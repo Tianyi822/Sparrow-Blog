@@ -22,6 +22,21 @@
     cursor: pointer;
   }
 
+  .nav-menu-button {
+    display: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    
+    span {
+      display: block;
+      width: 25px;
+      height: 3px;
+      background-color: $font-color-base;
+      margin: 5px 0;
+      transition: all 0.3s ease;
+    }
+  }
+
   .nav-list {
     display: flex;
     align-items: center;
@@ -42,34 +57,36 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      position: relative;
 
-      &:hover {
-        color: $primary-400;
-        background-color: rgba($primary-100, 0.5);
+      // 下划线效果
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -0.2rem;
+        left: 15%;
+        width: 0;
+        height: 3px;
+        background-color: $primary-400;
+        transition: all 0.3s ease;
       }
 
-      &.active {
-        color: $primary-400;
-        background-color: $primary-100;
-      }
-
-      &.search-button {
-        padding: 0.5rem;
-        margin-right: 0.5rem;
-        
-        svg {
-          transition: transform 0.3s ease;
-        }
-
-        &:hover svg {
-          transform: scale(1.1);
+      &:hover, &.active {
+        &::after {
+          width: 75%;
         }
       }
 
       .nav-text {
-        @media (max-width: 768px) {
-          display: none;
-        }
+        margin-left: 0.5rem;
+      }
+
+      .svg-icon {
+        transition: transform 0.3s ease;
+      }
+
+      &:hover .svg-icon {
+        transform: scale(1.1);
       }
     }
 
@@ -78,23 +95,8 @@
     }
   }
 
-  .nav-menu-button {
-    display: none; // 默认隐藏汉堡菜单
-    cursor: pointer;
-    padding: 0.5rem;
-    
-    span {
-      display: block;
-      width: 25px;
-      height: 3px;
-      background-color: $font-color-base;
-      margin: 5px 0;
-      transition: all 0.3s ease;
-    }
-  }
-
-  // 平板端样式 - 修改断点
-  @media (max-width: 1024px) {
+  // 响应式布局
+  @media (max-width: 1050px) {
     padding: 1rem;
 
     .nav-list {
@@ -107,8 +109,8 @@
     }
   }
 
-  // 折叠导航栏样式 - 新的断点
-  @media (max-width: 850px) {
+  // 折叠导航栏样式
+  @media (max-width: 900px) {
     .nav-menu-button {
       display: block;
       z-index: 1001;
@@ -138,47 +140,25 @@
       .nav-item {
         width: 100%;
         margin: 0.5rem 0;
-        justify-content: flex-start;
         padding: 0.8rem 1.2rem;
-        border-radius: 0.8rem;
-        position: relative;
         border-left: 3px solid transparent;
-        transition: all 0.3s ease;
-        
-        &:hover {
-          background-color: rgba($primary-100, 0.3);
-          border-left-color: rgba($primary-400, 0.5);
-        }
 
-        &.active {
-          background-color: $primary-100;
+        &:hover, &.active {
           border-left-color: $primary-400;
+          &::after {
+            width: 0;
+          }
         }
 
-        &.search-button {
-          margin: 0.8rem 0;
-          order: -1;
-          padding: 0.8rem 1.2rem;
+        .nav-text {
+          margin-left: 1rem;
+          font-size: 0.95rem;
         }
 
         .svg-icon {
           width: 1.2rem;
           min-width: 1.2rem;
           height: 1.2rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: transform 0.3s ease;
-        }
-
-        .nav-text {
-          display: inline-block;
-          margin-left: 1rem;
-          font-size: 0.95rem;
-        }
-
-        &:hover .svg-icon {
-          transform: scale(1.1);
         }
       }
 
@@ -192,7 +172,7 @@
   // 超小屏幕样式
   @media (max-width: 370px) {
     .nav-list {
-      width: 4rem;  // 只显示图标时减小宽度
+      width: 4rem;
       padding: 4rem 0.5rem 2rem;
 
       .nav-item {
@@ -200,11 +180,11 @@
         justify-content: center;
 
         .nav-text {
-          display: none;  // 隐藏文字
+          display: none;
         }
 
         .svg-icon {
-          width: 1.4rem;  // 稍微增大图标尺寸
+          width: 1.4rem;
           min-width: 1.4rem;
           height: 1.4rem;
         }
