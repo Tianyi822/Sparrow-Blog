@@ -11,6 +11,7 @@ import SvgIcon, {
     FriendLink,
     About
 } from "@/components/SvgIcon/SvgIcon.jsx";
+import classNames from "classnames";
 
 const Navigator = (props) => {
     const {index, setIndex, className} = props
@@ -40,7 +41,7 @@ const Navigator = (props) => {
 
     return (
         <nav className={clsName}>
-            <div className="nav-brand">Tianyi's Blog</div>
+            <div className="nav-brand">Tianyi&#39;s Blog</div>
 
             <div className="nav-menu-button" onClick={toggleMenu}>
                 <span></span>
@@ -69,7 +70,8 @@ const Navigator = (props) => {
 
 Navigator.propTypes = {
     index: PropTypes.number.isRequired,
-    setIndex: PropTypes.func
+    setIndex: PropTypes.func,
+    className: PropTypes.string
 }
 
 export default Navigator;
