@@ -1,18 +1,28 @@
 import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
-import "./index.scss"
+import "./Navigator.scss"
+import SvgIcon, {
+    Normal,
+    Search,
+    Home,
+    TimeLine,
+    Tag,
+    Category,
+    FriendLink,
+    About
+} from "@/components/SvgIcon/SvgIcon.jsx";
 
 const Navigator = (props) => {
-    const {index, setIndex} = props
+    const {index, setIndex, className} = props
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const navItems = [
-        {name: '首页', path: '/', label: '首页'},
-        {name: '时间轴', path: '/timeline', label: '时间轴'},
-        {name: '标签', path: '/tags', label: '标签'},
-        {name: '分类', path: '/categories', label: '分类'},
-        {name: '友链', path: '/friends', label: '友链'},
-        {name: '关于', path: '/about', label: '关于'},
+        {name: '首页', path: '/', label: '首页', icon: Home},
+        {name: '时间轴', path: '/timeline', label: '时间轴', icon: TimeLine},
+        {name: '标签', path: '/tags', label: '标签', icon: Tag},
+        {name: '分类', path: '/categories', label: '分类', icon: Category},
+        {name: '友链', path: '/friends', label: '友链', icon: FriendLink},
+        {name: '关于', path: '/about', label: '关于', icon: About},
     ];
 
     const handleClick = useCallback((idx) => {
@@ -26,8 +36,10 @@ const Navigator = (props) => {
         setIsMenuOpen(prev => !prev);
     }, []);
 
+    const clsName = classNames('navigator', className)
+
     return (
-        <nav className="navigator">
+        <nav className={clsName}>
             <div className="nav-brand">Tianyi's Blog</div>
 
             <div className="nav-menu-button" onClick={toggleMenu}>
@@ -38,10 +50,7 @@ const Navigator = (props) => {
 
             <ul className={`nav-list ${isMenuOpen ? 'open' : ''}`}>
                 <li className="nav-item search-button">
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
+                    <SvgIcon name={Search} size={Normal}/>
                 </li>
                 {navItems.map((item, idx) => (
                     <li
@@ -49,7 +58,8 @@ const Navigator = (props) => {
                         className={`nav-item ${idx === index ? 'active' : ''}`}
                         onClick={() => handleClick(idx)}
                     >
-                        {item.name}
+                        <SvgIcon name={item.icon} size={Normal}/>
+                        <span className="nav-text">{item.name}</span>
                     </li>
                 ))}
             </ul>

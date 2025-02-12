@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.scss"
-import Navigator from "@/components/Navigator/index.jsx";
+import Navigator from "@/components/Navigator/Navigator.jsx";
 
 function App() {
     const [navIndex, setNavIndex] = useState(0)

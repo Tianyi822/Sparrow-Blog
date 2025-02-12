@@ -17,7 +17,7 @@
   .nav-brand {
     font-family: $font-family-sans-serif;
     font-size: 1.5rem;
-    font-weight: $font-weight-bold;
+    font-weight: $font-weight-bolder * 1.5;
     color: $font-color-base;
     cursor: pointer;
   }
@@ -41,6 +41,7 @@
       border-radius: 0.5rem;
       display: flex;
       align-items: center;
+      gap: 0.5rem;
 
       &:hover {
         color: $primary-400;
@@ -62,6 +63,12 @@
 
         &:hover svg {
           transform: scale(1.1);
+        }
+      }
+
+      .nav-text {
+        @media (max-width: 768px) {
+          display: none;
         }
       }
     }
@@ -86,7 +93,7 @@
     }
   }
 
-  // 平板端样式
+  // 平板端样式 - 修改断点
   @media (max-width: 1024px) {
     padding: 1rem;
 
@@ -100,8 +107,8 @@
     }
   }
 
-  // 移动端样式
-  @media (max-width: 768px) {
+  // 折叠导航栏样式 - 新的断点
+  @media (max-width: 850px) {
     .nav-menu-button {
       display: block;
       z-index: 1001;
@@ -115,12 +122,12 @@
       position: fixed;
       top: 0;
       right: -100%;
-      width: 70%;
+      width: 25%;
       height: 100vh;
       flex-direction: column;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 5rem 2rem 2rem;
+      padding: 4rem 1rem 2rem;
       transition: right 0.3s ease;
       box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
 
@@ -130,29 +137,77 @@
 
       .nav-item {
         width: 100%;
-        text-align: center;
         margin: 0.5rem 0;
-        justify-content: center;
+        justify-content: flex-start;
+        padding: 0.8rem 1.2rem;
+        border-radius: 0.8rem;
+        position: relative;
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
         
         &:hover {
-          transform: translateX(5px);
+          background-color: rgba($primary-100, 0.3);
+          border-left-color: rgba($primary-400, 0.5);
+        }
+
+        &.active {
+          background-color: $primary-100;
+          border-left-color: $primary-400;
         }
 
         &.search-button {
-          margin: 0.5rem 0;
+          margin: 0.8rem 0;
           order: -1;
-          padding: 0.5rem 1rem;
-          
-          svg {
-            width: 20px;
-            height: 20px;
-          }
+          padding: 0.8rem 1.2rem;
+        }
+
+        .svg-icon {
+          width: 1.2rem;
+          min-width: 1.2rem;
+          height: 1.2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.3s ease;
+        }
+
+        .nav-text {
+          display: inline-block;
+          margin-left: 1rem;
+          font-size: 0.95rem;
+        }
+
+        &:hover .svg-icon {
+          transform: scale(1.1);
         }
       }
 
       .about-link {
         margin-left: 0;
-        margin-top: auto; // 移动端时固定在底部
+        margin-top: 2rem;
+      }
+    }
+  }
+
+  // 超小屏幕样式
+  @media (max-width: 370px) {
+    .nav-list {
+      width: 4rem;  // 只显示图标时减小宽度
+      padding: 4rem 0.5rem 2rem;
+
+      .nav-item {
+        padding: 0.8rem;
+        justify-content: center;
+
+        .nav-text {
+          display: none;  // 隐藏文字
+        }
+
+        .svg-icon {
+          width: 1.4rem;  // 稍微增大图标尺寸
+          min-width: 1.4rem;
+          height: 1.4rem;
+        }
       }
     }
   }
