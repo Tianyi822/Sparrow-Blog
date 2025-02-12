@@ -1,16 +1,4 @@
-@use "@/style/variables" as *;
-
-a {
-  display: block;
-  width: 200px;
-  height: 200px;
-  background-color: $accent-200;
-  text-decoration: none;
-  text-align: center;
-  line-height: 200px; // 使文字垂直居中
-
-  &:hover {
-    background-color: #e74c3c;
-    transition: background-color 0.3s ease; // 添加过渡效果
-  }
+body {
+  margin: 0;
+  padding-top: 4rem; // 为固定导航栏留出空间
 }

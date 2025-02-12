@@ -1,10 +1,12 @@
+import { useState } from "react";
 import "./App.scss"
+import Navigator from "@/components/Navigator/index.jsx";
 
 function App() {
+    const [navIndex, setNavIndex] = useState(0)
+
     return (
-        <>
-            <a href="https://tybook.cc">Hello World</a>
-        </>
+        <Navigator index={navIndex} setIndex={setNavIndex}/>
     )
 }
 
