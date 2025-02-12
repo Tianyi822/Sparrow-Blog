@@ -17,7 +17,14 @@ const Navigator = (props) => {
     const {index, setIndex, className} = props
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+    const handleSearch = useCallback(() => {
+        // 处理搜索点击事件
+        console.log('搜索被点击');
+        setIsMenuOpen(false);
+    }, []);
+
     const navItems = [
+        {name: '搜索', path: '', label: '搜索', icon: Search, onClick: handleSearch},
         {name: '首页', path: '/', label: '首页', icon: Home},
         {name: '时间轴', path: '/timeline', label: '时间轴', icon: TimeLine},
         {name: '标签', path: '/tags', label: '标签', icon: Tag},
@@ -26,7 +33,11 @@ const Navigator = (props) => {
         {name: '关于', path: '/about', label: '关于', icon: About},
     ];
 
-    const handleClick = useCallback((idx) => {
+    const handleClick = useCallback((idx, item) => {
+        if (item.onClick) {
+            item.onClick();
+            return;
+        }
         if (setIndex) {
             setIndex(idx)
         }
@@ -50,14 +61,11 @@ const Navigator = (props) => {
             </div>
 
             <ul className={`nav-list ${isMenuOpen ? 'open' : ''}`}>
-                <li className="nav-item search-button">
-                    <SvgIcon name={Search} size={Normal}/>
-                </li>
                 {navItems.map((item, idx) => (
                     <li
                         key={item.name}
-                        className={`nav-item ${idx === index ? 'active' : ''}`}
-                        onClick={() => handleClick(idx)}
+                        className={`nav-item ${!item.onClick && idx === index ? 'active' : ''}`}
+                        onClick={() => handleClick(idx, item)}
                     >
                         <SvgIcon name={item.icon} size={Normal}/>
                         <span className="nav-text">{item.name}</span>
