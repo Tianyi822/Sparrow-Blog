@@ -1,22 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import "./App.scss"
 import Navigator from "@/components/Navigator/Navigator.jsx";
 
 function App() {
     const [navIndex, setNavIndex] = useState(1);
     // 模拟从后端获取的背景图片地址
-    const [bgImage] = useState("https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E3%80%90%E5%8D%95%E4%BA%BA%E7%89%88%E3%80%91%E8%90%A4%E7%81%AB%E4%B9%8B%E7%BA%A610K_ab781.webp");
+    const [bgImage] = useState("https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E8%90%A4%E7%81%AB%E5%80%BE%E5%9F%8E-%E6%B8%85%E6%99%A8-%E6%B8%85%E5%87%89%E7%89%8810K_805e7.webp");
 
     useEffect(() => {
         document.title = "Tianyi's Blog";
     }, []);
 
     return (
-        <div className="app-container">
-            <div className="bg-image" style={{ backgroundImage: `url(${bgImage})` }}></div>
-            <div className="bg-overlay"></div>
+        <Fragment>
             <Navigator className="app-navigator" index={navIndex} setIndex={setNavIndex}/>
-        </div>
+            <div className="app-container">
+                <div className="bg-image" style={{backgroundImage: `url(${bgImage})`}}></div>
+                <div className="bg-overlay"></div>
+            </div>
+        </Fragment>
     )
 }
 
