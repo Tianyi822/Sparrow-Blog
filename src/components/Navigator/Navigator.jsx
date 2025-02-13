@@ -67,7 +67,11 @@ const Navigator = (props) => {
                         className={`nav-item ${!item.onClick && idx === index ? 'active' : ''}`}
                         onClick={() => handleClick(idx, item)}
                     >
-                        <SvgIcon name={item.icon} size={Normal}/>
+                        <SvgIcon 
+                            name={item.icon} 
+                            size={Normal}
+                            color="#cccccc"
+                        />
                         <span className="nav-text">{item.name}</span>
                     </li>
                 ))}
