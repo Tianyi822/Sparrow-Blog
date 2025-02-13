@@ -40,25 +40,25 @@ const SvgIcon = (props) => {
     let icon = <div/>
     switch (name) {
         case Search:
-            icon = <SearchSvg className={clsName} stroke={color}/>
+            icon = <SearchSvg className={clsName} fill={color}/>
             break;
         case Home:
-            icon = <HomeSvg className={clsName} stroke={color}/>
+            icon = <HomeSvg className={clsName} fill={color}/>
             break;
         case TimeLine:
-            icon = <TimeLineSvg className={clsName} stroke={color}/>
+            icon = <TimeLineSvg className={clsName} fill={color}/>
             break;
         case FriendLink:
-            icon = <FriendLinkSvg className={clsName} stroke={color}/>
+            icon = <FriendLinkSvg className={clsName} fill={color}/>
             break;
         case About:
-            icon = <AboutSvg className={clsName} stroke={color}/>
+            icon = <AboutSvg className={clsName} fill={color}/>
             break;
         case Tag:
-            icon = <TagSvg className={clsName} stroke={color}/>
+            icon = <TagSvg className={clsName} fill={color}/>
             break;
         case Category:
-            icon = <CategorySvg className={clsName} stroke={color}/>
+            icon = <CategorySvg className={clsName} fill={color}/>
             break;
         default:
             console.error("WARNING: 图标名称错误")
