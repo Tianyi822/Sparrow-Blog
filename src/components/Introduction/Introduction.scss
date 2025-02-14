@@ -7,10 +7,6 @@ $text-color: rgba(255, 255, 255, 0.9);
 $mobile-breakpoint: 768px;
 
 .introduction {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   color: $text-color;
   text-align: left;
   user-select: none;
@@ -55,9 +51,6 @@ $mobile-breakpoint: 768px;
 }
 
 .introduction-type-writer {
-  position: relative;
-  left: 0;
-  transform: none;
   width: 100%;
   max-width: 90vw;
   font-size: 2rem;
