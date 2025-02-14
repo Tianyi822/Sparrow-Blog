@@ -23,12 +23,6 @@
     height: 32px;
   }
 
-  // 如果传入的是数字，会直接作为类名
-  &[class*="svg-icon-"] {
-    width: var(--icon-size, 24px);
-    height: var(--icon-size, 24px);
-  }
-
   &:hover {
     transform: scale(1.1);
   }

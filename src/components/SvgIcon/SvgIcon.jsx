@@ -8,6 +8,7 @@ import FriendLinkSvg from '@/assets/svgs/friendLink.svg?react'
 import AboutSvg from '@/assets/svgs/about.svg?react'
 import TagSvg from '@/assets/svgs/tag.svg?react'
 import CategorySvg from '@/assets/svgs/category.svg?react'
+import DownArrowSvg from '@/assets/svgs/downwardArrow.svg?react'
 import { Fragment } from "react";
 
 // 图标尺寸
@@ -23,7 +24,7 @@ export const FriendLink = "friendLink"
 export const About = "about"
 export const Tag = "tag"
 export const Category = "category"
-
+export const DownArrow = "downArrow"
 
 const SvgIcon = (props) => {
     const {
@@ -60,6 +61,9 @@ const SvgIcon = (props) => {
         case Category:
             icon = <CategorySvg className={clsName} fill={color}/>
             break;
+        case DownArrow:
+            icon = <DownArrowSvg className={clsName} fill={color}/>
+            break;
         default:
             console.error("WARNING: 图标名称错误")
             break;
@@ -73,10 +77,7 @@ const SvgIcon = (props) => {
 }
 
 SvgIcon.propTypes = {
-    size: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-    ]),
+    size: PropTypes.string,
     color: PropTypes.string,
     name: PropTypes.string.isRequired,
     className: PropTypes.string
