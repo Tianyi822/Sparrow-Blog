@@ -2,6 +2,7 @@ import { useState, useEffect, Fragment } from "react";
 import "./App.scss"
 import Navigator from "@/components/Navigator/Navigator.jsx";
 import Introduction from "@/components/Introduction/Introduction.jsx";
+import SvgIcon, { DownArrow, Large } from "./components/SvgIcon/SvgIcon";
 
 function App() {
     const [navIndex, setNavIndex] = useState(1);
@@ -19,6 +20,11 @@ function App() {
                 <div className="bg-image" style={{backgroundImage: `url(${bgImage})`}}></div>
                 <div className="bg-overlay"></div>
                 <Introduction className={"app-introduction"}/>
+                <SvgIcon 
+                    name={DownArrow} 
+                    size={Large}
+                    className="app-down-arrow"
+                />
             </div>
         </Fragment>
     )
