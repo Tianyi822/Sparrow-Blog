@@ -1,0 +1,56 @@
+.tools {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;  // 组件之间的间距
+    align-items: flex-end;  // 让子元素靠右对齐
+
+    .tools-back-to-top {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+
+        &.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        &.animating {
+            animation: floatUp 0.3s ease forwards;
+            pointer-events: none;
+        }
+    }
+
+    .tools-website-record {
+        position: relative;  // 为绝对定位的内容提供参考点
+        width: 36px;  // 固定初始宽度
+
+        .website-record {
+            position: absolute;
+            right: 0;  // 靠右对齐
+            width: 36px;  // 初始宽度
+            transition: width 0.3s ease;
+
+            &.expanded {
+                width: 220px;  // 展开宽度
+            }
+        }
+    }
+
+    // 窄屏隐藏
+    @media screen and (max-width: 768px) {
+        display: none;
+    }
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+    }
+} 

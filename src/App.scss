@@ -2,4 +2,51 @@
     width: 100%;
     min-height: 100vh;
     position: relative;
+
+    .app-back-to-top {
+        position: fixed;
+        right: 1rem;
+        bottom: calc(1rem + 48px);  // WebsiteRecord高度(36px) + 间距(12px)
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+
+        &.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        &.animating {
+            animation: floatUp 0.3s ease forwards;
+            pointer-events: none;
+        }
+    }
+
+    .app-website-record {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 100;
+    }
+
+    .app-tools {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 100;
+    }
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+    }
 }

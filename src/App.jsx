@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.scss"
 import Navigator from "@/components/Navigator/Navigator.jsx";
 import Home from "@/components/Home/Home.jsx";
-import WebsiteRecord from "@/components/WebsiteRecord/WebsiteRecord.jsx";
+import Tools from "@/components/Tools/Tools.jsx";
 
 function App() {
     const [navIndex, setNavIndex] = useState(1);
@@ -15,7 +15,7 @@ function App() {
         <div className="app">
             <Navigator className="app-navigator" index={navIndex} setIndex={setNavIndex}/>
             <Home/>
-            <WebsiteRecord />
+            <Tools className="app-tools"/>
         </div>
     );
 }
