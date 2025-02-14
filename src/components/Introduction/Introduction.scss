@@ -1,0 +1,94 @@
+// 定义变量
+$primary-color: #87CEEB;
+$secondary-color: #baccd9;
+$text-color: rgba(255, 255, 255, 0.9);
+
+// 定义断点
+$mobile-breakpoint: 768px;
+
+.introduction {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: $text-color;
+  text-align: left;
+  user-select: none;
+  z-index: 100;
+  width: 1000px;
+  max-width: 90vw;
+
+  .greeting {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .hello {
+      font-size: 3.75rem;
+      font-weight: 500;
+    }
+
+    .name {
+      font-size: 5.25rem;
+      font-weight: 700;
+      color: $primary-color;
+    }
+  }
+
+  .identity {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .tech-stack {
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
+    
+    .tech {
+      color: $primary-color;
+      font-weight: 600;
+      margin: 0 0.3rem;
+    }
+  }
+}
+
+.introduction-type-writer {
+  position: relative;
+  left: 0;
+  transform: none;
+  width: 100%;
+  max-width: 90vw;
+  font-size: 2rem;
+  color: $secondary-color;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: $mobile-breakpoint) {
+  .introduction {
+    padding: 0 1.5rem;
+
+    .greeting {
+      .hello {
+        font-size: 3rem;
+      }
+
+      .name {
+        font-size: 4.2rem;
+      }
+    }
+
+    .identity {
+      font-size: 2.4rem;
+    }
+
+    .tech-stack {
+      font-size: 1.8rem;
+    }
+  }
+
+  .introduction-type-writer {
+    font-size: 1.8rem;
+  }
+}
