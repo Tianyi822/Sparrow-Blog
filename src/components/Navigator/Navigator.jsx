@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import "./Navigator.scss"
 import SvgIcon, {
     Normal,
@@ -16,6 +16,32 @@ import classNames from "classnames";
 const Navigator = (props) => {
     const {index, setIndex, className} = props
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [scrollDirection, setScrollDirection] = useState('none');
+    const [isAtTop, setIsAtTop] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            
+            // 检查是否在顶部
+            setIsAtTop(currentScrollY === 0);
+            
+            // 确定滚动方向并设置状态
+            if (currentScrollY > lastScrollY) {
+                // 向下滚动
+                setScrollDirection('down');
+            } else if (currentScrollY < lastScrollY) {
+                // 向上滚动
+                setScrollDirection('up');
+            }
+            
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
 
     const handleSearch = useCallback(() => {
         // 处理搜索点击事件
@@ -48,10 +74,26 @@ const Navigator = (props) => {
         setIsMenuOpen(prev => !prev);
     }, []);
 
-    const clsName = classNames('navigator', className)
+    const navClasses = classNames(
+        'navigator',
+        className,
+        {
+            'nav-hidden': scrollDirection === 'down' && !isAtTop,
+            'nav-solid': !isAtTop && scrollDirection === 'up',
+            'nav-transparent': isAtTop
+        }
+    );
+
+    // 根据导航栏状态决定图标颜色
+    const iconColor = useMemo(() => {
+        if (!isAtTop && scrollDirection === 'up') {
+            return '#333333';  // 实色背景时为深色
+        }
+        return '#cccccc';  // 默认为浅色
+    }, [isAtTop, scrollDirection]);
 
     return (
-        <nav className={clsName}>
+        <nav className={navClasses}>
             <div className="nav-brand">Tianyi&#39;s Blog</div>
 
             <div className="nav-menu-button" onClick={toggleMenu}>
@@ -70,7 +112,7 @@ const Navigator = (props) => {
                         <SvgIcon 
                             name={item.icon} 
                             size={Normal}
-                            color="#cccccc"
+                            color={iconColor}  // 使用动态颜色
                         />
                         <span className="nav-text">{item.name}</span>
                     </li>
