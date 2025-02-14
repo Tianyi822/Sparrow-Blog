@@ -9,7 +9,7 @@ import AboutSvg from '@/assets/svgs/about.svg?react'
 import TagSvg from '@/assets/svgs/tag.svg?react'
 import CategorySvg from '@/assets/svgs/category.svg?react'
 import DownArrowSvg from '@/assets/svgs/downwardArrow.svg?react'
-import { Fragment } from "react";
+import PreviewSvg from '@/assets/svgs/preview.svg?react'
 
 // 图标尺寸
 export const Normal = "normal"
@@ -25,15 +25,9 @@ export const About = "about"
 export const Tag = "tag"
 export const Category = "category"
 export const DownArrow = "downArrow"
+export const Preview = "preview"
 
-const SvgIcon = (props) => {
-    const {
-        size = Normal,  // 默认尺寸
-        color = 'currentColor', // 默认颜色跟随父元素
-        name, // 图标名称
-        className = '' // 自定义类名
-    } = props
-
+const SvgIcon = ({name, size, className, onClick, color = 'currentColor'}) => {
     const clsName = classNames('svg-icon', className, {
         [`svg-icon-${size}`]: size
     })
@@ -64,23 +58,31 @@ const SvgIcon = (props) => {
         case DownArrow:
             icon = <DownArrowSvg className={clsName} fill={color}/>
             break;
+        case Preview:
+            icon = <PreviewSvg className={clsName} fill={color}/>
+            break;
         default:
             console.error("WARNING: 图标名称错误")
             break;
     }
 
     return (
-        <Fragment>
+        <div
+            className={clsName}
+            onClick={onClick}
+            style={{cursor: 'pointer'}}
+        >
             {icon}
-        </Fragment>
+        </div>
     )
 }
 
 SvgIcon.propTypes = {
-    size: PropTypes.string,
-    color: PropTypes.string,
     name: PropTypes.string.isRequired,
-    className: PropTypes.string
+    size: PropTypes.string,
+    className: PropTypes.string,
+    onClick: PropTypes.func,
+    color: PropTypes.string
 };
 
 export default SvgIcon;
