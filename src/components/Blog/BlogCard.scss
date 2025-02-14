@@ -58,7 +58,6 @@ $mobile-padding: 1rem;
     .blog-card-time {
       display: flex;
       align-items: center;
-      gap: 4px;
     }
   }
 
@@ -72,7 +71,7 @@ $mobile-padding: 1rem;
     .blog-card-tag {
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
       padding: 3px 8px;
       border-radius: 4px;
       font-size: 0.8em;

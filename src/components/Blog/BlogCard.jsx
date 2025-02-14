@@ -15,22 +15,18 @@ const BlogCard = ({ title, date, updateDate, category, tags, image, description,
                     <h3 className="blog-card-title">{title}</h3>
                     <div className="blog-card-meta">
                         <span className="blog-card-time">
-                            <i className="fa fa-calendar"></i>
                             创建于 {date}
                         </span>
                         <span className="blog-card-time">
-                            <i className="fa fa-clock-o"></i>
                             更新于 {updateDate}
                         </span>
                     </div>
                     <div className="blog-card-tags">
                         <span className="blog-card-category">
-                            <i className="fa fa-folder"></i>
                             {category}
                         </span>
                         {tags && tags.map((tag, index) => (
                             <span key={index} className="blog-card-tag">
-                                <i className="fa fa-tag"></i>
                                 {tag}
                             </span>
                         ))}
