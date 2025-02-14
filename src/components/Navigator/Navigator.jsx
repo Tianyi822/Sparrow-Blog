@@ -43,6 +43,27 @@ const Navigator = (props) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [lastScrollY]);
 
+    // 添加点击外部关闭菜单的处理函数
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // 如果菜单是打开的，且点击的不是菜单按钮和菜单内容
+            if (isMenuOpen && 
+                !event.target.closest('.nav-menu-button') && 
+                !event.target.closest('.nav-list')) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        // 只在菜单打开时添加事件监听
+        if (isMenuOpen) {
+            document.addEventListener('click', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isMenuOpen]);
+
     const handleSearch = useCallback(() => {
         // 处理搜索点击事件
         console.log('搜索被点击');
@@ -60,14 +81,14 @@ const Navigator = (props) => {
     ];
 
     const handleClick = useCallback((idx, item) => {
+        if (setIndex && idx !== 0) {
+            setIndex(idx);
+        }
         if (item.onClick) {
             item.onClick();
             return;
         }
-        if (setIndex) {
-            setIndex(idx)
-        }
-        setIsMenuOpen(false);
+        setIsMenuOpen(false);  // 选中选项后关闭菜单
     }, [setIndex]);
 
     const toggleMenu = useCallback(() => {
@@ -96,12 +117,6 @@ const Navigator = (props) => {
         <nav className={navClasses}>
             <div className="nav-brand">Tianyi&#39;s Blog</div>
 
-            <div className="nav-menu-button" onClick={toggleMenu}>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-
             <ul className={`nav-list ${isMenuOpen ? 'open' : ''}`}>
                 {navItems.map((item, idx) => (
                     <li
@@ -112,12 +127,18 @@ const Navigator = (props) => {
                         <SvgIcon 
                             name={item.icon} 
                             size={Normal}
-                            color={iconColor}  // 使用动态颜色
+                            color={isMenuOpen ? '#333333' : iconColor}
                         />
                         <span className="nav-text">{item.name}</span>
                     </li>
                 ))}
             </ul>
+
+            <div className="nav-menu-button" onClick={toggleMenu}>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </nav>
     )
 }
