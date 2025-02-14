@@ -1,0 +1,70 @@
+@use "sass:color";
+
+.scroll-bar-container {
+    width: 8px;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover,
+    &.visible {
+        opacity: 1;
+    }
+
+    .scroll-bar-thumb {
+        width: 100%;
+        min-height: 50px;
+        background-color: #93b5cf;
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        transition: transform 0.1s ease;
+        cursor: pointer;
+        user-select: none;
+
+        &:hover {
+            background-color: color.adjust(#93b5cf, $lightness: 10%);
+        }
+
+        &:active {
+            background-color: color.adjust(#93b5cf, $lightness: -10%);
+        }
+    }
+
+    &.bounce-top .scroll-bar-thumb {
+        animation: bounceTop 0.2s ease;
+        transform-origin: top;
+    }
+
+    &.bounce-bottom .scroll-bar-thumb {
+        animation: bounceBottom 0.2s ease;
+        transform-origin: bottom;
+    }
+}
+
+@keyframes bounceTop {
+    0% {
+        transform: scaleY(1) scaleX(1);
+    }
+    50% {
+        transform: scaleY(0.99) scaleX(3);
+    }
+    100% {
+        transform: scaleY(1) scaleX(1);
+    }
+}
+
+@keyframes bounceBottom {
+    0% {
+        transform: scaleY(1) scaleX(1);
+    }
+    50% {
+        transform: scaleY(0.99) scaleX(3);
+    }
+    100% {
+        transform: scaleY(1) scaleX(1);
+    }
+} 

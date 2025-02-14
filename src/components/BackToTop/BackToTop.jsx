@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import './BackToTop.scss';
 import SvgIcon, { DownArrow, Small } from '@/components/SvgIcon/SvgIcon.jsx';
 import classNames from "classnames";

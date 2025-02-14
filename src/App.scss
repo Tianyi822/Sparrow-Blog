@@ -1,7 +1,19 @@
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+    display: none; /* Chrome, Safari 和 Opera */
+}
+
 .app {
     width: 100%;
     min-height: 100vh;
     position: relative;
+
+    // 隐藏默认滚动条
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 
     .app-back-to-top {
         position: fixed;
@@ -35,6 +47,13 @@
         right: 1rem;
         bottom: 1rem;
         z-index: 100;
+    }
+
+    .app-scroll-bar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 1000;
     }
 }
 
