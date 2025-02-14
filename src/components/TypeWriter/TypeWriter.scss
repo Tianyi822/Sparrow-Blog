@@ -1,0 +1,39 @@
+// 定义动画时间
+$blink-duration: 1s;
+
+.type-writer {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  width: 100%;
+  
+  .text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+
+    .cursor {
+      animation: blink $blink-duration step-end infinite;
+      position: relative;
+      display: inline;
+      margin-left: -2px;
+    }
+  }
+
+  &.typing,
+  &.erasing {
+    .cursor {
+      animation: none;
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes blink {
+  from, to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
