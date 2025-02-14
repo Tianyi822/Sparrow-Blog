@@ -10,6 +10,7 @@ import TagSvg from '@/assets/svgs/tag.svg?react'
 import CategorySvg from '@/assets/svgs/category.svg?react'
 import DownArrowSvg from '@/assets/svgs/downwardArrow.svg?react'
 import PreviewSvg from '@/assets/svgs/preview.svg?react'
+import WebsiteRecordSvg from '@/assets/svgs/websiteRecord.svg?react'
 
 // 图标尺寸
 export const Normal = "normal"
@@ -26,6 +27,7 @@ export const Tag = "tag"
 export const Category = "category"
 export const DownArrow = "downArrow"
 export const Preview = "preview"
+export const WebsiteRecord = "websiteRecord"
 
 const SvgIcon = ({name, size, className, onClick, color = 'currentColor'}) => {
     const clsName = classNames('svg-icon', className, {
@@ -61,6 +63,9 @@ const SvgIcon = ({name, size, className, onClick, color = 'currentColor'}) => {
         case Preview:
             icon = <PreviewSvg className={clsName} fill={color}/>
             break;
+        case WebsiteRecord:
+            icon = <WebsiteRecordSvg className={clsName}/>
+            break;
         default:
             console.error("WARNING: 图标名称错误")
             break;
@@ -70,7 +75,7 @@ const SvgIcon = ({name, size, className, onClick, color = 'currentColor'}) => {
         <div
             className={clsName}
             onClick={onClick}
-            style={{cursor: 'pointer'}}
+            style={{cursor: 'pointer', color: color}}
         >
             {icon}
         </div>

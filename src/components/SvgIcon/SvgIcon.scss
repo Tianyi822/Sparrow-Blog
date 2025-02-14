@@ -1,9 +1,12 @@
 @use '@/style/variables' as *;
 
+// 基础图标样式
 .svg-icon {
-  display: inline-block;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.3s ease;
+  color: inherit;
 
   // 默认尺寸 normal
   &.svg-icon-normal {
@@ -42,53 +45,6 @@
     &.svg-icon-large {
       width: 36px;
       height: 36px;
-    }
-  }
-}
-
-// 增加选择器优先级
-.navigator .nav-list .nav-item.search-button .svg-icon {
-  display: inline-block;
-  vertical-align: middle;
-  transition: transform 0.3s ease;
-
-  // 默认尺寸 normal
-  &.svg-icon-normal {
-    width: 24px !important;  // 使用 !important 确保优先级
-    height: 24px !important;
-  }
-
-  // 小尺寸
-  &.svg-icon-small {
-    width: 16px !important;
-    height: 16px !important;
-  }
-
-  // 大尺寸
-  &.svg-icon-large {
-    width: 32px !important;
-    height: 32px !important;
-  }
-
-  &:hover {
-    transform: scale(1.1);
-  }
-
-  // 移动端大小调整
-  @media (max-width: 768px) {
-    &.svg-icon-small {
-      width: 20px !important;
-      height: 20px !important;
-    }
-
-    &.svg-icon-normal {
-      width: 28px !important;
-      height: 28px !important;
-    }
-
-    &.svg-icon-large {
-      width: 36px !important;
-      height: 36px !important;
     }
   }
 }

@@ -1,7 +1,8 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import "./App.scss"
 import Navigator from "@/components/Navigator/Navigator.jsx";
 import Home from "@/components/Home/Home.jsx";
+import WebsiteRecord from "@/components/WebsiteRecord/WebsiteRecord.jsx";
 
 function App() {
     const [navIndex, setNavIndex] = useState(1);
@@ -11,11 +12,12 @@ function App() {
     }, []);
 
     return (
-        <Fragment>
+        <div className="app">
             <Navigator className="app-navigator" index={navIndex} setIndex={setNavIndex}/>
-            <Home />
-        </Fragment>
-    )
+            <Home/>
+            <WebsiteRecord />
+        </div>
+    );
 }
 
 export default App
