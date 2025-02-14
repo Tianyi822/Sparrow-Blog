@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import Introduction from "@/components/Introduction/Introduction.jsx";
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import "./Home.scss";
