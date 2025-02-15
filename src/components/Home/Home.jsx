@@ -176,7 +176,7 @@ const Home = () => {
                         onPageChange={handlePageChange}
                     />
                 </div>
-                <WebContent />
+                <WebContent className="home-web-content" />
             </section>
             {PreviewOverlay}
         </div>
