@@ -1,0 +1,233 @@
+.contribution-graph {
+    background: rgba(35, 39, 47, 0.8);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    user-select: none;
+
+    // 调整公共变量
+    $cell-size: 20px;
+    $month-height: 24px;
+    $month-width: 32px;
+    $weekday-width: 35px;
+    $gap-size: 6px;
+    $weekday-gap: calc($gap-size * 2);
+    $month-gap: $gap-size;
+    $font-size: 12px;
+    $border-radius: 6px;
+    $bg-color: rgba(255, 255, 255, 0.08);
+    $highlight-color: #ef82a0;
+    $cell-padding: 0 4px;
+
+    // 基础样式
+    %base-cell {
+        width: $cell-size;
+        height: $cell-size;
+        border-radius: $border-radius;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: default;
+    }
+
+    %text-cell {
+        font-size: $font-size;
+        color: rgba(255, 255, 255, 0.6);
+        background-color: $bg-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        padding: $cell-padding;
+    }
+
+    %hover-effect {
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            background-color: inherit;
+            opacity: 0;
+            transition: all 0.1s ease;
+            z-index: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        &:hover::after {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+            border: 1.5px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    // 月份标签基础样式
+    %month-base {
+        @extend %text-cell;
+        min-width: $month-width;
+        height: $month-height;
+        writing-mode: horizontal-tb;
+        text-orientation: mixed;
+        transform: none;
+        white-space: nowrap;
+        cursor: pointer;
+        border-radius: $border-radius;
+        line-height: 1;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    // 高亮状态基础样式
+    %highlight-base {
+        background-color: $highlight-color;
+        transform: scale(1.15);
+        font-weight: 600;
+        z-index: 2;
+        box-shadow: 0 4px 12px rgba(188, 132, 168, 0.3);
+        color: rgba(255, 255, 255, 0.95);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    // 高亮状态的悬停效果
+    %highlight-hover {
+        &:hover::after {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+            border: 1.5px solid rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    .graph-grid {
+        display: grid;
+        gap: $gap-size;
+        width: 100%;
+
+        .grid-row {
+            display: flex;
+            gap: $weekday-gap;
+            width: 100%;
+            overflow: visible;
+
+            &.months {
+                height: auto;
+                display: grid;
+                grid-template-columns: $weekday-width repeat(54, $cell-size);
+                column-gap: $gap-size;
+                padding-left: $gap-size + 2px;
+
+                .month {
+                    @extend %month-base;
+                    justify-self: start;
+                    position: relative;
+                    z-index: 1;
+                    margin-left: $gap-size;
+                }
+            }
+
+            .contribution-cells {
+                display: grid;
+                grid-template-columns: repeat(54, $cell-size);
+                gap: $gap-size;
+                flex: 1;
+            }
+        }
+
+        .grid-cell {
+            &.weekday {
+                @extend %text-cell;
+                @extend %base-cell;
+                width: $weekday-width;
+                min-width: $weekday-width;
+            }
+
+            &.month {
+                @extend %month-base;
+            }
+
+            &.weekday.highlight,
+            &.month.highlight {
+                @extend %highlight-base;
+                @extend %highlight-hover;
+            }
+
+            &.contribution-cell {
+                @extend %base-cell;
+                @extend %hover-effect;
+                background-color: #666666;
+                position: relative;
+
+                &:not(.level-0) {
+                    cursor: pointer;
+                }
+
+                &.level-0 { background-color: #f0f2f4; }
+                &.level-1 { background-color: #c2d1dc; }
+                &.level-2 { background-color: #94aec0; }
+                &.level-3 { background-color: #6589a5; }
+                &.level-4 { background-color: #37638a; }
+
+                &.month-highlight {
+                    @extend %highlight-base;
+                    @extend %highlight-hover;
+                    background-color: $highlight-color !important;
+                    z-index: 1;
+                }
+            }
+
+            &.empty-cell {
+                @extend %base-cell;
+                background-color: transparent;
+            }
+        }
+    }
+
+    .graph-legend {
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: $border-radius;
+        backdrop-filter: blur(4px);
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.9);
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .legend-cells {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+
+            .contribution-cell {
+                @extend %base-cell;
+                width: 16px;
+                height: 16px;
+
+                &.level-0 { background-color: #ebedf0; }
+                &.level-1 { background-color: #baccd9; }
+                &.level-2 { background-color: #89a7bb; }
+                &.level-3 { background-color: #5882a0; }
+                &.level-4 { background-color: #2c5c7c; }
+
+                &:hover::after {
+                    display: none;
+                }
+            }
+        }
+
+        span {
+            font-size: 12px;
+            opacity: 0.9;
+            white-space: nowrap;
+        }
+    }
+} 
