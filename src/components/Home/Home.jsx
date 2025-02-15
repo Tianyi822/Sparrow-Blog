@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Introduction from "@/components/Introduction/Introduction.jsx";
 import BlogCard from "@/components/Blog/BlogCard.jsx";
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
+import Pagination from '@/components/Pagination/Pagination';
 import "./Home.scss";
 
 const INITIAL_BLOG_DATA = [
@@ -49,6 +50,8 @@ const Home = () => {
     const [previewBlog, setPreviewBlog] = useState(null);
     const [isPreviewClosing, setIsPreviewClosing] = useState(false);
     const [blogData, setBlogData] = useState(INITIAL_BLOG_DATA);
+    const [currentPage, setCurrentPage] = useState(4);
+    const [totalPages, setTotalPages] = useState(20);
 
     // 使用 useCallback 优化滚动处理函数
     const handleScroll = useCallback(() => {
@@ -120,6 +123,11 @@ const Home = () => {
         );
     }, [previewBlog, isPreviewClosing, handleClosePreview]);
 
+    const handlePageChange = useCallback((page) => {
+        console.log(`Page changed to: ${page}`);
+        setCurrentPage(page);
+    }, []);
+
     return (
         <div className="home">
             <div className="background-container">
@@ -152,6 +160,12 @@ const Home = () => {
                         />
                     ))}
                 </div>
+                <Pagination 
+                    current={currentPage}
+                    total={totalPages}
+                    className="blog-pagination"
+                    onPageChange={handlePageChange}
+                />
             </section>
             {PreviewOverlay}
         </div>

@@ -1,0 +1,94 @@
+.pagination {
+    position: relative;  // 添加这行，作为定位上下文
+    display: grid;
+    grid-template-columns: 2rem auto 2rem;  // 三列布局：左箭头、数字、右箭头
+    gap: 1rem;
+    min-height: 2rem;
+    width: fit-content;  // 宽度由内容决定
+    user-select: none;  // 添加这行，使整个组件文本不可选中
+
+    // 基础按钮样式
+    %button-base {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666666;
+        background-color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    }
+
+    // 箭头区域
+    .pagination-arrow-area {
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    // 箭头按钮
+    .pagination-arrow {
+        @extend %button-base;
+
+        svg {
+            &.left {
+                transform: rotate(90deg);
+            }
+
+            &.right {
+                transform: rotate(-90deg);
+            }
+        }
+    }
+
+    // 数字按钮区域
+    .pagination-numbers {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;  // 确保数字始终居中
+    }
+
+    // 数字按钮
+    .pagination-number {
+        @extend %button-base;
+
+        &.active {
+            background-color: #87ceeb;
+            color: white;
+            cursor: default;
+        }
+
+        &.ellipsis {
+            cursor: pointer;
+            position: relative;
+            font-size: 0; // 隐藏原始内容
+            
+            &::after {
+                content: '•••';
+                position: absolute;
+                top: 45%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                transition: all 0.3s ease;
+                font-size: 1rem; // 恢复字体大小
+            }
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.8);
+                
+                &::after {
+                    content: '•••';
+                    letter-spacing: 2px;
+                }
+            }
+        }
+    }
+} 
