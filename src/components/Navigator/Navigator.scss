@@ -13,6 +13,7 @@
   z-index: 1000;
   transition: all 0.3s ease;
   transform: translateY(0);
+  user-select: none;
 
   // 向下滚动时隐藏
   &.nav-hidden {
