@@ -1,7 +1,7 @@
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import SvgIcon, { DownArrow, Normal } from '@/components/SvgIcon/SvgIcon';
-import PagePopup from './PagePopup';
+import SvgIcon, { DownArrow, Normal } from '@/components/SvgIcon/SvgIcon.jsx';
+import PagePopup from './PagePopup.jsx';
 import './Pagination.scss';
 
 const Pagination = ({ current, total, className, onPageChange }) => {
@@ -174,14 +174,6 @@ const Pagination = ({ current, total, className, onPageChange }) => {
             }
         };
     }, []);
-
-    const getPageNumbers = () => {
-        const isMobile = windowWidth <= 768;
-        const maxVisible = isMobile ? 5 : 7; // 在移动端只显示5个页码
-        
-        // ... 根据 maxVisible 计算要显示的页码
-        // 这里需要修改你现有的页码计算逻辑
-    };
 
     return (
         <div className={`pagination ${className || ''}`}>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Tools.scss';
-import BackToTop from '@/components/BackToTop/BackToTop.jsx';
-import WebsiteRecord from '@/components/WebsiteRecord/WebsiteRecord.jsx';
+import BackToTop from '@/components/Tools/BackToTop/BackToTop.jsx';
+import WebsiteRecord from '@/components/Tools/WebsiteRecord/WebsiteRecord.jsx';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 

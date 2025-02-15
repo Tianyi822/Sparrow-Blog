@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
-import Introduction from "@/components/Introduction/Introduction.jsx";
+import Introduction from "@/components/Home/Introduction/Introduction.jsx";
 import BlogCard from "@/components/Blog/BlogCard.jsx";
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
-import Pagination from '@/components/Pagination/Pagination';
+import Pagination from '@/components/Home/Pagination/Pagination';
 import WebContent from '@/components/WebContent/WebContent';
-import Clock from '@/components/Clock/Clock';
+import Clock from '@/components/Home/Clock/Clock';
 import "./Home.scss";
 
 const INITIAL_BLOG_DATA = [

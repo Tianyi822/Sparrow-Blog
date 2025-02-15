@@ -2,7 +2,7 @@ import './Introduction.scss';
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import TypeWriter from '@/components/TypeWriter/TypeWriter';
+import TypeWriter from '@/components/Home/TypeWriter/TypeWriter.jsx';
 
 const Introduction = (props) => {
     const {className} = props;
