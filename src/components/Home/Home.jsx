@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Introduction from "@/components/Introduction/Introduction.jsx";
 import BlogCard from "@/components/Blog/BlogCard.jsx";
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
@@ -47,38 +47,11 @@ const INITIAL_BLOG_DATA = [
 ];
 
 const Home = () => {
-    const [bgImage] = useState("https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/background_image.webp");
-    const [blurAmount, setBlurAmount] = useState(0);
     const [previewBlog, setPreviewBlog] = useState(null);
     const [isPreviewClosing, setIsPreviewClosing] = useState(false);
     const [blogData] = useState(INITIAL_BLOG_DATA);
     const [currentPage, setCurrentPage] = useState(4);
     const [totalPages] = useState(20);
-
-    // 修改 handleScroll 函数，抽取计算模糊度的逻辑
-    const calculateBlur = useCallback(() => {
-        const scrollPosition = window.scrollY;
-        const windowHeight = window.innerHeight;
-
-        const progress = Math.min(scrollPosition / windowHeight, 1);
-        const eased = progress < 0.5
-            ? 4 * progress * progress * progress
-            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-        const blur = eased * 20;
-        setBlurAmount(blur);
-    }, []);
-
-    const handleScroll = useCallback(() => {
-        calculateBlur();
-    }, [calculateBlur]);
-
-    useEffect(() => {
-        // 在组件挂载时立即计算一次模糊效果
-        calculateBlur();
-
-        window.addEventListener('scroll', handleScroll, {passive: true});
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [handleScroll, calculateBlur]);
 
     // 使用 useCallback 优化点击处理函数
     const handleScrollDown = useCallback(() => {
@@ -104,13 +77,6 @@ const Home = () => {
             setIsPreviewClosing(false);
         }, 300);
     }, []);
-
-    // 使用 useMemo 优化样式对象
-    const overlayStyle = useMemo(() => ({
-        backdropFilter: `blur(${blurAmount}px)`,
-        WebkitBackdropFilter: `blur(${blurAmount}px)`,
-        transition: 'backdrop-filter 0.1s linear'
-    }), [blurAmount]);
 
     // 将预览组件提取为 memo 组件
     const PreviewOverlay = useMemo(() => {
@@ -139,16 +105,6 @@ const Home = () => {
 
     return (
         <div className="home">
-            <div className="background-container">
-                <div
-                    className="bg-image"
-                    style={{backgroundImage: `url(${bgImage})`}}
-                />
-                <div
-                    className="bg-overlay"
-                    style={overlayStyle}
-                />
-            </div>
             <section className="landing-page">
                 <div className="landing-content">
                     <Introduction className="home-introduction"/>
