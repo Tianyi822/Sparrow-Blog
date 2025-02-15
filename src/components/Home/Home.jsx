@@ -3,6 +3,7 @@ import Introduction from "@/components/Introduction/Introduction.jsx";
 import BlogCard from "@/components/Blog/BlogCard.jsx";
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import Pagination from '@/components/Pagination/Pagination';
+import WebContent from '@/components/WebContent/WebContent';
 import "./Home.scss";
 
 const INITIAL_BLOG_DATA = [
@@ -80,9 +81,9 @@ const Home = () => {
 
     // 使用 useCallback 优化点击处理函数
     const handleScrollDown = useCallback(() => {
-        const blogSection = document.querySelector('.blog-section');
-        if (blogSection) {
-            const offsetTop = blogSection.offsetTop;
+        const mainSection = document.querySelector('.main-content');
+        if (mainSection) {
+            const offsetTop = mainSection.offsetTop;
             window.scrollTo({
                 top: offsetTop,
                 behavior: 'smooth'
@@ -156,23 +157,26 @@ const Home = () => {
                     onClick={handleScrollDown}
                 />
             </section>
-            <section className="blog-section" id="blog-section">
-                <div className="blog-cards-container">
-                    {blogData.map((blog, index) => (
-                        <BlogCard
-                            key={index}
-                            className={index % 2 === 0 ? 'even' : 'odd'}
-                            {...blog}
-                            onPreview={() => handlePreview(blog)}
-                        />
-                    ))}
+            <section className="main-content" id="main-content">
+                <div className="blog-content">
+                    <div className="blog-cards-container">
+                        {blogData.map((blog, index) => (
+                            <BlogCard
+                                key={index}
+                                className={index % 2 === 0 ? 'even' : 'odd'}
+                                {...blog}
+                                onPreview={() => handlePreview(blog)}
+                            />
+                        ))}
+                    </div>
+                    <Pagination 
+                        current={currentPage}
+                        total={totalPages}
+                        className="blog-pagination"
+                        onPageChange={handlePageChange}
+                    />
                 </div>
-                <Pagination 
-                    current={currentPage}
-                    total={totalPages}
-                    className="blog-pagination"
-                    onPageChange={handlePageChange}
-                />
+                <WebContent />
             </section>
             {PreviewOverlay}
         </div>
