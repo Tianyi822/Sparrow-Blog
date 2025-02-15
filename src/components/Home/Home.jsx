@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Introduction from "@/components/Introduction/Introduction.jsx";
 import BlogCard from "@/components/Blog/BlogCard.jsx";
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import Pagination from '@/components/Pagination/Pagination';
 import WebContent from '@/components/WebContent/WebContent';
+import Clock from '@/components/Clock/Clock';
 import "./Home.scss";
 
 const INITIAL_BLOG_DATA = [
@@ -50,15 +51,15 @@ const Home = () => {
     const [blurAmount, setBlurAmount] = useState(0);
     const [previewBlog, setPreviewBlog] = useState(null);
     const [isPreviewClosing, setIsPreviewClosing] = useState(false);
-    const [blogData, setBlogData] = useState(INITIAL_BLOG_DATA);
+    const [blogData] = useState(INITIAL_BLOG_DATA);
     const [currentPage, setCurrentPage] = useState(4);
-    const [totalPages, setTotalPages] = useState(20);
+    const [totalPages] = useState(20);
 
     // 修改 handleScroll 函数，抽取计算模糊度的逻辑
     const calculateBlur = useCallback(() => {
         const scrollPosition = window.scrollY;
         const windowHeight = window.innerHeight;
-        
+
         const progress = Math.min(scrollPosition / windowHeight, 1);
         const eased = progress < 0.5
             ? 4 * progress * progress * progress
@@ -74,8 +75,8 @@ const Home = () => {
     useEffect(() => {
         // 在组件挂载时立即计算一次模糊效果
         calculateBlur();
-        
-        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        window.addEventListener('scroll', handleScroll, {passive: true});
         return () => window.removeEventListener('scroll', handleScroll);
     }, [handleScroll, calculateBlur]);
 
@@ -115,11 +116,11 @@ const Home = () => {
     const PreviewOverlay = useMemo(() => {
         if (!previewBlog) return null;
         return (
-            <div 
+            <div
                 className={`preview-overlay ${isPreviewClosing ? 'closing' : ''}`}
                 onClick={handleClosePreview}
             >
-                <div 
+                <div
                     className="preview-content"
                     onClick={e => e.stopPropagation()}
                 >
@@ -139,19 +140,26 @@ const Home = () => {
     return (
         <div className="home">
             <div className="background-container">
-                <div 
-                    className="bg-image" 
+                <div
+                    className="bg-image"
                     style={{backgroundImage: `url(${bgImage})`}}
                 />
-                <div 
+                <div
                     className="bg-overlay"
                     style={overlayStyle}
                 />
             </div>
             <section className="landing-page">
-                <Introduction className="home-introduction"/>
-                <SvgIcon 
-                    name={DownArrow} 
+                <div className="landing-content">
+                    <Introduction className="home-introduction"/>
+                    <Clock
+                        className="home-clock"
+                        profileImage="https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
+                        backgroundImage="https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
+                    />
+                </div>
+                <SvgIcon
+                    name={DownArrow}
                     size={Large}
                     className="home-down-arrow"
                     onClick={handleScrollDown}
@@ -169,14 +177,14 @@ const Home = () => {
                             />
                         ))}
                     </div>
-                    <Pagination 
+                    <Pagination
                         current={currentPage}
                         total={totalPages}
                         className="blog-pagination"
                         onPageChange={handlePageChange}
                     />
                 </div>
-                <WebContent className="home-web-content" />
+                <WebContent className="home-web-content"/>
             </section>
             {PreviewOverlay}
         </div>

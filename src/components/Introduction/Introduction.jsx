@@ -22,16 +22,16 @@ const Introduction = (props) => {
     return (
         <div className={introductionClassName}>
             <div className="greeting">
-                <span className="hello">你好，我是</span>
+                <span className="hello">(＾Ｕ＾)ノ~ 你好，我是</span>
                 <span className="name">{name}</span>
             </div>
-            <div className="identity">一名二次元+程序员。</div>
+            <div className="identity">一名二次元 + 程序员。</div>
             <div className="tech-stack">
                 喜欢
                 <span className="tech">React</span>、
                 <span className="tech">JavaScript</span>、
                 <span className="tech">Golang</span>、
-                <span className="tech">数据库</span> (＾Ｕ＾)ノ~
+                <span className="tech">数据库</span>
             </div>
             <TypeWriter
                 texts={typewriterTexts}
