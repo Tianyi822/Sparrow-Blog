@@ -11,19 +11,34 @@
     gap: 12px;
     user-select: none;
 
-    // 调整公共变量
-    $cell-size: 20px;
-    $month-height: 24px;
-    $month-width: 32px;
-    $weekday-width: 35px;
-    $gap-size: 6px;
-    $weekday-gap: calc($gap-size * 2);
-    $month-gap: $gap-size;
-    $font-size: 12px;
-    $border-radius: 6px;
-    $bg-color: rgba(255, 255, 255, 0.08);
-    $highlight-color: #ef82a0;
-    $cell-padding: 0 4px;
+    // 添加CSS变量用于缩放
+    --scale: 1;
+    
+    // 调整公共变量为CSS变量
+    --cell-size: 20px;
+    --month-height: 24px;
+    --month-width: 32px;
+    --weekday-width: 35px;
+    --gap-size: 6px;
+    --font-size: 12px;
+    --border-radius: 6px;
+    --bg-color: rgba(255, 255, 255, 0.08);
+    --highlight-color: #ef82a0;
+    --cell-padding: 0 4px;
+    
+    // 更新变量定义
+    $cell-size: var(--cell-size);
+    $month-height: var(--month-height);
+    $month-width: var(--month-width);
+    $weekday-width: var(--weekday-width);
+    $gap-size: var(--gap-size);
+    $weekday-gap: calc(var(--gap-size) * 2);
+    $month-gap: var(--gap-size);
+    $font-size: var(--font-size);
+    $border-radius: var(--border-radius);
+    $bg-color: var(--bg-color);
+    $highlight-color: var(--highlight-color);
+    $cell-padding: var(--cell-padding);
 
     // 基础样式
     %base-cell {
@@ -229,5 +244,142 @@
             opacity: 0.9;
             white-space: nowrap;
         }
+    }
+
+    // 添加媒体查询
+    @media screen and (max-width: 1520px) {
+        --scale: 0.8;
+        --cell-size: calc(20px * var(--scale));
+        --month-height: calc(24px * var(--scale));
+        --month-width: calc(32px * var(--scale));
+        --weekday-width: calc(35px * var(--scale));
+        --gap-size: calc(6px * var(--scale));
+        --font-size: calc(12px * var(--scale));
+        --border-radius: calc(6px * var(--scale));
+        
+        padding: calc(25px * var(--scale));
+        gap: calc(12px * var(--scale));
+
+        .graph-legend {
+            padding: calc(8px * var(--scale)) calc(12px * var(--scale));
+            font-size: calc(14px * var(--scale));
+            gap: calc(8px * var(--scale));
+
+            .legend-cells {
+                gap: calc(3px * var(--scale));
+
+                .contribution-cell {
+                    width: calc(16px * var(--scale));
+                    height: calc(16px * var(--scale));
+                }
+            }
+
+            span {
+                font-size: calc(12px * var(--scale));
+            }
+        }
+    }
+
+    @media screen and (max-width: 1230px) {
+        --scale: 0.6;
+        --cell-size: calc(20px * var(--scale));
+        --month-height: calc(24px * var(--scale));
+        --month-width: calc(32px * var(--scale));
+        --weekday-width: calc(35px * var(--scale));
+        --gap-size: calc(6px * var(--scale));
+        --font-size: calc(12px * var(--scale));
+        --border-radius: calc(6px * var(--scale));
+        
+        padding: calc(25px * var(--scale));
+        gap: calc(12px * var(--scale));
+
+        .graph-legend {
+            padding: calc(8px * var(--scale)) calc(12px * var(--scale));
+            font-size: calc(14px * var(--scale));
+            gap: calc(8px * var(--scale));
+
+            .legend-cells {
+                gap: calc(3px * var(--scale));
+
+                .contribution-cell {
+                    width: calc(16px * var(--scale));
+                    height: calc(16px * var(--scale));
+                }
+            }
+
+            span {
+                font-size: calc(12px * var(--scale));
+            }
+        }
+    }
+
+    @media screen and (max-width: 920px) {
+        --scale: 0.45;
+        --cell-size: calc(20px * var(--scale));
+        --month-height: calc(24px * var(--scale));
+        --month-width: calc(32px * var(--scale));
+        --weekday-width: calc(35px * var(--scale));
+        --gap-size: calc(6px * var(--scale));
+        --font-size: calc(12px * var(--scale));
+        --border-radius: calc(6px * var(--scale));
+        
+        padding: calc(25px * var(--scale));
+        gap: calc(12px * var(--scale));
+
+        .graph-legend {
+            padding: calc(8px * var(--scale)) calc(12px * var(--scale));
+            font-size: calc(14px * var(--scale));
+            gap: calc(8px * var(--scale));
+
+            .legend-cells {
+                gap: calc(3px * var(--scale));
+
+                .contribution-cell {
+                    width: calc(16px * var(--scale));
+                    height: calc(16px * var(--scale));
+                }
+            }
+
+            span {
+                font-size: calc(12px * var(--scale));
+            }
+        }
+    }
+
+    @media screen and (max-width: 690px) {
+        --scale: 0.35;
+        --cell-size: calc(20px * var(--scale));
+        --month-height: calc(24px * var(--scale));
+        --month-width: calc(32px * var(--scale));
+        --weekday-width: calc(35px * var(--scale));
+        --gap-size: calc(6px * var(--scale));
+        --font-size: calc(12px * var(--scale));
+        --border-radius: calc(6px * var(--scale));
+        
+        padding: calc(25px * var(--scale));
+        gap: calc(12px * var(--scale));
+
+        .graph-legend {
+            padding: calc(8px * var(--scale)) calc(12px * var(--scale));
+            font-size: calc(14px * var(--scale));
+            gap: calc(8px * var(--scale));
+
+            .legend-cells {
+                gap: calc(3px * var(--scale));
+
+                .contribution-cell {
+                    width: calc(16px * var(--scale));
+                    height: calc(16px * var(--scale));
+                }
+            }
+
+            span {
+                font-size: calc(12px * var(--scale));
+            }
+        }
+    }
+
+    @media screen and (max-width: 535px) {
+        display: none;
     }
 } 
