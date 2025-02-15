@@ -1,6 +1,13 @@
 .web-content {
-    width: 280px;
+    width: 300px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-} 
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .web-content {
+        width: 100%;
+    }
+}

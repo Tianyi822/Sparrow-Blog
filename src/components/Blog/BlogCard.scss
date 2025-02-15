@@ -144,12 +144,17 @@ $mobile-padding: 1rem;
 
   // 移动端布局
   @media (max-width: $mobile-breakpoint) {
+    margin: 0;
+    width: 100%;
+
     .blog-card-content {
       padding: $mobile-padding;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .blog-card-brief {
-      font-size: 0.85em;
+      padding-right: 0;
     }
 
     .blog-card-preview {

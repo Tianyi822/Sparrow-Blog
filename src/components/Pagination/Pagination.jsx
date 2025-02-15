@@ -9,10 +9,20 @@ const Pagination = ({ current, total, className, onPageChange }) => {
     const [isClosing, setIsClosing] = useState(false);
     const ellipsisRef = useRef(null);
     const closeTimeoutRef = useRef(null);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // 计算要显示的页码
     const displayPages = useMemo(() => {
-        if (total <= 7) {
+        const isMobile = windowWidth <= 768;
+        const maxVisible = isMobile ? 5 : 7; // 在移动端只显示5个页码
+
+        if (total <= maxVisible) {
             return Array.from({ length: total }, (_, i) => i + 1);
         }
 
@@ -21,28 +31,44 @@ const Pagination = ({ current, total, className, onPageChange }) => {
         // 始终显示第一页
         pages.push(1);
 
-        // 当前页靠近开始
-        if (current <= 4) {
-            pages.push(2, 3, 4, 5);
-            pages.push('...');
-            pages.push(total);
-        }
-        // 当前页靠近结束
-        else if (current >= total - 3) {
-            pages.push('...');
-            pages.push(total - 4, total - 3, total - 2, total - 1);
-            pages.push(total);
-        }
-        // 当前页在中间
-        else {
-            pages.push('...');
-            pages.push(current - 1, current, current + 1);
-            pages.push('...');
-            pages.push(total);
+        if (isMobile) {
+            // 移动端显示逻辑
+            if (current <= 3) {
+                // 当前页靠近开始
+                pages.push(2, 3);
+                pages.push('...');
+                pages.push(total);
+            } else if (current >= total - 2) {
+                // 当前页靠近结束
+                pages.push('...');
+                pages.push(total - 2, total - 1, total);
+            } else {
+                // 当前页在中间
+                pages.push('...');
+                pages.push(current);
+                pages.push('...');
+                pages.push(total);
+            }
+        } else {
+            // 桌面端显示逻辑（保持原有逻辑）
+            if (current <= 4) {
+                pages.push(2, 3, 4, 5);
+                pages.push('...');
+                pages.push(total);
+            } else if (current >= total - 3) {
+                pages.push('...');
+                pages.push(total - 4, total - 3, total - 2, total - 1);
+                pages.push(total);
+            } else {
+                pages.push('...');
+                pages.push(current - 1, current, current + 1);
+                pages.push('...');
+                pages.push(total);
+            }
         }
 
         return pages;
-    }, [current, total]);
+    }, [current, total, windowWidth]); // 添加 windowWidth 作为依赖
 
     // 将 getEllipsisPages 移入 useMemo
     const getEllipsisPages = useMemo(() => {
@@ -148,6 +174,14 @@ const Pagination = ({ current, total, className, onPageChange }) => {
             }
         };
     }, []);
+
+    const getPageNumbers = () => {
+        const isMobile = windowWidth <= 768;
+        const maxVisible = isMobile ? 5 : 7; // 在移动端只显示5个页码
+        
+        // ... 根据 maxVisible 计算要显示的页码
+        // 这里需要修改你现有的页码计算逻辑
+    };
 
     return (
         <div className={`pagination ${className || ''}`}>

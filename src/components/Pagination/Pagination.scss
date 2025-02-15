@@ -1,10 +1,12 @@
 .pagination {
+    display: flex;
+    justify-content: center; // 确保水平居中
+    align-items: center;
+    gap: 0.5rem; // 统一设置基础间距
+    width: fit-content; // 修改为适应内容的宽度
+    margin: 0 auto; // 添加这行以确保居中
     position: relative;  // 添加这行，作为定位上下文
-    display: grid;
-    grid-template-columns: 2rem auto 2rem;  // 三列布局：左箭头、数字、右箭头
-    gap: 1rem;
     min-height: 2rem;
-    width: fit-content;  // 宽度由内容决定
     user-select: none;  // 添加这行，使整个组件文本不可选中
 
     // 基础按钮样式
@@ -52,7 +54,7 @@
     // 数字按钮区域
     .pagination-numbers {
         display: flex;
-        gap: 1rem;
+        gap: 0.5rem; // 与外层间距保持一致
         justify-content: center;  // 确保数字始终居中
     }
 
@@ -88,6 +90,21 @@
                     content: '•••';
                     letter-spacing: 2px;
                 }
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        gap: 0.5rem; // 保持与桌面端相同的间距
+        
+        .pagination-numbers {
+            gap: 0.5rem; // 保持一致的间距
+        }
+
+        // 在窄屏模式下隐藏多余的页码
+        .pagination-number {
+            &:nth-child(n+6) {
+                display: none;
             }
         }
     }

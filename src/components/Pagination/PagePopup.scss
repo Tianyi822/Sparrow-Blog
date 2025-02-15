@@ -20,7 +20,7 @@
     }
 
     .page-popup {
-        position: fixed;
+        position: absolute;
         background: white;
         border-radius: 4px;
         padding: 0.5rem;
@@ -29,7 +29,7 @@
         grid-template-columns: repeat(5, 1fr);
         gap: 0.5rem;
         min-width: 200px;
-        z-index: 1001;
+        z-index: 10;
         opacity: 0;
         pointer-events: auto;
         transform: translate(-50%, calc(-100% - 30px)) scale(0.95, 1.05);
