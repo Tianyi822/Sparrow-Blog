@@ -1,9 +1,9 @@
-import AuthorInfo from '@/components/AuthorInfo/AuthorInfo';
-import Announcement from '@/components/Announcement/Announcement';
-import LatestArticles from '@/components/LatestArticles/LatestArticles';
-import LatestComments from '@/components/LatestComments/LatestComments';
-import Categories from '@/components/Categories/Categories';
-import Tags from '@/components/Tags/Tags';
+import AuthorInfo from '@/components/WebContent/AuthorInfo/AuthorInfo';
+import Announcement from '@/components/WebContent/Announcement/Announcement';
+import LatestArticles from '@/components/WebContent/LatestArticles/LatestArticles';
+import LatestComments from '@/components/WebContent/LatestComments/LatestComments';
+import Categories from '@/components/WebContent/Categories/Categories';
+import Tags from '@/components/WebContent/Tags/Tags';
 import './WebContent.scss';
 import PropTypes from "prop-types";
 

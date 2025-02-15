@@ -1,4 +1,4 @@
-import React from 'react';
+import 'react';
 import './Tags.scss';
 import PropTypes from 'prop-types';
 
@@ -11,7 +11,7 @@ const TAGS = [
     "骚年商城开发系列"
 ];
 
-const Tags = ({ className }) => {
+const Tags = ({className}) => {
     return (
         <div className={`tags ${className || ''}`}>
             <h3 className="tags-title">

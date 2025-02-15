@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Announcement.scss';
 import PropTypes from 'prop-types';
 
@@ -7,9 +7,9 @@ const ANNOUNCEMENT_CONFIG = {
     content: "联系博主请发邮件到 chentyit@163.com"
 };
 
-const Announcement = ({ className }) => {
+const Announcement = ({className}) => {
     const [announcementData, setAnnouncementData] = useState(ANNOUNCEMENT_CONFIG);
-    
+
     useEffect(() => {
         // 从后端获取公告内容
         const fetchAnnouncement = async () => {
@@ -23,7 +23,7 @@ const Announcement = ({ className }) => {
                 setAnnouncementData(ANNOUNCEMENT_CONFIG);
             }
         };
-        
+
         fetchAnnouncement();
     }, []);
 

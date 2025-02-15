@@ -1,4 +1,3 @@
-import React from 'react';
 import './LatestComments.scss';
 import PropTypes from 'prop-types';
 

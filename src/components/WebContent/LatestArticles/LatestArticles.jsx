@@ -1,4 +1,3 @@
-import React from 'react';
 import './LatestArticles.scss';
 import PropTypes from 'prop-types';
 
@@ -18,7 +17,7 @@ const LATEST_ARTICLES = [
     // ... 其他文章
 ];
 
-const LatestArticles = ({ className }) => {
+const LatestArticles = ({className}) => {
     return (
         <div className={`latest-articles ${className || ''}`}>
             <h3 className="latest-articles-title">
@@ -28,7 +27,7 @@ const LatestArticles = ({ className }) => {
             <div className="latest-articles-list">
                 {LATEST_ARTICLES.map(article => (
                     <div key={article.id} className="article-item">
-                        <img src={article.image} alt={article.title} className="article-image" />
+                        <img src={article.image} alt={article.title} className="article-image"/>
                         <div className="article-info">
                             <h4 className="article-title">{article.title}</h4>
                             <span className="article-date">{article.date}</span>
