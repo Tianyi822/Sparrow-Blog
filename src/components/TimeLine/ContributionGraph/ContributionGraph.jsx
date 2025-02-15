@@ -1,37 +1,180 @@
+import { useMemo, useCallback } from 'react';
 import './ContributionGraph.scss';
 
 const ContributionGraph = () => {
-    // 修改数据生成函数
-    const generateMockData = () => {
+    // 模拟后端返回的数据
+    const mockApiData = [
+        // 2025年2月
+        { date: '2025-02-25', wordCount: 2800 },  // level-3
+        { date: '2025-02-22', wordCount: 1500 },  // level-2
+        { date: '2025-02-18', wordCount: 4200 },  // level-4
+        { date: '2025-02-15', wordCount: 750 },   // level-1
+        { date: '2025-02-12', wordCount: 3200 },  // level-3
+        { date: '2025-02-08', wordCount: 1800 },  // level-2
+        { date: '2025-02-05', wordCount: 600 },   // level-1
+        { date: '2025-02-01', wordCount: 4500 },  // level-4
+
+        // 2025年1月
+        { date: '2025-01-30', wordCount: 2100 },  // level-3
+        { date: '2025-01-28', wordCount: 850 },   // level-2
+        { date: '2025-01-25', wordCount: 4200 },  // level-4
+        { date: '2025-01-22', wordCount: 1600 },  // level-2
+        { date: '2025-01-18', wordCount: 3500 },  // level-3
+        { date: '2025-01-15', wordCount: 5000 },  // level-4
+        { date: '2025-01-10', wordCount: 700 },   // level-1
+        { date: '2025-01-05', wordCount: 2400 },  // level-3
+        { date: '2025-01-01', wordCount: 4800 },  // level-4
+
+        // 2024年12月
+        { date: '2024-12-31', wordCount: 3800 },  // level-3 跨年
+        { date: '2024-12-28', wordCount: 1900 },  // level-2
+        { date: '2024-12-25', wordCount: 4500 },  // level-4 圣诞
+        { date: '2024-12-22', wordCount: 2200 },  // level-3
+        { date: '2024-12-18', wordCount: 750 },   // level-1
+        { date: '2024-12-15', wordCount: 3200 },  // level-3
+        { date: '2024-12-10', wordCount: 1500 },  // level-2
+        { date: '2024-12-05', wordCount: 2800 },  // level-3
+        { date: '2024-12-01', wordCount: 4000 },  // level-3
+
+        // 2024年11月
+        { date: '2024-11-30', wordCount: 2500 },  // level-3
+        { date: '2024-11-28', wordCount: 650 },   // level-1
+        { date: '2024-11-25', wordCount: 3800 },  // level-3
+        { date: '2024-11-22', wordCount: 1800 },  // level-2
+        { date: '2024-11-18', wordCount: 4200 },  // level-4
+        { date: '2024-11-15', wordCount: 2100 },  // level-3
+        { date: '2024-11-10', wordCount: 900 },   // level-2
+        { date: '2024-11-05', wordCount: 3500 },  // level-3
+        { date: '2024-11-01', wordCount: 1500 },  // level-2
+
+        // 2024年10月
+        { date: '2024-10-31', wordCount: 4500 },  // level-4 万圣节
+        { date: '2024-10-28', wordCount: 2200 },  // level-3
+        { date: '2024-10-25', wordCount: 800 },   // level-1
+        { date: '2024-10-20', wordCount: 3200 },  // level-3
+        { date: '2024-10-15', wordCount: 1800 },  // level-2
+        { date: '2024-10-10', wordCount: 4000 },  // level-3
+        { date: '2024-10-05', wordCount: 700 },   // level-1
+        { date: '2024-10-01', wordCount: 5000 },  // level-4 国庆
+
+        // 2024年9月
+        { date: '2024-09-30', wordCount: 2800 },  // level-3
+        { date: '2024-09-25', wordCount: 1500 },  // level-2
+        { date: '2024-09-20', wordCount: 3500 },  // level-3
+        { date: '2024-09-15', wordCount: 750 },   // level-1
+        { date: '2024-09-10', wordCount: 4200 },  // level-4
+        { date: '2024-09-05', wordCount: 2100 },  // level-3
+        { date: '2024-09-01', wordCount: 1800 },  // level-2
+
+        // 2024年8月
+        { date: '2024-08-28', wordCount: 3800 },  // level-3
+        { date: '2024-08-25', wordCount: 650 },   // level-1
+        { date: '2024-08-20', wordCount: 4500 },  // level-4
+        { date: '2024-08-15', wordCount: 2200 },  // level-3
+        { date: '2024-08-10', wordCount: 1500 },  // level-2
+        { date: '2024-08-05', wordCount: 3200 },  // level-3
+        { date: '2024-08-01', wordCount: 900 },   // level-2
+
+        // 2024年7月
+        { date: '2024-07-30', wordCount: 4200 },  // level-4
+        { date: '2024-07-25', wordCount: 1800 },  // level-2
+        { date: '2024-07-20', wordCount: 3500 },  // level-3
+        { date: '2024-07-15', wordCount: 750 },   // level-1
+        { date: '2024-07-10', wordCount: 2800 },  // level-3
+        { date: '2024-07-05', wordCount: 1500 },  // level-2
+        { date: '2024-07-01', wordCount: 4000 },  // level-3
+
+        // 2024年6月
+        { date: '2024-06-30', wordCount: 2100 },  // level-3
+        { date: '2024-06-25', wordCount: 4500 },  // level-4
+        { date: '2024-06-20', wordCount: 800 },   // level-1
+        { date: '2024-06-15', wordCount: 3200 },  // level-3
+        { date: '2024-06-10', wordCount: 1800 },  // level-2
+        { date: '2024-06-05', wordCount: 2500 },  // level-3
+        { date: '2024-06-01', wordCount: 4200 },  // level-4
+
+        // 2024年5月
+        { date: '2024-05-31', wordCount: 1500 },  // level-2
+        { date: '2024-05-25', wordCount: 3800 },  // level-3
+        { date: '2024-05-20', wordCount: 700 },   // level-1
+        { date: '2024-05-15', wordCount: 4500 },  // level-4
+        { date: '2024-05-10', wordCount: 2200 },  // level-3
+        { date: '2024-05-05', wordCount: 1800 },  // level-2
+        { date: '2024-05-01', wordCount: 5000 },  // level-4 劳动节
+
+        // 2024年4月
+        { date: '2024-04-30', wordCount: 2800 },  // level-3
+        { date: '2024-04-25', wordCount: 1500 },  // level-2
+        { date: '2024-04-20', wordCount: 3500 },  // level-3
+        { date: '2024-04-15', wordCount: 750 },   // level-1
+        { date: '2024-04-10', wordCount: 4200 },  // level-4
+        { date: '2024-04-05', wordCount: 4800 },  // level-4 清明
+        { date: '2024-04-01', wordCount: 1800 },  // level-2
+
+        // 2024年3月
+        { date: '2024-03-31', wordCount: 3200 },  // level-3
+        { date: '2024-03-25', wordCount: 1500 },  // level-2
+        { date: '2024-03-20', wordCount: 4500 },  // level-4
+        { date: '2024-03-15', wordCount: 800 },   // level-1
+        { date: '2024-03-10', wordCount: 2800 },  // level-3
+        { date: '2024-03-05', wordCount: 1800 },  // level-2
+        { date: '2024-03-01', wordCount: 3500 },  // level-3
+
+        // 2024年2月
+        { date: '2024-02-28', wordCount: 2100 },  // level-3
+        { date: '2024-02-25', wordCount: 4200 },  // level-4
+        { date: '2024-02-20', wordCount: 750 },   // level-1
+        { date: '2024-02-15', wordCount: 3800 },  // level-3
+        { date: '2024-02-10', wordCount: 5000 },  // level-4 春节
+        { date: '2024-02-05', wordCount: 2800 },  // level-3
+        { date: '2024-02-01', wordCount: 1500 },  // level-2
+
+        // 2024年1月
+        { date: '2024-01-31', wordCount: 3500 },  // level-3
+        { date: '2024-01-25', wordCount: 1800 },  // level-2
+        { date: '2024-01-20', wordCount: 4500 },  // level-4
+        { date: '2024-01-15', wordCount: 700 },   // level-1
+        { date: '2024-01-10', wordCount: 2500 },  // level-3
+        { date: '2024-01-05', wordCount: 1500 },  // level-2
+        { date: '2024-01-01', wordCount: 4800 }   // level-4 元旦
+    ];
+
+    // 修改数据生成逻辑
+    const generateContributionData = useCallback(() => {
         const data = [];
         const today = new Date();
-
+        
         // 计算需要多少天才能让今天在最后一列
-        const currentDayOfWeek = today.getDay();  // 0-6，0是周日
-        // 转换为我们的显示方式（1-7，周一-周日）
+        const currentDayOfWeek = today.getDay();
         const displayDayOfWeek = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1;
-        const daysToGenerate = 371 + (6 - displayDayOfWeek);  // 确保今天在最后一列
+        const daysToGenerate = 371 + (6 - displayDayOfWeek);
+
+        // 创建日期到字数的映射
+        const contributionMap = new Map(
+            mockApiData.map(item => [
+                item.date,
+                item.wordCount  // 直接使用字数，不再转换
+            ])
+        );
 
         // 从今天开始，向前生成数据
         for (let i = 0; i < daysToGenerate; i++) {
             const date = new Date(today);
             date.setDate(today.getDate() - i);
+            
+            const dateString = date.toISOString().split('T')[0];
+            const count = contributionMap.get(dateString) || 0;
 
-            // 生成1-4的随机数
-            const count = Math.floor(Math.random() * 4) + 1;
-
-            // 将新数据插入到数组开头，这样最新的日期会在最后
             data.unshift({
                 date,
                 count
             });
         }
 
-        // 获取第一天的星期并转换为我们的显示方式
+        // 填充开头的空数据
         const firstDay = data[0].date.getDay();
         const displayFirstDay = firstDay === 0 ? 6 : firstDay - 1;
-
-        // 在开头填充空数据，使其从周一开始
+        
         for (let i = 0; i < displayFirstDay; i++) {
             const firstDate = data[0].date;
             data.unshift({
@@ -41,9 +184,10 @@ const ContributionGraph = () => {
         }
 
         return data;
-    };
+    }, []);
 
-    const data = generateMockData();
+    // 使用 useMemo 缓存生成的数据
+    const data = useMemo(() => generateContributionData(), [generateContributionData]);
 
     // 修改月份标签生成函数
     const getMonthLabels = () => {
@@ -104,22 +248,26 @@ const ContributionGraph = () => {
         return months;
     };
 
-    const monthLabels = getMonthLabels();
-    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    // 使用 useMemo 缓存月份标签
+    const monthLabels = useMemo(() => getMonthLabels(), [data]);
 
-    // 将数据按周分组
-    const weeks = [];
-    for (let i = 0; i < data.length; i += 7) {
-        weeks.push(data.slice(i, i + 7));
-    }
+    // 使用 useMemo 缓存周数据
+    const weeks = useMemo(() => {
+        const result = [];
+        for (let i = 0; i < data.length; i += 7) {
+            result.push(data.slice(i, i + 7));
+        }
+        return result;
+    }, [data]);
 
-    const getContributionLevel = (count) => {
-        if (count === 0) return 'level-0';
-        if (count === 1) return 'level-1';
-        if (count === 2) return 'level-2';
-        if (count === 3) return 'level-3';
-        return 'level-4';
-    };
+    // 使用 useCallback 优化贡献等级计算
+    const getContributionLevel = useCallback((count) => {
+        if (count === 0) return 'level-0';          // 没有写作
+        if (count <= 800) return 'level-1';         // 1-800字，短篇博客
+        if (count <= 2000) return 'level-2';        // 801-2000字，中等篇幅
+        if (count <= 4000) return 'level-3';        // 2001-4000字，较长文章
+        return 'level-4';                           // 4000字以上，长篇文章
+    }, []);
 
     // 添加鼠标事件处理函数
     const handleMouseEnter = (weekIndex, month, year) => {
@@ -179,6 +327,8 @@ const ContributionGraph = () => {
         });
     };
 
+    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
     return (
         <div className="contribution-graph">
             <div className="graph-grid">
@@ -213,7 +363,7 @@ const ContributionGraph = () => {
                                     <div
                                         key={`${dayIndex}-${weekIndex}`}
                                         className={`grid-cell contribution-cell ${getContributionLevel(week[dayIndex]?.count || 0)}`}
-                                        title={`${cellDate.toLocaleDateString()}: ${week[dayIndex]?.count || 0} contributions`}
+                                        title={`${cellDate.toLocaleDateString()}: ${week[dayIndex]?.count || 0} words`}
                                         data-week-index={dayIndex}
                                         data-month={cellDate.getMonth()}
                                         data-year={cellDate.getFullYear()}
