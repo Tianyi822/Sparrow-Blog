@@ -18,6 +18,7 @@ const AuthorInfo = () => {
     });
 
     const [githubUrl] = useState('https://github.com/Tianyi822');
+    const [emailAddress] = useState('chentyit@163.com');
 
     const handleStatClick = (type) => {
         console.log(`Clicked ${type}`); // 暂时只打印点击信息
@@ -67,6 +68,13 @@ const AuthorInfo = () => {
                 rel="noopener noreferrer"
             >
                 <span className="github-icon">GitHub</span>
+            </a>
+            <a
+                href={`mailto:${emailAddress}`}
+                className="email-link"
+                rel="noopener noreferrer"
+            >
+                <span className="email-icon">Email</span>
             </a>
         </div>
     );
