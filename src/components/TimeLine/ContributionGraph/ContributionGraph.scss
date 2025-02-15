@@ -80,23 +80,19 @@
         &::after {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 4px;
-            background-color: inherit;
+            border-radius: $border-radius;
+            background-color: var(--highlight-color);
             opacity: 0;
-            transition: all 0.1s ease;
+            transition: opacity 0.2s ease;
             z-index: 1;
-            transform: translate(-50%, -50%) scale(1);
         }
 
         &:hover::after {
             opacity: 1;
-            transform: translate(-50%, -50%) scale(1.2);
-            border: 1.5px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
     }
 
@@ -192,8 +188,8 @@
             &.contribution-cell {
                 @extend %base-cell;
                 @extend %hover-effect;
-                background-color: #666666;
                 position: relative;
+                transition: none;
 
                 &:not(.level-0) {
                     cursor: pointer;
@@ -207,9 +203,8 @@
                 &.level-4 { background-color: var(--level-4-color); }
 
                 &.month-highlight {
-                    @extend %highlight-base;
-                    @extend %highlight-hover;
-                    background-color: $highlight-color !important;
+                    background-color: var(--highlight-color) !important;
+                    transform: none;
                     z-index: 1;
                 }
             }
@@ -303,21 +298,59 @@
     }
 
     @media screen and (max-width: 1230px) {
-        --scale: 0.6;
-        @include scale-styles;
-    }
+        width: calc(100% - 100px);
+        margin: 0 50px;
+        display: inline-flex;
+        position: relative;
+        left: 0;
+        
+        // 修改滚动容器样式
+        .graph-grid {
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            width: 100%;
+            max-width: 100%;
+            padding-bottom: 6px;
+            
+            // 自定义滚动条样式
+            &::-webkit-scrollbar {
+                height: 6px;
+            }
+            
+            &::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                margin: 0 16px;
+            }
+            
+            &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                
+                &:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                }
+            }
 
-    @media screen and (max-width: 920px) {
-        --scale: 0.45;
-        @include scale-styles;
-    }
+            // 设置固定宽度而不是最小宽度
+            .grid-row {
+                width: auto;
+                
+                &.months {
+                    width: auto;
+                }
 
-    @media screen and (max-width: 690px) {
-        --scale: 0.35;
-        @include scale-styles;
-    }
+                .contribution-cells {
+                    width: auto;
+                }
+            }
+        }
 
-    @media screen and (max-width: 535px) {
-        display: none;
+        // 调整图例位置
+        .graph-legend {
+            position: relative;
+            right: 0;
+            width: fit-content;
+        }
     }
 } 

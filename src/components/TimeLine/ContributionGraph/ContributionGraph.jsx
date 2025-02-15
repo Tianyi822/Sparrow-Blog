@@ -1,9 +1,30 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useRef, useEffect } from 'react';
 import './ContributionGraph.scss';
 
 const ContributionGraph = () => {
-    // 模拟后端返回的数据
-    const mockApiData = [
+    const gridRef = useRef(null);
+
+    useEffect(() => {
+        // 在小屏幕下自动滚动到最新数据
+        const handleResize = () => {
+            if (window.innerWidth <= 920 && gridRef.current) {
+                // 延迟执行以确保布局已完成
+                setTimeout(() => {
+                    gridRef.current.scrollLeft = gridRef.current.scrollWidth;
+                }, 100);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    // 使用 useMemo 缓存 mockApiData
+    const mockApiData = useMemo(() => [
         // 2025年2月
         { date: '2025-02-25', wordCount: 2800 },  // level-3
         { date: '2025-02-22', wordCount: 1500 },  // level-2
@@ -137,7 +158,7 @@ const ContributionGraph = () => {
         { date: '2024-01-10', wordCount: 2500 },  // level-3
         { date: '2024-01-05', wordCount: 1500 },  // level-2
         { date: '2024-01-01', wordCount: 4800 }   // level-4 元旦
-    ];
+    ], []); // 空依赖数组，因为数据是静态的
 
     // 修改数据生成逻辑
     const generateContributionData = useCallback(() => {
@@ -184,13 +205,13 @@ const ContributionGraph = () => {
         }
 
         return data;
-    }, []);
+    }, [mockApiData]);
 
     // 使用 useMemo 缓存生成的数据
     const data = useMemo(() => generateContributionData(), [generateContributionData]);
 
-    // 修改月份标签生成函数
-    const getMonthLabels = () => {
+    // 使用 useCallback 缓存月份标签生成函数
+    const getMonthLabels = useCallback(() => {
         const months = [];
 
         // 英文月份缩写
@@ -246,10 +267,10 @@ const ContributionGraph = () => {
         }
 
         return months;
-    };
+    }, [data]); // 依赖于 data
 
     // 使用 useMemo 缓存月份标签
-    const monthLabels = useMemo(() => getMonthLabels(), [data]);
+    const monthLabels = useMemo(() => getMonthLabels(), [getMonthLabels]);
 
     // 使用 useMemo 缓存周数据
     const weeks = useMemo(() => {
@@ -331,7 +352,7 @@ const ContributionGraph = () => {
 
     return (
         <div className="contribution-graph">
-            <div className="graph-grid">
+            <div className="graph-grid" ref={gridRef}>
                 <div className="grid-row months">
                     <div className="grid-cell"></div>
                     {monthLabels.map((month) => (
