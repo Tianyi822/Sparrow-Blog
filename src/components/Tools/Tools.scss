@@ -36,10 +36,10 @@
         }
     }
 
-    // 窄屏隐藏
-    @media screen and (max-width: 768px) {
+    // 移除窄屏隐藏的媒体查询
+    /* @media screen and (max-width: 768px) {
         display: none;
-    }
+    } */
 }
 
 @keyframes floatUp {
