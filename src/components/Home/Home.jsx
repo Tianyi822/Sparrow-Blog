@@ -53,8 +53,8 @@ const Home = () => {
     const [currentPage, setCurrentPage] = useState(4);
     const [totalPages, setTotalPages] = useState(20);
 
-    // 使用 useCallback 优化滚动处理函数
-    const handleScroll = useCallback(() => {
+    // 修改 handleScroll 函数，抽取计算模糊度的逻辑
+    const calculateBlur = useCallback(() => {
         const scrollPosition = window.scrollY;
         const windowHeight = window.innerHeight;
         
@@ -66,10 +66,17 @@ const Home = () => {
         setBlurAmount(blur);
     }, []);
 
+    const handleScroll = useCallback(() => {
+        calculateBlur();
+    }, [calculateBlur]);
+
     useEffect(() => {
+        // 在组件挂载时立即计算一次模糊效果
+        calculateBlur();
+        
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [handleScroll]);
+    }, [handleScroll, calculateBlur]);
 
     // 使用 useCallback 优化点击处理函数
     const handleScrollDown = useCallback(() => {
