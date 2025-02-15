@@ -300,57 +300,11 @@
     @media screen and (max-width: 1230px) {
         width: calc(100% - 100px);
         margin: 0 50px;
-        display: inline-flex;
-        position: relative;
-        left: 0;
         
-        // 修改滚动容器样式
         .graph-grid {
-            overflow-x: auto;
             overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
-            width: 100%;
-            max-width: 100%;
             padding-bottom: 6px;
-            
-            // 自定义滚动条样式
-            &::-webkit-scrollbar {
-                height: 6px;
-            }
-            
-            &::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.1);
-                margin: 0 16px;
-            }
-            
-            &::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.2);
-                
-                &:hover {
-                    background: rgba(255, 255, 255, 0.3);
-                }
-            }
-
-            // 设置固定宽度而不是最小宽度
-            .grid-row {
-                width: auto;
-                
-                &.months {
-                    width: auto;
-                }
-
-                .contribution-cells {
-                    width: auto;
-                }
-            }
-        }
-
-        // 调整图例位置
-        .graph-legend {
-            position: relative;
-            right: 0;
-            width: fit-content;
-        }
+        }   
     }
 } 
