@@ -1,46 +1,43 @@
 .contribution-graph {
-    background: rgba(35, 39, 47, 0.8);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: rgba(219, 234, 254, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 25px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03);
     display: inline-flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 12px;
     user-select: none;
 
-    // 添加CSS变量用于缩放
+    // 1. CSS变量定义
+    // 布局相关
     --scale: 1;
-    
-    // 调整公共变量为CSS变量
     --cell-size: 20px;
     --month-height: 24px;
     --month-width: 32px;
     --weekday-width: 35px;
     --gap-size: 6px;
-    --font-size: 12px;
     --border-radius: 6px;
-    --bg-color: rgba(255, 255, 255, 0.08);
-    --highlight-color: #ef82a0;
+    
+    // 文本相关
+    --font-size: 12px;
+    --text-bg: rgba(255, 255, 255, 0.1);
+    --text-color: rgba(0, 0, 0, 0.65);
+    --text-blur: 8px;
+    --text-letter-spacing: 0.5px;
     --cell-padding: 0 4px;
     
-    // 1. 贡献格子的颜色可以抽取成变量
-    --level-0-color: #f0f2f4;
-    --level-1-color: #c2d1dc;
-    --level-2-color: #94aec0;
-    --level-3-color: #6589a5;
-    --level-4-color: #37638a;
+    // 颜色相关
+    --highlight-color: rgba(239, 130, 160, 0.7);
+    --level-0-color: #f8fafc;
+    --level-1-color: #bfdbfe;
+    --level-2-color: #93c5fd;
+    --level-3-color: #60a5fa;
+    --level-4-color: #3b82f6;
     
-    // 2. 重复的颜色定义可以统一
-    --legend-level-0-color: var(--level-0-color);
-    --legend-level-1-color: var(--level-1-color);
-    --legend-level-2-color: var(--level-2-color);
-    --legend-level-3-color: var(--level-3-color);
-    --legend-level-4-color: var(--level-4-color);
-
-    // 更新变量定义
+    // 2. SCSS变量映射
     $cell-size: var(--cell-size);
     $month-height: var(--month-height);
     $month-width: var(--month-width);
@@ -50,11 +47,19 @@
     $month-gap: var(--gap-size);
     $font-size: var(--font-size);
     $border-radius: var(--border-radius);
-    $bg-color: var(--bg-color);
     $highlight-color: var(--highlight-color);
     $cell-padding: var(--cell-padding);
 
-    // 基础样式
+    // 4. 基础混合器
+    %common-text-style {
+        background-color: var(--text-bg);
+        color: var(--text-color);
+        backdrop-filter: blur(var(--text-blur));
+        -webkit-backdrop-filter: blur(var(--text-blur));
+        font-weight: 500;
+        letter-spacing: var(--text-letter-spacing);
+    }
+
     %base-cell {
         width: $cell-size;
         height: $cell-size;
@@ -64,15 +69,12 @@
     }
 
     %text-cell {
+        @extend %common-text-style;
         font-size: $font-size;
-        color: rgba(255, 255, 255, 0.6);
-        background-color: $bg-color;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
-        font-weight: 500;
-        letter-spacing: 0.5px;
         padding: $cell-padding;
     }
 
@@ -117,8 +119,8 @@
         transform: scale(1.15);
         font-weight: 600;
         z-index: 2;
-        box-shadow: 0 4px 12px rgba(188, 132, 168, 0.3);
-        color: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 12px rgba(239, 130, 160, 0.1);
+        color: rgba(255, 255, 255, 0.85);
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -216,17 +218,21 @@
         }
     }
 
+    // 图例样式
     .graph-legend {
+        @extend %common-text-style;
         padding: 8px 12px;
-        background: rgba(255, 255, 255, 0.05);
         border-radius: $border-radius;
-        backdrop-filter: blur(4px);
         font-size: 14px;
-        color: rgba(255, 255, 255, 0.9);
-        letter-spacing: 0.5px;
         display: flex;
         align-items: center;
         gap: 8px;
+
+        span {
+            font-size: 12px;
+            opacity: 0.8;
+            white-space: nowrap;
+        }
 
         .legend-cells {
             display: flex;
@@ -239,22 +245,16 @@
                 height: 16px;
 
                 // 使用相同的变量，避免颜色值略有不同
-                &.level-0 { background-color: var(--legend-level-0-color); }
-                &.level-1 { background-color: var(--legend-level-1-color); }
-                &.level-2 { background-color: var(--legend-level-2-color); }
-                &.level-3 { background-color: var(--legend-level-3-color); }
-                &.level-4 { background-color: var(--legend-level-4-color); }
+                &.level-0 { background-color: var(--level-0-color); }
+                &.level-1 { background-color: var(--level-1-color); }
+                &.level-2 { background-color: var(--level-2-color); }
+                &.level-3 { background-color: var(--level-3-color); }
+                &.level-4 { background-color: var(--level-4-color); }
 
                 &:hover::after {
                     display: none;
                 }
             }
-        }
-
-        span {
-            font-size: 12px;
-            opacity: 0.9;
-            white-space: nowrap;
         }
     }
 
@@ -291,7 +291,7 @@
         }
     }
 
-    // 使用 mixin 简化媒体查询
+    // 5. 媒体查询优化
     @media screen and (max-width: 1520px) {
         --scale: 0.8;
         @include scale-styles;
