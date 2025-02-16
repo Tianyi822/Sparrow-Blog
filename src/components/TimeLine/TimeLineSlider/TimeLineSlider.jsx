@@ -11,35 +11,35 @@ const TimeLineSlider = () => {
         {
             id: 'item-2025-1',
             title: "舞！舞！舞！",
-            date: "2025/01/15",
+            date: "2025/01",
             description: "你要做一个不动声色的大人了，不准情绪化，不准偷偷想念，不准回头看，去过自己另外的生活。你要听话，不是所有的鱼都会生活在同一片海里。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/background_image.webp"
         },
         {
             id: 'item-2024-2',
             title: "挪威的森林",
-            date: "2024/06/20",
+            date: "2024/06",
             description: "每个人都有属于自己的一片森林，也许我们从来不曾去过，但它一直在那里，总会在那里。迷失的人迷失了，相逢的人会再相逢。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
         },
         {
             id: 'item-2023-3',
             title: "且听风吟",
-            date: "2023/03/10",
+            date: "2023/03",
             description: "我们都是孤独的刺猬，只有在爱的时候，才会暂时降下身上的刺。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/469ff90b17f48092067c10a5d2c88ff516121004.webp"
         },
         {
             id: 'item-2022-4',
             title: "海边的卡夫卡",
-            date: "2022/12/25",
+            date: "2022/12",
             description: "不管全世界所有人怎么说，我都认为自己的感受才是正确的。无论别人怎么看，我绝不打乱自己的节奏。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E3%80%90%E5%8D%95%E4%BA%BA%E7%89%88%E3%80%91%E8%90%A4%E7%81%AB%E4%B9%8B%E7%BA%A610K_ab781.webp"
         },
         {
             id: 'item-2021-5',
             title: "1Q84",
-            date: "2021/09/01",
+            date: "2021/09",
             description: "世界上有些事物是如此美好，以至于让人感到恐惧。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E8%90%A4%E7%81%AB%E5%80%BE%E5%9F%8E-%E9%AA%A4%E9%9B%A8-%E6%B8%85%E5%87%89%E7%89%8810K_484a6.webp"
         },
@@ -63,52 +63,6 @@ const TimeLineSlider = () => {
         });
     }, [testData.length]);
 
-    // 添加高斯模糊效果处理
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
-
-        const handleScroll = () => {
-            const items = container.querySelectorAll('.timeline-item');
-            const containerRect = container.getBoundingClientRect();
-            const blurThreshold = containerRect.height * 0.2; // 上下20%区域应用模糊
-
-            items.forEach(item => {
-                const rect = item.getBoundingClientRect();
-                const distanceFromTop = rect.top - containerRect.top;
-                const distanceFromBottom = containerRect.bottom - rect.bottom;
-
-                // 计算模糊度
-                let blurAmount = 0;
-                let opacity = 1;
-
-                // 处理顶部模糊
-                if (distanceFromTop < blurThreshold) {
-                    const ratio = distanceFromTop / blurThreshold;
-                    blurAmount = 15 * (1 - ratio);
-                    opacity = 0.3 + (0.7 * ratio);
-                }
-                // 处理底部模糊
-                else if (distanceFromBottom < blurThreshold) {
-                    const ratio = distanceFromBottom / blurThreshold;
-                    blurAmount = 15 * (1 - ratio);
-                    opacity = 0.3 + (0.7 * ratio);
-                }
-
-                // 应用效果
-                item.style.filter = `blur(${blurAmount}px)`;
-                item.style.opacity = opacity;
-            });
-        };
-
-        // 初始化效果
-        handleScroll();
-
-        // 添加滚动监听
-        container.addEventListener('scroll', handleScroll);
-        return () => container.removeEventListener('scroll', handleScroll);
-    }, []);
-
     // 检测中间项目并更新背景
     useEffect(() => {
         const container = containerRef.current;
@@ -119,7 +73,6 @@ const TimeLineSlider = () => {
             const containerRect = container.getBoundingClientRect();
             const containerCenter = containerRect.top + containerRect.height / 2;
 
-            // 找到最接近中心的项目
             let closestItem = null;
             let minDistance = Infinity;
 
@@ -134,26 +87,20 @@ const TimeLineSlider = () => {
                 }
             });
 
-            // 更新背景
             if (closestItem) {
                 const index = Array.from(items).indexOf(closestItem);
                 const newImageUrl = testData[index].imageUrl;
                 if (newImageUrl !== currentBackground) {
                     setIsTransitioning(true);
-                    // 延迟更新背景图片，让过渡效果有时间显示
                     setTimeout(() => {
                         setCurrentBackground(newImageUrl);
-                        // 等待新背景加载完成后移除过渡状态
                         setTimeout(() => setIsTransitioning(false), 1000);
                     }, 50);
                 }
             }
         };
 
-        // 初始化背景
         handleScroll();
-
-        // 添加滚动监听
         container.addEventListener('scroll', handleScroll);
         return () => container.removeEventListener('scroll', handleScroll);
     }, [testData, currentBackground]);
@@ -166,28 +113,28 @@ const TimeLineSlider = () => {
             }}
         >
             <div className="timeline-axis-line"></div>
-            <div 
-                ref={containerRef}
-                className="timeline-axis"
-            >
+            <div ref={containerRef} className="timeline-axis">
                 <div className="timeline-spacer top"></div>
                 {testData.map((item, index) => (
                     <div 
                         key={item.id}
                         className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
-                        style={{ willChange: 'filter, opacity' }}
                     >
                         <div className="timeline-dot"></div>
                         <div className="timeline-content">
                             <div className="timeline-media">
-                                <div className="timeline-date">{item.date}</div>
-                                <img src={item.imageUrl} alt={item.title} />
-                                <div className="timeline-info">
-                                    <div className="timeline-description">{item.description}</div>
+                                <div className="media-stack-layer"></div>
+                                <div className="media-stack-layer"></div>
+                                <div className="media-content">
+                                    <div className="timeline-title">{item.title}</div>
+                                    <img src={item.imageUrl} alt={item.title} />
+                                    <div className="timeline-info">
+                                        <div className="timeline-description">{item.description}</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="timeline-title">
-                                <div className="title-content">《 {item.title} 》</div>
+                            <div className="timeline-date">
+                                <div className="date-content">{item.date}</div>
                             </div>
                         </div>
                     </div>
