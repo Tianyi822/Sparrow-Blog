@@ -1,12 +1,51 @@
 .timeline {
+    // 变量定义
+    --border-radius: 3px;
+    --spacing-small: 2px;
+    --spacing-medium: 4px;
+    --spacing-large: 15px;
+    --cell-size: 16px;
+    --month-gap: 20px;
+
+    // 颜色变量
+    --highlight-color: rgba(239, 130, 160, 0.7);
+    --level-0-color: #f8fafc;
+    --level-1-color: #bfdbfe;
+    --level-2-color: #93c5fd;
+    --level-3-color: #60a5fa;
+    --level-4-color: #3b82f6;
+
+    // 主题颜色
+    --bg-primary: rgba(219, 234, 254, 0.6);
+    --bg-secondary: rgba(147, 197, 253, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: #9ca3af;
+    --text-description: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(59, 130, 246, 0.1);
+
     width: 100%;
+    height: 100vh;
     position: relative;
     display: flex;
     justify-content: center;
-    padding-top: 120px;
+    align-items: center;
     background: transparent;
+    font-family: sans-serif;
+    user-select: none;
+    padding: 0;
 
+    .timeline-container {
+        display: flex;
+        gap: 20px;
+        width: fit-content;
+        margin: 0 auto;
+    }
+
+    // 公共样式
+    .timeline-slider,
     .contribution-graph {
-        align-self: flex-start;
+        backdrop-filter: blur(10px);
+        border-radius: calc(var(--border-radius) * 4);
+        border: 1px solid var(--border-color);
     }
 } 
