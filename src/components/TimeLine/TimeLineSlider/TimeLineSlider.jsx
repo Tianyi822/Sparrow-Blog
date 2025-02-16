@@ -13,35 +13,35 @@ const TimeLineSlider = () => {
             title: "舞！舞！舞！",
             date: "2025/01",
             description: "你要做一个不动声色的大人了，不准情绪化，不准偷偷想念，不准回头看，去过自己另外的生活。你要听话，不是所有的鱼都会生活在同一片海里。",
-            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/background_image.webp"
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225120610.webp"
         },
         {
             id: 'item-2024-2',
             title: "挪威的森林",
             date: "2024/06",
             description: "每个人都有属于自己的一片森林，也许我们从来不曾去过，但它一直在那里，总会在那里。迷失的人迷失了，相逢的人会再相逢。",
-            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192352.webp"
         },
         {
             id: 'item-2023-3',
             title: "且听风吟",
             date: "2023/03",
             description: "我们都是孤独的刺猬，只有在爱的时候，才会暂时降下身上的刺。",
-            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/469ff90b17f48092067c10a5d2c88ff516121004.webp"
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192355.webp"
         },
         {
             id: 'item-2022-4',
             title: "海边的卡夫卡",
             date: "2022/12",
             description: "不管全世界所有人怎么说，我都认为自己的感受才是正确的。无论别人怎么看，我绝不打乱自己的节奏。",
-            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E3%80%90%E5%8D%95%E4%BA%BA%E7%89%88%E3%80%91%E8%90%A4%E7%81%AB%E4%B9%8B%E7%BA%A610K_ab781.webp"
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240624110431.webp"
         },
         {
             id: 'item-2021-5',
             title: "1Q84",
             date: "2021/09",
             description: "世界上有些事物是如此美好，以至于让人感到恐惧。",
-            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E8%90%A4%E7%81%AB%E5%80%BE%E5%9F%8E-%E9%AA%A4%E9%9B%A8-%E6%B8%85%E5%87%89%E7%89%8810K_484a6.webp"
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225120610.webp"
         },
         // ... 可以继续添加更多静态数据
     ], []);
