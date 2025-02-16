@@ -1,14 +1,50 @@
 .timeline-slider {
     width: 1120px;
     height: 992px;
-    background: rgb(219, 234, 254);
-    backdrop-filter: blur(10px);
-    border-radius: calc(var(--border-radius) * 4);
-    border: 1px solid var(--border-color);
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-radius: calc(var(--border-radius) * 4);
+    border: 1px solid var(--border-color);
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.5s ease-in-out;
+
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1s ease-in-out;
+        z-index: -1;
+    }
+
+    &.transitioning {
+        &::after {
+            opacity: 1;
+            background-image: inherit;
+        }
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgb(53, 53, 53);
+        opacity: 0.65;
+        backdrop-filter: blur(10px);
+        z-index: 0;
+    }
+
+    .timeline-axis-line,
+    .timeline-axis {
+        position: relative;
+        z-index: 1;
+    }
 
     .timeline-axis-line {
         position: absolute;
@@ -37,7 +73,6 @@
         scroll-behavior: smooth;
         flex: 1;
         padding: 20px 0;
-        cursor: grab;
 
         &::-webkit-scrollbar {
             width: 6px;
@@ -46,10 +81,6 @@
         &::-webkit-scrollbar-thumb {
             background: rgba(59, 130, 246, 0.3);
             border-radius: 3px;
-        }
-
-        &:active {
-            cursor: grabbing;
         }
 
         user-select: none;
@@ -125,15 +156,26 @@
         .timeline-media {
             position: relative;
             width: 300px;
+            padding: 15px;
+            background: rgba(236, 233, 241, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+
+            &:hover {
+                background: rgba(236, 233, 241, 0.95);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            }
 
             .timeline-date {
+                bottom: 105px;
                 position: absolute;
-                bottom: 110px;
-                left: 0;
                 font-size: 40px;
                 font-weight: 900;
-                color: var(--text-primary);
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                color: rgb(180, 169, 197);
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
                 z-index: 2;
                 line-height: 1;
                 font-family: 'Arial', sans-serif;
@@ -153,8 +195,8 @@
                 gap: 10px;
 
                 .timeline-description {
-                    margin-top: 40px;
-                    color: var(--text-secondary);
+                    margin-top: 20px;
+                    color: rgba(0, 0, 0, 0.75);
                     font-size: 14px;
                     line-height: 1.5;
                     width: 100%;
@@ -170,11 +212,27 @@
         }
 
         .timeline-title {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--text-secondary);
             width: 450px;
             text-align: center;
+
+            .title-content {
+                display: inline-block;
+                font-size: 28px;
+                font-weight: bold;
+                color: rgba(0, 0, 0, 0.85);
+                padding: 15px 25px;
+                background: rgba(236, 233, 241, 0.85);
+                backdrop-filter: blur(8px);
+                border-radius: var(--border-radius);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background: rgba(236, 233, 241, 0.95);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+                }
+            }
         }
     }
 } 

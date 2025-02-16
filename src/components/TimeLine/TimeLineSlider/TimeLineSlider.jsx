@@ -3,8 +3,8 @@ import './TimeLineSlider.scss';
 
 const TimeLineSlider = () => {
     const containerRef = useRef(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const dragStartRef = useRef({ y: 0, scrollTop: 0 });
+    const [currentBackground, setCurrentBackground] = useState('');
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
     // 静态数据
     const testData = useMemo(() => [
@@ -27,21 +27,21 @@ const TimeLineSlider = () => {
             title: "且听风吟",
             date: "2023/03/10",
             description: "我们都是孤独的刺猬，只有在爱的时候，才会暂时降下身上的刺。",
-            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/background_image.webp"
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/469ff90b17f48092067c10a5d2c88ff516121004.webp"
         },
         {
             id: 'item-2022-4',
             title: "海边的卡夫卡",
             date: "2022/12/25",
             description: "不管全世界所有人怎么说，我都认为自己的感受才是正确的。无论别人怎么看，我绝不打乱自己的节奏。",
-            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E3%80%90%E5%8D%95%E4%BA%BA%E7%89%88%E3%80%91%E8%90%A4%E7%81%AB%E4%B9%8B%E7%BA%A610K_ab781.webp"
         },
         {
             id: 'item-2021-5',
             title: "1Q84",
             date: "2021/09/01",
             description: "世界上有些事物是如此美好，以至于让人感到恐惧。",
-            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/background_image.webp"
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E8%90%A4%E7%81%AB%E5%80%BE%E5%9F%8E-%E9%AA%A4%E9%9B%A8-%E6%B8%85%E5%87%89%E7%89%8810K_484a6.webp"
         },
         // ... 可以继续添加更多静态数据
     ], []);
@@ -51,18 +51,14 @@ const TimeLineSlider = () => {
         const container = containerRef.current;
         if (!container || !testData.length) return;
 
-        // 等待一帧确保 DOM 完全渲染
         requestAnimationFrame(() => {
-            // 获取第一个 timeline-item 的位置
             const firstItem = container.querySelector('.timeline-item');
             if (!firstItem) return;
 
-            // 计算需要滚动的距离
             const containerHeight = container.clientHeight;
             const itemTop = firstItem.offsetTop;
             const itemHeight = firstItem.offsetHeight;
             
-            // 将第一个项目滚动到中间位置
             container.scrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
         });
     }, [testData.length]);
@@ -113,59 +109,68 @@ const TimeLineSlider = () => {
         return () => container.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // 鼠标事件处理
-    const handleMouseDown = (e) => {
-        setIsDragging(true);
-        dragStartRef.current = {
-            y: e.clientY,
-            scrollTop: containerRef.current.scrollTop
+    // 检测中间项目并更新背景
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            const items = container.querySelectorAll('.timeline-item');
+            const containerRect = container.getBoundingClientRect();
+            const containerCenter = containerRect.top + containerRect.height / 2;
+
+            // 找到最接近中心的项目
+            let closestItem = null;
+            let minDistance = Infinity;
+
+            items.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const itemCenter = rect.top + rect.height / 2;
+                const distance = Math.abs(containerCenter - itemCenter);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
+
+            // 更新背景
+            if (closestItem) {
+                const index = Array.from(items).indexOf(closestItem);
+                const newImageUrl = testData[index].imageUrl;
+                if (newImageUrl !== currentBackground) {
+                    setIsTransitioning(true);
+                    // 延迟更新背景图片，让过渡效果有时间显示
+                    setTimeout(() => {
+                        setCurrentBackground(newImageUrl);
+                        // 等待新背景加载完成后移除过渡状态
+                        setTimeout(() => setIsTransitioning(false), 1000);
+                    }, 50);
+                }
+            }
         };
-    };
 
-    const handleMouseMove = (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        
-        const deltaY = e.clientY - dragStartRef.current.y;
-        containerRef.current.scrollTop = dragStartRef.current.scrollTop - deltaY;
-    };
+        // 初始化背景
+        handleScroll();
 
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    // 触摸事件处理
-    const handleTouchStart = (e) => {
-        setIsDragging(true);
-        dragStartRef.current = {
-            y: e.touches[0].clientY,
-            scrollTop: containerRef.current.scrollTop
-        };
-    };
-
-    const handleTouchMove = (e) => {
-        if (!isDragging) return;
-        
-        const deltaY = e.touches[0].clientY - dragStartRef.current.y;
-        containerRef.current.scrollTop = dragStartRef.current.scrollTop - deltaY;
-    };
+        // 添加滚动监听
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [testData, currentBackground]);
 
     return (
-        <div className="timeline-slider">
+        <div 
+            className={`timeline-slider ${isTransitioning ? 'transitioning' : ''}`}
+            style={{
+                backgroundImage: `url(${currentBackground})`
+            }}
+        >
             <div className="timeline-axis-line"></div>
             <div 
                 ref={containerRef}
                 className="timeline-axis"
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleMouseUp}
             >
                 <div className="timeline-spacer top"></div>
-
                 {testData.map((item, index) => (
                     <div 
                         key={item.id}
@@ -181,11 +186,12 @@ const TimeLineSlider = () => {
                                     <div className="timeline-description">{item.description}</div>
                                 </div>
                             </div>
-                            <div className="timeline-title">《 {item.title} 》</div>
+                            <div className="timeline-title">
+                                <div className="title-content">《 {item.title} 》</div>
+                            </div>
                         </div>
                     </div>
                 ))}
-
                 <div className="timeline-spacer bottom"></div>
             </div>
         </div>
