@@ -31,7 +31,7 @@ const TimeLineSlider = () => {
         },
         {
             id: 'item-2022-4',
-            title: "海边的卡夫卡",
+            title: "海边的卡夫卡asdfadsfg",
             date: "2022/12",
             description: "不管全世界所有人怎么说，我都认为自己的感受才是正确的。无论别人怎么看，我绝不打乱自己的节奏。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240624110431.webp"
@@ -123,8 +123,6 @@ const TimeLineSlider = () => {
                         <div className="timeline-dot"></div>
                         <div className="timeline-content">
                             <div className="timeline-media">
-                                <div className="media-stack-layer"></div>
-                                <div className="media-stack-layer"></div>
                                 <div className="media-content">
                                     <div className="timeline-title">{item.title}</div>
                                     <img src={item.imageUrl} alt={item.title} />
@@ -132,6 +130,8 @@ const TimeLineSlider = () => {
                                         <div className="timeline-description">{item.description}</div>
                                     </div>
                                 </div>
+                                <div className="media-stack-layer layer-1"></div>
+                                <div className="media-stack-layer layer-2"></div>
                             </div>
                             <div className="timeline-date">
                                 <div className="date-content">{item.date}</div>
