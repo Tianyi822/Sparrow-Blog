@@ -1,310 +1,232 @@
 .contribution-graph {
-    background: rgba(219, 234, 254, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03);
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 12px;
-    user-select: none;
+    --border-radius: 3px;  // 统一圆角
+    --spacing-small: 2px;  // 最小间距
+    --spacing-medium: 4px; // 中等间距
+    --spacing-large: 15px;  // 较大间距
+    --cell-size: 16px;     // 增加贡献格尺寸
 
-    // 1. CSS变量定义
-    // 布局相关
-    --scale: 1;
-    --cell-size: 20px;
-    --month-height: 24px;
-    --month-width: 32px;
-    --weekday-width: 35px;
-    --gap-size: 6px;
-    --border-radius: 6px;
-    
-    // 文本相关
-    --font-size: 12px;
-    --text-bg: rgba(255, 255, 255, 0.1);
-    --text-color: rgba(0, 0, 0, 0.65);
-    --text-blur: 8px;
-    --text-letter-spacing: 0.5px;
-    --cell-padding: 0 4px;
-    
-    // 颜色相关
+    // 颜色变量
     --highlight-color: rgba(239, 130, 160, 0.7);
     --level-0-color: #f8fafc;
     --level-1-color: #bfdbfe;
     --level-2-color: #93c5fd;
     --level-3-color: #60a5fa;
     --level-4-color: #3b82f6;
-    
-    // 2. SCSS变量映射
-    $cell-size: var(--cell-size);
-    $month-height: var(--month-height);
-    $month-width: var(--month-width);
-    $weekday-width: var(--weekday-width);
-    $gap-size: var(--gap-size);
-    $weekday-gap: calc(var(--gap-size) * 2);
-    $month-gap: var(--gap-size);
-    $font-size: var(--font-size);
-    $border-radius: var(--border-radius);
-    $highlight-color: var(--highlight-color);
-    $cell-padding: var(--cell-padding);
 
-    // 4. 基础混合器
-    %common-text-style {
-        background-color: var(--text-bg);
-        color: var(--text-color);
-        backdrop-filter: blur(var(--text-blur));
-        -webkit-backdrop-filter: blur(var(--text-blur));
-        font-weight: 500;
-        letter-spacing: var(--text-letter-spacing);
+    // 修改主题颜色
+    --bg-primary: rgba(219, 234, 254, 0.4);
+    --bg-secondary: rgba(147, 197, 253, 0.1);
+    --text-primary: #ffffff; // 更改为更柔和的灰色
+    --text-secondary: #9ca3af; // 次要文字颜色
+    --border-color: rgba(59, 130, 246, 0.1);
+
+    // 修改月份间距变量
+    --month-gap: 20px; // 将 40px 减半为 20px
+
+    user-select: none;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-large);
+    padding: var(--spacing-large);
+    width: fit-content;
+    margin: 0 auto;
+    font-family: sans-serif;
+    background: var(--bg-primary);
+    backdrop-filter: blur(10px);
+    border-radius: calc(var(--border-radius) * 4);
+    border: 1px solid var(--border-color);
+
+    .controls-column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 800px;
     }
 
-    %base-cell {
-        width: $cell-size;
-        height: $cell-size;
-        border-radius: $border-radius;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: default;
-    }
-
-    %text-cell {
-        @extend %common-text-style;
-        font-size: $font-size;
+    .color-scale {
         display: flex;
         align-items: center;
         justify-content: center;
-        text-align: center;
-        padding: $cell-padding;
-    }
-
-    %hover-effect {
-        &::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: $border-radius;
-            background-color: var(--highlight-color);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            z-index: 1;
-        }
-
-        &:hover::after {
-            opacity: 1;
-        }
-    }
-
-    // 月份标签基础样式
-    %month-base {
-        @extend %text-cell;
-        min-width: $month-width;
-        height: $month-height;
-        writing-mode: horizontal-tb;
-        text-orientation: mixed;
-        transform: none;
-        white-space: nowrap;
-        cursor: pointer;
-        border-radius: $border-radius;
-        line-height: 1;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    // 高亮状态基础样式
-    %highlight-base {
-        background-color: $highlight-color;
-        transform: scale(1.15);
-        font-weight: 600;
-        z-index: 2;
-        box-shadow: 0 4px 12px rgba(239, 130, 160, 0.1);
-        color: rgba(255, 255, 255, 0.85);
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    // 高亮状态的悬停效果
-    %highlight-hover {
-        &:hover::after {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1.2);
-            border: 1.5px solid rgba(0, 0, 0, 0.1);
-        }
-    }
-
-    .graph-grid {
-        display: grid;
-        gap: $gap-size;
+        gap: var(--spacing-medium);
+        padding: var(--spacing-medium);
         width: 100%;
-
-        .grid-row {
-            display: flex;
-            gap: $weekday-gap;
-            width: 100%;
-            overflow: visible;
-
-            &.months {
-                height: auto;
-                display: grid;
-                grid-template-columns: $weekday-width repeat(54, $cell-size);
-                column-gap: $gap-size;
-                padding-left: $gap-size + 2px;
-                margin-left: $gap-size;
-
-                .month {
-                    @extend %month-base;
-                    justify-self: start;
-                    position: relative;
-                    z-index: 1;
-                    margin-left: $gap-size;
-                }
-            }
-
-            .contribution-cells {
-                display: grid;
-                grid-template-columns: repeat(54, $cell-size);
-                gap: $gap-size;
-                flex: 1;
-            }
-        }
-
-        .grid-cell {
-            &.weekday {
-                @extend %text-cell;
-                @extend %base-cell;
-                width: $weekday-width;
-                min-width: $weekday-width;
-            }
-
-            &.month {
-                @extend %month-base;
-            }
-
-            &.weekday.highlight,
-            &.month.highlight {
-                @extend %highlight-base;
-                @extend %highlight-hover;
-            }
-
-            &.contribution-cell {
-                @extend %base-cell;
-                @extend %hover-effect;
-                position: relative;
-                transition: none;
-
-                &:not(.level-0) {
-                    cursor: pointer;
-                }
-
-                // 使用变量替代重复的颜色值
-                &.level-0 { background-color: var(--level-0-color); }
-                &.level-1 { background-color: var(--level-1-color); }
-                &.level-2 { background-color: var(--level-2-color); }
-                &.level-3 { background-color: var(--level-3-color); }
-                &.level-4 { background-color: var(--level-4-color); }
-
-                &.month-highlight {
-                    background-color: var(--highlight-color) !important;
-                    transform: none;
-                    z-index: 1;
-                }
-            }
-
-            &.empty-cell {
-                @extend %base-cell;
-                background-color: transparent;
-            }
-        }
-    }
-
-    // 图例样式
-    .graph-legend {
-        @extend %common-text-style;
-        padding: 8px 12px;
-        border-radius: $border-radius;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        max-width: 300px;
 
         span {
-            font-size: 12px;
+            font-size: 11px;
+            color: var(--text-primary);
             opacity: 0.8;
-            white-space: nowrap;
         }
 
-        .legend-cells {
+        .contribution-cells {
             display: flex;
-            gap: 3px;
+            gap: var(--spacing-small);
+        }
+
+        .contribution-cell {
+            width: 14px;    // 相应增加示例格子尺寸
+            height: 14px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+
+            &.level-0 { background-color: var(--level-0-color); }
+            &.level-1 { background-color: var(--level-1-color); }
+            &.level-2 { background-color: var(--level-2-color); }
+            &.level-3 { background-color: var(--level-3-color); }
+            &.level-4 { background-color: var(--level-4-color); }
+        }
+    }
+
+    .year-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-medium);
+        margin-bottom: var(--spacing-medium);
+        padding: var(--spacing-medium);
+        border-radius: var(--border-radius);
+
+        .arrow-btn {
+            width: 14px;
+            height: 14px;
+            padding: 3px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
             align-items: center;
+            justify-content: center;
 
-            .contribution-cell {
-                @extend %base-cell;
-                width: 16px;
-                height: 16px;
+            &:hover {
+                background: var(--level-1-color);
+                border-color: var(--level-2-color);
+            }
 
-                // 使用相同的变量，避免颜色值略有不同
-                &.level-0 { background-color: var(--level-0-color); }
-                &.level-1 { background-color: var(--level-1-color); }
-                &.level-2 { background-color: var(--level-2-color); }
-                &.level-3 { background-color: var(--level-3-color); }
-                &.level-4 { background-color: var(--level-4-color); }
+            .svg-icon {
+                fill: var(--text-primary);
+                background: none; // 移除 SvgIcon 的背景
+                border: none; // 移除 SvgIcon 的边框
 
-                &:hover::after {
-                    display: none;
+                &.rotate-90 {
+                    transform: rotate(45deg);
+                }
+
+                &.rotate-270 {
+                    transform: rotate(-45deg);
                 }
             }
         }
-    }
 
-    // 媒体查询中的重复代码可以抽取成 mixin
-    @mixin scale-styles {
-        --cell-size: calc(20px * var(--scale));
-        --month-height: calc(24px * var(--scale));
-        --month-width: calc(32px * var(--scale));
-        --weekday-width: calc(35px * var(--scale));
-        --gap-size: calc(6px * var(--scale));
-        --font-size: calc(12px * var(--scale));
-        --border-radius: calc(6px * var(--scale));
-        
-        padding: calc(25px * var(--scale));
-        gap: calc(12px * var(--scale));
-
-        .graph-legend {
-            padding: calc(8px * var(--scale)) calc(12px * var(--scale));
-            font-size: calc(14px * var(--scale));
-            gap: calc(8px * var(--scale));
-
-            .legend-cells {
-                gap: calc(3px * var(--scale));
-
-                .contribution-cell {
-                    width: calc(16px * var(--scale));
-                    height: calc(16px * var(--scale));
-                }
-            }
-
-            span {
-                font-size: calc(12px * var(--scale));
-            }
+        .year-text {
+            font-size: 16px; // 增加字体大小
+            color: var(--text-primary);
+            min-width: 60px;
+            text-align: center;
+            font-weight: 500;
+            padding: 0 var(--spacing-medium);
         }
     }
 
-    // 5. 媒体查询优化
-    @media screen and (max-width: 1520px) {
-        --scale: 0.8;
-        @include scale-styles;
+    .graph-container {
+        width: 100%;
+        max-width: 800px;
     }
 
-    @media screen and (max-width: 1230px) {
-        width: calc(100% - 100px);
-        margin: 0 50px;
+    .months-grid {
+        display: grid;
+        grid-template-columns: repeat(2, auto);
+        gap: var(--month-gap);
+        align-items: start;
+        width: fit-content;
+        justify-content: center;
+    }
+
+    .month-block {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-medium);
+        width: fit-content;
+        margin: 0;
+
+        .month-label {
+            width: calc(7 * var(--cell-size) + 6 * var(--spacing-medium));
+            height: var(--cell-size);
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-primary);
+            opacity: 0.8;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-small);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, var(--cell-size));
+            gap: var(--spacing-medium);
+            align-content: start;
+            grid-auto-rows: var(--cell-size);
+            width: fit-content;
+        }
+    }
+
+    .day {
+        width: var(--cell-size);
+        height: var(--cell-size);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+
+        &:hover {
+            transform: scale(1.15); // 稍微调整悬停缩放比例
+            z-index: 1;
+            box-shadow: 0 0 8px var(--level-2-color); // 增加阴影大小
+        }
+
+        &.level-0 { 
+            background-color: var(--level-0-color);
+            border-color: var(--border-color);
+        }
+        &.level-1 { 
+            background-color: var(--level-1-color);
+            border-color: var(--level-1-color);
+        }
+        &.level-2 { 
+            background-color: var(--level-2-color);
+            border-color: var(--level-2-color);
+        }
+        &.level-3 { 
+            background-color: var(--level-3-color);
+            border-color: var(--level-3-color);
+        }
+        &.level-4 { 
+            background-color: var(--level-4-color);
+            border-color: var(--level-4-color);
+        }
+
+        &.empty {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width: 920px) {
+        padding: var(--spacing-medium);
         
-        .graph-grid {
-            overflow-y: hidden;
-            scrollbar-width: thin;
-            padding-bottom: 6px;
-        }   
+        .months-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .graph-container {
+            max-width: 100%;
+        }
     }
 } 
