@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import './TimeLineSlider.scss';
 
-const TimeLineSlider = () => {
+const TimeLineSlider = ({ className }) => {
     const containerRef = useRef(null);
     const [currentBackground, setCurrentBackground] = useState('');
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -107,7 +109,9 @@ const TimeLineSlider = () => {
 
     return (
         <div 
-            className={`timeline-slider ${isTransitioning ? 'transitioning' : ''}`}
+            className={classNames('timeline-slider', className, {
+                'transitioning': isTransitioning
+            })}
             style={{
                 backgroundImage: `url(${currentBackground})`
             }}
@@ -143,6 +147,14 @@ const TimeLineSlider = () => {
             </div>
         </div>
     );
+};
+
+TimeLineSlider.propTypes = {
+    className: PropTypes.string
+};
+
+TimeLineSlider.defaultProps = {
+    className: ''
 };
 
 export default TimeLineSlider; 

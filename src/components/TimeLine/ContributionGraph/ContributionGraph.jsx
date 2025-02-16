@@ -1,8 +1,10 @@
 import { useState, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import './ContributionGraph.scss';
 import SvgIcon, { DownArrow, Small } from "@/components/SvgIcon/SvgIcon.jsx";
 
-const ContributionGraph = () => {
+const ContributionGraph = ({ className }) => {
     // 模拟后端返回的数据
     const mockApiData = useMemo(() => [
         // 2025年2月
@@ -216,7 +218,7 @@ const ContributionGraph = () => {
     }, []);
 
     return (
-        <div className="contribution-graph">
+        <div className={classNames('contribution-graph', className)}>
             <div className="controls-column">
                 <div className="year-controls">
                     <div className="arrow-btn">
@@ -308,6 +310,14 @@ const getContributionLevelTitle = (level) => {
         default:
             return '';
     }
+};
+
+ContributionGraph.propTypes = {
+    className: PropTypes.string
+};
+
+ContributionGraph.defaultProps = {
+    className: ''
 };
 
 export default ContributionGraph; 

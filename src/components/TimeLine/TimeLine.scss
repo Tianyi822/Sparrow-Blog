@@ -34,17 +34,34 @@
     user-select: none;
     padding: 0;
 
-    .timeline-container {
-        display: flex;
-        gap: 20px;
-        width: fit-content;
-        margin: 0 auto;
+    // 窄屏时的样式
+    @media screen and (max-width: 1480px) {
+        padding: 0;
+        
+        .time-line-timeline-slider {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            border-radius: 0;
+        }
     }
 
-    // 公共样式
-    .timeline-slider,
-    .contribution-graph {
-        backdrop-filter: blur(10px);
-        border-radius: calc(var(--border-radius) * 4);
+    // 宽屏时的样式
+    @media screen and (min-width: 1481px) {
+        .timeline-container {
+            display: flex;
+            gap: 20px;
+            width: fit-content;
+            margin: 0 auto;
+
+            .time-line-timeline-slider {
+                width: 1120px;
+            }
+
+            .time-line-timeline-slider,
+            .time-line-contribution-graph {
+                border-radius: calc(var(--border-radius) * 4);
+            }
+        }
     }
 } 
