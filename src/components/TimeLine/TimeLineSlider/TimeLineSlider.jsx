@@ -1,103 +1,177 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import './TimeLineSlider.scss';
 
 const TimeLineSlider = () => {
-    const rafRef = useRef(null);
+    const containerRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStartRef = useRef({ y: 0, scrollTop: 0 });
 
-    useEffect(() => {
-        const updateItemStyle = (element, rootBounds) => {
-            const rect = element.getBoundingClientRect();
-            const elementCenter = rect.top + rect.height / 2;
-            
-            // 调整区域比例
-            const visibleAreaTop = rootBounds.top + rootBounds.height * 0.05; // 顶部 5%
-            const visibleAreaBottom = rootBounds.top + rootBounds.height * 0.95; // 底部 5%
-            const clearAreaTop = rootBounds.top + rootBounds.height * 0.2; // 清晰区域开始
-            const clearAreaBottom = rootBounds.top + rootBounds.height * 0.8; // 清晰区域结束
-
-            let blurAmount = 0;
-            let opacity = 1;
-
-            // 如果在顶部或底部的模糊区域
-            if (elementCenter < visibleAreaTop || elementCenter > visibleAreaBottom) {
-                blurAmount = 15;
-                opacity = 0.4;
-            }
-            // 如果在过渡区域
-            else if (elementCenter < clearAreaTop) {
-                const transitionRatio = (elementCenter - visibleAreaTop) / (clearAreaTop - visibleAreaTop);
-                const easedRatio = transitionRatio * transitionRatio; // 使用二次方缓动
-                blurAmount = 15 * (1 - easedRatio);
-                opacity = 0.4 + (0.6 * easedRatio);
-            }
-            else if (elementCenter > clearAreaBottom) {
-                const transitionRatio = (visibleAreaBottom - elementCenter) / (visibleAreaBottom - clearAreaBottom);
-                const easedRatio = transitionRatio * transitionRatio; // 使用二次方缓动
-                blurAmount = 15 * (1 - easedRatio);
-                opacity = 0.4 + (0.6 * easedRatio);
-            }
-
-            element.style.filter = `blur(${blurAmount}px)`;
-            element.style.opacity = opacity;
-        };
-
-        const container = document.querySelector('.timeline-axis');
-        const items = document.querySelectorAll('.timeline-item');
-
-        const updateAllItems = () => {
-            if (!container) return;
-            const rootBounds = container.getBoundingClientRect();
-            items.forEach(item => updateItemStyle(item, rootBounds));
-            rafRef.current = requestAnimationFrame(updateAllItems);
-        };
-
-        updateAllItems();
-
-        return () => {
-            if (rafRef.current) {
-                cancelAnimationFrame(rafRef.current);
-            }
-        };
-    }, []);
-
-    // 测试数据
-    const testData = [
+    // 静态数据
+    const testData = useMemo(() => [
         {
-            id: 1,
+            id: 'item-2025-1',
             title: "舞！舞！舞！",
-            date: "2025/01/01",
-            description: "你要做一个不动声色的大人了，不准情绪化，不准偷偷想念，不准回头看，去过自己另外的生活。你要听话，不是所有的鱼都会生活在同一片海里。你要听话，不是所有的鱼都会生活在同一片海里。",
+            date: "2025/01/15",
+            description: "你要做一个不动声色的大人了，不准情绪化，不准偷偷想念，不准回头看，去过自己另外的生活。你要听话，不是所有的鱼都会生活在同一片海里。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/background_image.webp"
         },
         {
-            id: 2,
+            id: 'item-2024-2',
             title: "挪威的森林",
-            date: "2002/01/01",
+            date: "2024/06/20",
             description: "每个人都有属于自己的一片森林，也许我们从来不曾去过，但它一直在那里，总会在那里。迷失的人迷失了，相逢的人会再相逢。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
         },
         {
-            id: 3,
+            id: 'item-2023-3',
             title: "且听风吟",
-            date: "2003/01/01",
+            date: "2023/03/10",
             description: "我们都是孤独的刺猬，只有在爱的时候，才会暂时降下身上的刺。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/background_image.webp"
         },
         {
-            id: 4,
+            id: 'item-2022-4',
             title: "海边的卡夫卡",
-            date: "2004/01/01",
+            date: "2022/12/25",
             description: "不管全世界所有人怎么说，我都认为自己的感受才是正确的。无论别人怎么看，我绝不打乱自己的节奏。",
             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
-        }
-    ];
+        },
+        {
+            id: 'item-2021-5',
+            title: "1Q84",
+            date: "2021/09/01",
+            description: "世界上有些事物是如此美好，以至于让人感到恐惧。",
+            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/background_image.webp"
+        },
+        // ... 可以继续添加更多静态数据
+    ], []);
+
+    // 设置初始滚动位置
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container || !testData.length) return;
+
+        // 等待一帧确保 DOM 完全渲染
+        requestAnimationFrame(() => {
+            // 获取第一个 timeline-item 的位置
+            const firstItem = container.querySelector('.timeline-item');
+            if (!firstItem) return;
+
+            // 计算需要滚动的距离
+            const containerHeight = container.clientHeight;
+            const itemTop = firstItem.offsetTop;
+            const itemHeight = firstItem.offsetHeight;
+            
+            // 将第一个项目滚动到中间位置
+            container.scrollTop = itemTop - (containerHeight / 2) + (itemHeight / 2);
+        });
+    }, [testData.length]);
+
+    // 添加高斯模糊效果处理
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            const items = container.querySelectorAll('.timeline-item');
+            const containerRect = container.getBoundingClientRect();
+            const blurThreshold = containerRect.height * 0.2; // 上下20%区域应用模糊
+
+            items.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const distanceFromTop = rect.top - containerRect.top;
+                const distanceFromBottom = containerRect.bottom - rect.bottom;
+
+                // 计算模糊度
+                let blurAmount = 0;
+                let opacity = 1;
+
+                // 处理顶部模糊
+                if (distanceFromTop < blurThreshold) {
+                    const ratio = distanceFromTop / blurThreshold;
+                    blurAmount = 15 * (1 - ratio);
+                    opacity = 0.3 + (0.7 * ratio);
+                }
+                // 处理底部模糊
+                else if (distanceFromBottom < blurThreshold) {
+                    const ratio = distanceFromBottom / blurThreshold;
+                    blurAmount = 15 * (1 - ratio);
+                    opacity = 0.3 + (0.7 * ratio);
+                }
+
+                // 应用效果
+                item.style.filter = `blur(${blurAmount}px)`;
+                item.style.opacity = opacity;
+            });
+        };
+
+        // 初始化效果
+        handleScroll();
+
+        // 添加滚动监听
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // 鼠标事件处理
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        dragStartRef.current = {
+            y: e.clientY,
+            scrollTop: containerRef.current.scrollTop
+        };
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        const deltaY = e.clientY - dragStartRef.current.y;
+        containerRef.current.scrollTop = dragStartRef.current.scrollTop - deltaY;
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    // 触摸事件处理
+    const handleTouchStart = (e) => {
+        setIsDragging(true);
+        dragStartRef.current = {
+            y: e.touches[0].clientY,
+            scrollTop: containerRef.current.scrollTop
+        };
+    };
+
+    const handleTouchMove = (e) => {
+        if (!isDragging) return;
+        
+        const deltaY = e.touches[0].clientY - dragStartRef.current.y;
+        containerRef.current.scrollTop = dragStartRef.current.scrollTop - deltaY;
+    };
 
     return (
         <div className="timeline-slider">
             <div className="timeline-axis-line"></div>
-            <div className="timeline-axis">
+            <div 
+                ref={containerRef}
+                className="timeline-axis"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleMouseUp}
+            >
+                <div className="timeline-spacer top"></div>
+
                 {testData.map((item, index) => (
-                    <div key={item.id} className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}>
+                    <div 
+                        key={item.id}
+                        className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
+                        style={{ willChange: 'filter, opacity' }}
+                    >
                         <div className="timeline-dot"></div>
                         <div className="timeline-content">
                             <div className="timeline-media">
@@ -111,6 +185,8 @@ const TimeLineSlider = () => {
                         </div>
                     </div>
                 ))}
+
+                <div className="timeline-spacer bottom"></div>
             </div>
         </div>
     );
