@@ -4,6 +4,7 @@ import './TimeLine.scss';
 import ContributionGraph from './ContributionGraph/ContributionGraph';
 import Slider from './Slider/Slider.jsx';
 import { BlogType } from './types';
+import BlogCollections from './BlogCollections/BlogCollections';
 
 const CollectionType = PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -14,6 +15,9 @@ const CollectionType = PropTypes.shape({
 const TimeLine = () => {
     const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 1480);
     const sliderRef = useRef(null);
+    const [selectedBlogs, setSelectedBlogs] = useState(null);
+    const [showMask, setShowMask] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
     
     /** @type {Array<{id: string, date: string, blogs: Array<{id: string, date: string, title: string, description: string, imageUrl: string}>}>} */
     const [timelineData] = useState([
@@ -131,6 +135,25 @@ const TimeLine = () => {
         }
     };
 
+    // 处理博客点击
+    const handleBlogsClick = (blogs) => {
+        setSelectedBlogs(blogs);
+        setShowMask(true);
+        document.body.style.overflow = 'hidden';
+    };
+
+    // 处理关闭
+    const handleCloseBlogCollection = (e) => {
+        e.preventDefault();
+        setIsClosing(true);
+        setTimeout(() => {
+            setSelectedBlogs(null);
+            setShowMask(false);
+            setIsClosing(false);
+            document.body.style.overflow = 'auto';
+        }, 300);
+    };
+
     return (
         <div className="timeline">
             {isWideScreen ? (
@@ -139,6 +162,7 @@ const TimeLine = () => {
                         ref={sliderRef}
                         className="time-line-slider"
                         data={timelineData}
+                        onBlogsClick={handleBlogsClick}
                     />
                     <ContributionGraph 
                         className="time-line-contribution-graph"
@@ -150,7 +174,23 @@ const TimeLine = () => {
                     ref={sliderRef}
                     className="time-line-slider"
                     data={timelineData}
+                    onBlogsClick={handleBlogsClick}
                 />
+            )}
+
+            {/* 遮罩层和BlogCollections移到这里 */}
+            {showMask && (
+                <div 
+                    className={`blog-collection-mask ${isClosing ? 'closing' : ''}`} 
+                    onClick={handleCloseBlogCollection}
+                >
+                    {selectedBlogs && (
+                        <BlogCollections 
+                            blogs={selectedBlogs} 
+                            onClose={handleCloseBlogCollection}
+                        />
+                    )}
+                </div>
             )}
         </div>
     );

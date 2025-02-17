@@ -33,7 +33,7 @@
     font-family: sans-serif;
     user-select: none;
     padding: 0;
-    overflow-y: auto;
+    overflow: visible;
 
     // 窄屏时的样式
     @media screen and (max-width: 1480px) {

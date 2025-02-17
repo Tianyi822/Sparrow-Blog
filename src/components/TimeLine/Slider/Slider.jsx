@@ -1,18 +1,13 @@
 import { useEffect, useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './Slider.scss';
-import BlogCollections from '../BlogCollections/BlogCollections';
 
-const Slider = ({ className, data }, ref) => {
+// eslint-disable-next-line react/prop-types
+const Slider = forwardRef(function Slider({ className = '', data = [], onBlogsClick = null }, ref) {
     const containerRef = useRef(null);
     const [currentBackground, setCurrentBackground] = useState('');
     const [isTransitioning, setIsTransitioning] = useState(false);
-    const [selectedBlogs, setSelectedBlogs] = useState(null);
-    const [showMask, setShowMask] = useState(false);
-    const [isClosing, setIsClosing] = useState(false);
 
-    // 重命名为 blogCollectionData
     const blogCollectionData = useMemo(() => data || [], [data]);
 
     // 设置初始滚动位置
@@ -96,97 +91,58 @@ const Slider = ({ className, data }, ref) => {
         }
     }));
 
-    // 处理点击timeline-item
+    // 简化为只传递点击事件
     const handleItemClick = (blogs) => {
-        setSelectedBlogs(blogs);
-        setShowMask(true);
-        // 禁用body滚动
-        document.body.style.overflow = 'hidden';
-    };
-
-    // 处理关闭BlogCollection
-    const handleCloseBlogCollection = (e) => {
-        e.preventDefault()
-        setIsClosing(true);
-        // 等待动画完成后再隐藏
-        setTimeout(() => {
-            setSelectedBlogs(null);
-            setShowMask(false);
-            setIsClosing(false);
-            // 恢复body滚动
-            document.body.style.overflow = 'auto';
-        }, 300);
+        if (onBlogsClick) {
+            onBlogsClick(blogs);
+        }
     };
 
     return (
-        <>
-            <div 
-                className={classNames('timeline-slider', className, {
-                    'transitioning': isTransitioning,
-                    'empty': !blogCollectionData.length
-                })}
-                style={{
-                    backgroundImage: blogCollectionData.length ? `url(${currentBackground})` : 'none'
-                }}
-            >
-                <div className="timeline-axis-line"></div>
-                <div ref={containerRef} className="timeline-axis">
-                    <div className="timeline-spacer top"></div>
-                    {blogCollectionData.map((collection, index) => (
-                        <div 
-                            key={collection.id}
-                            data-id={collection.id}
-                            className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
-                        >
-                            <div className="timeline-dot"></div>
-                            <div className="timeline-content">
-                                <div 
-                                    className="timeline-media"
-                                    onClick={() => handleItemClick(collection.blogs)}
-                                >
-                                    <div className="media-content">
-                                        <div className="timeline-title">{collection.blogs[0]?.title}</div>
-                                        <img src={collection.blogs[0]?.imageUrl} alt={collection.blogs[0]?.title} />
-                                        <div className="timeline-info">
-                                            <div className="timeline-description">{collection.blogs[0]?.description}</div>
-                                        </div>
+        <div 
+            className={classNames('timeline-slider', className, {
+                'transitioning': isTransitioning,
+                'empty': !blogCollectionData.length
+            })}
+            style={{
+                backgroundImage: blogCollectionData.length ? `url(${currentBackground})` : 'none'
+            }}
+        >
+            <div className="timeline-axis-line"></div>
+            <div ref={containerRef} className="timeline-axis">
+                <div className="timeline-spacer top"></div>
+                {blogCollectionData.map((collection, index) => (
+                    <div 
+                        key={collection.id}
+                        data-id={collection.id}
+                        className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
+                    >
+                        <div className="timeline-dot"></div>
+                        <div className="timeline-content">
+                            <div 
+                                className="timeline-media"
+                                onClick={() => handleItemClick(collection.blogs)}
+                            >
+                                <div className="media-content">
+                                    <div className="timeline-title">{collection.blogs[0]?.title}</div>
+                                    <img src={collection.blogs[0]?.imageUrl} alt={collection.blogs[0]?.title} />
+                                    <div className="timeline-info">
+                                        <div className="timeline-description">{collection.blogs[0]?.description}</div>
                                     </div>
-                                    <div className="media-stack-layer layer-1"></div>
-                                    <div className="media-stack-layer layer-2"></div>
                                 </div>
-                                <div className="timeline-date">
-                                    <div className="date-content">{collection.date}</div>
-                                </div>
+                                <div className="media-stack-layer layer-1"></div>
+                                <div className="media-stack-layer layer-2"></div>
+                            </div>
+                            <div className="timeline-date">
+                                <div className="date-content">{collection.date}</div>
                             </div>
                         </div>
-                    ))}
-                    <div className="timeline-spacer bottom"></div>
-                </div>
+                    </div>
+                ))}
+                <div className="timeline-spacer bottom"></div>
             </div>
-
-            {/* 遮罩层和BlogCollections */}
-            {showMask && (
-                <div className={`blog-collection-mask ${isClosing ? 'closing' : ''}`} onClick={handleCloseBlogCollection}>
-                    {selectedBlogs && (
-                        <BlogCollections 
-                            blogs={selectedBlogs} 
-                            onClose={handleCloseBlogCollection}
-                        />
-                    )}
-                </div>
-            )}
-        </>
+        </div>
     );
-}
+});
 
-Slider.propTypes = {
-    className: PropTypes.string,
-    data: PropTypes.array  // 添加 data 的类型检查
-};
-
-Slider.defaultProps = {
-    className: '',
-    data: []  // 添加 data 的默认值
-};
-
-export default forwardRef(Slider);
+export default Slider;
