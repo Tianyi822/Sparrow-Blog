@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import './ContributionGraph.scss';
 import SvgIcon, { DownArrow, Small } from "@/components/SvgIcon/SvgIcon.jsx";
 
-const ContributionGraph = ({ className }) => {
+const ContributionGraph = ({ className, onDayClick }) => {
     // 模拟后端返回的数据
     const mockApiData = useMemo(() => [
         // 2025年2月
@@ -268,6 +268,9 @@ const ContributionGraph = ({ className }) => {
                                                 gridColumn: adjustedWeekDay
                                             }}
                                             title={`${day.date.toLocaleDateString()}: ${day.count} words`}
+                                            onClick={() => onDayClick(day.date)}
+                                            role="button"
+                                            tabIndex={0}
                                         />
                                     );
                                 })}
@@ -313,11 +316,13 @@ const getContributionLevelTitle = (level) => {
 };
 
 ContributionGraph.propTypes = {
-    className: PropTypes.string
+    className: PropTypes.string,
+    onDayClick: PropTypes.func
 };
 
 ContributionGraph.defaultProps = {
-    className: ''
+    className: '',
+    onDayClick: () => {}
 };
 
 export default ContributionGraph; 
