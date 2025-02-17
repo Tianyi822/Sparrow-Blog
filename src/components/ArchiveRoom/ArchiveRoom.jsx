@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import './TimeLine.scss';
+import './ArchiveRoom.scss';
 import ContributionGraph from './ContributionGraph/ContributionGraph';
 import Slider from './Slider/Slider.jsx';
 import { BlogType } from './types';
@@ -12,7 +12,7 @@ const CollectionType = PropTypes.shape({
     blogs: PropTypes.arrayOf(BlogType).isRequired,
 });
 
-const TimeLine = () => {
+const ArchiveRoom = () => {
     const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 1480);
     const sliderRef = useRef(null);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
@@ -209,12 +209,12 @@ const TimeLine = () => {
     };
 
     return (
-        <div className="timeline">
+        <div className="archive-room">
             {isWideScreen ? (
-                <div className="timeline-container">
+                <div className="archive-room-container">
                     <Slider
                         ref={sliderRef}
-                        className="time-line-slider"
+                        className="archive-room-slider"
                         data={timelineData.collections}
                         onBlogsClick={handleBlogsClick}
                     />
@@ -227,7 +227,7 @@ const TimeLine = () => {
             ) : (
                 <Slider
                     ref={sliderRef}
-                    className="time-line-slider"
+                    className="archive-room-slider"
                     data={timelineData.collections}
                     onBlogsClick={handleBlogsClick}
                 />
@@ -251,8 +251,8 @@ const TimeLine = () => {
     );
 };
 
-TimeLine.propTypes = {
+ArchiveRoom.propTypes = {
     collections: PropTypes.arrayOf(CollectionType)
 };
 
-export default TimeLine; 
+export default ArchiveRoom; 

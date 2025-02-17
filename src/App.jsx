@@ -5,7 +5,7 @@ import Navigator from "@/components/Navigator/Navigator.jsx";
 import Tools from "@/components/Tools/Tools.jsx";
 import ScrollBar from "@/components/ScrollBar/ScrollBar.jsx";
 import Background from "@/components/Background/Background.jsx";
-import TimeLine from "@/components/TimeLine/TimeLine.jsx";
+import ArchiveRoom from "@/components/ArchiveRoom/ArchiveRoom.jsx";
 
 function App() {
     const [navIndex, setNavIndex] = useState(1);
@@ -20,7 +20,7 @@ function App() {
             <Background backgroundImage={bgImage} />
             <Navigator className="app-navigator" index={navIndex} setIndex={setNavIndex}/>
             {/* <Home/> */}
-            <TimeLine />
+            <ArchiveRoom />
             <Tools className="app-tools"/>
             <ScrollBar className="app-scroll-bar"/>
         </div>

@@ -1,4 +1,4 @@
-.timeline {
+.archive-room {
     // 变量定义
     --border-radius: 3px;
     --spacing-small: 2px;
@@ -40,7 +40,7 @@
         padding: 0;
         overflow: hidden;
         
-        .time-line-slider {
+        .archive-room-slider {
             width: 100vw;
             height: 100vh;
             margin: 0;
@@ -53,7 +53,7 @@
         align-items: flex-start;
         min-height: 1062px;
 
-        .timeline-container {
+        .archive-room-container {
             position: absolute;
             top: 70px;
             left: 50%;
@@ -64,17 +64,17 @@
 
     // 宽屏时的样式
     @media screen and (min-width: 1481px) {
-        .timeline-container {
+        .archive-room-container {
             display: flex;
             gap: 20px;
             width: fit-content;
             margin: 0 auto;
 
-            .time-line-slider {
+            .archive-room-slider {
                 width: 1120px;
             }
 
-            .time-line-slider,
+            .archive-room-slider,
             .time-line-contribution-graph {
                 border-radius: calc(var(--border-radius) * 4);
             }
