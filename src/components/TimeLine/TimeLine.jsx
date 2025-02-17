@@ -4,7 +4,7 @@ import './TimeLine.scss';
 import ContributionGraph from './ContributionGraph/ContributionGraph';
 import Slider from './Slider/Slider.jsx';
 import { BlogType } from './types';
-import BlogCollections from './BlogCollections/BlogCollections';
+import UnfoldCollection from './UnfoldCollection/UnfoldCollection.jsx';
 
 const CollectionType = PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -185,7 +185,7 @@ const TimeLine = () => {
                     onClick={handleCloseBlogCollection}
                 >
                     {selectedBlogs && (
-                        <BlogCollections 
+                        <UnfoldCollection
                             blogs={selectedBlogs} 
                             onClose={handleCloseBlogCollection}
                         />

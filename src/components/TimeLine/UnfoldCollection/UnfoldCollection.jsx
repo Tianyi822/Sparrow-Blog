@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { BlogType } from '../types';
-import './BlogCollections.scss';
+import './UnfoldCollection.scss';
 
-const BlogCollections = ({ blogs, onClose }) => {
+const UnfoldCollection = ({ blogs, onClose }) => {
     const handleContainerClick = (e) => {
         // 阻止事件冒泡，防止触发遮罩层的点击事件
         e.stopPropagation();
@@ -48,9 +48,9 @@ const BlogCollections = ({ blogs, onClose }) => {
     );
 };
 
-BlogCollections.propTypes = {
+UnfoldCollection.propTypes = {
     blogs: PropTypes.arrayOf(BlogType).isRequired,
     onClose: PropTypes.func.isRequired
 };
 
-export default BlogCollections; 
+export default UnfoldCollection;
