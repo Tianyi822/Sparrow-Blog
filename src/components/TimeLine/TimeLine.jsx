@@ -3,15 +3,7 @@ import PropTypes from 'prop-types';
 import './TimeLine.scss';
 import ContributionGraph from './ContributionGraph/ContributionGraph';
 import Slider from './Slider/Slider.jsx';
-
-// 定义数据类型
-const BlogType = PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    imageUrl: PropTypes.string.isRequired,
-});
+import { BlogType } from './types';
 
 const CollectionType = PropTypes.shape({
     id: PropTypes.string.isRequired,

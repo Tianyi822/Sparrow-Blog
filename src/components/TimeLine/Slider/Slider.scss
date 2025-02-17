@@ -145,6 +145,7 @@
         position: relative;
         margin: 25px 0;
         width: 100%;
+        cursor: pointer;
 
         &:first-child { margin-top: 0; }
         &:last-child { margin-bottom: 0; }
@@ -172,6 +173,11 @@
             justify-content: space-evenly;
             align-items: center;
             padding: 0 60px;
+            transition: transform 0.3s ease;
+        }
+
+        &:hover .timeline-content {
+            transform: scale(1.02);
         }
 
         &.left .timeline-content { flex-direction: row; }
@@ -311,5 +317,44 @@
         &::before {
             opacity: 1;
         }
+    }
+}
+
+.blog-collection-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+
+    .shell {
+        animation: scaleIn 0.3s ease-in-out;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
     }
 } 
