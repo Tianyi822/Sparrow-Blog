@@ -6,8 +6,6 @@ import SvgIcon, {
     Search,
     Home,
     TimeLine,
-    Tag,
-    Category,
     FriendLink,
     About
 } from "@/components/SvgIcon/SvgIcon.jsx";
@@ -73,9 +71,7 @@ const Navigator = (props) => {
     const navItems = [
         {name: '搜索', path: '', label: '搜索', icon: Search, onClick: handleSearch},
         {name: '首页', path: '/', label: '首页', icon: Home},
-        {name: '时间轴', path: '/timeline', label: '时间轴', icon: TimeLine},
-        {name: '标签', path: '/tags', label: '标签', icon: Tag},
-        {name: '分类', path: '/categories', label: '分类', icon: Category},
+        {name: '档案馆', path: '/archive', label: '档案馆', icon: TimeLine},
         {name: '友链', path: '/friends', label: '友链', icon: FriendLink},
         {name: '关于', path: '/about', label: '关于', icon: About},
     ];
