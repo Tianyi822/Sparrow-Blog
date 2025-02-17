@@ -137,11 +137,13 @@ const Slider = ({ className, data }, ref) => {
                             key={collection.id}
                             data-id={collection.id}
                             className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
-                            onClick={() => handleItemClick(collection.blogs)}
                         >
                             <div className="timeline-dot"></div>
                             <div className="timeline-content">
-                                <div className="timeline-media">
+                                <div 
+                                    className="timeline-media"
+                                    onClick={() => handleItemClick(collection.blogs)}
+                                >
                                     <div className="media-content">
                                         <div className="timeline-title">{collection.blogs[0]?.title}</div>
                                         <img src={collection.blogs[0]?.imageUrl} alt={collection.blogs[0]?.title} />
