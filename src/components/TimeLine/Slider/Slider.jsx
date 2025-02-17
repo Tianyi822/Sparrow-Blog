@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import './TimeLineSlider.scss';
+import './Slider.scss';
 
 const Slider = ({ className }) => {
     const containerRef = useRef(null);
