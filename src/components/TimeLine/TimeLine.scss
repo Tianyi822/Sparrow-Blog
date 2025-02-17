@@ -40,7 +40,7 @@
         padding: 0;
         overflow: hidden;
         
-        .time-line-timeline-slider {
+        .time-line-slider {
             width: 100vw;
             height: 100vh;
             margin: 0;
@@ -70,11 +70,11 @@
             width: fit-content;
             margin: 0 auto;
 
-            .time-line-timeline-slider {
+            .time-line-slider {
                 width: 1120px;
             }
 
-            .time-line-timeline-slider,
+            .time-line-slider,
             .time-line-contribution-graph {
                 border-radius: calc(var(--border-radius) * 4);
             }

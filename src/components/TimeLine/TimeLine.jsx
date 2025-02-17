@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './TimeLine.scss';
 import ContributionGraph from './ContributionGraph/ContributionGraph';
-import TimeLineSlider from './TimeLineSlider/TimeLineSlider';
+import Slider from './Slider/Slider.jsx';
 
 const TimeLine = () => {
     const [isWideScreen, setIsWideScreen] = useState(window.innerWidth > 1480);
@@ -19,11 +19,11 @@ const TimeLine = () => {
         <div className="timeline">
             {isWideScreen ? (
                 <div className="timeline-container">
-                    <TimeLineSlider className="time-line-timeline-slider" />
+                    <Slider className={"time-line-slider"} />
                     <ContributionGraph className="time-line-contribution-graph" />
                 </div>
             ) : (
-                <TimeLineSlider className="time-line-timeline-slider" />
+                <Slider className="time-line-slider" />
             )}
         </div>
     );

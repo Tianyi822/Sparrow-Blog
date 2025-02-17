@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './TimeLineSlider.scss';
 
-const TimeLineSlider = ({ className }) => {
+const Slider = ({ className }) => {
     const containerRef = useRef(null);
     const [currentBackground, setCurrentBackground] = useState('');
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -149,12 +149,12 @@ const TimeLineSlider = ({ className }) => {
     );
 };
 
-TimeLineSlider.propTypes = {
+Slider.propTypes = {
     className: PropTypes.string
 };
 
-TimeLineSlider.defaultProps = {
+Slider.defaultProps = {
     className: ''
 };
 
-export default TimeLineSlider; 
+export default Slider;
