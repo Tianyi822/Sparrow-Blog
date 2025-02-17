@@ -163,16 +163,21 @@
         border: 1px solid var(--border-color);
         transition: all 0.2s ease;
 
-        &:hover {
-            transform: scale(1.15); // 稍微调整悬停缩放比例
-            z-index: 1;
-            box-shadow: 0 0 8px var(--level-2-color); // 增加阴影大小
-        }
-
         &.level-0 { 
             background-color: var(--level-0-color);
             border-color: var(--border-color);
         }
+
+        &:not(.level-0) {
+            cursor: pointer;
+
+            &:hover {
+                transform: scale(1.15);
+                z-index: 1;
+                box-shadow: 0 0 8px var(--level-2-color);
+            }
+        }
+
         &.level-1 { 
             background-color: var(--level-1-color);
             border-color: var(--level-1-color);
