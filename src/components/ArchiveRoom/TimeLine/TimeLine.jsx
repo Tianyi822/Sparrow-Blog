@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import './Slider.scss';
+import './TimeLine.scss';
 
-const Slider = forwardRef(function Slider({ className = '', data = [], onBlogsClick = null }, ref) {
+const TimeLine = forwardRef(function Slider({ className = '', data = [], onBlogsClick = null }, ref) {
     const containerRef = useRef(null);
     const [currentBackground, setCurrentBackground] = useState('');
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -143,7 +143,7 @@ const Slider = forwardRef(function Slider({ className = '', data = [], onBlogsCl
     );
 });
 
-Slider.propTypes = {
+TimeLine.propTypes = {
     className: PropTypes.string,
     data: PropTypes.arrayOf(
         PropTypes.shape({
@@ -157,4 +157,4 @@ Slider.propTypes = {
     onBlogsClick: PropTypes.func
 };
 
-export default Slider;
+export default TimeLine;

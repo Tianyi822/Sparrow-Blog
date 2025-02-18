@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import './ArchiveRoom.scss';
 import ContributionGraph from './ContributionGraph/ContributionGraph';
-import Slider from './Slider/Slider.jsx';
+import TimeLine from './TimeLine/TimeLine.jsx';
 import { BlogType } from './types';
 import UnfoldCollection from './UnfoldCollection/UnfoldCollection.jsx';
 import Category from './Category/Category.jsx';
@@ -326,7 +326,7 @@ const ArchiveRoom = () => {
             {isWideScreen ? (
                 <>
                     <div className="archive-room-container">
-                        <Slider
+                        <TimeLine
                             ref={sliderRef}
                             className="archive-room-slider"
                             data={timelineData.collections.map(collection => ({
@@ -352,7 +352,7 @@ const ArchiveRoom = () => {
                 </>
             ) : (
                 <>
-                    <Slider
+                    <TimeLine
                         ref={sliderRef}
                         className="archive-room-slider"
                         data={timelineData.collections.map(collection => ({
