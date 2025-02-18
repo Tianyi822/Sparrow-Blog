@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './Category.scss';
+import classNames from 'classnames';
 
-const Category = ({ categories = [] }) => {
+const Category = ({ categories = [], className, onCategoryClick }) => {
   const [columns, setColumns] = useState(6);
 
   // 计算块的大小和类型
@@ -55,6 +56,7 @@ const Category = ({ categories = [] }) => {
       <div
         key={category.name}
         className={`category-block ${calculateSize(category.count)} ${calculateType(index)}`}
+        onClick={() => onCategoryClick && onCategoryClick(category.name)}
       >
         <span className="category-name">{category.name}</span>
         <span className="category-count">{category.count} 篇</span>
@@ -72,8 +74,10 @@ const Category = ({ categories = [] }) => {
     return [...categoryBlocks, ...emptyBlocks];
   };
 
+  const clsName = classNames(className, "category")
+
   return (
-    <div className="archive-category">
+    <div className={clsName}>
       <h2 className="category-title">分类</h2>
       <div className="category-grid" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {renderCategories()}
@@ -83,12 +87,14 @@ const Category = ({ categories = [] }) => {
 };
 
 Category.propTypes = {
+  className: PropTypes.string.isRequired,
   categories: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       count: PropTypes.number.isRequired
     })
-  )
+  ),
+  onCategoryClick: PropTypes.func
 };
 
 export default Category;

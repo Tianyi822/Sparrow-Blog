@@ -75,7 +75,7 @@
             border-radius: 0;
         }
 
-        .archive-category {
+        .archive-room-category {
             width: 100vw;
             border-radius: 0;
             margin-top: 0;
@@ -95,7 +95,7 @@
             margin: 0 auto;
         }
 
-        .archive-category {
+        .archive-room-category {
             margin-top: 20px;
             width: fit-content;
             display: flex;
@@ -108,7 +108,7 @@
     // 宽屏时的样式
     @media screen and (min-width: 1481px) {
         .archive-room-container,
-        .archive-category {
+        .archive-room-category {
             display: flex;
             gap: 20px;
             width: fit-content;

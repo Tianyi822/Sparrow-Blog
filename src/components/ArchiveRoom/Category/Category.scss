@@ -1,4 +1,4 @@
-.archive-category {
+.archive-room-category {
   border-radius: calc(var(--border-radius) * 4);
   min-height: 200px;
   padding: 1rem;
@@ -6,6 +6,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.category {
 
   .category-title {
     font-size: 1.8rem;
