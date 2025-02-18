@@ -5,6 +5,7 @@ import ContributionGraph from './ContributionGraph/ContributionGraph';
 import Slider from './Slider/Slider.jsx';
 import { BlogType } from './types';
 import UnfoldCollection from './UnfoldCollection/UnfoldCollection.jsx';
+import Category from './Category/Category.jsx';
 
 const CollectionType = PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -211,26 +212,32 @@ const ArchiveRoom = () => {
     return (
         <div className="archive-room">
             {isWideScreen ? (
-                <div className="archive-room-container">
+                <>
+                    <div className="archive-room-container">
+                        <Slider
+                            ref={sliderRef}
+                            className="archive-room-slider"
+                            data={timelineData.collections}
+                            onBlogsClick={handleBlogsClick}
+                        />
+                        <ContributionGraph
+                            className="time-line-contribution-graph"
+                            onDayClick={handleDayClick}
+                            data={timelineData.contributionData}
+                        />
+                    </div>
+                    <Category />
+                </>
+            ) : (
+                <>
                     <Slider
                         ref={sliderRef}
                         className="archive-room-slider"
                         data={timelineData.collections}
                         onBlogsClick={handleBlogsClick}
                     />
-                    <ContributionGraph
-                        className="time-line-contribution-graph"
-                        onDayClick={handleDayClick}
-                        data={timelineData.contributionData}
-                    />
-                </div>
-            ) : (
-                <Slider
-                    ref={sliderRef}
-                    className="archive-room-slider"
-                    data={timelineData.collections}
-                    onBlogsClick={handleBlogsClick}
-                />
+                    <Category />
+                </>
             )}
 
             {/* 遮罩层和BlogCollections移到这里 */}
