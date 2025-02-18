@@ -5,8 +5,7 @@ import Home from "@/components/Home/Home.jsx";
 import Tools from "@/components/Tools/Tools.jsx";
 import ScrollBar from "@/components/ScrollBar/ScrollBar.jsx";
 import Background from "@/components/Background/Background.jsx";
-import ArchiveRoom from "@/components/ArchiveRoom/ArchiveRoom.jsx";
-import FriendLink from "@/components/FriendLink/FriendLink.jsx";
+// import FriendLink from "@/components/FriendLink/FriendLink.jsx";
 
 function App() {
     const [navIndex, setNavIndex] = useState(1);
@@ -20,9 +19,8 @@ function App() {
         <div className="app">
             <Background backgroundImage={bgImage} />
             <Navigator className="app-navigator" index={navIndex} setIndex={setNavIndex}/>
-             {/*<Home/>*/}
-            {/*<ArchiveRoom />*/}
-            <FriendLink />
+             <Home/>
+            {/*<FriendLink />*/}
             <Tools className="app-tools"/>
             <ScrollBar className="app-scroll-bar"/>
         </div>

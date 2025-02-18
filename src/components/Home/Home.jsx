@@ -47,10 +47,8 @@ const INITIAL_BLOG_DATA = [
 ];
 
 const Home = () => {
-    const [previewBlog, setPreviewBlog] = useState(null);
-    const [isPreviewClosing, setIsPreviewClosing] = useState(false);
     const [blogData] = useState(INITIAL_BLOG_DATA);
-    const [currentPage, setCurrentPage] = useState(4);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages] = useState(20);
 
     // 使用 useCallback 优化点击处理函数
@@ -64,39 +62,6 @@ const Home = () => {
             });
         }
     }, []);
-
-    const handlePreview = useCallback((blog) => {
-        setIsPreviewClosing(false);
-        setPreviewBlog(blog);
-    }, []);
-
-    const handleClosePreview = useCallback(() => {
-        setIsPreviewClosing(true);
-        setTimeout(() => {
-            setPreviewBlog(null);
-            setIsPreviewClosing(false);
-        }, 300);
-    }, []);
-
-    // 将预览组件提取为 memo 组件
-    const PreviewOverlay = useMemo(() => {
-        if (!previewBlog) return null;
-        return (
-            <div
-                className={`preview-overlay ${isPreviewClosing ? 'closing' : ''}`}
-                onClick={handleClosePreview}
-            >
-                <div
-                    className="preview-content"
-                    onClick={e => e.stopPropagation()}
-                >
-                    <div className="preview-card-container">
-                        {/* 空白预览卡片 */}
-                    </div>
-                </div>
-            </div>
-        );
-    }, [previewBlog, isPreviewClosing, handleClosePreview]);
 
     const handlePageChange = useCallback((page) => {
         console.log(`Page changed to: ${page}`);
@@ -129,7 +94,6 @@ const Home = () => {
                                 key={index}
                                 className={index % 2 === 0 ? 'even' : 'odd'}
                                 {...blog}
-                                onPreview={() => handlePreview(blog)}
                             />
                         ))}
                     </div>
@@ -142,7 +106,6 @@ const Home = () => {
                 </div>
                 <WebContent className="home-web-content"/>
             </section>
-            {PreviewOverlay}
         </div>
     );
 };
