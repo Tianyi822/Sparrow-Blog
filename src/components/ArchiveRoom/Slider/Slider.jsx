@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import './Slider.scss';
 
-// eslint-disable-next-line react/prop-types
 const Slider = forwardRef(function Slider({ className = '', data = [], onBlogsClick = null }, ref) {
     const containerRef = useRef(null);
     const [currentBackground, setCurrentBackground] = useState('');
@@ -53,7 +53,7 @@ const Slider = forwardRef(function Slider({ className = '', data = [], onBlogsCl
 
             if (closestItem) {
                 const index = Array.from(items).indexOf(closestItem);
-                const newImageUrl = blogCollectionData[index]?.blogs[0]?.imageUrl;
+                const newImageUrl = blogCollectionData[index]?.imageUrl;
                 if (newImageUrl !== currentBackground) {
                     setIsTransitioning(true);
                     setTimeout(() => {
@@ -90,14 +90,12 @@ const Slider = forwardRef(function Slider({ className = '', data = [], onBlogsCl
             }
         }
     }));
-
     // 简化为只传递点击事件
-    const handleItemClick = (blogs) => {
+    const handleItemClick = (collection) => {
         if (onBlogsClick) {
-            onBlogsClick(blogs);
+            onBlogsClick(collection.id);
         }
     };
-
     return (
         <div 
             className={classNames('timeline-slider', className, {
@@ -121,13 +119,13 @@ const Slider = forwardRef(function Slider({ className = '', data = [], onBlogsCl
                         <div className="timeline-content">
                             <div 
                                 className="timeline-media"
-                                onClick={() => handleItemClick(collection.blogs)}
+                                onClick={() => handleItemClick(collection)}
                             >
                                 <div className="media-content">
-                                    <div className="timeline-title">{collection.blogs[0]?.title}</div>
-                                    <img src={collection.blogs[0]?.imageUrl} alt={collection.blogs[0]?.title} />
+                                    <div className="timeline-title">{collection.title}</div>
+                                    <img src={collection.imageUrl} alt={collection.title} />
                                     <div className="timeline-info">
-                                        <div className="timeline-description">{collection.blogs[0]?.description}</div>
+                                        <div className="timeline-description">{collection.description}</div>
                                     </div>
                                 </div>
                                 <div className="media-stack-layer layer-1"></div>
@@ -144,5 +142,19 @@ const Slider = forwardRef(function Slider({ className = '', data = [], onBlogsCl
         </div>
     );
 });
+
+Slider.propTypes = {
+    className: PropTypes.string,
+    data: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            date: PropTypes.string.isRequired,
+            title: PropTypes.string.isRequired,
+            description: PropTypes.string.isRequired,
+            imageUrl: PropTypes.string.isRequired
+        })
+    ),
+    onBlogsClick: PropTypes.func
+};
 
 export default Slider;

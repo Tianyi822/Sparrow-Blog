@@ -273,10 +273,13 @@ const ArchiveRoom = () => {
     };
 
     // 处理博客点击
-    const handleBlogsClick = (blogs) => {
-        setSelectedBlogs(blogs);
-        setShowMask(true);
-        document.body.style.overflow = 'hidden';
+    const handleBlogsClick = (collectionId) => {
+        const collection = timelineData.collections.find(c => c.id === collectionId);
+        if (collection) {
+            setSelectedBlogs(collection.blogs);
+            setShowMask(true);
+            document.body.style.overflow = 'hidden';
+        }
     };
 
     // 处理关闭
@@ -299,7 +302,13 @@ const ArchiveRoom = () => {
                         <Slider
                             ref={sliderRef}
                             className="archive-room-slider"
-                            data={timelineData.collections}
+                            data={timelineData.collections.map(collection => ({
+                                id: collection.id,
+                                date: collection.date,
+                                title: collection.blogs[0].title,
+                                description: collection.blogs[0].description,
+                                imageUrl: collection.blogs[0].imageUrl
+                            }))}
                             onBlogsClick={handleBlogsClick}
                         />
                         <ContributionGraph
@@ -315,7 +324,13 @@ const ArchiveRoom = () => {
                     <Slider
                         ref={sliderRef}
                         className="archive-room-slider"
-                        data={timelineData.collections}
+                        data={timelineData.collections.map(collection => ({
+                            id: collection.id,
+                            date: collection.date,
+                            title: collection.blogs[0].title,
+                            description: collection.blogs[0].description,
+                            imageUrl: collection.blogs[0].imageUrl
+                        }))}
                         onBlogsClick={handleBlogsClick}
                     />
                     <Category categories={timelineData.categories} />
