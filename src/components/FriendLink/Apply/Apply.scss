@@ -1,0 +1,303 @@
+.apply {
+    position: fixed;
+    right: -432px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 432px; // 明确指定总宽度（400px + 32px）
+
+    &.expanded {
+        right: 32px;
+    }
+
+    &-toggle {
+        flex: 0 0 32px;
+        margin-left: -32px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: none;
+        border-radius: 6px 0 0 6px;
+        padding: 1rem 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        width: 32px;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        &-text {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            user-select: none;
+        }
+
+        @media screen and (max-width: 500px) {
+            .expanded & {  // 只在展开状态下隐藏
+                display: none;
+            }
+        }
+    }
+
+    &-form-container {
+        flex: 0 0 400px;
+        width: 400px;
+        padding: 2rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        max-height: 90vh;  // 限制最大高度
+        overflow-y: auto;  // 添加滚动
+
+        @media screen and (max-width: 500px) {
+            width: 300px;  // 固定宽度
+            flex: 0 0 300px;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    &-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    &-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+        user-select: none;
+        margin: 0;  // 移除原有的margin-bottom
+    }
+
+    &-close {
+        display: none;  // 默认隐藏关闭按钮
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.6);
+        transition: all 0.3s ease;
+
+        @media screen and (max-width: 500px) {
+            display: flex;  // 在移动端显示
+            align-items: center;
+            justify-content: center;
+        }
+
+        &:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        &-icon {
+            position: relative;
+            width: 20px;
+            height: 20px;
+
+            &::before,
+            &::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background-color: currentColor;
+                transform-origin: center;
+            }
+
+            &::before {
+                transform: rotate(45deg);
+            }
+
+            &::after {
+                transform: rotate(-45deg);
+            }
+        }
+    }
+
+    &-form {
+        display: grid;
+        gap: 1.5rem;
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            label {
+                font-size: 0.9rem;
+                color: rgba(255, 255, 255, 0.8);
+                user-select: none;
+            }
+
+            .error-message {
+                font-size: 0.8rem;
+                color: rgba(239, 68, 68, 0.9);
+                margin-top: 0.25rem;
+                padding-left: 0.5rem;
+                animation: fadeIn 0.2s ease-in;
+                user-select: none;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-5px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            input, textarea {
+                padding: 0.875rem 1rem;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 6px;
+                background-color: rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 0.875rem;
+                transition: all 0.2s ease;
+                backdrop-filter: blur(5px);
+                -webkit-backdrop-filter: blur(5px);
+
+                &:focus {
+                    outline: none;
+                    border-color: rgba(255, 255, 255, 0.2);
+                    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+                }
+
+                &::placeholder {
+                    color: rgba(255, 255, 255, 0.5);
+                }
+
+                &.valid {
+                    border-color: rgba(34, 197, 94, 0.6);
+                    background: linear-gradient(
+                        to bottom,
+                        rgba(34, 197, 94, 0.1) 0%,
+                        rgba(34, 197, 94, 0.05) 100%
+                    );
+
+                    &:focus {
+                        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+                    }
+                }
+
+                &.invalid {
+                    border-color: rgba(239, 68, 68, 0.6);
+                    background: linear-gradient(
+                        to bottom,
+                        rgba(239, 68, 68, 0.1) 0%,
+                        rgba(239, 68, 68, 0.05) 100%
+                    );
+
+                    &:focus {
+                        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+                    }
+                }
+            }
+
+            textarea {
+                resize: vertical;
+                min-height: 100px;
+            }
+        }
+
+        .category-select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            padding-right: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            background: 
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") right 0.8rem center no-repeat,
+                linear-gradient(
+                    to bottom,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    rgba(255, 255, 255, 0.05) 100%
+                );
+            appearance: none;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            outline: none;
+            
+            &:hover, &:focus {
+                border-color: rgba(255, 255, 255, 0.2);
+                background: 
+                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") right 0.8rem center no-repeat,
+                    linear-gradient(
+                        to bottom,
+                        rgba(255, 255, 255, 0.15) 0%,
+                        rgba(255, 255, 255, 0.1) 100%
+                    );
+            }
+            
+            option {
+                background: rgba(30, 30, 30, 0.95);
+                color: rgba(255, 255, 255, 0.8);
+                padding: 0.5rem;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+            }
+        }
+
+        .submit-button {
+            padding: 0.875rem 2rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+                transform: translateY(-1px);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+    }
+
+    // 移动端适配
+    @media screen and (max-width: 500px) {
+        width: 332px;  // 300px + 32px
+        right: -332px;
+
+        &.expanded {
+            right: 32px;
+        }
+    }
+} 

@@ -1,0 +1,188 @@
+@use '@/style/variables' as *;
+
+.friend-link {
+    padding: 6rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    color: rgba(255, 255, 255, 0.9);
+
+    // 鼠标跟踪光效
+    &::before {
+        content: '';
+        position: fixed;
+        width: 200px;
+        height: 200px;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &:hover::before {
+        opacity: 1;
+    }
+
+    &-header {
+        margin-bottom: 2rem;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    &-search {
+        width: 100%;
+        max-width: 600px;
+        padding: 0.875rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        font-size: 0.875rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        transition: all 0.2s ease;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        appearance: none;
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+    }
+
+    &-categories {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        width: calc(100% + 2rem);
+        justify-content: flex-start;
+
+        .category-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.15);
+                color: rgba(255, 255, 255, 0.9);
+            }
+
+            &.active {
+                background-color: rgba(255, 255, 255, 0.2);
+                color: rgba(255, 255, 255, 1);
+                border-color: rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+
+    &-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .friend-link-card {
+        display: flex;
+        padding: 1rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+
+        &:hover {
+            transform: translateY(-2px);
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .friend-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+        }
+
+        .friend-info {
+            flex: 1;
+
+            .friend-name {
+                margin: 0 0 0.5rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.95);
+            }
+
+            .friend-description {
+                margin: 0 0 0.5rem;
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.7);
+                line-height: 1.4;
+            }
+
+            .friend-category {
+                font-size: 0.75rem;
+                color: rgba(255, 255, 255, 0.6);
+                background-color: rgba(255, 255, 255, 0.1);
+                padding: 0.25rem 0.5rem;
+                border-radius: 12px;
+            }
+        }
+    }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+    .friend-link {
+        padding: 6rem 3rem;
+
+        &-search {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+        }
+
+        &-grid {
+            gap: 1rem 1.5rem;
+        }
+
+        &-card {
+            width: calc(100% - 1.75rem);
+
+            .friend-avatar {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        &-categories {
+            max-width: calc(100% + 2rem);
+        }
+    }
+}
