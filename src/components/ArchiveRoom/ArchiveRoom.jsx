@@ -23,6 +23,88 @@ const ArchiveRoom = () => {
     /** @type {Array<{id: string, date: string, blogs: Array<{id: string, date: string, title: string, description: string, imageUrl: string}>}>} */
     const [timelineData] = useState(
         {
+            categories: [
+                {
+                    name: "前端开发",
+                    count: 15
+                },
+                {
+                    name: "后端开发",
+                    count: 12
+                },
+                {
+                    name: "数据库",
+                    count: 8
+                },
+                {
+                    name: "算法与数据结构",
+                    count: 10
+                },
+                {
+                    name: "人工智能",
+                    count: 7
+                },
+                {
+                    name: "云计算",
+                    count: 6
+                },
+                {
+                    name: "DevOps",
+                    count: 5
+                },
+                {
+                    name: "网络安全",
+                    count: 9
+                },
+                {
+                    name: "区块链",
+                    count: 4
+                },
+                {
+                    name: "微服务",
+                    count: 8
+                },
+                {
+                    name: "容器技术",
+                    count: 6
+                },
+                {
+                    name: "操作系统",
+                    count: 7
+                },
+                {
+                    name: "移动开发",
+                    count: 11
+                },
+                {
+                    name: "测试与质量",
+                    count: 5
+                },
+                {
+                    name: "系统架构",
+                    count: 8
+                },
+                {
+                    name: "大数据",
+                    count: 9
+                },
+                {
+                    name: "编程语言",
+                    count: 14
+                },
+                {
+                    name: "开发工具",
+                    count: 7
+                },
+                {
+                    name: "性能优化",
+                    count: 6
+                },
+                {
+                    name: "项目管理",
+                    count: 5
+                }
+            ],
             contributionData: [
                 {
                     date: "2025-1-1",
@@ -89,7 +171,7 @@ const ArchiveRoom = () => {
                             id: "item-2025-1-2",
                             date: "2025-1-2",
                             title: "挪威的森林",
-                            description: "每个人都有属于自己的一片森林，也许我们从来不曾去过，但它一直在那里，总会在那里。迷失的人迷失了，相逢的人会再相逢。",
+                            description: "每个人都有属于自己的一片森林，也许我们从来不会去过，但它一直在那里，总会在那里。迷失的人迷失了，相逢的人会再相逢。",
                             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192352.webp"
                         },
                         {
@@ -137,7 +219,7 @@ const ArchiveRoom = () => {
                             id: "item-2025-2-2",
                             date: "2025-1-2",
                             title: "挪威的森林",
-                            description: "每个人都有属于自己的一片森林，也许我们从来不曾去过，但它一直在那里，总会在那里。迷失的人迷失了，相逢的人会再相逢。",
+                            description: "每个人都有属于自己的一片森林，也许我们从来不会去过，但它一直在那里，总会在那里。迷失的人迷失了，相逢的人会再相逢。",
                             imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192352.webp"
                         },
                         {
@@ -170,7 +252,7 @@ const ArchiveRoom = () => {
                         },
                     ]
                 }
-            ]
+            ],
         },
     );
 
@@ -226,7 +308,7 @@ const ArchiveRoom = () => {
                             data={timelineData.contributionData}
                         />
                     </div>
-                    <Category />
+                    <Category categories={timelineData.categories} />
                 </>
             ) : (
                 <>
@@ -236,7 +318,7 @@ const ArchiveRoom = () => {
                         data={timelineData.collections}
                         onBlogsClick={handleBlogsClick}
                     />
-                    <Category />
+                    <Category categories={timelineData.categories} />
                 </>
             )}
 
@@ -262,4 +344,4 @@ ArchiveRoom.propTypes = {
     collections: PropTypes.arrayOf(CollectionType)
 };
 
-export default ArchiveRoom; 
+export default ArchiveRoom;
