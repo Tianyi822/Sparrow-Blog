@@ -32,13 +32,15 @@ const BlogCard = ({title, date, updateDate, category, tags, image, description, 
             glow.style.background = `radial-gradient(circle 1000px at ${x}px ${y}px, 
                 rgba(255, 255, 255, 0.25) 0%, 
                 rgba(255, 255, 255, 0.12) 45%, 
-                transparent 100%)`;
+             transparent 100%)`;
 
             // 边框光晕 - 调整渐变和透明度
-            borderGlow.style.background = `radial-gradient(circle 1000px at ${x}px ${y}px, 
-                rgba(255, 255, 255, 0.8) 0%, 
-                rgba(255, 255, 255, 0.3) 45%, 
-                transparent 80%)`;
+            borderGlow.style.background = `
+                radial-gradient(circle 1000px at ${x}px ${y}px, 
+                    rgba(255, 255, 255, 1) 0%, 
+                    rgba(255, 255, 255, 0.7) 20%, 
+                    rgba(255, 255, 255, 0.3) 40%,
+                    transparent 65%)`;   
         };
 
         const handleMouseLeave = () => {
