@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import Introduction from "@/components/Home/Introduction/Introduction.jsx";
 import BlogCard from "@/components/Blog/BlogCard.jsx";
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
