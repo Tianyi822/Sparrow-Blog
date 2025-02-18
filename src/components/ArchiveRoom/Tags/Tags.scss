@@ -1,0 +1,45 @@
+@use '@/style/variables' as *;
+
+.archive-tags {
+    width: 100%;
+    max-width: 1474px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    padding: 1.2rem;
+    box-sizing: border-box;
+
+    .archive-tags-title {
+        margin: 0 0 1rem 0;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .archive-tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.8rem;
+
+        .archive-tag-item {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            // 预设20种颜色
+            @for $i from 1 through 20 {
+                &.type-#{$i} {
+                    background: adjust-hue($primary-300, ($i - 1) * 18deg);
+                }
+            }
+        }
+    }
+}

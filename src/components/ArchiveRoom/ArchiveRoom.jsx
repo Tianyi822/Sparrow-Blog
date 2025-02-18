@@ -6,6 +6,7 @@ import TimeLine from './TimeLine/TimeLine.jsx';
 import { BlogType } from './types';
 import UnfoldCollection from './UnfoldCollection/UnfoldCollection.jsx';
 import Category from './Category/Category.jsx';
+import Tags from './Tags/Tags.jsx';
 
 const CollectionType = PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -21,7 +22,7 @@ const ArchiveRoom = () => {
     const [isClosing, setIsClosing] = useState(false);
 
     /** @type {Array<{id: string, date: string, blogs: Array<{id: string, date: string, title: string, description: string, imageUrl: string}>}>} */
-    const [timelineData] = useState(
+    const [archiveData] = useState(
         {
             categories: [
                 {
@@ -120,6 +121,151 @@ const ArchiveRoom = () => {
                         },
                     ]
                 },
+            ],
+            tags: [
+                {
+                    name: "Bilibili World",
+                    blogs: [
+                        {
+                            id: "item-2025-1-1",
+                            date: "2025-1-1",
+                            title: "舞！舞！舞！",
+                            description: "你要做一个不动声色的大人了，不准情绪化，不准偷偷想念，不准回头看，去过自己另外的生活。你要听话，不是所有的鱼都会生活在同一片海里。",
+                            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225120610.webp"
+                        },
+                        {
+                            id: "item-2025-1-2",
+                            date: "2025-1-2",
+                            title: "挪威的森林",
+                            description: "每个人都有属于自己的一片森林，也许我们从来不会去过，但它一直在那里，总会在那里。迷失的人迷失了，相逢的人会再相逢。",
+                            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192352.webp"
+                        },
+                        {
+                            id: "item-2025-1-3",
+                            date: "2025-1-3",
+                            title: "且听风吟",
+                            description: "我们都是孤独的刺猬，只有在爱的时候，才会暂时降下身上的刺。",
+                            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192355.webp"
+                        },
+                        {
+                            id: "item-2025-1-4",
+                            date: "2025-1-4",
+                            title: "舞！舞！舞！",
+                            description: "你要做一个不动声色的大人了，不准情绪化，不准偷偷想念，不准回头看，去过自己另外的生活。你要听话，不是所有的鱼都会生活在同一片海里。",
+                            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225120610.webp"
+                        },
+                        {
+                            id: "item-2025-1-5",
+                            date: "2025-1-5",
+                            title: "海边的卡夫卡asdfadsfg",
+                            description: "不管全世界所有人怎么说，我都认为自己的感受才是正确的。无论别人怎么看，我绝不打乱自己的节奏。",
+                            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240624110431.webp"
+                        },
+                        {
+                            id: "item-2025-1-6",
+                            date: "2025-1-6",
+                            title: "1Q84",
+                            description: "世界上有些事物是如此美好，以至于让人感到恐惧。",
+                            imageUrl: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225120610.webp"
+                        },
+                    ]
+                },
+                {
+                    name: "C",
+                    blogs: []
+                },
+                {
+                    name: "CPP",
+                    blogs: []
+                },
+                {
+                    name: "ClickHouse",
+                    blogs: []
+                },
+                {
+                    name: "ElasticSearch",
+                    blogs: []
+                },
+                {
+                    name: "Flink",
+                    blogs: []
+                },
+                {
+                    name: "HDFS",
+                    blogs: []
+                },
+                {
+                    name: "Hexo",
+                    blogs: []
+                },
+                {
+                    name: "JVM",
+                    blogs: []
+                },
+                {
+                    name: "Java源码",
+                    blogs: []
+                },
+                {
+                    name: "Linux",
+                    blogs: []
+                },
+                {
+                    name: "Maven",
+                    blogs: []
+                },
+                {
+                    name: "MySQL",
+                    blogs: []
+                },
+                {
+                    name: "Python",
+                    blogs: []
+                },
+                {
+                    name: "SQL",
+                    blogs: []
+                },
+                {
+                    name: "Spark",
+                    blogs: []
+                },
+                {
+                    name: "Twikoo",
+                    blogs: []
+                },
+                {
+                    name: "VSCode",
+                    blogs: []
+                },
+                {
+                    name: "Zookeeper",
+                    blogs: []
+                },
+                {
+                    name: "年",
+                    blogs: []
+                },
+                {
+                    name: "数据库",
+                    blogs: []
+                },
+                {
+                    name: "数据结构",
+                    blogs: []
+                },
+                {
+                    name: "智能指针",
+                    blogs: []
+                },
+                {
+                    name: "算法",
+                    blogs: []
+                },
+                {
+                    name: "骚年商城开发系列",
+                    blogs: []
+                }
             ],
             contributionData: [
                 {
@@ -290,7 +436,7 @@ const ArchiveRoom = () => {
 
     // 处理博客点击
     const handleBlogsClick = (collectionId) => {
-        const collection = timelineData.collections.find(c => c.id === collectionId);
+        const collection = archiveData.collections.find(c => c.id === collectionId);
         if (collection) {
             setSelectedBlogs(collection.blogs);
             setShowMask(true);
@@ -300,7 +446,7 @@ const ArchiveRoom = () => {
 
     // 处理分类点击
     const handleCategoryClick = (categoryName) => {
-        const category = timelineData.categories.find(c => c.name === categoryName);
+        const category = archiveData.categories.find(c => c.name === categoryName);
         if (category) {
             setSelectedBlogs(category.blogs);
             setShowMask(true);
@@ -308,17 +454,25 @@ const ArchiveRoom = () => {
         }
     };
 
-    const handleCloseBlogCollection = (e) => {
-        if (e) e.stopPropagation();
-        setIsClosing(true);
-        document.body.style.overflow = 'auto';
+    // 处理标签点击
+    const handleTagClick = (tagName) => {
+        const tag = archiveData.tags.find(t => t.name === tagName);
+        if (tag) {
+            setSelectedBlogs(tag.blogs);
+            setShowMask(true);
+            document.body.style.overflow = 'hidden';
+        }
+    };
 
-        // 等待关闭动画完成后重置状态
+    const handleCloseBlogCollection = (e) => {
+        e.preventDefault();
+        setIsClosing(true);
         setTimeout(() => {
-            setShowMask(false);
             setSelectedBlogs(null);
+            setShowMask(false);
             setIsClosing(false);
-        }, 300); // 动画持续时间为300ms
+            document.body.style.overflow = 'auto';
+        }, 300);
     };
 
     return (
@@ -329,7 +483,7 @@ const ArchiveRoom = () => {
                         <TimeLine
                             ref={sliderRef}
                             className="archive-room-slider"
-                            data={timelineData.collections.map(collection => ({
+                            data={archiveData.collections.map(collection => ({
                                 id: collection.id,
                                 date: collection.date,
                                 title: collection.blogs[0].title,
@@ -341,13 +495,18 @@ const ArchiveRoom = () => {
                         <ContributionGraph
                             className="time-line-contribution-graph"
                             onDayClick={handleDayClick}
-                            data={timelineData.contributionData}
+                            data={archiveData.contributionData}
                         />
                     </div>
                     <Category
                         className="archive-room-category"
-                        categories={timelineData.categories.map(({ name, count }) => ({ name, count }))}
+                        categories={archiveData.categories.map(({ name, count }) => ({ name, count }))}
                         onCategoryClick={handleCategoryClick}
+                    />
+                    <Tags
+                        className="archive-room-tags"
+                        tags={archiveData.tags.map(({ name }) => name)}
+                        onTagClick={handleTagClick}
                     />
                 </>
             ) : (
@@ -355,7 +514,7 @@ const ArchiveRoom = () => {
                     <TimeLine
                         ref={sliderRef}
                         className="archive-room-slider"
-                        data={timelineData.collections.map(collection => ({
+                        data={archiveData.collections.map(collection => ({
                             id: collection.id,
                             date: collection.date,
                             title: collection.blogs[0].title,
@@ -366,8 +525,13 @@ const ArchiveRoom = () => {
                     />
                     <Category
                         className="archive-room-category"
-                        categories={timelineData.categories.map(({ name, count }) => ({ name, count }))}
+                        categories={archiveData.categories.map(({ name, count }) => ({ name, count }))}
                         onCategoryClick={handleCategoryClick}
+                    />
+                    <Tags
+                        className="archive-room-tags"
+                        tags={archiveData.tags.map(({ name }) => name)}
+                        onTagClick={handleTagClick}
                     />
                 </>
             )}
