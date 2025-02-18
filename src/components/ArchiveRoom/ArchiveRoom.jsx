@@ -346,7 +346,7 @@ const ArchiveRoom = () => {
                     </div>
                     <Category
                         className="archive-room-category"
-                        categories={timelineData.categories}
+                        categories={timelineData.categories.map(({ name, count }) => ({ name, count }))}
                         onCategoryClick={handleCategoryClick}
                     />
                 </>
@@ -366,7 +366,7 @@ const ArchiveRoom = () => {
                     />
                     <Category
                         className="archive-room-category"
-                        categories={timelineData.categories}
+                        categories={timelineData.categories.map(({ name, count }) => ({ name, count }))}
                         onCategoryClick={handleCategoryClick}
                     />
                 </>
