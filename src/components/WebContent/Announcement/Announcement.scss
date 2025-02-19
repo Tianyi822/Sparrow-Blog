@@ -8,6 +8,19 @@
     box-sizing: border-box;
     @include glass-card;
     @include glass-glow;
+    transform-style: preserve-3d;
+    transform: perspective(1000px);
+    transition: transform 0.3s ease;
+
+    .announcement-glow,
+    .announcement-border-glow {
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        pointer-events: none;
+        z-index: 2;
+        transition: background 0.3s ease;
+    }
 
     .announcement-title {
         display: flex;
@@ -18,6 +31,7 @@
         color: rgba(255, 255, 255, 0.95);
         position: relative;
         z-index: 3;
+        transition: color 0.3s ease;
 
         .announcement-icon {
             font-size: 1.2rem;
@@ -25,25 +39,27 @@
     }
 
     .announcement-content {
-        margin: 0;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.5;
         position: relative;
         z-index: 3;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+        transition: color 0.3s ease;
 
-        a {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            transition: color 0.2s;
-
-            &:hover {
-                color: rgba(29, 161, 242, 0.9);
-            }
+        p {
+            margin: 0.5rem 0;
         }
     }
 
     &:hover {
         @include glass-card-hover;
+        
+        .announcement-title {
+            color: rgba(26, 38, 52, 0.95);
+        }
+
+        .announcement-content {
+            color: rgba(44, 62, 80, 0.9);
+        }
     }
 } 

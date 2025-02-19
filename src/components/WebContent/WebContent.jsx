@@ -11,7 +11,7 @@ const WebContent = ({className}) => {
     return (
         <div className={`web-content ${className || ''}`}>
             <AuthorInfo className="web-content-author-info"/>
-            <Announcement className="web-content-announcement"/>
+            <Announcement />
             <LatestArticles className="web-content-latest-articles"/>
             <LatestComments className="web-content-latest-comments"/>
             <Categories className="web-content-categories"/>
