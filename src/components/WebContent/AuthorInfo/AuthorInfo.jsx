@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import './AuthorInfo.scss';
 import use3DEffect from '@/hooks/use3DEffect';
 

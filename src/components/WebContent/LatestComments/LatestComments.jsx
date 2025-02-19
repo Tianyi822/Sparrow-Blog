@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import './LatestComments.scss';
 import PropTypes from 'prop-types';
 import use3DEffect from '@/hooks/use3DEffect';

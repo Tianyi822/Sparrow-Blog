@@ -1,4 +1,3 @@
-import { useRef, useEffect } from 'react';
 import './LatestArticles.scss';
 import PropTypes from 'prop-types';
 import use3DEffect from '@/hooks/use3DEffect';
