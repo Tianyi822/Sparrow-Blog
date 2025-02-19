@@ -149,6 +149,64 @@
   box-shadow: 0 0 0 0.625em hsl(0, 0%, 100%) inset;
 }
 
+// 中等屏幕尺寸 (768px - 1200px)
+@media (min-width: 769px) and (max-width: 1200px) {
+    .clock {
+        width: 20em;
+        height: 20em;
+
+        .profile {
+            width: 2.5em;
+            height: 2.5em;
+            left: 1.75em;
+            bottom: 1.75em;
+        }
+
+        .hand {
+            bottom: calc(50% - 0.4em);
+            left: calc(50% - 0.4em);
+            width: 0.8em;
+
+            &--hr {
+                height: 4em;
+            }
+
+            &--min {
+                height: 5.4em;
+            }
+
+            &--sec {
+                width: 0.18em;
+                height: 5.5em;
+            }
+        }
+
+        .layer {
+            &--face {
+                transform: translateZ(3em);
+            }
+
+            &--img {
+                transform: translateZ(-3em);
+            }
+
+            &--profile {
+                transform: translateZ(9em);
+            }
+        }
+
+        .digits {
+            margin-top: 1.8em;
+            font-size: 1.1em;
+        }
+
+        .ring {
+            box-shadow: 0 0 0 0.5em hsl(0, 0%, 100%) inset;
+        }
+    }
+}
+
+// 小屏幕尺寸 (<=768px) 保持原有样式
 @media (max-width: 768px) {
   .clock {
     width: 16em;
@@ -159,6 +217,48 @@
       height: 2em;
       left: 1.5em;
       bottom: 1.5em;
+    }
+
+    .hand {
+      bottom: calc(50% - 0.35em);
+      left: calc(50% - 0.35em);
+      width: 0.7em;
+
+      &--hr {
+        height: 3.2em;
+      }
+
+      &--min {
+        height: 4.7em;
+      }
+
+      &--sec {
+        width: 0.15em;
+        height: 4.7em;
+      }
+    }
+
+    .layer {
+      &--face {
+        transform: translateZ(2.5em);
+      }
+
+      &--img {
+        transform: translateZ(-2.5em);
+      }
+
+      &--profile {
+        transform: translateZ(7.5em);
+      }
+    }
+
+    .digits {
+      margin-top: 1.5em;
+      font-size: 1em;
+    }
+
+    .ring {
+      box-shadow: 0 0 0 0.4em hsl(0, 0%, 100%) inset;
     }
   }
 }
