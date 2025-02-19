@@ -1,13 +1,45 @@
 .author-info {
     width: 100%;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1.2rem;
-    background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     user-select: none;
     box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    isolation: isolate;
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+    will-change: transform;
+    transition: transform 0.2s ease-out;
+
+    // 添加光晕效果
+    .author-info-glow {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        mix-blend-mode: soft-light;
+        transition: all 0.2s ease-out;
+    }
+
+    .author-info-border-glow {
+        position: absolute;
+        inset: -2px;
+        z-index: 1;
+        pointer-events: none;
+        border-radius: 14px;
+        transition: all 0.2s ease-out;
+        mix-blend-mode: overlay;
+        opacity: 1;
+    }
 
     .author-avatar {
         width: 100px;
@@ -15,6 +47,8 @@
         border-radius: 50%;
         overflow: hidden;
         margin-bottom: 1rem;
+        position: relative;
+        z-index: 3;
 
         img {
             width: 100%;
@@ -25,14 +59,18 @@
 
     .author-name {
         font-size: 1.2rem;
-        color: #333;
+        color: rgba(255, 255, 255, 0.95);
         margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 3;
     }
 
     .author-description {
         font-size: 0.9rem;
-        color: #666;
+        color: rgba(255, 255, 255, 0.8);
         margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 3;
     }
 
     .author-stats {
@@ -40,6 +78,8 @@
         justify-content: space-around;
         width: 100%;
         margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 3;
 
         .stat-item {
             display: flex;
@@ -58,13 +98,13 @@
 
             .stat-value {
                 font-size: 1.1rem;
-                color: #333;
+                color: rgba(255, 255, 255, 0.95);
                 font-weight: 500;
             }
 
             .stat-label {
                 font-size: 0.8rem;
-                color: #666;
+                color: rgba(255, 255, 255, 0.8);
                 margin-top: 0.2rem;
             }
         }
@@ -75,28 +115,80 @@
         width: calc(100% - 1.5rem);
         padding: 0.8rem;
         text-align: center;
-        border-radius: 4px;
+        border-radius: 8px;
         text-decoration: none;
         font-size: 0.9rem;
-        transition: background-color 0.2s;
+        position: relative;
+        z-index: 3;
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        color: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        font-weight: 500;
+        letter-spacing: 0.5px;
     }
 
     .github-link {
-        background: #1da1f2;
-        color: white;
         margin-bottom: 0.8rem;
+        background: rgba(29, 161, 242, 0.5);
+        border: 2px solid rgba(29, 161, 242, 0.4);
 
         &:hover {
-            background: #1991db;
+            background: rgba(29, 161, 242, 0.6);
+            border-color: rgba(29, 161, 242, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(29, 161, 242, 0.3);
+            color: rgba(25, 118, 210, 0.95);
+            font-weight: 600;
+            letter-spacing: 1px;
         }
     }
 
     .email-link {
-        background: #2ecc71;
-        color: white;
+        background: rgba(46, 204, 113, 0.5);
+        border: 2px solid rgba(46, 204, 113, 0.4);
 
         &:hover {
-            background: #27ae60;
+            background: rgba(46, 204, 113, 0.6);
+            border-color: rgba(46, 204, 113, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
+            color: rgba(27, 94, 32, 0.95);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+    }
+
+    &:hover {
+        .author-name {
+            color: rgba(26, 38, 52, 0.95);
+        }
+
+        .author-description {
+            color: rgba(44, 62, 80, 0.9);
+        }
+
+        .author-stats {
+            .stat-item {
+                .stat-value {
+                    color: rgba(26, 38, 52, 0.95);
+                }
+
+                .stat-label {
+                    color: rgba(68, 85, 102, 0.9);
+                }
+            }
+        }
+
+        .github-link,
+        .email-link {
+            color: rgba(26, 38, 52, 0.95);
+            
+            &:hover {
+                color: rgba(26, 38, 52, 0.95);
+            }
         }
     }
 } 
