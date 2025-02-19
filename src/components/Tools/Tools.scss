@@ -1,3 +1,5 @@
+@use '@/style/mixins' as *;
+
 .tools {
     display: flex;
     flex-direction: column;
@@ -8,6 +10,18 @@
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.3s ease, visibility 0.3s ease;
+        @include glass-card-base; // 使用基础毛玻璃效果
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        &:hover {
+            @include glass-card-hover-base;
+        }
 
         &.visible {
             opacity: 1;
@@ -28,7 +42,18 @@
             position: absolute;
             right: 0;  // 靠右对齐
             width: 36px;  // 初始宽度
-            transition: width 0.3s ease;
+            height: 36px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            @include glass-card-base; // 使用基础毛玻璃效果
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            &:hover {
+                @include glass-card-hover-base;
+            }
 
             &.expanded {
                 width: 220px;  // 展开宽度

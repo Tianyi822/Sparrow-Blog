@@ -1,14 +1,15 @@
+@use '@/style/mixins' as *;
+
 .website-record {
+    @include glass-card-base;
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.9);
     width: 36px;
     height: 36px;
     padding: 0;
-    border-radius: 18px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 
     .svg-icon {
@@ -17,11 +18,12 @@
         flex-shrink: 0;
         padding: 6px;
         box-sizing: border-box;
+        color: #fff;
     }
 
     .record-text {
         white-space: nowrap;
-        color: #666666;
+        color: #fff;
         font-size: 0.85rem;
         line-height: 36px;
         padding: 0 12px;
@@ -39,7 +41,14 @@
     }
 
     &:hover {
-        background-color: rgba(255, 255, 255, 1);
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+        @include glass-card-hover-base;
+
+        .svg-icon {
+            color: #fff;
+        }
+
+        .record-text {
+            color: #fff;
+        }
     }
 } 

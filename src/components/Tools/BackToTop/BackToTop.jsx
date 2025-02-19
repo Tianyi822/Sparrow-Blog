@@ -1,5 +1,5 @@
 import './BackToTop.scss';
-import SvgIcon, { DownArrow, Small } from '@/components/SvgIcon/SvgIcon.jsx';
+import SvgIcon, { DownArrow, Normal } from '@/components/SvgIcon/SvgIcon.jsx';
 import classNames from "classnames";
 import PropTypes from "prop-types";
 
@@ -11,8 +11,9 @@ const BackToTop = ({ className, onClick }) => {
         >
             <SvgIcon
                 name={DownArrow}
-                size={Small}
-                color="#126bae"
+                size={Normal}
+                className="svg-icon"
+                color="#fff"
             />
         </div>
     );
