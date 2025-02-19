@@ -1,9 +1,26 @@
-@mixin glass-card {
+// 基础毛玻璃效果，不包含动画
+@mixin glass-card-base {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 2px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+}
+
+// 基础毛玻璃 hover 效果，不包含动画
+@mixin glass-card-hover-base {
+  .title, h3, h4, p, span {
+    color: rgba(26, 38, 52, 0.95);
+  }
+  
+  .meta, .date, .count {
+    color: rgba(44, 62, 80, 0.9);
+  }
+}
+
+// 完整的毛玻璃效果，包含动画
+@mixin glass-card {
+  @include glass-card-base;
   transform-style: preserve-3d;
   perspective: 1000px;
   isolation: isolate;
@@ -12,14 +29,9 @@
   transition: transform 0.2s ease-out;
 }
 
+// 完整的毛玻璃 hover 效果，包含动画
 @mixin glass-card-hover {
-  .title, h3, h4, p, span {
-    color: rgba(26, 38, 52, 0.95);
-  }
-  
-  .meta, .date, .count {
-    color: rgba(44, 62, 80, 0.9);
-  }
+  @include glass-card-hover-base;
 }
 
 @mixin glass-glow {

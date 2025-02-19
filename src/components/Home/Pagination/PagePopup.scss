@@ -1,3 +1,5 @@
+@use '@/style/mixins' as *;
+
 .page-popup-container {
     position: fixed;
     top: 0;
@@ -29,11 +31,9 @@
         z-index: 10;
         opacity: 0;
         pointer-events: auto;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transform: translate(-50%, -120%);
+        transition: all 0.2s ease-out;
+        @include glass-card-base;
 
         .popup-page-number {
             width: 2rem;
@@ -45,15 +45,10 @@
             color: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
             user-select: none;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            @include glass-card-base;
 
             &:hover {
-                background: rgba(255, 255, 255, 0.15);
-                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+                @include glass-card-hover-base;
                 color: rgba(255, 255, 255, 0.98);
             }
         }
@@ -66,7 +61,7 @@
 
         .page-popup {
             opacity: 1;
-            transform: translate(-50%, -100%) scale(1, 1);
+            transform: translate(-50%, -100%);
         }
     }
 
@@ -77,10 +72,7 @@
 
         .page-popup {
             opacity: 0;
-            transform: translate(-50%, calc(-100% - 10px)) scale(0.95, 1.05);
-            transition: 
-                opacity 0.15s ease-out,
-                transform 0.2s ease-in;
+            transform: translate(-50%, -80%);
         }
     }
 } 
