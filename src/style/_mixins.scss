@@ -1,0 +1,45 @@
+@mixin glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  isolation: isolate;
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+  will-change: transform;
+  transition: transform 0.2s ease-out;
+}
+
+@mixin glass-card-hover {
+  .title, h3, h4, p, span {
+    color: rgba(26, 38, 52, 0.95);
+  }
+  
+  .meta, .date, .count {
+    color: rgba(44, 62, 80, 0.9);
+  }
+}
+
+@mixin glass-glow {
+  &-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+    transition: all 0.2s ease-out;
+  }
+
+  &-border-glow {
+    position: absolute;
+    inset: -2px;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 14px;
+    transition: all 0.2s ease-out;
+    mix-blend-mode: overlay;
+    opacity: 1;
+  }
+} 

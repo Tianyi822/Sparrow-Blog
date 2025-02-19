@@ -1,9 +1,13 @@
+@use '@/style/mixins' as *;
+
 .announcement {
     width: 100%;
-    background: white;
-    border-radius: 8px;
+    position: relative;
+    border-radius: 12px;
     padding: 1.2rem;
     box-sizing: border-box;
+    @include glass-card;
+    @include glass-glow;
 
     .announcement-title {
         display: flex;
@@ -11,7 +15,9 @@
         gap: 0.5rem;
         margin: 0 0 1rem 0;
         font-size: 1.1rem;
-        color: #333;
+        color: rgba(255, 255, 255, 0.95);
+        position: relative;
+        z-index: 3;
 
         .announcement-icon {
             font-size: 1.2rem;
@@ -21,17 +27,23 @@
     .announcement-content {
         margin: 0;
         font-size: 0.9rem;
-        color: #666;
+        color: rgba(255, 255, 255, 0.8);
         line-height: 1.5;
+        position: relative;
+        z-index: 3;
 
         a {
-            color: #1da1f2;
+            color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
             transition: color 0.2s;
 
             &:hover {
-                color: #1991db;
+                color: rgba(29, 161, 242, 0.9);
             }
         }
+    }
+
+    &:hover {
+        @include glass-card-hover;
     }
 } 
