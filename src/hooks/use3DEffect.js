@@ -29,8 +29,8 @@ const use3DEffect = () => {
             const y = e.clientY - rect.top;
             
             // 修改旋转角度计算方式
-            const rotateX = 20 * (0.5 - (y / rect.height)); // 鼠标在上半部分时正值，下半部分负值
-            const rotateY = 20 * ((x / rect.width) - 0.5); // 鼠标在右半部分时正值，左半部分负值
+            const rotateX = -20 * (0.5 - (y / rect.height)); // 添加负号使鼠标位置翘起
+            const rotateY = -20 * ((x / rect.width) - 0.5); // 添加负号使鼠标位置翘起
 
             // 使用CSS变量优化性能
             card.style.setProperty('--rotateX', `${rotateX}deg`);
