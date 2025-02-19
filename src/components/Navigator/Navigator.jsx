@@ -5,7 +5,6 @@ import SvgIcon, {
     Normal,
     Search,
     Home,
-    TimeLine,
     FriendLink,
     About
 } from "@/components/SvgIcon/SvgIcon.jsx";
@@ -71,7 +70,6 @@ const Navigator = (props) => {
     const navItems = [
         {name: '搜索', path: '', label: '搜索', icon: Search, onClick: handleSearch},
         {name: '首页', path: '/', label: '首页', icon: Home},
-        {name: '档案馆', path: '/archive', label: '档案馆', icon: TimeLine},
         {name: '友链', path: '/friends', label: '友链', icon: FriendLink},
         {name: '关于', path: '/about', label: '关于', icon: About},
     ];
@@ -101,13 +99,10 @@ const Navigator = (props) => {
         }
     );
 
-    // 根据导航栏状态决定图标颜色
+    // 修改图标颜色逻辑，始终使用浅色
     const iconColor = useMemo(() => {
-        if (!isAtTop && scrollDirection === 'up') {
-            return '#333333';  // 实色背景时为深色
-        }
-        return '#cccccc';  // 默认为浅色
-    }, [isAtTop, scrollDirection]);
+        return '#ffffff'; // 始终使用白色
+    }, []);
 
     return (
         <nav className={navClasses}>
@@ -123,7 +118,7 @@ const Navigator = (props) => {
                         <SvgIcon 
                             name={item.icon} 
                             size={Normal}
-                            color={isMenuOpen ? '#333333' : iconColor}
+                            color={iconColor}
                         />
                         <span className="nav-text">{item.name}</span>
                     </li>
