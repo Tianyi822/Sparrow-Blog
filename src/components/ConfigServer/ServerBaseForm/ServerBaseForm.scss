@@ -1,0 +1,113 @@
+@use "@/style/mixins" as *;
+
+.server-base-form-container {
+  // Use glass-card-base instead of glass-card to remove 3D effects
+  @include glass-card-base;
+  position: relative;
+  max-width: 500px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem auto;
+  
+  // Simplify hover effect without mouse position tracking
+  &:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  // Remove the card glow effects that depend on mouse position
+  .card-glow, .card-border-glow {
+    display: none; // Hide these elements as they're typically used with mouse position
+  }
+  
+  h2 {
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      
+      label {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 500;
+        
+        .icon {
+          font-size: 1.2rem;
+          margin-right: 0.5rem;
+          display: flex;
+          align-items: center;
+        }
+      }
+      
+      input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        outline: none;
+        transition: all 0.2s ease;
+        
+        &:focus {
+          border-color: rgba(255, 255, 255, 0.5);
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.5);
+        }
+      }
+      
+      &.checkbox-group {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.75rem;
+        
+        input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+        }
+
+        label {
+          color: rgba(255, 255, 255, 0.85);
+        }
+      }
+    }
+    
+    .submit-button {
+      margin-top: 1rem;
+      background: rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      padding: 0.75rem 0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}

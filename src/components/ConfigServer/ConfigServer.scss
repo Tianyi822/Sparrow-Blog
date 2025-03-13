@@ -1,0 +1,113 @@
+@use "@/style/mixins" as *;
+
+// Use more specific selectors to avoid affecting child components
+.config-server-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  // Add display flex and set height to enable vertical centering
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 4rem); // viewport height minus padding
+  
+  // Style only direct children of config-server-header
+  > .config-server-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    
+    > h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: rgba(26, 38, 52, 0.95);
+      margin-bottom: 0.5rem;
+    }
+    
+    > p {
+      font-size: 1rem;
+      color: rgba(44, 62, 80, 0.9);
+    }
+  }
+  
+  // Notification styles are specific to this component
+  > .save-notification {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+    animation: configServerFadeIn 0.3s ease-in-out;
+    
+    &.success {
+      background-color: rgba(46, 204, 113, 0.15);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      color: rgba(39, 174, 96, 0.9);
+    }
+    
+    &.error {
+      background-color: rgba(231, 76, 60, 0.15);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      color: rgba(192, 57, 43, 0.9);
+    }
+  }
+  
+  // Center the form wrapper and make it flex-grow to take up available space
+  > .config-form-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center; // Center horizontally
+    align-items: center; // Center vertically
+    flex: 1; // Take up available space
+    
+    // Optional: add some padding around the form for better spacing
+    padding: 1rem 0;
+  }
+}
+
+// Saving overlay is fixed position, so it won't affect other components
+.saving-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: configServerFadeIn 0.2s ease-in-out;
+  
+  .saving-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(26, 38, 52, 0.1);
+    border-top-color: rgba(26, 38, 52, 0.7);
+    border-radius: 50%;
+    animation: configServerSpin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: rgba(26, 38, 52, 0.9);
+  }
+}
+
+// Renamed animations to avoid conflicts
+@keyframes configServerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes configServerSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,10 +1,10 @@
 import Background from "@/components/Background/Background";
-import Home from "@/components/Home/Home";
+// import Home from "@/components/Home/Home";
 import Navigator from "@/components/Navigator/Navigator";
 import ScrollBar from "@/components/ScrollBar/ScrollBar";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
+import ConfigServer from "./components/ConfigServer/ConfigServer";
 import Tools from "./components/Tools/Tools";
-
 // import FriendLink from "./components/FriendLink/FriendLink";
 
 function App() {
@@ -17,12 +17,13 @@ function App() {
 
     return (
         <div className="app">
-            <Background backgroundImage={bgImage}/>
-            <Navigator className="app-navigator" index={navIndex} setIndex={setNavIndex}/>
-            <Home/>
+            <Background backgroundImage={bgImage} />
+            <Navigator className="app-navigator" index={navIndex} setIndex={setNavIndex} />
+            {/* <Home/> */}
             {/*<FriendLink />*/}
-            <Tools className="app-tools"/>
-            <ScrollBar className="app-scroll-bar"/>
+            <ConfigServer />
+            <Tools className="app-tools" />
+            <ScrollBar className="app-scroll-bar" />
         </div>
     )
 }
