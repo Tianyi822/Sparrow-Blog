@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import './PagePopup.scss';
 
-const PagePopup = ({ pages, onSelect, onClose, position, isClosing, index }) => {
-    const [isVisible, setIsVisible] = useState(false);
-    const [popupStyle, setPopupStyle] = useState({});
+interface PagePopupProps {
+    pages: number[];
+    onSelect: (page: number) => void;
+    onClose: () => void;
+    position: number;
+    isClosing?: boolean;
+    index: number;
+    currentPage: number;
+}
+
+const PagePopup: React.FC<PagePopupProps> = ({ pages, onSelect, onClose, position, isClosing, index, currentPage }) => {
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
 
     useEffect(() => {
         // 获取所有省略号按钮
         const ellipsisButtons = document.querySelectorAll('.pagination .ellipsis');
         // 找到对应索引的省略号按钮
         const currentEllipsis = Array.from(ellipsisButtons).find((button) => {
-            const buttonIndex = Array.from(button.parentNode.children).indexOf(button);
+            const buttonIndex = Array.from(button.parentNode!.children).indexOf(button);
             return buttonIndex === index;
         });
 
@@ -35,7 +44,7 @@ const PagePopup = ({ pages, onSelect, onClose, position, isClosing, index }) => 
         }
     }, [isClosing]);
 
-    const handlePopupClick = (e) => {
+    const handlePopupClick = (e: React.MouseEvent) => {
         e.stopPropagation();
     };
 
@@ -50,8 +59,11 @@ const PagePopup = ({ pages, onSelect, onClose, position, isClosing, index }) => 
                 {pages.map(page => (
                     <span
                         key={page}
-                        className="popup-page-number"
-                        onClick={() => onSelect(page)}
+                        className={`popup-page-number ${page === currentPage ? 'active' : ''}`}
+                        onClick={() => {
+                            onSelect(page);
+                            onClose();
+                        }}
                     >
                         {page}
                     </span>
@@ -61,13 +73,4 @@ const PagePopup = ({ pages, onSelect, onClose, position, isClosing, index }) => 
     );
 };
 
-PagePopup.propTypes = {
-    pages: PropTypes.arrayOf(PropTypes.number).isRequired,
-    onSelect: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-    position: PropTypes.number.isRequired,
-    isClosing: PropTypes.bool,
-    index: PropTypes.number.isRequired
-};
-
-export default PagePopup; 
+export default PagePopup;

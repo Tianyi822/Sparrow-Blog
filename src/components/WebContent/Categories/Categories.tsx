@@ -1,8 +1,17 @@
 import './Categories.scss';
-import PropTypes from 'prop-types';
 import use3DEffect from '@/hooks/use3DEffect';
 
-const CATEGORIES = [
+interface CategoriesProps {
+    className?: string;
+}
+
+interface CategoryItem {
+    id: number;
+    name: string;
+    count: number;
+}
+
+const CATEGORIES: CategoryItem[] = [
     {id: 1, name: "博客版本记录", count: 1},
     {id: 2, name: "大数据", count: 10},
     {id: 3, name: "奇技淫巧", count: 3},
@@ -11,7 +20,7 @@ const CATEGORIES = [
     {id: 6, name: "生活", count: 3}
 ];
 
-const Categories = ({className}) => {
+const Categories: React.FC<CategoriesProps> = ({className}) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
 
     return (
@@ -34,8 +43,4 @@ const Categories = ({className}) => {
     );
 };
 
-Categories.propTypes = {
-    className: PropTypes.string
-};
-
-export default Categories; 
+export default Categories;

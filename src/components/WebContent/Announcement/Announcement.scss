@@ -1,4 +1,4 @@
-@use '@/style/mixins' as *;
+@import '../../../style/mixins';
 
 .announcement {
     width: 100%;
@@ -7,22 +7,36 @@
     padding: 1.2rem;
     box-sizing: border-box;
     @include glass-card;
-    @include glass-glow;
-    transform-style: preserve-3d;
-    transform: perspective(1000px);
-    transition: transform 0.3s ease;
-
-    .announcement-glow,
-    .announcement-border-glow {
+    
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    
+    &-glow {
         position: absolute;
         inset: 0;
-        border-radius: 12px;
-        pointer-events: none;
         z-index: 2;
-        transition: background 0.3s ease;
+        pointer-events: none;
+        mix-blend-mode: soft-light;
+        transition: all 0.2s ease-out;
+        border-radius: 12px;
+        user-select: none;
     }
-
-    .announcement-title {
+    
+    &-border-glow {
+        position: absolute;
+        inset: -2px;
+        z-index: 1;
+        pointer-events: none;
+        border-radius: 14px;
+        transition: all 0.2s ease-out;
+        mix-blend-mode: overlay;
+        opacity: 1;
+        user-select: none;
+    }
+    
+    &-title {
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -32,34 +46,39 @@
         position: relative;
         z-index: 3;
         transition: color 0.3s ease;
-
+        
         .announcement-icon {
             font-size: 1.2rem;
         }
     }
-
-    .announcement-content {
-        position: relative;
-        z-index: 3;
+    
+    &-content {
         font-size: 0.9rem;
         color: rgba(255, 255, 255, 0.8);
-        line-height: 1.6;
+        line-height: 1.5;
+        position: relative;
+        z-index: 3;
         transition: color 0.3s ease;
-
-        p {
-            margin: 0.5rem 0;
-        }
     }
-
+    
+    &-date {
+        font-size: 0.8rem;
+        color: var(--text-tertiary);
+        margin-top: 12px;
+        text-align: right;
+    }
+    
     &:hover {
-        @include glass-card-hover;
-        
         .announcement-title {
-            color: rgba(26, 38, 52, 0.95);
+            color: rgba(26, 38, 52, 0.95); // 深黑色
         }
-
+        
         .announcement-content {
-            color: rgba(44, 62, 80, 0.9);
+            color: rgba(44, 62, 80, 0.9); // 稍浅的黑色
+        }
+        
+        .announcement-date {
+            color: rgba(44, 62, 80, 0.9); // 稍浅的黑色
         }
     }
 } 

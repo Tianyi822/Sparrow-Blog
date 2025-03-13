@@ -1,6 +1,10 @@
 @use '@/style/mixins' as *;
 
 .tools {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
     display: flex;
     flex-direction: column;
     gap: 12px;  // 组件之间的间距
@@ -78,4 +82,4 @@
         visibility: hidden;
         transform: translateY(-20px);
     }
-} 
+}

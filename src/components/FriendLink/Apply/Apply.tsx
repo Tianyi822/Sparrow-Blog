@@ -1,9 +1,21 @@
-import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import './Apply.scss';
 import classNames from 'classnames';
+import { useEffect, useState } from 'react';
+import './Apply.scss';
 
-const Apply = ({ className, onSubmit }) => {
+export interface FormData {
+    name: string;
+    url: string;
+    avatar: string;
+    description: string;
+    category: string;
+}
+
+interface ApplyProps {
+    className?: string;
+    onSubmit: (data: FormData) => void;
+}
+
+const Apply: React.FC<ApplyProps> = ({ className, onSubmit }) => {
     const [formData, setFormData] = useState({
         name: '',
         url: '',
@@ -12,26 +24,26 @@ const Apply = ({ className, onSubmit }) => {
         category: ''
     });
 
-    const [validation, setValidation] = useState({
+    const [validation, setValidation] = useState<Record<FieldName, boolean | null>>(() => ({
         name: null,
         url: null,
         avatar: null,
         description: null,
         category: null
-    });
+    }));
 
-    const [errors, setErrors] = useState({
+    const [errors, setErrors] = useState<Record<FieldName, string>>(() => ({
         name: '',
         url: '',
         avatar: '',
         description: '',
         category: ''
-    });
+    }));
 
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
     // URL验证函数
-    const isValidUrl = (urlString) => {
+    const isValidUrl = (urlString: string): boolean | null => {
         if (!urlString) return null;
         try {
             new URL(urlString);
@@ -68,14 +80,21 @@ const Apply = ({ className, onSubmit }) => {
     }, [formData.url, formData.avatar]);
 
     // 验证文本字段
-    const validateText = (text, fieldName) => {
+    interface ValidationResult {
+        isValid: boolean;
+        error: string;
+    }
+
+    type FieldName = keyof FormData;
+
+    const validateText = (text: string, fieldName: FieldName): ValidationResult => {
         if (!text.trim()) {
             return {
                 isValid: false,
-                error: `${fieldName}不能为空`
+                error: `${fieldName === 'name' ? '博客名称' : '博客描述'}不能为空`
             };
         }
-        if (fieldName === '博客描述' && text.length < 10) {
+        if (fieldName === 'description' && text.length < 10) {
             return {
                 isValid: false,
                 error: '博客描述至少需要10个字符'
@@ -91,116 +110,111 @@ const Apply = ({ className, onSubmit }) => {
     const categoryOptions = ['技术博客', '生活博客'];
 
     // 处理表单输入变化
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        const fieldName = name as FieldName;
+
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [fieldName]: value
         }));
 
         // 实时验证文本字段
-        if (name === 'name' || name === 'description') {
-            const { isValid, error } = validateText(
-                value, 
-                name === 'name' ? '博客名称' : '博客描述'
-            );
+        if (fieldName === 'name' || fieldName === 'description') {
+            const validationResult = validateText(value, fieldName);
             setValidation(prev => ({
                 ...prev,
-                [name]: isValid
+                [fieldName]: validationResult.isValid
             }));
             setErrors(prev => ({
                 ...prev,
-                [name]: error
+                [fieldName]: validationResult.error
             }));
         }
 
         // 验证分类选择
-        if (name === 'category') {
+        if (fieldName === 'category') {
             const isValid = value.trim() !== '';
             setValidation(prev => ({
                 ...prev,
                 category: isValid
             }));
-            // 如果选择了有效值，立即清除错误信息
-            if (isValid) {
-                setErrors(prev => ({
-                    ...prev,
-                    category: ''
-                }));
-            }
+            setErrors(prev => ({
+                ...prev,
+                category: isValid ? '' : '请选择博客分类'
+            }));
         }
     };
 
     // 验证所有字段
-    const validateAllFields = () => {
-        const validations = {
-            name: validateText(formData.name, '博客名称'),
-            description: validateText(formData.description, '博客描述'),
-            url: { isValid: isValidUrl(formData.url), error: '请输入有效的网址' },
-            avatar: { isValid: isValidUrl(formData.avatar), error: '请输入有效的图片链接' },
-            category: { 
-                isValid: formData.category.trim() !== '', 
-                error: '请选择博客分类' 
-            }
+    const validateAllFields = (): boolean => {
+        const validations: Record<FieldName, ValidationResult> = {
+            name: validateText(formData.name, 'name'),
+            description: validateText(formData.description, 'description'),
+            url: { isValid: !!isValidUrl(formData.url), error: '请输入有效的网址' },
+            avatar: { isValid: !!isValidUrl(formData.avatar), error: '请输入有效的图片链接' },
+            category: { isValid: formData.category.trim() !== '', error: '请选择博客分类' }
         };
 
         // 更新所有验证状态
-        setValidation({
-            name: validations.name.isValid,
-            url: validations.url.isValid,
-            avatar: validations.avatar.isValid,
-            description: validations.description.isValid,
-            category: validations.category.isValid
-        });
+        setValidation(prev => ({
+            ...prev,
+            ...Object.fromEntries(
+                Object.entries(validations).map(([key, value]) => [key, value.isValid])
+            )
+        }));
 
         // 更新所有错误信息
-        setErrors({
-            name: validations.name.error,
-            url: validations.url.error,
-            avatar: validations.avatar.error,
-            description: validations.description.error,
-            category: validations.category.error
-        });
+        setErrors(prev => ({
+            ...prev,
+            ...Object.fromEntries(
+                Object.entries(validations).map(([key, value]) => [key, value.error])
+            )
+        }));
 
-        // 返回是否全部验证通过
         return Object.values(validations).every(v => v.isValid);
     };
 
+    const resetForm = () => {
+        setFormData({
+            name: '',
+            url: '',
+            avatar: '',
+            description: '',
+            category: ''
+        });
+        setValidation({
+            name: null,
+            url: null,
+            avatar: null,
+            description: null,
+            category: null
+        });
+        setErrors({
+            name: '',
+            url: '',
+            avatar: '',
+            description: '',
+            category: ''
+        });
+        setIsExpanded(false);
+    };
+
     // 处理表单提交
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
         if (validateAllFields()) {
             onSubmit(formData);
-            // 清空表单
-            setFormData({
-                name: '',
-                url: '',
-                avatar: '',
-                description: '',
-                category: ''
-            });
-            setValidation({
-                name: null,
-                url: null,
-                avatar: null,
-                description: null,
-                category: null
-            });
-            setErrors({
-                name: '',
-                url: '',
-                avatar: '',
-                description: '',
-                category: ''
-            });
-            // 提交成功后折叠表单
-            setIsExpanded(false);
+            resetForm();
         }
     };
 
     const toggleExpand = () => {
-        setIsExpanded(!isExpanded);
+        if (!isExpanded) {
+            setIsExpanded(true);
+        } else {
+            resetForm();
+        }
     };
 
     return (
@@ -208,7 +222,7 @@ const Apply = ({ className, onSubmit }) => {
             'expanded': isExpanded
         })}>
             {/* 桌面端的侧边按钮 */}
-            <button 
+            <button
                 className="apply-toggle"
                 onClick={toggleExpand}
             >
@@ -217,8 +231,7 @@ const Apply = ({ className, onSubmit }) => {
             <div className="apply-form-container">
                 <div className="apply-header">
                     <h2 className="apply-title">申请友链</h2>
-                    {/* 移动端的关闭按钮 */}
-                    <button 
+                    <button
                         className="apply-close"
                         onClick={toggleExpand}
                         aria-label="关闭"
@@ -323,9 +336,4 @@ const Apply = ({ className, onSubmit }) => {
     );
 };
 
-Apply.propTypes = {
-    className: PropTypes.string,
-    onSubmit: PropTypes.func.isRequired
-};
-
-export default Apply; 
+export default Apply;

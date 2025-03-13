@@ -1,8 +1,18 @@
 import './LatestArticles.scss';
-import PropTypes from 'prop-types';
 import use3DEffect from '@/hooks/use3DEffect';
 
-const LATEST_ARTICLES = [
+interface LatestArticlesProps {
+    className?: string;
+}
+
+interface ArticleItem {
+    id: number;
+    title: string;
+    date: string;
+    image: string;
+}
+
+const LATEST_ARTICLES: ArticleItem[] = [
     {
         id: 1,
         title: "Vite+React 没有 ReactComponent 解决方案",
@@ -18,7 +28,7 @@ const LATEST_ARTICLES = [
     // ... 其他文章
 ];
 
-const LatestArticles = ({className}) => {
+const LatestArticles: React.FC<LatestArticlesProps> = ({className}) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
 
     return (
@@ -44,8 +54,4 @@ const LatestArticles = ({className}) => {
     );
 };
 
-LatestArticles.propTypes = {
-    className: PropTypes.string
-};
-
-export default LatestArticles; 
+export default LatestArticles;

@@ -1,8 +1,11 @@
 import './Tags.scss';
-import PropTypes from 'prop-types';
 import use3DEffect from '@/hooks/use3DEffect';
 
-const TAGS = [
+interface TagsProps {
+    className?: string;
+}
+
+const TAGS: string[] = [
     "Bilibili World", "C", "CPP", "ClickHouse",
     "ElasticSearch", "Flink", "HDFS", "Hexo", "JVM",
     "Java源码", "Linux", "Maven", "MySQL", "Python",
@@ -11,7 +14,7 @@ const TAGS = [
     "骚年商城开发系列"
 ];
 
-const Tags = ({className}) => {
+const Tags: React.FC<TagsProps> = ({className}) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
 
     return (
@@ -33,8 +36,4 @@ const Tags = ({className}) => {
     );
 };
 
-Tags.propTypes = {
-    className: PropTypes.string
-};
-
-export default Tags; 
+export default Tags;

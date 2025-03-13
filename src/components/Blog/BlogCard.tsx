@@ -1,8 +1,18 @@
 import './BlogCard.scss';
-import PropTypes from 'prop-types';
 import use3DEffect from '@/hooks/use3DEffect';
 
-const BlogCard = ({ title, date, updateDate, category, tags, image, description, className }) => {
+interface BlogCardProps {
+    title: string;
+    date: string;
+    updateDate: string;
+    category: string;
+    tags?: string[];
+    image: string;
+    description: string;
+    className?: string;
+}
+
+const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, tags, image, description, className }) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
 
     return (
@@ -41,17 +51,6 @@ const BlogCard = ({ title, date, updateDate, category, tags, image, description,
             </div>
         </article>
     );
-};
-
-BlogCard.propTypes = {
-    title: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
-    updateDate: PropTypes.string.isRequired,
-    category: PropTypes.string.isRequired,
-    tags: PropTypes.arrayOf(PropTypes.string),
-    image: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    className: PropTypes.string
 };
 
 export default BlogCard;

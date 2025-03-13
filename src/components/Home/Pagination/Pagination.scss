@@ -42,14 +42,10 @@
     .pagination-arrow {
         @extend %button-base;
 
-        svg {
-            &.left {
-                transform: rotate(90deg);
-            }
-
-            &.right {
-                transform: rotate(-90deg);
-            }
+        &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
         }
     }
 
@@ -100,17 +96,11 @@
     }
 
     @media (max-width: 768px) {
-        gap: 0.5rem; // 保持与桌面端相同的间距
+        gap: 0.5rem;
         
         .pagination-numbers {
-            gap: 0.5rem; // 保持一致的间距
-        }
-
-        // 在窄屏模式下隐藏多余的页码
-        .pagination-number {
-            &:nth-child(n+6) {
-                display: none;
-            }
+            gap: 0.5rem;
+            // Don't hide any rendered page numbers now that we control exactly which ones to show
         }
     }
 } 

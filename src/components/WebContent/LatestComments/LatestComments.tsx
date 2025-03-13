@@ -1,8 +1,18 @@
 import './LatestComments.scss';
-import PropTypes from 'prop-types';
 import use3DEffect from '@/hooks/use3DEffect';
 
-const LATEST_COMMENTS = [
+interface LatestCommentsProps {
+    className?: string;
+}
+
+interface CommentItem {
+    id: number;
+    content: string;
+    date: string;
+    article: string;
+}
+
+const LATEST_COMMENTS: CommentItem[] = [
     {
         id: 1,
         content: "无法获取评论，请确认相关配置是否正确",
@@ -11,7 +21,7 @@ const LATEST_COMMENTS = [
     }
 ];
 
-const LatestComments = ({ className }) => {
+const LatestComments: React.FC<LatestCommentsProps> = ({ className }) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
 
     return (
@@ -37,8 +47,4 @@ const LatestComments = ({ className }) => {
     );
 };
 
-LatestComments.propTypes = {
-    className: PropTypes.string
-};
-
-export default LatestComments; 
+export default LatestComments;

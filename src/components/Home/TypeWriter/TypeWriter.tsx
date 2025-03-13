@@ -1,25 +1,30 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './TypeWriter.scss';
 
-const TypeWriter = (props) => {
-    const {
-        texts = [],
-        typeSpeed = 150,
-        eraseSpeed = 100,
-        delayBetween = 2000,
-        className = ''
-    } = props;
+interface TypeWriterProps {
+    texts?: string[];
+    typeSpeed?: number;
+    eraseSpeed?: number;
+    delayBetween?: number;
+    className?: string;
+}
 
-    const [displayText, setDisplayText] = useState('');
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isTyping, setIsTyping] = useState(true);
+const TypeWriter: React.FC<TypeWriterProps> = ({
+    texts = [],
+    typeSpeed = 150,
+    eraseSpeed = 100,
+    delayBetween = 2000,
+    className = ''
+}) => {
+    const [displayText, setDisplayText] = useState<string>('');
+    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [isTyping, setIsTyping] = useState<boolean>(true);
 
     useEffect(() => {
         if (!texts.length) return;
 
-        let timeout;
+        let timeout: NodeJS.Timeout;
         
         if (isTyping) {
             if (displayText.length < texts[currentIndex].length) {
@@ -60,12 +65,4 @@ const TypeWriter = (props) => {
     );
 };
 
-TypeWriter.propTypes = {
-    texts: PropTypes.arrayOf(PropTypes.string),
-    typeSpeed: PropTypes.number,
-    eraseSpeed: PropTypes.number,
-    delayBetween: PropTypes.number,
-    className: PropTypes.string
-};
-
-export default TypeWriter; 
+export default TypeWriter;

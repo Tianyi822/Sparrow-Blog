@@ -3,14 +3,17 @@ import Announcement from '@/components/WebContent/Announcement/Announcement';
 import LatestArticles from '@/components/WebContent/LatestArticles/LatestArticles';
 import LatestComments from '@/components/WebContent/LatestComments/LatestComments';
 import Categories from '@/components/WebContent/Categories/Categories';
-import Tags from '@/components/WebContent/Tags/Tags';
 import './WebContent.scss';
-import PropTypes from "prop-types";
+import Tags from './Tags/Tags';
 
-const WebContent = ({className}) => {
+interface WebContentProps {
+    className?: string;
+}
+
+const WebContent: React.FC<WebContentProps> = ({className}) => {
     return (
         <div className={`web-content ${className || ''}`}>
-            <AuthorInfo className="web-content-author-info"/>
+            <AuthorInfo />
             <Announcement />
             <LatestArticles className="web-content-latest-articles"/>
             <LatestComments className="web-content-latest-comments"/>
@@ -20,8 +23,4 @@ const WebContent = ({className}) => {
     );
 };
 
-WebContent.propTypes = {
-    className: PropTypes.string.isRequired,
-};
-
-export default WebContent; 
+export default WebContent;

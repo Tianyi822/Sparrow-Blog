@@ -1,29 +1,40 @@
 import { useEffect, useRef, useState } from 'react';
 import './Clock.scss';
-import PropTypes from 'prop-types';
 
-const Clock = ({className, profileImage, backgroundImage}) => {
-    const clockRef = useRef(null);
-    const [time, setTime] = useState(getTimeObject());
+interface ClockProps {
+    className?: string;
+    profileImage?: string;
+    backgroundImage?: string;
+}
+
+interface TimeObject {
+    h: number;
+    m: number;
+    s: number;
+}
+
+const Clock: React.FC<ClockProps> = ({className, profileImage, backgroundImage}) => {
+    const clockRef = useRef<HTMLDivElement | null>(null);
+    const [time, setTime] = useState<TimeObject>(getTimeObject());
 
     // 获取时间对象
-    function getTimeObject() {
+    function getTimeObject(): TimeObject {
         const date = new Date();
-        let h = date.getHours();
+        const h = date.getHours();
         const m = date.getMinutes();
         const s = date.getSeconds();
         return {h, m, s};
     }
 
     // 获取格式化的时间数组
-    function getTimeDigitsGrouped() {
+    function getTimeDigitsGrouped(): [number | string, string, string, string] {
         let {h, m, s} = time;
         const ap = h > 11 ? "P" : "A";
         if (h === 0) h += 12;
         else if (h > 12) h -= 12;
-        if (m < 10) m = `0${m}`;
-        if (s < 10) s = `0${s}`;
-        return [h, m, s, ap];
+        const mStr = m < 10 ? `0${m}` : m.toString();
+        const sStr = s < 10 ? `0${s}` : s.toString();
+        return [h, mStr, sStr, ap];
     }
 
     // 更新时钟样式和时间
@@ -80,10 +91,4 @@ const Clock = ({className, profileImage, backgroundImage}) => {
     );
 };
 
-Clock.propTypes = {
-    className: PropTypes.string,
-    profileImage: PropTypes.string,
-    backgroundImage: PropTypes.string
-};
-
-export default Clock; 
+export default Clock;

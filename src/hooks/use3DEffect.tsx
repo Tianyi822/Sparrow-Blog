@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
 
 const use3DEffect = () => {
-    const cardRef = useRef(null);
-    const glowRef = useRef(null);
-    const borderGlowRef = useRef(null);
-    const frameRef = useRef(null);
-    const lastMouseEvent = useRef(null);
-    const lastUpdate = useRef(0);
+    const cardRef = useRef<HTMLDivElement | null>(null);
+    const glowRef = useRef<HTMLDivElement | null>(null);
+    const borderGlowRef = useRef<HTMLDivElement | null>(null);
+    const frameRef = useRef<number | null>(null);
+    const lastMouseEvent = useRef<MouseEvent | null>(null);
+    const lastUpdate = useRef<number>(0);
 
     useEffect(() => {
         const card = cardRef.current;
@@ -71,7 +71,7 @@ const use3DEffect = () => {
             frameRef.current = requestAnimationFrame(updateCardTransform);
         };
 
-        const handleMouseMove = (e) => {
+        const handleMouseMove = (e: MouseEvent) => {
             lastMouseEvent.current = e;
             if (!frameRef.current) {
                 frameRef.current = requestAnimationFrame(updateCardTransform);
@@ -113,4 +113,4 @@ const use3DEffect = () => {
     return { cardRef, glowRef, borderGlowRef };
 };
 
-export default use3DEffect; 
+export default use3DEffect;

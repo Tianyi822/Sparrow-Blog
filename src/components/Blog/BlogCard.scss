@@ -1,4 +1,4 @@
-@use '@/style/mixins' as *;
+@import '../../style/mixins';
 
 // 定义变量
 $mobile-breakpoint: 768px;
@@ -6,18 +6,42 @@ $card-padding: 1.2rem;
 $mobile-padding: 1rem;
 
 .blog-card {
-  width: 100%;
-  position: relative;
-  border-radius: 12px;
-  box-sizing: border-box;
-  @include glass-card;
-  @include glass-glow;
+  @include card-style;
+  
+  // 将所有声明放在嵌套规则之前
   transform-style: preserve-3d;
   transform: perspective(1000px);
   transition: transform 0.3s ease;
   display: flex;
-  min-height: 200px;
-  overflow: hidden;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  cursor: pointer;
+  
+  // 嵌套规则放在后面
+  &:hover {
+    transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+  }
+  
+  .blog-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .blog-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+  
+  .blog-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+  }
 
   .blog-card-glow,
   .blog-card-border-glow {
@@ -63,6 +87,7 @@ $mobile-padding: 1rem;
     background-size: cover;
     background-position: center;
     overflow: hidden;
+    border-radius: 12px;
   }
 
   // 内容区域基础样式
@@ -160,6 +185,10 @@ $mobile-padding: 1rem;
 
     &.odd {
       flex-direction: row-reverse;
+      
+      .blog-card-img {
+        border-radius: 12px;
+      }
     }
   }
 
@@ -174,6 +203,7 @@ $mobile-padding: 1rem;
 
     .blog-card-img {
       height: 180px;
+      border-radius: 12px;
     }
   }
 

@@ -1,7 +1,10 @@
 import './Background.scss';
-import PropTypes from 'prop-types';
 
-const Background = ({backgroundImage}) => {
+interface BackgroundProps {
+    backgroundImage: string;
+}
+
+const Background = ({ backgroundImage }: BackgroundProps) => {
     return (
         <div className="background-container">
             <div
@@ -11,10 +14,6 @@ const Background = ({backgroundImage}) => {
             <div className="bg-overlay" />
         </div>
     );
-};
-
-Background.propTypes = {
-    backgroundImage: PropTypes.string.isRequired
 };
 
 export default Background;

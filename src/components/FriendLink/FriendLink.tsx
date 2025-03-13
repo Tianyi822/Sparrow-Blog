@@ -1,11 +1,23 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-import './FriendLink.scss';
 import classNames from 'classnames';
-import Apply from './Apply/Apply';
+import { useState } from 'react';
+import Apply, { FormData } from './Apply/Apply';
+import './FriendLink.scss';
 
-const FriendLink = ({className}) => {
-    const [links] = useState([
+interface FriendLinkProps {
+    className?: string;
+}
+
+interface LinkItem {
+    id: number;
+    avatar: string;
+    name: string;
+    description: string;
+    url: string;
+    category: string;
+}
+
+const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
+    const [links] = useState<LinkItem[]>([
         {
             id: 1,
             avatar: 'https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192355.webp',
@@ -24,8 +36,8 @@ const FriendLink = ({className}) => {
         }
     ]);
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('全部');
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<string>('全部');
 
     // 获取所有分类
     const categories = ['全部', ...new Set(links.map(link => link.category))];
@@ -39,7 +51,7 @@ const FriendLink = ({className}) => {
     });
 
     // 处理友链申请提交
-    const handleApplySubmit = (formData) => {
+    const handleApplySubmit = (formData: FormData) => {
         // 这里添加表单提交逻辑，例如发送到后端API
         console.log('提交的友链申请数据:', formData);
     };
@@ -77,7 +89,7 @@ const FriendLink = ({className}) => {
                         rel="noopener noreferrer"
                         className="friend-link-card"
                     >
-                        <img src={link.avatar} alt={link.name} className="friend-avatar"/>
+                        <img src={link.avatar} alt={link.name} className="friend-avatar" />
                         <div className="friend-info">
                             <h3 className="friend-name">{link.name}</h3>
                             <p className="friend-description">{link.description}</p>
@@ -93,10 +105,6 @@ const FriendLink = ({className}) => {
             />
         </div>
     );
-};
-
-FriendLink.propTypes = {
-    className: PropTypes.string
 };
 
 export default FriendLink;

@@ -1,20 +1,29 @@
 import { useState, useEffect, useRef } from 'react';
 import './ScrollBar.scss';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
-const ScrollBar = ({ className }) => {
-    const [isDragging, setIsDragging] = useState(false);
-    const [isScrolling, setIsScrolling] = useState(false);
-    const [bounceDirection, setBounceDirection] = useState(null);
-    const thumbRef = useRef(null);
-    const containerRef = useRef(null);
-    const dragStartRef = useRef(null);
-    const isManualScrollRef = useRef(false);  // 添加手动滚动标记
-    let scrollTimeout;
+interface ScrollBarProps {
+    className?: string;
+    hideDelay?: number; // Add prop for customizing hide delay
+}
+
+interface DragStart {
+    mouseY: number;
+    scrollTop: number;
+}
+
+const ScrollBar: React.FC<ScrollBarProps> = ({ className, hideDelay = 1000 }) => {
+    const [isDragging, setIsDragging] = useState<boolean>(false);
+    const [isScrolling, setIsScrolling] = useState<boolean>(false);
+    const [bounceDirection, setBounceDirection] = useState<'top' | 'bottom' | null>(null);
+    const thumbRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const dragStartRef = useRef<DragStart | null>(null);
+    const isManualScrollRef = useRef<boolean>(false);
+    const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
     // 更新滚动条位置和大小
-    const updateScrollThumb = () => {
+    const updateScrollThumb = (): void => {
         if (!thumbRef.current || !containerRef.current) return;
 
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
@@ -29,7 +38,7 @@ const ScrollBar = ({ className }) => {
             if (scrollTop <= 0) {
                 setBounceDirection('top');
                 setTimeout(() => setBounceDirection(null), 300);
-            } else if (scrollTop >= scrollHeight - clientHeight) {
+            } else if (scrollTop >= scrollHeight - clientHeight - 1) { // Add a small tolerance
                 setBounceDirection('bottom');
                 setTimeout(() => setBounceDirection(null), 300);
             }
@@ -37,42 +46,53 @@ const ScrollBar = ({ className }) => {
     };
 
     useEffect(() => {
-        const handleScroll = () => {
+        const handleScroll = (): void => {
             if (!isDragging) {
                 updateScrollThumb();
                 setIsScrolling(true);
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
+                
+                // Clear previous timeout
+                if (scrollTimeoutRef.current) {
+                    clearTimeout(scrollTimeoutRef.current);
+                }
+                
+                // Set new timeout to hide the scrollbar
+                scrollTimeoutRef.current = setTimeout(() => {
                     setIsScrolling(false);
-                    isManualScrollRef.current = false;  // 重置手动滚动标记
-                }, 1000);
+                    isManualScrollRef.current = false;
+                }, hideDelay);
             }
         };
 
         window.addEventListener('scroll', handleScroll);
         window.addEventListener('resize', updateScrollThumb);
+        
+        // Initial update
         updateScrollThumb();
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('resize', updateScrollThumb);
-            clearTimeout(scrollTimeout);
+            
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current);
+            }
         };
-    }, [isDragging]);
+    }, [isDragging, hideDelay]);
 
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
         e.preventDefault();
         if (!thumbRef.current || !containerRef.current) return;
 
         setIsDragging(true);
-        isManualScrollRef.current = true;  // 设置手动滚动标记
+        isManualScrollRef.current = true;
         setBounceDirection(null);
         dragStartRef.current = {
             mouseY: e.clientY,
             scrollTop: document.documentElement.scrollTop
         };
 
-        const handleMouseMove = (e) => {
+        const handleMouseMove = (e: MouseEvent): void => {
             if (!dragStartRef.current) return;
 
             const { scrollHeight, clientHeight } = document.documentElement;
@@ -85,21 +105,25 @@ const ScrollBar = ({ className }) => {
 
             window.scrollTo(0, newScrollTop);
             
-            const thumbHeight = thumbRef.current.clientHeight;
-            const maxTop = clientHeight - thumbHeight;
-            const scrollPercent = newScrollTop / (scrollHeight - clientHeight);
-            thumbRef.current.style.top = `${maxTop * scrollPercent}px`;
+            if (thumbRef.current) {
+                const thumbHeight = thumbRef.current.clientHeight;
+                const maxTop = clientHeight - thumbHeight;
+                const scrollPercent = newScrollTop / (scrollHeight - clientHeight);
+                thumbRef.current.style.top = `${maxTop * scrollPercent}px`;
+            }
         };
 
-        const handleMouseUp = () => {
+        const handleMouseUp = (): void => {
             setIsDragging(false);
             dragStartRef.current = null;
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
+            
             // 延迟重置手动滚动标记，以防止松开鼠标时触发弹性
             setTimeout(() => {
                 isManualScrollRef.current = false;
             }, 100);
+            
             updateScrollThumb();
         };
 
@@ -125,8 +149,4 @@ const ScrollBar = ({ className }) => {
     );
 };
 
-ScrollBar.propTypes = {
-    className: PropTypes.string,
-};
-
-export default ScrollBar; 
+export default ScrollBar;

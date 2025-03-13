@@ -54,4 +54,66 @@
     mix-blend-mode: overlay;
     opacity: 1;
   }
+}
+
+// 确保card-style mixin被正确定义
+@mixin card-style {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  
+  // 添加卡片光晕效果
+  &-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+    transition: all 0.2s ease-out;
+    user-select: none;
+  }
+  
+  &-border-glow {
+    position: absolute;
+    inset: -2px;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 14px;
+    transition: all 0.2s ease-out;
+    mix-blend-mode: overlay;
+    opacity: 1;
+    user-select: none;
+  }
+}
+
+// 卡片悬停效果
+@mixin glass-card-hover {
+  transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+  box-shadow: 
+    0 10px 20px rgba(0, 0, 0, 0.1),
+    0 6px 6px rgba(0, 0, 0, 0.1);
+  
+  .card-glow {
+    background: radial-gradient(
+      circle at var(--mouse-x) var(--mouse-y),
+      rgba(255, 255, 255, 0.8),
+      transparent 80%
+    );
+  }
+  
+  .card-border-glow {
+    background: radial-gradient(
+      circle at var(--mouse-x) var(--mouse-y),
+      rgba(255, 255, 255, 0.8),
+      transparent 40%
+    );
+    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.1);
+  }
 } 

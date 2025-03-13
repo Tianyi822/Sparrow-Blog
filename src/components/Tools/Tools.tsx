@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import './Tools.scss';
-import BackToTop from '@/components/Tools/BackToTop/BackToTop.jsx';
-import WebsiteRecord from '@/components/Tools/WebsiteRecord/WebsiteRecord.jsx';
+import BackToTop from '@/components/Tools/BackToTop/BackToTop';
+import WebsiteRecord from '@/components/Tools/WebsiteRecord/WebsiteRecord';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
-const Tools = ({ className }) => {
-    const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
+interface ToolsProps {
+    className?: string;
+}
+
+const Tools: React.FC<ToolsProps> = ({ className }) => {
+    const [isBackToTopVisible, setIsBackToTopVisible] = useState<boolean>(false);
+    const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -59,8 +62,4 @@ const Tools = ({ className }) => {
     );
 };
 
-Tools.propTypes = {
-    className: PropTypes.string,
-};
-
-export default Tools; 
+export default Tools;

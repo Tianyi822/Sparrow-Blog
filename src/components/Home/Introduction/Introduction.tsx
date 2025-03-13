@@ -1,17 +1,18 @@
 import './Introduction.scss';
 import classNames from "classnames";
-import PropTypes from "prop-types";
 import { useState } from "react";
-import TypeWriter from '@/components/Home/TypeWriter/TypeWriter.jsx';
+import TypeWriter from '../TypeWriter/TypeWriter';
 
-const Introduction = (props) => {
-    const {className} = props;
+interface IntroductionProps {
+    className?: string;
+}
 
+const Introduction: React.FC<IntroductionProps> = ({ className }) => {
     const introductionClassName = classNames("introduction", className);
 
-    const [name] = useState("TianYi");
+    const [name] = useState<string>("TianYi");
 
-    const [typewriterTexts] = useState([
+    const [typewriterTexts] = useState<string[]>([
         "昨日种种，皆成今我，切勿思量，更莫哀，从今往后，怎么收获怎么载",
         "但行好事，莫问前程",
         "喜欢探索新技术",
@@ -25,7 +26,7 @@ const Introduction = (props) => {
                 <span className="hello">(＾Ｕ＾)ノ~ 你好，我是</span>
                 <span className="name">{name}</span>
             </div>
-            <div className="identity">一名二次元 + 程序员。</div>
+            <div className="identity">一名二次元 + 程序员</div>
             <div className="tech-stack">
                 喜欢
                 <span className="tech">React</span>、
@@ -42,11 +43,6 @@ const Introduction = (props) => {
             />
         </div>
     );
-};
-
-
-Introduction.propTypes = {
-    className: PropTypes.string
 };
 
 export default Introduction;

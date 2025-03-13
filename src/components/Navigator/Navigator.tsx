@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import "./Navigator.scss"
 import SvgIcon, {
@@ -7,10 +6,16 @@ import SvgIcon, {
     Home,
     FriendLink,
     About
-} from "@/components/SvgIcon/SvgIcon.jsx";
+} from "@/components/SvgIcon/SvgIcon";
 import classNames from "classnames";
 
-const Navigator = (props) => {
+interface NavigatorProps {
+    index: number;
+    setIndex?: (index: number) => void;
+    className?: string;
+}
+
+const Navigator: React.FC<NavigatorProps> = (props) => {
     const {index, setIndex, className} = props
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrollDirection, setScrollDirection] = useState('none');
@@ -42,11 +47,12 @@ const Navigator = (props) => {
 
     // 添加点击外部关闭菜单的处理函数
     useEffect(() => {
-        const handleClickOutside = (event) => {
+        const handleClickOutside = (event: MouseEvent) => {
             // 如果菜单是打开的，且点击的不是菜单按钮和菜单内容
             if (isMenuOpen && 
-                !event.target.closest('.nav-menu-button') && 
-                !event.target.closest('.nav-list')) {
+                event.target && 
+                !(event.target as Element).closest('.nav-menu-button') && 
+                !(event.target as Element).closest('.nav-list')) {
                 setIsMenuOpen(false);
             }
         };
@@ -74,7 +80,15 @@ const Navigator = (props) => {
         {name: '关于', path: '/about', label: '关于', icon: About},
     ];
 
-    const handleClick = useCallback((idx, item) => {
+    interface NavItem {
+    name: string;
+    path: string;
+    label: string;
+    icon: string;
+    onClick?: () => void;
+}
+
+const handleClick = useCallback((idx: number, item: NavItem) => {
         if (setIndex && idx !== 0) {
             setIndex(idx);
         }
@@ -132,12 +146,6 @@ const Navigator = (props) => {
             </div>
         </nav>
     )
-}
-
-Navigator.propTypes = {
-    index: PropTypes.number.isRequired,
-    setIndex: PropTypes.func,
-    className: PropTypes.string
 }
 
 export default Navigator;

@@ -1,13 +1,23 @@
-import { useCallback, useState } from "react";
-import Introduction from "@/components/Home/Introduction/Introduction.jsx";
-import BlogCard from "@/components/Blog/BlogCard.jsx";
-import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
-import Pagination from '@/components/Home/Pagination/Pagination';
-import WebContent from '@/components/WebContent/WebContent';
+import BlogCard from '@/components/Blog/BlogCard';
 import Clock from '@/components/Home/Clock/Clock';
+import Introduction from "@/components/Home/Introduction/Introduction";
+import Pagination from '@/components/Home/Pagination/Pagination';
+import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
+import WebContent from '@/components/WebContent/WebContent';
+import { useCallback, useState } from "react";
 import "./Home.scss";
 
-const INITIAL_BLOG_DATA = [
+interface BlogData {
+    title: string;
+    date: string;
+    updateDate: string;
+    category: string;
+    tags: string[];
+    image: string;
+    description: string;
+}
+
+const INITIAL_BLOG_DATA: BlogData[] = [
     {
         title: "MacBook M1平台使用 C++ 连接 MySQL",
         date: "2021-12-27",
@@ -46,7 +56,7 @@ const INITIAL_BLOG_DATA = [
     }
 ];
 
-const Home = () => {
+const Home: React.FC = () => {
     const [blogData] = useState(INITIAL_BLOG_DATA);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages] = useState(20);
@@ -55,7 +65,7 @@ const Home = () => {
     const handleScrollDown = useCallback(() => {
         const mainSection = document.querySelector('.main-content');
         if (mainSection) {
-            const offsetTop = mainSection.offsetTop;
+            const offsetTop = (mainSection as HTMLElement).offsetTop;
             window.scrollTo({
                 top: offsetTop,
                 behavior: 'smooth'
@@ -63,7 +73,7 @@ const Home = () => {
         }
     }, []);
 
-    const handlePageChange = useCallback((page) => {
+    const handlePageChange = useCallback((page: number) => {
         console.log(`Page changed to: ${page}`);
         setCurrentPage(page);
     }, []);
@@ -72,7 +82,7 @@ const Home = () => {
         <div className="home">
             <section className="landing-page">
                 <div className="landing-content">
-                    <Introduction className="home-introduction"/>
+                    <Introduction className="home-introduction" />
                     <Clock
                         className="home-clock"
                         profileImage="https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
@@ -98,16 +108,16 @@ const Home = () => {
                         ))}
                     </div>
                     <Pagination
-                        current={currentPage}
-                        total={totalPages}
+                        currentPage={currentPage}
+                        totalPages={totalPages}
                         className="blog-pagination"
                         onPageChange={handlePageChange}
                     />
                 </div>
-                <WebContent className="home-web-content"/>
+                <WebContent className="home-web-content" />
             </section>
         </div>
     );
 };
 
-export default Home; 
+export default Home;

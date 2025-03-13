@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import './WebsiteRecord.scss';
-import SvgIcon, { WebsiteRecord as WebsiteRecordIcon, Small } from '@/components/SvgIcon/SvgIcon.jsx';
+import SvgIcon, { WebsiteRecord as WebsiteRecordIcon, Small } from '@/components/SvgIcon/SvgIcon';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
-const WebsiteRecord = (props) => {
-    const { className } = props;
-    const [isExpanded, setIsExpanded] = useState(false);
+interface WebsiteRecordProps {
+    className?: string;
+}
+
+const WebsiteRecord: React.FC<WebsiteRecordProps> = ({ className }) => {
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
     const websiteRecordStyle = classNames('website-record', className, {
         expanded: isExpanded
@@ -29,8 +31,4 @@ const WebsiteRecord = (props) => {
     );
 };
 
-WebsiteRecord.propTypes = {
-    className: PropTypes.string,
-};
-
-export default WebsiteRecord; 
+export default WebsiteRecord;

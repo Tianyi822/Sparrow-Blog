@@ -1,9 +1,8 @@
 import './SvgIcon.scss'
-import PropTypes from 'prop-types';
 import classNames from "classnames";
 import SearchSvg from '@/assets/svgs/search.svg?react'
 import HomeSvg from '@/assets/svgs/home.svg?react'
-import TimeLineSvg from '@/assets/svgs/timeLine.svg?react'
+import TimeLineSvg  from '@/assets/svgs/timeLine.svg?react'
 import FriendLinkSvg from '@/assets/svgs/friendLink.svg?react'
 import AboutSvg from '@/assets/svgs/about.svg?react'
 import TagSvg from '@/assets/svgs/tag.svg?react'
@@ -13,23 +12,37 @@ import PreviewSvg from '@/assets/svgs/preview.svg?react'
 import WebsiteRecordSvg from '@/assets/svgs/websiteRecord.svg?react'
 
 // 图标尺寸
-export const Normal = "normal"
-export const Small = "small"
-export const Large = "large"
+export const Normal = "normal" as const;
+export const Small = "small" as const;
+export const Large = "large" as const;
+
+export type IconSize = typeof Normal | typeof Small | typeof Large;
 
 // 图标名称
-export const Search = "search"
-export const Home = "home"
-export const TimeLine = "timeLine"
-export const FriendLink = "friendLink"
-export const About = "about"
-export const Tag = "tag"
-export const Category = "category"
-export const DownArrow = "downArrow"
-export const Preview = "preview"
-export const WebsiteRecord = "websiteRecord"
+export const Search = "search" as const;
+export const Home = "home" as const;
+export const TimeLine = "timeLine" as const;
+export const FriendLink = "friendLink" as const;
+export const About = "about" as const;
+export const Tag = "tag" as const;
+export const Category = "category" as const;
+export const DownArrow = "downArrow" as const;
+export const Preview = "preview" as const;
+export const WebsiteRecord = "websiteRecord" as const;
 
-const SvgIcon = ({name, size, className, onClick, color = 'currentColor'}) => {
+export type IconName = typeof Search | typeof Home | typeof TimeLine | typeof FriendLink | 
+                      typeof About | typeof Tag | typeof Category | typeof DownArrow | 
+                      typeof Preview | typeof WebsiteRecord;
+
+interface SvgIconProps {
+    name: IconName;
+    size?: IconSize;
+    className?: string;
+    onClick?: () => void;
+    color?: string;
+}
+
+const SvgIcon: React.FC<SvgIconProps> = ({name, size, className, onClick, color = 'currentColor'}) => {
     const clsName = classNames('svg-icon', className, {
         [`svg-icon-${size}`]: size
     })
@@ -64,7 +77,7 @@ const SvgIcon = ({name, size, className, onClick, color = 'currentColor'}) => {
             icon = <PreviewSvg className={clsName} fill={color}/>
             break;
         case WebsiteRecord:
-            icon = <WebsiteRecordSvg className={clsName}/>
+            icon = <WebsiteRecordSvg className={clsName} fill={color}/>
             break;
         default:
             console.error("WARNING: 图标名称错误")
@@ -81,13 +94,5 @@ const SvgIcon = ({name, size, className, onClick, color = 'currentColor'}) => {
         </div>
     )
 }
-
-SvgIcon.propTypes = {
-    name: PropTypes.string.isRequired,
-    size: PropTypes.string,
-    className: PropTypes.string,
-    onClick: PropTypes.func,
-    color: PropTypes.string
-};
 
 export default SvgIcon;
