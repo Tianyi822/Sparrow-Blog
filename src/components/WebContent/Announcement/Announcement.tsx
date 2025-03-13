@@ -34,7 +34,7 @@ const Announcement: React.FC<AnnouncementProps> = ({className}) => {
         };
 
         // 暂时注释掉API调用，使用默认配置
-        // fetchAnnouncement();
+        fetchAnnouncement().then(r => console.log(r));
     }, []);
 
     return (

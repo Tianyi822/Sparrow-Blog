@@ -35,24 +35,26 @@
 }
 
 @mixin glass-glow {
-  &-glow {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    mix-blend-mode: soft-light;
-    transition: all 0.2s ease-out;
-  }
+  & {
+    &-glow {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      mix-blend-mode: soft-light;
+      transition: all 0.2s ease-out;
+    }
 
-  &-border-glow {
-    position: absolute;
-    inset: -2px;
-    z-index: 1;
-    pointer-events: none;
-    border-radius: 14px;
-    transition: all 0.2s ease-out;
-    mix-blend-mode: overlay;
-    opacity: 1;
+    &-border-glow {
+      position: absolute;
+      inset: -2px;
+      z-index: 1;
+      pointer-events: none;
+      border-radius: 14px;
+      transition: all 0.2s ease-out;
+      mix-blend-mode: overlay;
+      opacity: 1;
+    }
   }
 }
 
@@ -69,27 +71,29 @@
     0 1px 3px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   
-  // 添加卡片光晕效果
-  &-glow {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    mix-blend-mode: soft-light;
-    transition: all 0.2s ease-out;
-    user-select: none;
-  }
-  
-  &-border-glow {
-    position: absolute;
-    inset: -2px;
-    z-index: 1;
-    pointer-events: none;
-    border-radius: 14px;
-    transition: all 0.2s ease-out;
-    mix-blend-mode: overlay;
-    opacity: 1;
-    user-select: none;
+  // 使用 & {} 包裹声明，解决嵌套规则后的声明问题
+  & {
+    &-glow {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      mix-blend-mode: soft-light;
+      transition: all 0.2s ease-out;
+      user-select: none;
+    }
+    
+    &-border-glow {
+      position: absolute;
+      inset: -2px;
+      z-index: 1;
+      pointer-events: none;
+      border-radius: 14px;
+      transition: all 0.2s ease-out;
+      mix-blend-mode: overlay;
+      opacity: 1;
+      user-select: none;
+    }
   }
 }
 
@@ -100,20 +104,22 @@
     0 10px 20px rgba(0, 0, 0, 0.1),
     0 6px 6px rgba(0, 0, 0, 0.1);
   
-  .card-glow {
-    background: radial-gradient(
-      circle at var(--mouse-x) var(--mouse-y),
-      rgba(255, 255, 255, 0.8),
-      transparent 80%
-    );
+  & {
+    .card-glow {
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        rgba(255, 255, 255, 0.8),
+        transparent 80%
+      );
+    }
+    
+    .card-border-glow {
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        rgba(255, 255, 255, 0.8),
+        transparent 40%
+      );
+      box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.1);
+    }
   }
-  
-  .card-border-glow {
-    background: radial-gradient(
-      circle at var(--mouse-x) var(--mouse-y),
-      rgba(255, 255, 255, 0.8),
-      transparent 40%
-    );
-    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.1);
-  }
-} 
+}
