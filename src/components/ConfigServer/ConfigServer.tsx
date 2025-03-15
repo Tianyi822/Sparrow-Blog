@@ -3,6 +3,8 @@ import ServerBaseForm, { ServerBaseFormData } from './ServerBaseForm/ServerBaseF
 import LoggerForm, { LoggerFormData } from './LoggerForm/LoggerForm';
 import MySQLForm, { MySQLFormData } from './MySQLForm/MySQLForm';
 import OSSConfigForm, { OSSConfigFormData } from './OSSConfigForm/OSSConfigForm';
+import CacheConfigForm, { CacheConfigFormData } from './CacheConfigForm/CacheConfigForm';
+import UserEmailConfigForm, { UserEmailConfigFormData } from './UserEmailConfigForm/UserEmailConfigForm';
 import './ConfigServer.scss';
 
 interface ConfigServerProps {
@@ -10,13 +12,17 @@ interface ConfigServerProps {
   initialLoggerData?: LoggerFormData;
   initialMySQLData?: MySQLFormData;
   initialOSSData?: OSSConfigFormData;
+  initialCacheData?: CacheConfigFormData;
+  initialUserEmailData?: UserEmailConfigFormData;
 }
 
 const ConfigServer: React.FC<ConfigServerProps> = ({ 
   initialServerData, 
   initialLoggerData,
   initialMySQLData,
-  initialOSSData
+  initialOSSData,
+  initialCacheData,
+  initialUserEmailData
 }) => {
   const handleServerSubmit = (data: ServerBaseFormData) => {
     console.log('Server config submitted:', data);
@@ -35,6 +41,16 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
 
   const handleOSSSubmit = (data: OSSConfigFormData) => {
     console.log('OSS config submitted:', data);
+    // Here you would typically save the data to your backend
+  };
+  
+  const handleCacheSubmit = (data: CacheConfigFormData) => {
+    console.log('Cache config submitted:', data);
+    // Here you would typically save the data to your backend
+  };
+  
+  const handleUserEmailSubmit = (data: UserEmailConfigFormData) => {
+    console.log('User & Email config submitted:', data);
     // Here you would typically save the data to your backend
   };
 
@@ -66,6 +82,20 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
           <OSSConfigForm 
             onSubmit={handleOSSSubmit}
             initialData={initialOSSData}
+          />
+        </div>
+        
+        <div className="form-item">
+          <CacheConfigForm 
+            onSubmit={handleCacheSubmit}
+            initialData={initialCacheData}
+          />
+        </div>
+        
+        <div className="form-item">
+          <UserEmailConfigForm 
+            onSubmit={handleUserEmailSubmit}
+            initialData={initialUserEmailData}
           />
         </div>
       </div>
