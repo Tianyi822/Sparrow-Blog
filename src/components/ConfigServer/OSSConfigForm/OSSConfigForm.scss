@@ -7,7 +7,7 @@
   width: 100%;
   padding: 2rem;
   border-radius: 12px;
-  margin: 2rem auto;
+  margin: 0 auto; // 修改这里，移除上下边距
   
   &:hover {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -149,4 +149,4 @@
       text-align: center;
     }
   }
-} 
+}
