@@ -1,20 +1,40 @@
 import React from 'react';
 import ServerBaseForm, { ServerBaseFormData } from './ServerBaseForm/ServerBaseForm';
+import LoggerForm, { LoggerFormData } from './LoggerForm/LoggerForm';
 import './ConfigServer.scss';
 
 interface ConfigServerProps {
-  initialData?: ServerBaseFormData;
+  initialServerData?: ServerBaseFormData;
+  initialLoggerData?: LoggerFormData;
 }
 
-const ConfigServer: React.FC<ConfigServerProps> = ({ initialData }) => {
+const ConfigServer: React.FC<ConfigServerProps> = ({ initialServerData, initialLoggerData }) => {
+  const handleServerSubmit = (data: ServerBaseFormData) => {
+    console.log('Server config submitted:', data);
+    // Here you would typically save the data to your backend
+  };
+
+  const handleLoggerSubmit = (data: LoggerFormData) => {
+    console.log('Logger config submitted:', data);
+    // Here you would typically save the data to your backend
+  };
 
   return (
     <div className="config-server-container">
-      <div className="config-form-wrapper">
-        <ServerBaseForm 
-          onSubmit={() => {}}
-          initialData={initialData}
-        />
+      <div className="config-forms-wrapper">
+        <div className="form-item">
+          <ServerBaseForm 
+            onSubmit={handleServerSubmit}
+            initialData={initialServerData}
+          />
+        </div>
+        
+        <div className="form-item">
+          <LoggerForm 
+            onSubmit={handleLoggerSubmit}
+            initialData={initialLoggerData}
+          />
+        </div>
       </div>
     </div>
   );
