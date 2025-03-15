@@ -2,10 +2,9 @@
 
 // Use more specific selectors to avoid affecting child components
 .config-server-container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  // Add display flex and set height to enable vertical centering
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 4rem); // viewport height minus padding
@@ -50,16 +49,18 @@
     }
   }
   
-  // Center the form wrapper and make it flex-grow to take up available space
-  > .config-form-wrapper {
-    position: relative;
-    display: flex;
-    justify-content: center; // Center horizontally
-    align-items: center; // Center vertically
-    flex: 1; // Take up available space
-    
-    // Optional: add some padding around the form for better spacing
+  // Updated to handle multiple forms with a grid layout
+  > .config-forms-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    width: 100%;
     padding: 1rem 0;
+    
+    .form-item {
+      display: flex;
+      justify-content: center;
+    }
   }
 }
 
@@ -93,6 +94,17 @@
     font-size: 1.1rem;
     font-weight: 500;
     color: rgba(26, 38, 52, 0.9);
+  }
+}
+
+// Media query for smaller screens
+@media (max-width: 768px) {
+  .config-server-container > .config-forms-wrapper {
+    grid-template-columns: 1fr;
+    
+    .form-item {
+      width: 100%;
+    }
   }
 }
 
