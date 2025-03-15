@@ -55,11 +55,35 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    overflow: hidden;
     
     .current-form-container {
       max-width: 800px;
       width: 100%;
-      animation: fadeIn 0.4s ease-in-out;
+      position: relative;
+      transform: translateY(0); /* 默认位置 */
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      
+      /* 非动画状态下淡入 */
+      &:not(.animating) {
+        animation: slideDownIn 0.4s ease-out;
+      }
+      
+      /* 动画中状态 */
+      &.animating {
+        opacity: 0;
+      }
+      
+      /* 向上出场动画 */
+      &.slide-up-out {
+        transform: translateY(-30px);
+      }
+      
+      /* 向下出场动画（保留但不使用，为了代码完整性） */
+      &.slide-down-out {
+        transform: translateY(30px);
+      }
     }
   }
   
@@ -109,7 +133,7 @@
       
       &-down span {
         display: block;
-        transform: rotate(90deg); // Changed from -90deg to 270deg to make it point down
+        transform: rotate(90deg);
         font-size: 1rem;
       }
     }
@@ -170,6 +194,18 @@
   }
 }
 
+// 向下入场动画关键帧
+@keyframes slideDownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // Mobile responsiveness
 @media (max-width: 768px) {
   .config-server-container {
@@ -182,15 +218,6 @@
         width: 12px;
         height: 12px;
       }
-      
-      .nav-arrow {
-        width: 20px;
-        height: 20px;
-        
-        span {
-          font-size: 0.9rem;
-        }
-      }
     }
   }
 }
@@ -200,6 +227,28 @@
   from {
     opacity: 0;
     transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
   }
   to {
     opacity: 1;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ServerBaseConfigForm, { ServerBaseFormData } from '@/components/ConfigServer/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
 import LoggerConfigForm, { LoggerFormData } from '@/components/ConfigServer/LoggerConfigForm/LoggerConfigForm.tsx';
 import MySqlConfigForm, { MySQLFormData } from '@/components/ConfigServer/MySqlConfigForm/MySqlConfigForm.tsx';
@@ -26,6 +26,18 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
 }) => {
   // State to track the current form index
   const [currentFormIndex, setCurrentFormIndex] = useState(0);
+  // State to track animation direction (1: down, -1: up)
+  const [animationDirection, setAnimationDirection] = useState(0);
+  // State to track if animation is in progress
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  // Effect to handle animation reset
+  useEffect(() => {
+    if (!isAnimating) {
+      // Reset animation direction after animation completes
+      setAnimationDirection(0);
+    }
+  }, [isAnimating]);
 
   // Form titles for reference
   const formTitles = [
@@ -68,18 +80,32 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
   };
 
   const goToForm = (index: number) => {
-    if (index >= 0 && index <= 5) {
-      setCurrentFormIndex(index);
+    if (index >= 0 && index <= 5 && index !== currentFormIndex) {
+      // Always set animation direction to -1 for exit (up direction)
+      // This ensures all forms exit with the same animation (up direction)
+      setAnimationDirection(-1);
+      setIsAnimating(true);
+      
+      // Delay the actual form change to allow exit animation
+      setTimeout(() => {
+        setCurrentFormIndex(index);
+        // Reset animation state after a short delay
+        setTimeout(() => {
+          setIsAnimating(false);
+        }, 50);
+      }, 300); // Match this with animation duration
     }
   };
   
   // New functions for navigating to previous/next form
   const goToPrevForm = () => {
-    setCurrentFormIndex((prev) => (prev > 0 ? prev - 1 : 5));
+    const prevIndex = currentFormIndex > 0 ? currentFormIndex - 1 : 5;
+    goToForm(prevIndex);
   };
 
   const goToNextForm = () => {
-    setCurrentFormIndex((prev) => (prev < 5 ? prev + 1 : 0));
+    const nextIndex = currentFormIndex < 5 ? currentFormIndex + 1 : 0;
+    goToForm(nextIndex);
   };
 
   // Render the current form based on index
@@ -170,7 +196,12 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
 
       {/* The current form centered in the page */}
       <div className="config-form-content">
-        <div className="current-form-container">
+        <div 
+          className={`current-form-container ${isAnimating ? 'animating' : ''} ${
+            animationDirection > 0 ? 'slide-up-out' : 
+            animationDirection < 0 ? 'slide-down-out' : ''
+          }`}
+        >
           {renderCurrentForm()}
         </div>
       </div>
