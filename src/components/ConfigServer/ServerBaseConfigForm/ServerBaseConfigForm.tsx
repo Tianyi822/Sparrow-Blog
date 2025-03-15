@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './ServerBaseForm.scss';
+import './ServerBaseConfigForm.scss';
 
 interface ValidationErrors {
     port?: string;
@@ -34,7 +34,7 @@ export interface ServerBaseFormData {
     corsMethods: string;
 }
 
-const ServerBaseForm: React.FC<ServerBaseFormProps> = ({onSubmit, initialData, serverError}) => {
+const ServerBaseConfigForm: React.FC<ServerBaseFormProps> = ({onSubmit, initialData, serverError}) => {
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [formData, setFormData] = useState<ServerBaseFormData>({
         port: initialData?.port || '3000',
@@ -263,4 +263,4 @@ const ServerBaseForm: React.FC<ServerBaseFormProps> = ({onSubmit, initialData, s
     );
 };
 
-export default ServerBaseForm;
+export default ServerBaseConfigForm;

@@ -1,7 +1,7 @@
 import React from 'react';
-import ServerBaseForm, { ServerBaseFormData } from './ServerBaseForm/ServerBaseForm';
-import LoggerForm, { LoggerFormData } from './LoggerForm/LoggerForm';
-import MySQLForm, { MySQLFormData } from './MySQLForm/MySQLForm';
+import ServerBaseConfigForm, { ServerBaseFormData } from '@/components/ConfigServer/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
+import LoggerConfigForm, { LoggerFormData } from '@/components/ConfigServer/LoggerConfigForm/LoggerConfigForm.tsx';
+import MySqlConfigForm, { MySQLFormData } from '@/components/ConfigServer/MySqlConfigForm/MySqlConfigForm.tsx';
 import OSSConfigForm, { OSSConfigFormData } from './OSSConfigForm/OSSConfigForm';
 import CacheConfigForm, { CacheConfigFormData } from './CacheConfigForm/CacheConfigForm';
 import UserEmailConfigForm, { UserEmailConfigFormData } from './UserEmailConfigForm/UserEmailConfigForm';
@@ -58,21 +58,21 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
     <div className="config-server-container">
       <div className="config-forms-wrapper">
         <div className="form-item">
-          <ServerBaseForm 
+          <ServerBaseConfigForm
             onSubmit={handleServerSubmit}
             initialData={initialServerData}
           />
         </div>
         
         <div className="form-item">
-          <LoggerForm 
+          <LoggerConfigForm
             onSubmit={handleLoggerSubmit}
             initialData={initialLoggerData}
           />
         </div>
 
         <div className="form-item">
-          <MySQLForm 
+          <MySqlConfigForm
             onSubmit={handleMySQLSubmit}
             initialData={initialMySQLData}
           />

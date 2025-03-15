@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './LoggerForm.scss';
+import './LoggerConfigForm.scss';
 
 interface ValidationErrors {
     logLevel?: string;
@@ -25,7 +25,7 @@ export interface LoggerFormData {
     compress: boolean;
 }
 
-const LoggerForm: React.FC<LoggerFormProps> = ({ onSubmit, initialData, serverError }) => {
+const LoggerConfigForm: React.FC<LoggerFormProps> = ({ onSubmit, initialData, serverError }) => {
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [formData, setFormData] = useState<LoggerFormData>({
         logLevel: initialData?.logLevel || 'DEBUG',
@@ -236,4 +236,4 @@ const LoggerForm: React.FC<LoggerFormProps> = ({ onSubmit, initialData, serverEr
     );
 };
 
-export default LoggerForm;
+export default LoggerConfigForm;

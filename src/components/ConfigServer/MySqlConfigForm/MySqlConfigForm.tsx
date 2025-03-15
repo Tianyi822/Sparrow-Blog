@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './MySQLForm.scss';
+import './MySqlConfigForm.scss';
 
 interface ValidationErrors {
     username?: string;
@@ -27,7 +27,7 @@ export interface MySQLFormData {
     maxIdleConns: string;
 }
 
-const MySQLForm: React.FC<MySQLFormProps> = ({ onSubmit, initialData, serverError }) => {
+const MySqlConfigForm: React.FC<MySQLFormProps> = ({ onSubmit, initialData, serverError }) => {
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [formData, setFormData] = useState<MySQLFormData>({
         username: initialData?.username || '',
@@ -276,4 +276,4 @@ const MySQLForm: React.FC<MySQLFormProps> = ({ onSubmit, initialData, serverErro
     );
 };
 
-export default MySQLForm;
+export default MySqlConfigForm;
