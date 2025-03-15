@@ -72,6 +72,15 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
       setCurrentFormIndex(index);
     }
   };
+  
+  // New functions for navigating to previous/next form
+  const goToPrevForm = () => {
+    setCurrentFormIndex((prev) => (prev > 0 ? prev - 1 : 5));
+  };
+
+  const goToNextForm = () => {
+    setCurrentFormIndex((prev) => (prev < 5 ? prev + 1 : 0));
+  };
 
   // Render the current form based on index
   const renderCurrentForm = () => {
@@ -125,8 +134,19 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
 
   return (
     <div className="config-server-container">
-      {/* Navigation dots moved to left side */}
+      {/* Navigation dots moved to left side with up/down arrows */}
       <div className="form-navigation-dots">
+        {/* Up arrow for navigating to previous form */}
+        <button 
+          className="nav-arrow nav-arrow-up" 
+          onClick={goToPrevForm}
+          aria-label="上一个配置表单"
+          title={formTitles[(currentFormIndex > 0 ? currentFormIndex - 1 : 5)]}
+        >
+          <span>&#10094;</span>
+        </button>
+        
+        {/* Navigation dots */}
         {formTitles.map((title, index) => (
           <button
             key={index}
@@ -136,6 +156,16 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
             title={title}
           />
         ))}
+        
+        {/* Down arrow for navigating to next form */}
+        <button 
+          className="nav-arrow nav-arrow-down" 
+          onClick={goToNextForm}
+          aria-label="下一个配置表单"
+          title={formTitles[(currentFormIndex < 5 ? currentFormIndex + 1 : 0)]}
+        >
+          <span>&#10095;</span>
+        </button>
       </div>
 
       {/* The current form centered in the page */}

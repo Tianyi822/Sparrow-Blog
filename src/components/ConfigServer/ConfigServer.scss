@@ -72,7 +72,49 @@
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
+    align-items: center;
     
+    // Navigation arrows
+    .nav-arrow {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: none;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+      }
+      
+      &:active {
+        transform: scale(0.95);
+      }
+      
+      // Rotate arrow for up/down navigation
+      &-up span {
+        display: block;
+        transform: rotate(90deg);
+        font-size: 1rem;
+      }
+      
+      &-down span {
+        display: block;
+        transform: rotate(90deg); // Changed from -90deg to 270deg to make it point down
+        font-size: 1rem;
+      }
+    }
+    
+    // Navigation dots
     .nav-dot {
       width: 14px;
       height: 14px;
@@ -139,6 +181,15 @@
       .nav-dot {
         width: 12px;
         height: 12px;
+      }
+      
+      .nav-arrow {
+        width: 20px;
+        height: 20px;
+        
+        span {
+          font-size: 0.9rem;
+        }
       }
     }
   }
