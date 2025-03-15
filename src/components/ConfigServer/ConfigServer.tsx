@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ServerBaseConfigForm, { ServerBaseFormData } from '@/components/ConfigServer/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
 import LoggerConfigForm, { LoggerFormData } from '@/components/ConfigServer/LoggerConfigForm/LoggerConfigForm.tsx';
 import MySqlConfigForm, { MySQLFormData } from '@/components/ConfigServer/MySqlConfigForm/MySqlConfigForm.tsx';
@@ -24,6 +24,19 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
   initialCacheData,
   initialUserEmailData
 }) => {
+  // State to track the current form index
+  const [currentFormIndex, setCurrentFormIndex] = useState(0);
+
+  // Form titles for reference
+  const formTitles = [
+    "服务基础配置",
+    "日志配置",
+    "数据库配置",
+    "OSS 存储配置",
+    "缓存配置",
+    "用户与邮箱配置"
+  ];
+
   const handleServerSubmit = (data: ServerBaseFormData) => {
     console.log('Server config submitted:', data);
     // Here you would typically save the data to your backend
@@ -54,49 +67,81 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
     // Here you would typically save the data to your backend
   };
 
-  return (
-    <div className="config-server-container">
-      <div className="config-forms-wrapper">
-        <div className="form-item">
+  const goToForm = (index: number) => {
+    if (index >= 0 && index <= 5) {
+      setCurrentFormIndex(index);
+    }
+  };
+
+  // Render the current form based on index
+  const renderCurrentForm = () => {
+    switch (currentFormIndex) {
+      case 0:
+        return (
           <ServerBaseConfigForm
             onSubmit={handleServerSubmit}
             initialData={initialServerData}
           />
-        </div>
-        
-        <div className="form-item">
+        );
+      case 1:
+        return (
           <LoggerConfigForm
             onSubmit={handleLoggerSubmit}
             initialData={initialLoggerData}
           />
-        </div>
-
-        <div className="form-item">
+        );
+      case 2:
+        return (
           <MySqlConfigForm
             onSubmit={handleMySQLSubmit}
             initialData={initialMySQLData}
           />
-        </div>
-
-        <div className="form-item">
+        );
+      case 3:
+        return (
           <OSSConfigForm 
             onSubmit={handleOSSSubmit}
             initialData={initialOSSData}
           />
-        </div>
-        
-        <div className="form-item">
+        );
+      case 4:
+        return (
           <CacheConfigForm 
             onSubmit={handleCacheSubmit}
             initialData={initialCacheData}
           />
-        </div>
-        
-        <div className="form-item">
+        );
+      case 5:
+        return (
           <UserEmailConfigForm 
             onSubmit={handleUserEmailSubmit}
             initialData={initialUserEmailData}
           />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="config-server-container">
+      {/* Navigation dots moved to left side */}
+      <div className="form-navigation-dots">
+        {formTitles.map((title, index) => (
+          <button
+            key={index}
+            className={`nav-dot ${currentFormIndex === index ? 'active' : ''}`}
+            onClick={() => goToForm(index)}
+            aria-label={title}
+            title={title}
+          />
+        ))}
+      </div>
+
+      {/* The current form centered in the page */}
+      <div className="config-form-content">
+        <div className="current-form-container">
+          {renderCurrentForm()}
         </div>
       </div>
     </div>
