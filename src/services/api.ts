@@ -7,9 +7,13 @@ export interface ApiResponse<T> {
     msg: string;
 }
 
+// 获取API基础URL
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+// console.log('当前API基础URL:', apiBaseUrl); // 调试用，可以在生产环境中移除
+
 // Create axios instance with default config
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: apiBaseUrl || '/api', // 如果环境变量未设置，默认使用相对路径
     timeout: 15000,
     headers: {
         'Content-Type': 'application/json',
