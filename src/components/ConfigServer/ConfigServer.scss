@@ -1,5 +1,15 @@
 @use "@/style/mixins" as *;
 
+// 添加全局背景样式
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom right, #1a237e, #000000); // 从左上角深蓝色到右下角纯黑色的渐变
+  background-attachment: fixed; // 确保背景固定，不随滚动而移动
+  color: rgba(255, 255, 255, 0.9);
+  min-height: 100vh;
+}
+
 // Use more specific selectors to avoid affecting child components
 .config-server-container {
   max-width: 1200px;
@@ -8,25 +18,25 @@
   display: flex;
   min-height: calc(100vh - 4rem); // viewport height minus padding
   position: relative;
-  
+
   // Style only direct children of config-server-header
   > .config-server-header {
     text-align: center;
     margin-bottom: 2rem;
-    
+
     > h1 {
       font-size: 2rem;
       font-weight: 700;
-      color: rgba(26, 38, 52, 0.95);
+      color: rgba(255, 255, 255, 0.95);
       margin-bottom: 0.5rem;
     }
-    
+
     > p {
       font-size: 1rem;
-      color: rgba(44, 62, 80, 0.9);
+      color: rgba(255, 255, 255, 0.9);
     }
   }
-  
+
   // Notification styles are specific to this component
   > .save-notification {
     padding: 1rem;
@@ -35,20 +45,20 @@
     text-align: center;
     font-weight: 500;
     animation: configServerFadeIn 0.3s ease-in-out;
-    
+
     &.success {
       background-color: rgba(46, 204, 113, 0.15);
       border: 1px solid rgba(46, 204, 113, 0.3);
       color: rgba(39, 174, 96, 0.9);
     }
-    
+
     &.error {
       background-color: rgba(231, 76, 60, 0.15);
       border: 1px solid rgba(231, 76, 60, 0.3);
       color: rgba(192, 57, 43, 0.9);
     }
   }
-  
+
   // Form content container
   .config-form-content {
     flex: 1;
@@ -57,36 +67,36 @@
     align-items: center;
     position: relative;
     overflow: hidden;
-    
+
     .current-form-container {
       max-width: 800px;
       width: 100%;
       position: relative;
       transform: translateY(0); /* 默认位置 */
       transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-      
+
       /* 非动画状态下淡入 */
       &:not(.animating) {
         animation: slideDownIn 0.4s ease-out;
       }
-      
+
       /* 动画中状态 */
       &.animating {
         opacity: 0;
       }
-      
+
       /* 向上出场动画 */
       &.slide-up-out {
         transform: translateY(-30px);
       }
-      
+
       /* 向下出场动画（保留但不使用，为了代码完整性） */
       &.slide-down-out {
         transform: translateY(30px);
       }
     }
   }
-  
+
   // Vertical navigation dots on the left side
   .form-navigation-dots {
     position: absolute;
@@ -97,7 +107,7 @@
     flex-direction: column;
     gap: 1.2rem;
     align-items: center;
-    
+
     // Navigation arrows
     .nav-arrow {
       width: 24px;
@@ -113,31 +123,37 @@
       justify-content: center;
       transition: all 0.2s ease;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      
+      position: relative;
+
       &:hover {
         background: rgba(255, 255, 255, 0.2);
         color: rgba(255, 255, 255, 1);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
       }
-      
+
       &:active {
         transform: scale(0.95);
       }
-      
+
+      span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        line-height: 1;
+        font-size: 14px;
+      }
+
       // Rotate arrow for up/down navigation
       &-up span {
-        display: block;
-        transform: rotate(90deg);
-        font-size: 1rem;
+        transform: translate(-50%, -50%) rotate(90deg);
       }
-      
+
       &-down span {
-        display: block;
-        transform: rotate(90deg);
-        font-size: 1rem;
+        transform: translate(-50%, -50%) rotate(-90deg);
       }
     }
-    
+
     // Navigation dots
     .nav-dot {
       width: 14px;
@@ -147,13 +163,13 @@
       border: none;
       cursor: pointer;
       transition: all 0.2s ease;
-      
+
       &.active {
         background: rgba(255, 255, 255, 0.9);
         transform: scale(1.3);
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
-      
+
       &:hover {
         background: rgba(255, 255, 255, 0.5);
       }
@@ -176,7 +192,7 @@
   align-items: center;
   z-index: 1000;
   animation: configServerFadeIn 0.2s ease-in-out;
-  
+
   .saving-spinner {
     width: 50px;
     height: 50px;
@@ -186,7 +202,7 @@
     animation: configServerSpin 1s linear infinite;
     margin-bottom: 1rem;
   }
-  
+
   p {
     font-size: 1.1rem;
     font-weight: 500;
@@ -210,10 +226,10 @@
 @media (max-width: 768px) {
   .config-server-container {
     padding: 2rem 0.5rem 2rem 3rem;
-    
+
     .form-navigation-dots {
       left: 0.8rem;
-      
+
       .nav-dot {
         width: 12px;
         height: 12px;
