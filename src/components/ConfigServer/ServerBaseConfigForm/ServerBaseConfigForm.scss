@@ -116,15 +116,61 @@
       }
     }
 
-    .server-error-message {
+    .server-error-message,
+    .error-message {
       margin-top: 1rem;
       padding: 0.75rem;
-      color: #dc3545;
-      background-color: rgba(220, 53, 69, 0.1);
-      border: 1px solid rgba(220, 53, 69, 0.2);
+      color: #ff4d4f;
+      background-color: rgba(255, 77, 79, 0.1);
+      border: 1px solid rgba(255, 77, 79, 0.2);
       border-radius: 4px;
       font-size: 0.9rem;
       text-align: center;
     }
   }
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+.error-message-container {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border-radius: 4px;
+  background-color: rgba(255, 77, 79, 0.1);
+  border-left: 3px solid #ff4d4f;
+
+  .error-message {
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .error-details {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  }
+}
+
+.server-error-message {
+  color: #ff4d4f;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: rgba(255, 77, 79, 0.1);
+  border-radius: 4px;
 }

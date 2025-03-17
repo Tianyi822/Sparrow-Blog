@@ -1,16 +1,24 @@
 import { apiRequest, ApiResponse } from './api';
 
 // Types for configuration data
-import { ServerBaseFormData } from '@/components/ConfigServer/ServerBaseConfigForm/ServerBaseConfigForm';
+// import { ServerBaseFormData } from '@/components/ConfigServer/ServerBaseConfigForm/ServerBaseConfigForm';
 import { LoggerFormData } from '@/components/ConfigServer/LoggerConfigForm/LoggerConfigForm';
 import { MySQLFormData } from '@/components/ConfigServer/MySqlConfigForm/MySqlConfigForm';
 import { OSSConfigFormData } from '@/components/ConfigServer/OSSConfigForm/OSSConfigForm';
 import { CacheConfigFormData } from '@/components/ConfigServer/CacheConfigForm/CacheConfigForm';
 import { UserEmailConfigFormData } from '@/components/ConfigServer/UserEmailConfigForm/UserEmailConfigForm';
 
+// 服务器基础配置数据接口
+export interface ServerBaseConfig {
+    port: string;
+    tokenKey: string;
+    tokenExpireDuration: string;
+    corsOrigins: string;
+}
+
 // Combined configuration type
 export interface ServerConfig {
-    serverBase?: ServerBaseFormData;
+    serverBase?: ServerBaseConfig;
     logger?: LoggerFormData;
     mysql?: MySQLFormData;
     ossStorage?: OSSConfigFormData;
@@ -31,8 +39,8 @@ export const getAllConfigs = async (): Promise<ServerConfig> => {
 /**
  * Fetch server base configuration
  */
-export const getServerBaseConfig = async (): Promise<ServerBaseFormData> => {
-    return apiRequest<ServerBaseFormData>({
+export const getServerBaseConfig = async (): Promise<ServerBaseConfig> => {
+    return apiRequest<ServerBaseConfig>({
         method: 'GET',
         url: '/config/server-base'
     });
@@ -41,11 +49,42 @@ export const getServerBaseConfig = async (): Promise<ServerBaseFormData> => {
 /**
  * Save server base configuration
  */
-export const saveServerBaseConfig = async (data: ServerBaseFormData): Promise<ApiResponse<ServerBaseFormData>> => {
-    return apiRequest<ApiResponse<ServerBaseFormData>>({
+interface ServerBaseBackendData {
+    'server.port': string;
+    'server.token_key': string;
+    'server.token_expire_duration': string;
+    'server.cors.origins': string;
+}
+
+export const transformServerBaseData = (data: ServerBaseConfig): ServerBaseBackendData => {
+    // 处理corsOrigins，确保格式正确
+    let corsOrigins = data.corsOrigins.trim();
+
+    // 如果不包含协议前缀，添加https://
+    if (corsOrigins && !corsOrigins.startsWith('http://') && !corsOrigins.startsWith('https://')) {
+        corsOrigins = `https://${corsOrigins}`;
+    }
+
+    return {
+        'server.port': data.port,
+        'server.token_key': data.tokenKey,
+        'server.token_expire_duration': data.tokenExpireDuration,
+        'server.cors.origins': JSON.stringify([corsOrigins])
+    };
+};
+
+export const saveServerBaseConfig = async (data: ServerBaseConfig): Promise<ApiResponse<ServerBaseConfig>> => {
+    const transformedData = transformServerBaseData(data);
+    console.log('转换后的数据:', transformedData); // 调试用
+
+    // 使用JSON格式提交数据
+    return apiRequest<ApiResponse<ServerBaseConfig>>({
         method: 'POST',
-        url: '/config/server-base',
-        data
+        url: '/config/base',
+        data: transformedData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 };
 

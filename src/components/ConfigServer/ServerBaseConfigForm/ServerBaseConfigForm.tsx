@@ -1,254 +1,262 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { FiServer, FiKey, FiClock, FiGlobe } from 'react-icons/fi';
+import { saveServerBaseConfig, getServerBaseConfig } from '@/services/configService';
 import './ServerBaseConfigForm.scss';
 
-interface ValidationErrors {
-    port?: string;
-    tokenSecret?: string;
-    tokenExpiration?: string;
-    corsOrigin?: string;
+// 定义接口
+interface FormData {
+    port: string;
+    tokenKey: string;
+    tokenExpireDuration: string;
+    corsOrigins: string;
 }
 
-/**
- * 检查给定的字符串是否为有效的URL
- *
- * @param url 待检查的URL字符串
- * @returns 如果字符串是有效的URL则返回true，否则返回false
- */
-const isValidUrl = (url: string): boolean => {
-    try {
-        // 尝试使用URL构造函数解析传入的字符串
-        new URL(url);
-        // 如果解析成功，则说明字符串是一个有效的URL
-        return true;
-    } catch {
-        // 如果解析失败，则说明字符串不是一个有效的URL
-        return false;
+interface ValidationErrors {
+    [key: string]: string;
+}
+
+// 字段映射配置
+const FIELD_CONFIG = {
+    port: {
+        label: '服务器端口',
+        icon: <FiServer />,
+        placeholder: '2233',
+        name: 'server_port',
+        validate: (value: string) => {
+            if (!value) return '端口不能为空';
+            const numValue = parseInt(value, 10);
+            if (isNaN(numValue) || numValue < 0 || numValue > 65535) {
+                return '端口必须是0-65535之间的数字';
+            }
+            return '';
+        }
+    },
+    tokenKey: {
+        label: '令牌密钥',
+        icon: <FiKey />,
+        placeholder: '请输入令牌密钥',
+        name: 'server_token_key',
+        validate: (value: string) => !value ? '令牌密钥不能为空' : ''
+    },
+    tokenExpireDuration: {
+        label: '令牌过期时间 (小时)',
+        icon: <FiClock />,
+        placeholder: '24',
+        name: 'server_token_expire_duration',
+        validate: (value: string) => !value ? '令牌过期时间不能为空' : ''
+    },
+    corsOrigins: {
+        label: '网站地址 (仅输入单个域名，无需http或www前缀)',
+        icon: <FiGlobe />,
+        placeholder: 'example.com',
+        name: 'server_cors_origins',
+        validate: (value: string) => {
+            if (!value) return '网站地址不能为空';
+
+            // 验证单个域名格式
+            const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
+            if (!domainRegex.test(value)) {
+                return '请输入有效的域名格式 (例如: example.com)';
+            }
+            return '';
+        }
     }
 };
 
-interface ServerBaseFormProps {
-    onSubmit?: (formData: ServerBaseFormData) => void;
-    initialData?: ServerBaseFormData;
-    serverError?: string; // 添加后端错误信息属性
-}
-
-export interface ServerBaseFormData {
-    port: string;
-    tokenSecret: string;
-    tokenExpiration: string;
-    corsOrigin: string;
-}
-
-/**
- * ServerBaseConfigForm 是一个 React 函数组件，用于配置服务的基础信息。
- *
- * @param {ServerBaseFormProps} props - 组件的属性对象。
- *   - onSubmit: 表单提交时的回调函数，接收表单数据作为参数。
- *   - initialData: 表单的初始数据，用于填充表单字段。
- *   - serverError: 服务器端错误信息，用于显示在表单下方。
- * @returns {JSX.Element} 返回一个包含表单的 JSX 元素，用于配置服务基础信息。
- */
-const ServerBaseConfigForm: React.FC<ServerBaseFormProps> = ({ onSubmit, initialData, serverError }) => {
-    // 使用 useState 管理表单验证错误和表单数据状态
-    const [errors, setErrors] = useState<ValidationErrors>({});
-    const [formData, setFormData] = useState<ServerBaseFormData>({
-        port: initialData?.port || '3000',
-        tokenSecret: initialData?.tokenSecret || '',
-        tokenExpiration: initialData?.tokenExpiration || '7',
-        corsOrigin: initialData?.corsOrigin || 'http://localhost:3000'
+const ServerBaseConfigForm: React.FC = () => {
+    // 状态定义
+    const [formData, setFormData] = useState<FormData>({
+        port: '',
+        tokenKey: '',
+        tokenExpireDuration: '',
+        corsOrigins: 'tybook.cc'
     });
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [submitError, setSubmitError] = useState<string>('');
+    const [errorData, setErrorData] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    /**
-     * 验证单个表单字段的值是否符合规则。
-     *
-     * @param {string} name - 字段名称。
-     * @param {string} value - 字段值。
-     * @returns {string} 返回验证错误信息，如果无错误则返回空字符串。
-     */
-    const validateField = (name: string, value: string): string => {
-        switch (name) {
-            case 'port': {
-                const portNum = parseInt(value);
-                if (isNaN(portNum) || !Number.isInteger(portNum)) {
-                    return '端口号必须为整数';
+    // 初始化加载数据
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const data = await getServerBaseConfig();
+                if (data) {
+                    setFormData({
+                        port: data.port || '',
+                        tokenKey: data.tokenKey || '',
+                        tokenExpireDuration: data.tokenExpireDuration || '',
+                        corsOrigins: data.corsOrigins || 'tybook.cc'
+                    });
                 }
-                if (portNum < 0 || portNum > 65535) {
-                    return '端口号必须在0~65535之间';
-                }
-                return '';
+            } catch (error) {
+                console.error('Failed to fetch server config:', error);
+            } finally {
+                setLoading(false);
             }
+        };
 
-            case 'tokenSecret':
-                if (!value.trim()) {
-                    return 'Token密钥不能为空';
-                }
-                if (value.includes(' ')) {
-                    return 'Token密钥不能包含空格';
-                }
-                if (value.length < 20) {
-                    return 'Token密钥长度必须大于20个字符';
-                }
-                return '';
+        fetchData();
+    }, []);
 
-            case 'tokenExpiration': {
-                const days = parseInt(value);
-                if (isNaN(days) || !Number.isInteger(days)) {
-                    return 'Token过期时间必须为整数';
-                }
-                if (days < 0 || days > 30) {
-                    return 'Token过期时间必须在0~30天之间';
-                }
-                return '';
+    // 处理输入变化
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const fieldKey = Object.keys(FIELD_CONFIG).find(
+            key => FIELD_CONFIG[key as keyof typeof FIELD_CONFIG].name === name
+        ) as keyof FormData | undefined;
+
+        if (!fieldKey) return;
+
+        let processedValue = value;
+
+        // 特殊处理端口字段，确保只有数字
+        if (fieldKey === 'port') {
+            processedValue = value.replace(/\D/g, '');
+            const numValue = parseInt(processedValue, 10);
+            if (!isNaN(numValue) && numValue > 65535) {
+                processedValue = '65535';
             }
+        }
 
-            case 'corsOrigin': {
-                if (!value.trim()) {
-                    return '跨域源不能为空';
-                }
-                if (value.includes('，')) {
-                    return '请使用英文逗号(,)分隔多个跨域源';
-                }
-                if (value.includes('*')) {
-                    return '不允许使用通配符(*)，请指定具体的域名';
-                }
-                const origins = value.split(',').map(o => o.trim());
-                const invalidOrigins = origins.filter(o => !isValidUrl(o));
-                if (invalidOrigins.length > 0) {
-                    return '存在无效的跨域源URL格式';
-                }
-                return '';
-            }
+        setFormData(prev => ({ ...prev, [fieldKey]: processedValue }));
 
-            default:
-                return '';
+        // 清除该字段的错误
+        if (errors[fieldKey]) {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[fieldKey];
+                return newErrors;
+            });
         }
     };
 
-    /**
-     * 处理表单字段的变更事件，更新表单数据并验证字段。
-     *
-     * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} e - 输入事件对象。
-     */
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-
-        const error = validateField(name, value);
-        setErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+    // 验证单个字段
+    const validateField = (field: keyof FormData): string => {
+        const config = FIELD_CONFIG[field];
+        return config.validate(formData[field]);
     };
 
-    /**
-     * 处理表单提交事件，验证所有字段并在无错误时调用 onSubmit 回调。
-     *
-     * @param {React.FormEvent} e - 表单提交事件对象。
-     */
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // 验证所有字段并收集错误信息
+    // 验证所有字段
+    const validateForm = (): boolean => {
         const newErrors: ValidationErrors = {};
-        Object.entries(formData).forEach(([key, value]) => {
-            const error = validateField(key, value);
-            if (error) {
-                newErrors[key as keyof ValidationErrors] = error;
+        let isValid = true;
+
+        // 遍历所有字段进行验证
+        Object.keys(FIELD_CONFIG).forEach(field => {
+            const fieldKey = field as keyof FormData;
+            const errorMessage = validateField(fieldKey);
+
+            if (errorMessage) {
+                newErrors[fieldKey] = errorMessage;
+                isValid = false;
             }
         });
 
         setErrors(newErrors);
+        return isValid;
+    };
 
-        // 如果没有错误，则调用 onSubmit 提交表单数据
-        if (Object.keys(newErrors).length === 0) {
-            if (onSubmit) {
-                onSubmit(formData);
+    // 格式化错误数据显示
+    const formatErrorData = (data: any): string => {
+        if (!data) return '';
+
+        try {
+            if (typeof data === 'string') {
+                return data;
             }
+            return JSON.stringify(data, null, 2);
+        } catch (e) {
+            return String(data);
+        }
+    };
+
+    // 处理表单提交
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitError('');
+        setErrorData(null);
+
+        if (!validateForm()) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await saveServerBaseConfig({
+                port: formData.port,
+                tokenKey: formData.tokenKey,
+                tokenExpireDuration: formData.tokenExpireDuration,
+                corsOrigins: formData.corsOrigins
+            });
+
+            // 处理非200响应
+            if (response && response.code !== 200) {
+                setSubmitError(response.msg || '提交失败');
+                if (response.data) {
+                    setErrorData(response.data);
+                }
+                return;
+            }
+
+            // 成功提交
+            alert('配置保存成功');
+        } catch (error) {
+            console.error('Failed to save server config:', error);
+            setSubmitError('提交过程中发生错误');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="server-base-form-container">
-            <div className="card-glow"></div>
-            <div className="card-border-glow"></div>
-
-            <h2>服务基础配置</h2>
-
+            <h2>服务器基础配置</h2>
             <form onSubmit={handleSubmit}>
-                {/* 端口号输入框 */}
-                <div className="form-group">
-                    <label htmlFor="port">
-                        <span className="icon">🌐</span>
-                        服务端口号
-                    </label>
-                    <input
-                        type="text"
-                        id="port"
-                        name="port"
-                        value={formData.port}
-                        onChange={handleChange}
-                    />
-                    {errors.port && <div className="error-message">{errors.port}</div>}
-                </div>
+                {/* 动态生成表单字段 */}
+                {Object.entries(FIELD_CONFIG).map(([key, config]) => {
+                    const fieldKey = key as keyof FormData;
+                    return (
+                        <div className="form-group" key={fieldKey}>
+                            <label>
+                                <span className="icon">{config.icon}</span>
+                                {config.label}
+                            </label>
+                            <input
+                                type="text"
+                                name={config.name}
+                                value={formData[fieldKey]}
+                                onChange={handleChange}
+                                placeholder={config.placeholder}
+                            />
+                            {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
+                        </div>
+                    );
+                })}
 
-                {/* Token 密钥输入框 */}
-                <div className="form-group">
-                    <label htmlFor="tokenSecret">
-                        <span className="icon">🔑</span>
-                        Token 密钥 ( 至少20个随机字符 )
-                    </label>
-                    <input
-                        type="text"
-                        id="tokenSecret"
-                        name="tokenSecret"
-                        value={formData.tokenSecret}
-                        onChange={handleChange}
-                    />
-                    {errors.tokenSecret && <div className="error-message">{errors.tokenSecret}</div>}
-                </div>
+                <button
+                    type="submit"
+                    className="submit-button"
+                    disabled={loading}
+                >
+                    {loading ? '提交中...' : '保存配置'}
+                </button>
 
-                {/* Token 过期时间输入框 */}
-                <div className="form-group">
-                    <label htmlFor="tokenExpiration">
-                        <span className="icon">⏱️</span>
-                        Token 过期时间（天）
-                    </label>
-                    <input
-                        type="text"
-                        id="tokenExpiration"
-                        name="tokenExpiration"
-                        value={formData.tokenExpiration}
-                        onChange={handleChange}
-                    />
-                    {errors.tokenExpiration && <div className="error-message">{errors.tokenExpiration}</div>}
-                </div>
-
-                {/* 跨域源输入框 */}
-                <div className="form-group">
-                    <label htmlFor="corsOrigin">
-                        <span className="icon">🌍</span>
-                        跨域源 ( 请使用英文逗号分隔 )
-                    </label>
-                    <input
-                        type="text"
-                        id="corsOrigin"
-                        name="corsOrigin"
-                        value={formData.corsOrigin}
-                        onChange={handleChange}
-                    />
-                    {errors.corsOrigin && <div className="error-message">{errors.corsOrigin}</div>}
-                </div>
-
-                {/* 提交按钮 */}
-                <button type="submit" className="submit-button">保存配置</button>
-                {serverError && <div className="server-error-message">{serverError}</div>}
+                {/* 显示提交错误信息 */}
+                {submitError && (
+                    <div className="error-message-container">
+                        <div className="error-message">{submitError}</div>
+                        {errorData && (
+                            <div className="error-details">
+                                <pre>{formatErrorData(errorData)}</pre>
+                            </div>
+                        )}
+                    </div>
+                )}
             </form>
         </div>
     );
 };
-
 
 export default ServerBaseConfigForm;
