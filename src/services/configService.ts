@@ -99,13 +99,42 @@ export const getLoggerConfig = async (): Promise<LoggerFormData> => {
 };
 
 /**
+ * 转换日志配置数据为后端格式
+ */
+interface LoggerBackendData {
+    'logger.level': string;
+    'logger.path': string;
+    'logger.max_size': string;
+    'logger.compress': string;
+    'logger.max_backups': string;
+    'logger.max_age': string;
+}
+
+export const transformLoggerData = (data: LoggerFormData): LoggerBackendData => {
+    return {
+        'logger.level': data.logLevel.toLowerCase(),
+        'logger.path': data.logPath,
+        'logger.max_size': data.maxSize,
+        'logger.compress': data.compress ? '1' : '0',
+        'logger.max_backups': data.maxBackups,
+        'logger.max_age': data.maxDays
+    };
+};
+
+/**
  * Save logger configuration
  */
 export const saveLoggerConfig = async (data: LoggerFormData): Promise<ApiResponse<LoggerFormData>> => {
+    const transformedData = transformLoggerData(data);
+    console.log('转换后的日志配置数据:', transformedData); // 调试用
+
     return apiRequest<ApiResponse<LoggerFormData>>({
         method: 'POST',
         url: '/config/logger',
-        data
+        data: transformedData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 };
 
