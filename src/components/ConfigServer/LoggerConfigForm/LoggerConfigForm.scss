@@ -1,6 +1,6 @@
 @use "@/style/mixins" as *;
 
-.logger-form-container {
+.logger-config-form-container {
   @include glass-card-base;
   position: relative;
   max-width: 500px;

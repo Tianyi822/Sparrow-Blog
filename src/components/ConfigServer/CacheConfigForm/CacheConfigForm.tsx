@@ -1,6 +1,6 @@
-import { getCacheConfig, saveCacheConfig } from '@/services/configService';
+import { saveCacheConfig } from '@/services/configService';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FiDatabase, FiFolder, FiHardDrive, FiZap } from 'react-icons/fi';
 import './CacheConfigForm.scss';
 
@@ -13,16 +13,6 @@ export interface CacheConfigFormData {
     aofPath: string;
     aofMaxSize: string;
     compressEnabled: boolean;
-}
-
-// 后端返回的数据结构
-interface CacheBackendResponse {
-    aof: {
-        enable: boolean | string;
-        path: string;
-        max_size: string | number;
-        compress: boolean | string;
-    };
 }
 
 // 字段配置
@@ -85,48 +75,6 @@ const CacheConfigForm: React.FC = () => {
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
-    const [initialLoading, setInitialLoading] = useState<boolean>(true);
-
-    // 初始化加载数据
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setInitialLoading(true);
-                const data = await getCacheConfig();
-                
-                // 处理后端返回的数据格式
-                if (data) {
-                    // 检查是否是后端指定格式的数据
-                    if ('aof' in data) {
-                        // 适配后端返回的新格式
-                        const backendData = data as unknown as CacheBackendResponse;
-                        setFormData({
-                            aofEnabled: backendData.aof.enable === '1' || backendData.aof.enable === true,
-                            aofPath: backendData.aof.path || '',
-                            aofMaxSize: String(backendData.aof.max_size || '1'),
-                            compressEnabled: backendData.aof.compress === '1' || backendData.aof.compress === true
-                        });
-                    } else {
-                        // 适配旧格式
-                        const oldData = data as CacheConfigFormData;
-                        setFormData({
-                            aofEnabled: oldData.aofEnabled !== undefined ? oldData.aofEnabled : true,
-                            aofPath: oldData.aofPath || '',
-                            aofMaxSize: oldData.aofMaxSize || '1',
-                            compressEnabled: oldData.compressEnabled !== undefined ? oldData.compressEnabled : true
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to fetch cache config:', error);
-                // 只在控制台显示错误，不在UI上显示
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -282,112 +230,105 @@ const CacheConfigForm: React.FC = () => {
         <div className="cache-config-form-container">
             <h2>缓存配置</h2>
             
-            {initialLoading ? (
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <div className="loading-text">加载中...</div>
+            <form onSubmit={handleSubmit}>
+                {/* AOF启用选项 */}
+                <div className="form-group checkbox-group">
+                    <input
+                        type="checkbox"
+                        id="aofEnabled"
+                        name="aofEnabled"
+                        checked={formData.aofEnabled}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor="aofEnabled">
+                        <span className="icon">{FIELD_CONFIG.aofEnabled.icon}</span>
+                        {FIELD_CONFIG.aofEnabled.label}
+                    </label>
                 </div>
-            ) : (
-                <form onSubmit={handleSubmit}>
-                    {/* AOF启用选项 */}
-                    <div className="form-group checkbox-group">
-                        <input
-                            type="checkbox"
-                            id="aofEnabled"
-                            name="aofEnabled"
-                            checked={formData.aofEnabled}
-                            onChange={handleChange}
-                        />
-                        <label htmlFor="aofEnabled">
-                            <span className="icon">{FIELD_CONFIG.aofEnabled.icon}</span>
-                            {FIELD_CONFIG.aofEnabled.label}
-                        </label>
+
+                {/* AOF配置，仅在启用时显示 */}
+                {formData.aofEnabled && (
+                    <>
+                        <div className="form-group">
+                            <label htmlFor="aofPath">
+                                <span className="icon">{FIELD_CONFIG.aofPath.icon}</span>
+                                {FIELD_CONFIG.aofPath.label}
+                            </label>
+                            <input
+                                type="text"
+                                id="aofPath"
+                                name="aofPath"
+                                value={formData.aofPath}
+                                onChange={handleChange}
+                                placeholder={FIELD_CONFIG.aofPath.placeholder}
+                            />
+                            <div className="help-text">{FIELD_CONFIG.aofPath.help}</div>
+                            {errors.aofPath && <div className="error-message">{errors.aofPath}</div>}
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="aofMaxSize">
+                                <span className="icon">{FIELD_CONFIG.aofMaxSize.icon}</span>
+                                {FIELD_CONFIG.aofMaxSize.label}
+                            </label>
+                            <input
+                                type="text"
+                                id="aofMaxSize"
+                                name="aofMaxSize"
+                                value={formData.aofMaxSize}
+                                onChange={handleChange}
+                                placeholder={FIELD_CONFIG.aofMaxSize.placeholder}
+                            />
+                            {errors.aofMaxSize && <div className="error-message">{errors.aofMaxSize}</div>}
+                        </div>
+
+                        <div className="form-group checkbox-group">
+                            <input
+                                type="checkbox"
+                                id="compressEnabled"
+                                name="compressEnabled"
+                                checked={formData.compressEnabled}
+                                onChange={handleChange}
+                            />
+                            <label htmlFor="compressEnabled">
+                                <span className="icon">{FIELD_CONFIG.compressEnabled.icon}</span>
+                                {FIELD_CONFIG.compressEnabled.label}
+                            </label>
+                        </div>
+                    </>
+                )}
+
+                <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={loading}
+                >
+                    {loading ? '提交中...' : '保存配置'}
+                </button>
+                
+                {/* 显示成功消息 */}
+                {successMessage && (
+                    <div className="success-message-container">
+                        <div className="success-message">{successMessage}</div>
                     </div>
+                )}
 
-                    {/* AOF配置，仅在启用时显示 */}
-                    {formData.aofEnabled && (
-                        <>
-                            <div className="form-group">
-                                <label htmlFor="aofPath">
-                                    <span className="icon">{FIELD_CONFIG.aofPath.icon}</span>
-                                    {FIELD_CONFIG.aofPath.label}
-                                </label>
-                                <input
-                                    type="text"
-                                    id="aofPath"
-                                    name="aofPath"
-                                    value={formData.aofPath}
-                                    onChange={handleChange}
-                                    placeholder={FIELD_CONFIG.aofPath.placeholder}
-                                />
-                                <div className="help-text">{FIELD_CONFIG.aofPath.help}</div>
-                                {errors.aofPath && <div className="error-message">{errors.aofPath}</div>}
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="aofMaxSize">
-                                    <span className="icon">{FIELD_CONFIG.aofMaxSize.icon}</span>
-                                    {FIELD_CONFIG.aofMaxSize.label}
-                                </label>
-                                <input
-                                    type="text"
-                                    id="aofMaxSize"
-                                    name="aofMaxSize"
-                                    value={formData.aofMaxSize}
-                                    onChange={handleChange}
-                                    placeholder={FIELD_CONFIG.aofMaxSize.placeholder}
-                                />
-                                {errors.aofMaxSize && <div className="error-message">{errors.aofMaxSize}</div>}
-                            </div>
-
-                            <div className="form-group checkbox-group">
-                                <input
-                                    type="checkbox"
-                                    id="compressEnabled"
-                                    name="compressEnabled"
-                                    checked={formData.compressEnabled}
-                                    onChange={handleChange}
-                                />
-                                <label htmlFor="compressEnabled">
-                                    <span className="icon">{FIELD_CONFIG.compressEnabled.icon}</span>
-                                    {FIELD_CONFIG.compressEnabled.label}
-                                </label>
-                            </div>
-                        </>
-                    )}
-
-                    <button 
-                        type="submit" 
-                        className="submit-button"
-                        disabled={loading}
-                    >
-                        {loading ? '提交中...' : '保存配置'}
-                    </button>
-                    
-                    {/* 显示成功消息 */}
-                    {successMessage && (
-                        <div className="success-message-container">
-                            <div className="success-message">{successMessage}</div>
+                {/* 显示提交错误信息 */}
+                {submitError && (
+                    <div className="error-message-container">
+                        <div className="error-message">
+                            <span className="error-title">错误：</span>
+                            {submitError}
                         </div>
-                    )}
-
-                    {/* 显示提交错误信息 */}
-                    {submitError && (
-                        <div className="error-message-container">
-                            <div className="error-message">
-                                <span className="error-title">错误：</span>
-                                {submitError}
+                        {errorData && (
+                            <div className="error-details">
+                                <div className="error-details-title">详细信息：</div>
+                                <pre>{formatErrorData(errorData)}</pre>
                             </div>
-                            {errorData && (
-                                <div className="error-details">
-                                    <div className="error-details-title">详细信息：</div>
-                                    <pre>{formatErrorData(errorData)}</pre>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </form>
-            )}
+                        )}
+                    </div>
+                )}
+            </form>
         </div>
     );
 };

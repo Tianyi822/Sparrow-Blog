@@ -1,6 +1,6 @@
-import { getServerBaseConfig, saveServerBaseConfig } from '@/services/configService';
+import { saveServerBaseConfig } from '@/services/configService';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FiClock, FiGlobe, FiKey, FiServer } from 'react-icons/fi';
 import './ServerBaseConfigForm.scss';
 
@@ -81,32 +81,6 @@ const ServerBaseConfigForm: React.FC = () => {
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
-    const [initialLoading, setInitialLoading] = useState<boolean>(true);
-
-    // 初始化加载数据
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setInitialLoading(true);
-                const data = await getServerBaseConfig();
-                if (data) {
-                    setFormData({
-                        port: data.port || '',
-                        tokenKey: data.tokenKey || '',
-                        tokenExpireDuration: data.tokenExpireDuration || '',
-                        corsOrigins: data.corsOrigins || 'tybook.cc'
-                    });
-                }
-            } catch (error) {
-                console.error('Failed to fetch server config:', error);
-                // 只在控制台显示错误，不在UI上显示
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,66 +244,59 @@ const ServerBaseConfigForm: React.FC = () => {
         <div className="server-base-form-container">
             <h2>服务器基础配置</h2>
 
-            {initialLoading ? (
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <div className="loading-text">加载中...</div>
-                </div>
-            ) : (
-                <form onSubmit={handleSubmit}>
-                    {/* 动态生成表单字段 */}
-                    {Object.entries(FIELD_CONFIG).map(([key, config]) => {
-                        const fieldKey = key as keyof FormData;
-                        return (
-                            <div className="form-group" key={fieldKey}>
-                                <label>
-                                    <span className="icon">{config.icon}</span>
-                                    {config.label}
-                                </label>
-                                <input
-                                    type="text"
-                                    name={config.name}
-                                    value={formData[fieldKey]}
-                                    onChange={handleChange}
-                                    placeholder={config.placeholder}
-                                />
-                                {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
-                            </div>
-                        );
-                    })}
-
-                    <button
-                        type="submit"
-                        className="submit-button"
-                        disabled={loading}
-                    >
-                        {loading ? '提交中...' : '保存配置'}
-                    </button>
-
-                    {/* 显示成功消息 */}
-                    {successMessage && (
-                        <div className="success-message-container">
-                            <div className="success-message">{successMessage}</div>
+            <form onSubmit={handleSubmit}>
+                {/* 动态生成表单字段 */}
+                {Object.entries(FIELD_CONFIG).map(([key, config]) => {
+                    const fieldKey = key as keyof FormData;
+                    return (
+                        <div className="form-group" key={fieldKey}>
+                            <label>
+                                <span className="icon">{config.icon}</span>
+                                {config.label}
+                            </label>
+                            <input
+                                type="text"
+                                name={config.name}
+                                value={formData[fieldKey]}
+                                onChange={handleChange}
+                                placeholder={config.placeholder}
+                            />
+                            {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
                         </div>
-                    )}
+                    );
+                })}
 
-                    {/* 显示提交错误信息 */}
-                    {submitError && (
-                        <div className="error-message-container">
-                            <div className="error-message">
-                                <span className="error-title">错误：</span>
-                                {submitError}
-                            </div>
-                            {errorData && (
-                                <div className="error-details">
-                                    <div className="error-details-title">详细信息：</div>
-                                    <pre>{formatErrorData(errorData)}</pre>
-                                </div>
-                            )}
+                <button
+                    type="submit"
+                    className="submit-button"
+                    disabled={loading}
+                >
+                    {loading ? '提交中...' : '保存配置'}
+                </button>
+
+                {/* 显示成功消息 */}
+                {successMessage && (
+                    <div className="success-message-container">
+                        <div className="success-message">{successMessage}</div>
+                    </div>
+                )}
+
+                {/* 显示提交错误信息 */}
+                {submitError && (
+                    <div className="error-message-container">
+                        <div className="error-message">
+                            <span className="error-title">错误：</span>
+                            {submitError}
                         </div>
-                    )}
-                </form>
-            )}
+                        {errorData && (
+                            <div className="error-details">
+                                <div className="error-details-title">详细信息：</div>
+                                <pre>{formatErrorData(errorData)}</pre>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </form>
         </div>
     );
 };

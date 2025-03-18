@@ -1,6 +1,6 @@
-import { getMySQLConfig, saveMySQLConfig } from '@/services/configService';
+import { saveMySQLConfig } from '@/services/configService';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FiDatabase, FiLock, FiServer, FiSettings, FiUser, FiRefreshCw, FiClock } from 'react-icons/fi';
 import './MySqlConfigForm.scss';
 
@@ -16,17 +16,6 @@ export interface MySQLFormData {
     database: string;
     maxOpenConns: string;
     maxIdleConns: string;
-}
-
-// 后端返回的数据结构
-interface MySQLBackendResponse {
-    User: string;
-    Password: string;
-    Host: string;
-    Port: number;
-    DB: string;
-    MaxOpen: number;
-    MaxIdle: number;
 }
 
 // 字段映射配置
@@ -151,70 +140,32 @@ const MySqlConfigForm: React.FC = () => {
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
-    const [initialLoading, setInitialLoading] = useState<boolean>(true);
-
-    // 初始化加载数据
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setInitialLoading(true);
-                const data = await getMySQLConfig();
-                
-                // 处理后端返回的数据格式
-                if (data) {
-                    // 检查是否是后端指定格式的数据
-                    if ('User' in data) {
-                        // 适配后端返回的新格式
-                        const backendData = data as unknown as MySQLBackendResponse;
-                        setFormData({
-                            username: backendData.User || '',
-                            password: backendData.Password || '',
-                            host: backendData.Host || '127.0.0.1',
-                            port: backendData.Port ? String(backendData.Port) : '3306',
-                            database: backendData.DB || 'H2_BLOG_SERVER',
-                            maxOpenConns: backendData.MaxOpen ? String(backendData.MaxOpen) : '10',
-                            maxIdleConns: backendData.MaxIdle ? String(backendData.MaxIdle) : '5'
-                        });
-                    } else {
-                        // 适配旧格式
-                        const oldData = data as unknown as MySQLFormData;
-                        setFormData({
-                            username: oldData.username || '',
-                            password: oldData.password || '',
-                            host: oldData.host || '127.0.0.1',
-                            port: oldData.port || '3306',
-                            database: oldData.database || 'H2_BLOG_SERVER',
-                            maxOpenConns: oldData.maxOpenConns || '10',
-                            maxIdleConns: oldData.maxIdleConns || '5'
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to fetch MySQL config:', error);
-                // 只在控制台显示错误，不在UI上显示
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-
+        
         // 找出对应的字段
         const fieldKey = Object.keys(FIELD_CONFIG).find(
             key => FIELD_CONFIG[key as keyof typeof FIELD_CONFIG].name === name
         ) as keyof MySQLFormData | undefined;
-
+        
         if (!fieldKey) return;
-
+        
         let processedValue = value;
-
-        // 特殊处理端口和连接数字段，确保只有数字
-        if (fieldKey === 'port' || fieldKey === 'maxOpenConns' || fieldKey === 'maxIdleConns') {
+        
+        // 特殊处理端口字段，确保只有数字
+        if (fieldKey === 'port') {
+            processedValue = value.replace(/\D/g, '');
+            const numValue = parseInt(processedValue, 10);
+            // 范围检查
+            if (!isNaN(numValue) && numValue > 65535) {
+                processedValue = '65535';
+            }
+        }
+        
+        // 处理maxOpenConns和maxIdleConns字段，确保只有数字
+        if (fieldKey === 'maxOpenConns' || fieldKey === 'maxIdleConns') {
             processedValue = value.replace(/\D/g, '');
         }
 
@@ -228,12 +179,7 @@ const MySqlConfigForm: React.FC = () => {
                 return newErrors;
             });
         }
-
-        // 特别处理maxOpenConns与maxIdleConns的依赖关系
-        if (fieldKey === 'maxOpenConns') {
-            validateField('maxIdleConns');
-        }
-
+        
         // 清除成功和错误消息
         if (successMessage) setSuccessMessage('');
         if (submitError) setSubmitError('');
@@ -242,7 +188,14 @@ const MySqlConfigForm: React.FC = () => {
     // 验证单个字段
     const validateField = (field: keyof MySQLFormData): string => {
         const config = FIELD_CONFIG[field];
-        return config.validate(formData[field], formData);
+        if (!config) return '';
+        
+        // 处理特殊字段（maxIdleConns需要传递formData进行比较）
+        if (field === 'maxIdleConns') {
+            return config.validate(formData[field], formData);
+        }
+        
+        return (config.validate as (value: string) => string)(formData[field]);
     };
 
     // 验证所有字段
@@ -254,7 +207,7 @@ const MySqlConfigForm: React.FC = () => {
         Object.keys(FIELD_CONFIG).forEach(field => {
             const fieldKey = field as keyof MySQLFormData;
             const errorMessage = validateField(fieldKey);
-
+            
             if (errorMessage) {
                 newErrors[fieldKey] = errorMessage;
                 isValid = false;
@@ -352,70 +305,63 @@ const MySqlConfigForm: React.FC = () => {
     };
 
     return (
-        <div className="mysql-form-container">
+        <div className="mysql-config-form-container">
             <h2>数据库配置</h2>
-
-            {initialLoading ? (
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <div className="loading-text">加载中...</div>
-                </div>
-            ) : (
-                <form onSubmit={handleSubmit}>
-                    {/* 动态生成表单字段 */}
-                    {Object.entries(FIELD_CONFIG).map(([key, config]) => {
-                        const fieldKey = key as keyof MySQLFormData;
-                        return (
-                            <div className="form-group" key={fieldKey}>
-                                <label htmlFor={fieldKey}>
-                                    <span className="icon">{config.icon}</span>
-                                    {config.label}
-                                </label>
-                                <input
-                                    type={fieldKey === 'password' ? 'password' : 'text'}
-                                    id={fieldKey}
-                                    name={fieldKey}
-                                    value={formData[fieldKey]}
-                                    onChange={handleChange}
-                                    placeholder={config.placeholder}
-                                />
-                                {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
-                            </div>
-                        );
-                    })}
-
-                    <button
-                        type="submit"
-                        className="submit-button"
-                        disabled={loading}
-                    >
-                        {loading ? '提交中...' : '保存配置'}
-                    </button>
-
-                    {/* 显示成功消息 */}
-                    {successMessage && (
-                        <div className="success-message-container">
-                            <div className="success-message">{successMessage}</div>
+            
+            <form onSubmit={handleSubmit}>
+                {/* 动态生成表单字段 */}
+                {Object.entries(FIELD_CONFIG).map(([key, config]) => {
+                    const fieldKey = key as keyof MySQLFormData;
+                    return (
+                        <div className="form-group" key={fieldKey}>
+                            <label htmlFor={fieldKey}>
+                                <span className="icon">{config.icon}</span>
+                                {config.label}
+                            </label>
+                            <input
+                                type={fieldKey === 'password' ? 'password' : 'text'}
+                                id={fieldKey}
+                                name={config.name}
+                                value={formData[fieldKey]}
+                                onChange={handleChange}
+                                placeholder={config.placeholder}
+                            />
+                            {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
                         </div>
-                    )}
+                    );
+                })}
 
-                    {/* 显示提交错误信息 */}
-                    {submitError && (
-                        <div className="error-message-container">
-                            <div className="error-message">
-                                <span className="error-title">错误：</span>
-                                {submitError}
-                            </div>
-                            {errorData && (
-                                <div className="error-details">
-                                    <div className="error-details-title">详细信息：</div>
-                                    <pre>{formatErrorData(errorData)}</pre>
-                                </div>
-                            )}
+                <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={loading}
+                >
+                    {loading ? '提交中...' : '保存配置'}
+                </button>
+                
+                {/* 显示成功消息 */}
+                {successMessage && (
+                    <div className="success-message-container">
+                        <div className="success-message">{successMessage}</div>
+                    </div>
+                )}
+
+                {/* 显示提交错误信息 */}
+                {submitError && (
+                    <div className="error-message-container">
+                        <div className="error-message">
+                            <span className="error-title">错误：</span>
+                            {submitError}
                         </div>
-                    )}
-                </form>
-            )}
+                        {errorData && (
+                            <div className="error-details">
+                                <div className="error-details-title">详细信息：</div>
+                                <pre>{formatErrorData(errorData)}</pre>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </form>
         </div>
     );
 };

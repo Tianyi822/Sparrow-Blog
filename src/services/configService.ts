@@ -1,12 +1,11 @@
 import { apiRequest, ApiResponse } from './api';
 
 // Types for configuration data
-// import { ServerBaseFormData } from '@/components/ConfigServer/ServerBaseConfigForm/ServerBaseConfigForm';
 import { LoggerFormData } from '@/components/ConfigServer/LoggerConfigForm/LoggerConfigForm';
 import { MySQLFormData } from '@/components/ConfigServer/MySqlConfigForm/MySqlConfigForm';
 import { OSSConfigFormData } from '@/components/ConfigServer/OSSConfigForm/OSSConfigForm';
 import { CacheConfigFormData } from '@/components/ConfigServer/CacheConfigForm/CacheConfigForm';
-import { UserEmailConfigFormData } from '@/components/ConfigServer/UserConfigForm/UserConfigForm.tsx';
+import { UserEmailConfigFormData } from '@/components/ConfigServer/UserConfigForm/UserConfigForm';
 
 // 服务器基础配置数据接口
 export interface ServerBaseConfig {
@@ -25,16 +24,6 @@ export interface ServerConfig {
     cache?: CacheConfigFormData;
     userEmail?: UserEmailConfigFormData;
 }
-
-/**
- * Fetch server base configuration
- */
-export const getServerBaseConfig = async (): Promise<ServerBaseConfig> => {
-    return apiRequest<ServerBaseConfig>({
-        method: 'GET',
-        url: '/config/server-base'
-    });
-};
 
 /**
  * Save server base configuration
@@ -79,16 +68,6 @@ export const saveServerBaseConfig = async (data: ServerBaseConfig): Promise<ApiR
 };
 
 /**
- * Fetch logger configuration
- */
-export const getLoggerConfig = async (): Promise<LoggerFormData> => {
-    return apiRequest<LoggerFormData>({
-        method: 'GET',
-        url: '/config/logger'
-    });
-};
-
-/**
  * 转换日志配置数据为后端格式
  */
 interface LoggerBackendData {
@@ -125,16 +104,6 @@ export const saveLoggerConfig = async (data: LoggerFormData): Promise<ApiRespons
         headers: {
             'Content-Type': 'application/json'
         }
-    });
-};
-
-/**
- * Fetch MySQL configuration
- */
-export const getMySQLConfig = async (): Promise<MySQLFormData> => {
-    return apiRequest<MySQLFormData>({
-        method: 'GET',
-        url: '/config/mysql'
     });
 };
 
@@ -177,16 +146,6 @@ export const saveMySQLConfig = async (data: MySQLFormData): Promise<ApiResponse<
         headers: {
             'Content-Type': 'application/json'
         }
-    });
-};
-
-/**
- * Fetch OSS storage configuration
- */
-export const getOSSConfig = async (): Promise<OSSConfigFormData> => {
-    return apiRequest<OSSConfigFormData>({
-        method: 'GET',
-        url: '/config/oss'
     });
 };
 
@@ -235,16 +194,6 @@ export const saveOSSConfig = async (data: OSSConfigFormData): Promise<ApiRespons
         headers: {
             'Content-Type': 'application/json'
         }
-    });
-};
-
-/**
- * Fetch Cache configuration
- */
-export const getCacheConfig = async (): Promise<CacheConfigFormData> => {
-    return apiRequest<CacheConfigFormData>({
-        method: 'GET',
-        url: '/config/cache'
     });
 };
 
@@ -330,15 +279,10 @@ export const applyConfigurations = async (): Promise<ApiResponse<null>> => {
 };
 
 export default {
-    getServerBaseConfig,
     saveServerBaseConfig,
-    getLoggerConfig,
     saveLoggerConfig,
-    getMySQLConfig,
     saveMySQLConfig,
-    getOSSConfig,
     saveOSSConfig,
-    getCacheConfig,
     saveCacheConfig,
     saveUserConfig,
     sendVerificationCode,

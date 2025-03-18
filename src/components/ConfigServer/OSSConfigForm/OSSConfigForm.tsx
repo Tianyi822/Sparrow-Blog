@@ -1,6 +1,6 @@
-import { getOSSConfig, saveOSSConfig } from '@/services/configService';
+import { saveOSSConfig } from '@/services/configService';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FiBox, FiCloud, FiFile, FiGlobe, FiImage, FiKey, FiLock, FiMaximize, FiPercent, FiToggleRight } from 'react-icons/fi';
 import './OSSConfigForm.scss';
 
@@ -20,22 +20,6 @@ export interface OSSConfigFormData {
     webpEnabled: boolean;
     webpQuality: string;
     webpMaxSize: string;
-}
-
-// 后端返回的数据结构
-interface OSSBackendResponse {
-    endpoint: string;
-    region: string;
-    access_key_id: string;
-    access_key_secret: string;
-    bucket: string;
-    image_oss_path: string;
-    blog_oss_path: string;
-    webp: {
-        enable: boolean | string;
-        quality: number | string;
-        size: number | string;
-    };
 }
 
 // 定义字段配置接口，确保字段名与OSSConfigFormData匹配
@@ -223,62 +207,6 @@ const OSSConfigForm: React.FC = () => {
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
-    const [initialLoading, setInitialLoading] = useState<boolean>(true);
-
-    // 初始化加载数据
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setInitialLoading(true);
-                const data = await getOSSConfig();
-
-                // 处理后端返回的数据格式
-                if (data) {
-                    // 检查是否是后端指定格式的数据
-                    if ('access_key_id' in data || 'webp' in data) {
-                        // 适配后端返回的新格式
-                        const backendData = data as unknown as OSSBackendResponse;
-                        setFormData({
-                            endpoint: backendData.endpoint || '',
-                            region: backendData.region || '',
-                            accessKeyId: backendData.access_key_id || '',
-                            accessKeySecret: backendData.access_key_secret || '',
-                            bucketName: backendData.bucket || '',
-                            imagePath: backendData.image_oss_path || 'images/',
-                            avatarPath: 'images/avatar/', // 默认值，后端可能没有返回
-                            blogPath: backendData.blog_oss_path || 'blogs/',
-                            webpEnabled: backendData.webp?.enable === '1' || backendData.webp?.enable === true,
-                            webpQuality: String(backendData.webp?.quality || '75'),
-                            webpMaxSize: String(backendData.webp?.size || '1.5')
-                        });
-                    } else {
-                        // 适配旧格式
-                        const oldData = data as OSSConfigFormData;
-                        setFormData({
-                            endpoint: oldData.endpoint || '',
-                            region: oldData.region || '',
-                            accessKeyId: oldData.accessKeyId || '',
-                            accessKeySecret: oldData.accessKeySecret || '',
-                            bucketName: oldData.bucketName || '',
-                            imagePath: oldData.imagePath || 'images/',
-                            avatarPath: oldData.avatarPath || 'images/avatar/',
-                            blogPath: oldData.blogPath || 'blogs/',
-                            webpEnabled: oldData.webpEnabled !== undefined ? oldData.webpEnabled : true,
-                            webpQuality: oldData.webpQuality || '75',
-                            webpMaxSize: oldData.webpMaxSize || '1.5'
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to fetch OSS config:', error);
-                // 只在控制台显示错误，不在UI上显示
-            } finally {
-                setInitialLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -437,117 +365,110 @@ const OSSConfigForm: React.FC = () => {
         <div className="oss-config-form-container">
             <h2>OSS存储配置</h2>
 
-            {initialLoading ? (
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <div className="loading-text">加载中...</div>
+            <form onSubmit={handleSubmit}>
+                {/* 基本配置字段 */}
+                {['endpoint', 'region', 'accessKeyId', 'accessKeySecret', 'bucketName', 'imagePath', 'blogPath'].map(key => {
+                    const fieldKey = key as keyof OSSConfigFormData;
+                    const config = FIELD_CONFIG[fieldKey];
+                    return (
+                        <div className="form-group" key={fieldKey}>
+                            <label htmlFor={fieldKey}>
+                                <span className="icon">{config.icon}</span>
+                                {config.label}
+                            </label>
+                            <input
+                                type={config.type}
+                                id={fieldKey}
+                                name={fieldKey}
+                                value={formData[fieldKey] as string}
+                                onChange={handleChange}
+                                placeholder={config.placeholder}
+                            />
+                            {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
+                        </div>
+                    );
+                })}
+
+                <div className="form-section-header">
+                    <h3>
+                        <span className="icon"><FiImage /></span>
+                        WebP配置
+                    </h3>
                 </div>
-            ) : (
-                <form onSubmit={handleSubmit}>
-                    {/* 基本配置字段 */}
-                    {['endpoint', 'region', 'accessKeyId', 'accessKeySecret', 'bucketName', 'imagePath', 'blogPath'].map(key => {
-                        const fieldKey = key as keyof OSSConfigFormData;
-                        const config = FIELD_CONFIG[fieldKey];
-                        return (
-                            <div className="form-group" key={fieldKey}>
-                                <label htmlFor={fieldKey}>
-                                    <span className="icon">{config.icon}</span>
-                                    {config.label}
-                                </label>
-                                <input
-                                    type={config.type}
-                                    id={fieldKey}
-                                    name={fieldKey}
-                                    value={formData[fieldKey] as string}
-                                    onChange={handleChange}
-                                    placeholder={config.placeholder}
-                                />
-                                {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
-                            </div>
-                        );
-                    })}
 
-                    <div className="form-section-header">
-                        <h3>
-                            <span className="icon"><FiImage /></span>
-                            WebP配置
-                        </h3>
-                    </div>
+                {/* WebP 启用选项 */}
+                <div className="form-group checkbox-group">
+                    <input
+                        type="checkbox"
+                        id="webpEnabled"
+                        name="webpEnabled"
+                        checked={formData.webpEnabled}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor="webpEnabled">
+                        <span className="icon">{FIELD_CONFIG.webpEnabled.icon}</span>
+                        {FIELD_CONFIG.webpEnabled.label}
+                    </label>
+                </div>
 
-                    {/* WebP 启用选项 */}
-                    <div className="form-group checkbox-group">
-                        <input
-                            type="checkbox"
-                            id="webpEnabled"
-                            name="webpEnabled"
-                            checked={formData.webpEnabled}
-                            onChange={handleChange}
-                        />
-                        <label htmlFor="webpEnabled">
-                            <span className="icon">{FIELD_CONFIG.webpEnabled.icon}</span>
-                            {FIELD_CONFIG.webpEnabled.label}
-                        </label>
-                    </div>
-
-                    {/* WebP 参数设置，仅在启用时显示 */}
-                    {formData.webpEnabled && (
-                        <>
-                            {['webpQuality', 'webpMaxSize'].map(key => {
-                                const fieldKey = key as keyof OSSConfigFormData;
-                                const config = FIELD_CONFIG[fieldKey];
-                                return (
-                                    <div className="form-group" key={fieldKey}>
-                                        <label htmlFor={fieldKey}>
-                                            <span className="icon">{config.icon}</span>
-                                            {config.label}
-                                        </label>
-                                        <input
-                                            type={config.type}
-                                            id={fieldKey}
-                                            name={fieldKey}
-                                            value={formData[fieldKey] as string}
-                                            onChange={handleChange}
-                                            placeholder={config.placeholder}
-                                        />
-                                        {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
-                                    </div>
-                                );
-                            })}
-                        </>
-                    )}
-
-                    <button
-                        type="submit"
-                        className="submit-button"
-                        disabled={loading}
-                    >
-                        {loading ? '提交中...' : '保存配置'}
-                    </button>
-
-                    {/* 显示成功消息 */}
-                    {successMessage && (
-                        <div className="success-message-container">
-                            <div className="success-message">{successMessage}</div>
-                        </div>
-                    )}
-
-                    {/* 显示提交错误信息 */}
-                    {submitError && (
-                        <div className="error-message-container">
-                            <div className="error-message">
-                                <span className="error-title">错误：</span>
-                                {submitError}
-                            </div>
-                            {errorData && (
-                                <div className="error-details">
-                                    <div className="error-details-title">详细信息：</div>
-                                    <pre>{formatErrorData(errorData)}</pre>
+                {/* WebP 参数设置，仅在启用时显示 */}
+                {formData.webpEnabled && (
+                    <>
+                        {['webpQuality', 'webpMaxSize'].map(key => {
+                            const fieldKey = key as keyof OSSConfigFormData;
+                            const config = FIELD_CONFIG[fieldKey];
+                            return (
+                                <div className="form-group" key={fieldKey}>
+                                    <label htmlFor={fieldKey}>
+                                        <span className="icon">{config.icon}</span>
+                                        {config.label}
+                                    </label>
+                                    <input
+                                        type={config.type}
+                                        id={fieldKey}
+                                        name={fieldKey}
+                                        value={formData[fieldKey] as string}
+                                        onChange={handleChange}
+                                        placeholder={config.placeholder}
+                                    />
+                                    {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
                                 </div>
-                            )}
+                            );
+                        })}
+                    </>
+                )}
+
+                <button
+                    type="submit"
+                    className="submit-button"
+                    disabled={loading}
+                >
+                    {loading ? '提交中...' : '保存配置'}
+                </button>
+
+                {/* 显示成功消息 */}
+                {successMessage && (
+                    <div className="success-message-container">
+                        <div className="success-message">{successMessage}</div>
+                    </div>
+                )}
+
+                {/* 显示提交错误信息 */}
+                {submitError && (
+                    <div className="error-message-container">
+                        <div className="error-message">
+                            <span className="error-title">错误：</span>
+                            {submitError}
                         </div>
-                    )}
-                </form>
-            )}
+                        {errorData && (
+                            <div className="error-details">
+                                <div className="error-details-title">详细信息：</div>
+                                <pre>{formatErrorData(errorData)}</pre>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </form>
         </div>
     );
 };
