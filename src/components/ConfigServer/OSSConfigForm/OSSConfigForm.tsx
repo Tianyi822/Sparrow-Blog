@@ -1,24 +1,11 @@
-import React, { useState } from 'react';
+import { getOSSConfig, saveOSSConfig } from '@/services/configService';
+import { AxiosError } from 'axios';
+import React, { useEffect, useState } from 'react';
+import { FiBox, FiCloud, FiFile, FiGlobe, FiImage, FiKey, FiLock, FiMaximize, FiPercent, FiToggleRight } from 'react-icons/fi';
 import './OSSConfigForm.scss';
 
 interface ValidationErrors {
-    endpoint?: string;
-    region?: string;
-    accessKeyId?: string;
-    accessKeySecret?: string;
-    bucketName?: string;
-    imagePath?: string;
-    avatarPath?: string;
-    blogPath?: string;
-    webpEnabled?: string;
-    webpQuality?: string;
-    webpMaxSize?: string;
-}
-
-interface OSSConfigFormProps {
-    onSubmit?: (formData: OSSConfigFormData) => void;
-    initialData?: OSSConfigFormData;
-    serverError?: string;
+    [key: string]: string;
 }
 
 export interface OSSConfigFormData {
@@ -35,345 +22,532 @@ export interface OSSConfigFormData {
     webpMaxSize: string;
 }
 
-const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ onSubmit, initialData, serverError }) => {
-    const [errors, setErrors] = useState<ValidationErrors>({});
+// 后端返回的数据结构
+interface OSSBackendResponse {
+    endpoint: string;
+    region: string;
+    access_key_id: string;
+    access_key_secret: string;
+    bucket: string;
+    image_oss_path: string;
+    blog_oss_path: string;
+    webp: {
+        enable: boolean | string;
+        quality: number | string;
+        size: number | string;
+    };
+}
+
+// 定义字段配置接口，确保字段名与OSSConfigFormData匹配
+interface FieldConfigType {
+    [key: string]: {
+        label: string;
+        icon: React.ReactNode;
+        name: string;
+        type: string;
+        placeholder?: string;
+        validate: (value: string) => string;
+    };
+}
+
+// 字段映射配置
+const FIELD_CONFIG: FieldConfigType = {
+    endpoint: {
+        label: 'OSS Endpoint',
+        icon: <FiCloud />,
+        name: 'endpoint',
+        type: 'text',
+        placeholder: 'oss-cn-guangzhou.aliyuncs.com',
+        validate: (value: string) => {
+            if (!value.trim()) {
+                return 'Endpoint 不能为空';
+            }
+            return '';
+        }
+    },
+    region: {
+        label: '区域',
+        icon: <FiGlobe />,
+        name: 'region',
+        type: 'text',
+        placeholder: 'cn-guangzhou',
+        validate: (value: string) => {
+            if (!value.trim()) {
+                return '区域不能为空';
+            }
+            return '';
+        }
+    },
+    accessKeyId: {
+        label: 'AccessKey ID',
+        icon: <FiKey />,
+        name: 'accessKeyId',
+        type: 'password',
+        placeholder: '请输入AccessKey ID',
+        validate: (value: string) => {
+            if (!value.trim()) {
+                return 'AccessKey ID不能为空';
+            }
+            return '';
+        }
+    },
+    accessKeySecret: {
+        label: 'AccessKey Secret',
+        icon: <FiLock />,
+        name: 'accessKeySecret',
+        type: 'password',
+        placeholder: '请输入AccessKey Secret',
+        validate: (value: string) => {
+            if (!value.trim()) {
+                return 'AccessKey Secret不能为空';
+            }
+            return '';
+        }
+    },
+    bucketName: {
+        label: 'Bucket名称',
+        icon: <FiBox />,
+        name: 'bucketName',
+        type: 'text',
+        placeholder: '请输入Bucket名称',
+        validate: (value: string) => {
+            if (!value.trim()) {
+                return 'Bucket名称不能为空';
+            }
+            return '';
+        }
+    },
+    imagePath: {
+        label: '图片OSS路径',
+        icon: <FiImage />,
+        name: 'imagePath',
+        type: 'text',
+        placeholder: 'images/',
+        validate: (value: string) => {
+            if (!value.trim()) {
+                return '图片路径不能为空';
+            }
+            if (!value.endsWith('/')) {
+                return '路径必须以 / 结尾';
+            }
+            return '';
+        }
+    },
+    blogPath: {
+        label: '博客OSS路径',
+        icon: <FiFile />,
+        name: 'blogPath',
+        type: 'text',
+        placeholder: 'blogs/',
+        validate: (value: string) => {
+            if (!value.trim()) {
+                return '博客路径不能为空';
+            }
+            if (!value.endsWith('/')) {
+                return '路径必须以 / 结尾';
+            }
+            return '';
+        }
+    },
+    webpEnabled: {
+        label: '启用WebP转换',
+        icon: <FiToggleRight />,
+        name: 'webpEnabled',
+        type: 'checkbox',
+        validate: () => ''
+    },
+    webpQuality: {
+        label: 'WebP质量 (1-100)',
+        icon: <FiPercent />,
+        name: 'webpQuality',
+        type: 'text',
+        placeholder: '75',
+        validate: (value: string) => {
+            const quality = parseFloat(value);
+            if (isNaN(quality) || quality < 1 || quality > 100) {
+                return 'WebP质量必须是1到100之间的数字';
+            }
+            return '';
+        }
+    },
+    webpMaxSize: {
+        label: '最大大小 (MB)',
+        icon: <FiMaximize />,
+        name: 'webpMaxSize',
+        type: 'text',
+        placeholder: '1.5',
+        validate: (value: string) => {
+            const size = parseFloat(value);
+            if (isNaN(size) || size <= 0) {
+                return '最大大小必须为正数';
+            }
+            return '';
+        }
+    },
+    // 确保所有OSSConfigFormData中的字段都有对应配置
+    avatarPath: {
+        label: '头像OSS路径',
+        icon: <FiFile />,
+        name: 'avatarPath',
+        type: 'text',
+        placeholder: 'images/avatar/',
+        validate: (value: string) => {
+            if (!value.trim()) {
+                return '头像路径不能为空';
+            }
+            if (!value.endsWith('/')) {
+                return '路径必须以 / 结尾';
+            }
+            return '';
+        }
+    }
+};
+
+const OSSConfigForm: React.FC = () => {
+    // 状态定义
     const [formData, setFormData] = useState<OSSConfigFormData>({
-        endpoint: initialData?.endpoint || '',
-        region: initialData?.region || '',
-        accessKeyId: initialData?.accessKeyId || '',
-        accessKeySecret: initialData?.accessKeySecret || '',
-        bucketName: initialData?.bucketName || '',
-        imagePath: initialData?.imagePath || 'images/',
-        avatarPath: initialData?.avatarPath || 'images/avatar/',
-        blogPath: initialData?.blogPath || 'blogs/',
-        webpEnabled: initialData?.webpEnabled !== undefined ? initialData.webpEnabled : true,
-        webpQuality: initialData?.webpQuality || '75',
-        webpMaxSize: initialData?.webpMaxSize || '1'
+        endpoint: '',
+        region: '',
+        accessKeyId: '',
+        accessKeySecret: '',
+        bucketName: '',
+        imagePath: 'images/',
+        avatarPath: 'images/avatar/',
+        blogPath: 'blogs/',
+        webpEnabled: true,
+        webpQuality: '75',
+        webpMaxSize: '1.5'
     });
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [submitError, setSubmitError] = useState<string>('');
+    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = useState<string>('');
+    const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
-    const validateField = (name: string, value: string | boolean): string => {
-        if (typeof value === 'boolean') return '';
-        
-        switch (name) {
-            case 'endpoint':
-                if (!value.trim()) {
-                    return 'Endpoint 不能为空';
-                }
-                if (!value.startsWith('http://') && !value.startsWith('https://')) {
-                    return 'Endpoint 必须以 http:// 或 https:// 开头';
-                }
-                return '';
+    // 初始化加载数据
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setInitialLoading(true);
+                const data = await getOSSConfig();
 
-            case 'region':
-                if (!value.trim()) {
-                    return '地域不能为空';
+                // 处理后端返回的数据格式
+                if (data) {
+                    // 检查是否是后端指定格式的数据
+                    if ('access_key_id' in data || 'webp' in data) {
+                        // 适配后端返回的新格式
+                        const backendData = data as unknown as OSSBackendResponse;
+                        setFormData({
+                            endpoint: backendData.endpoint || '',
+                            region: backendData.region || '',
+                            accessKeyId: backendData.access_key_id || '',
+                            accessKeySecret: backendData.access_key_secret || '',
+                            bucketName: backendData.bucket || '',
+                            imagePath: backendData.image_oss_path || 'images/',
+                            avatarPath: 'images/avatar/', // 默认值，后端可能没有返回
+                            blogPath: backendData.blog_oss_path || 'blogs/',
+                            webpEnabled: backendData.webp?.enable === '1' || backendData.webp?.enable === true,
+                            webpQuality: String(backendData.webp?.quality || '75'),
+                            webpMaxSize: String(backendData.webp?.size || '1.5')
+                        });
+                    } else {
+                        // 适配旧格式
+                        const oldData = data as OSSConfigFormData;
+                        setFormData({
+                            endpoint: oldData.endpoint || '',
+                            region: oldData.region || '',
+                            accessKeyId: oldData.accessKeyId || '',
+                            accessKeySecret: oldData.accessKeySecret || '',
+                            bucketName: oldData.bucketName || '',
+                            imagePath: oldData.imagePath || 'images/',
+                            avatarPath: oldData.avatarPath || 'images/avatar/',
+                            blogPath: oldData.blogPath || 'blogs/',
+                            webpEnabled: oldData.webpEnabled !== undefined ? oldData.webpEnabled : true,
+                            webpQuality: oldData.webpQuality || '75',
+                            webpMaxSize: oldData.webpMaxSize || '1.5'
+                        });
+                    }
                 }
-                return '';
-
-            case 'accessKeyId':
-                if (!value.trim()) {
-                    return 'AccessKey ID 不能为空';
-                }
-                return '';
-
-            case 'accessKeySecret':
-                if (!value.trim()) {
-                    return 'AccessKey Secret 不能为空';
-                }
-                return '';
-
-            case 'bucketName':
-                if (!value.trim()) {
-                    return 'Bucket 名称不能为空';
-                }
-                return '';
-
-            case 'imagePath':
-                if (!value.trim()) {
-                    return '图片路径不能为空';
-                }
-                if (!value.endsWith('/')) {
-                    return '路径必须以 / 结尾';
-                }
-                return '';
-
-            case 'avatarPath':
-                if (!value.trim()) {
-                    return '头像路径不能为空';
-                }
-                if (!value.endsWith('/')) {
-                    return '路径必须以 / 结尾';
-                }
-                return '';
-
-            case 'blogPath':
-                if (!value.trim()) {
-                    return '博客路径不能为空';
-                }
-                if (!value.endsWith('/')) {
-                    return '路径必须以 / 结尾';
-                }
-                return '';
-
-            case 'webpQuality': {
-                const quality = parseInt(value);
-                if (isNaN(quality) || !Number.isInteger(quality)) {
-                    return 'Webp 质量必须为整数';
-                }
-                if (quality < 1 || quality > 100) {
-                    return 'Webp 质量必须在 1-100 之间';
-                }
-                return '';
+            } catch (error) {
+                console.error('Failed to fetch OSS config:', error);
+                // 只在控制台显示错误，不在UI上显示
+            } finally {
+                setInitialLoading(false);
             }
+        };
 
-            case 'webpMaxSize': {
-                const size = parseFloat(value);
-                if (isNaN(size) || size <= 0) {
-                    return '压缩后的大小必须为正数';
-                }
-                return '';
-            }
+        fetchData();
+    }, []);
 
-            default:
-                return '';
-        }
-    };
-
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
+    // 处理输入变化
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
-        
-        if (type === 'checkbox') {
-            const checked = (e.target as HTMLInputElement).checked;
-            setFormData({
-                ...formData,
-                [name]: checked
-            });
-            return;
-        }
-        
-        setFormData({
-            ...formData,
-            [name]: value
-        });
 
-        const error = validateField(name, value);
-        setErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+        // 找出对应的字段
+        const fieldKey = Object.keys(FIELD_CONFIG).find(
+            key => FIELD_CONFIG[key].name === name
+        );
+
+        if (!fieldKey) return;
+
+        // 处理不同类型的输入
+        if (type === 'checkbox') {
+            setFormData(prev => ({
+                ...prev,
+                [fieldKey]: (e.target as HTMLInputElement).checked
+            }));
+        } else {
+            setFormData(prev => ({ ...prev, [fieldKey]: value }));
+        }
+
+        // 清除该字段的错误
+        if (errors[fieldKey]) {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[fieldKey];
+                return newErrors;
+            });
+        }
+
+        // 清除成功和错误消息
+        if (successMessage) setSuccessMessage('');
+        if (submitError) setSubmitError('');
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    // 验证单个字段
+    const validateField = (field: string): string => {
+        const config = FIELD_CONFIG[field];
+        if (!config || typeof config.validate !== 'function') return '';
 
-        // 验证所有字段
+        // 对于布尔类型字段，直接返回空字符串
+        if (field === 'webpEnabled' && typeof formData[field as keyof OSSConfigFormData] === 'boolean') {
+            return '';
+        }
+
+        // 对于其他字段，执行验证
+        return config.validate(formData[field as keyof OSSConfigFormData] as string);
+    };
+
+    // 验证所有字段
+    const validateForm = (): boolean => {
         const newErrors: ValidationErrors = {};
-        Object.entries(formData).forEach(([key, value]) => {
-            if (typeof value !== 'boolean') {
-                const error = validateField(key, value);
-                if (error) {
-                    newErrors[key as keyof ValidationErrors] = error;
-                }
+        let isValid = true;
+
+        // 遍历所有字段进行验证
+        Object.keys(formData).forEach(field => {
+            const errorMessage = validateField(field);
+            if (errorMessage) {
+                newErrors[field] = errorMessage;
+                isValid = false;
             }
         });
 
         setErrors(newErrors);
+        return isValid;
+    };
 
-        // 如果没有错误，则提交表单
-        if (Object.keys(newErrors).length === 0) {
-            if (onSubmit) {
-                onSubmit(formData);
+    // 格式化错误数据显示
+    const formatErrorData = (data: Record<string, unknown> | null): string => {
+        if (!data) return '';
+
+        try {
+            return JSON.stringify(data, null, 2);
+        } catch {
+            return String(data);
+        }
+    };
+
+    // 处理表单提交
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitError('');
+        setErrorData(null);
+        setSuccessMessage('');
+
+        if (!validateForm()) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await saveOSSConfig(formData);
+
+            // 处理非200响应
+            if (response && response.code !== 200) {
+                setSubmitError(response.msg || 'OSS配置保存失败，请检查输入内容');
+                if (response.data !== null && response.data !== undefined) {
+                    setErrorData(response.data as unknown as Record<string, unknown>);
+                }
+                return;
             }
+
+            // 成功提交
+            setSuccessMessage('OSS配置保存成功！');
+        } catch (error: unknown) {
+            console.error('Failed to save OSS config:', error);
+
+            // 处理错误对象，提取详细信息
+            if (error && typeof error === 'object') {
+                // 检查是否是Axios错误并包含响应数据
+                if (error instanceof AxiosError && error.response) {
+                    const errorResponse = error.response;
+
+                    // 尝试提取错误消息
+                    if (errorResponse.data) {
+                        const errorData = errorResponse.data as Record<string, unknown>;
+                        if (errorData.msg) {
+                            setSubmitError(errorData.msg as string);
+                        } else {
+                            setSubmitError(`请求失败: ${errorResponse.status} ${errorResponse.statusText || ''}`);
+                        }
+
+                        // 尝试提取错误数据
+                        if (errorData.data) {
+                            setErrorData(errorData.data as Record<string, unknown>);
+                        } else if (typeof errorData === 'object') {
+                            // 如果没有data字段但响应本身是对象，则使用整个响应
+                            setErrorData(errorData as Record<string, unknown>);
+                        }
+                    } else {
+                        setSubmitError(`请求失败: ${errorResponse.status} ${errorResponse.statusText || ''}`);
+                    }
+                } else if ('message' in error) {
+                    // 普通Error对象
+                    setSubmitError(`错误: ${(error as Error).message}`);
+                } else {
+                    // 未知错误对象
+                    setSubmitError('提交过程中发生未知错误');
+                    try {
+                        setErrorData(error as Record<string, unknown>);
+                    } catch (e) {
+                        console.error('Failed to format error data:', e);
+                    }
+                }
+            } else {
+                // 基础错误处理
+                setSubmitError('提交过程中发生错误，请检查网络连接');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="oss-config-form-container">
-            <div className="card-glow"></div>
-            <div className="card-border-glow"></div>
+            <h2>OSS存储配置</h2>
 
-            <h2>OSS 存储配置</h2>
-
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="endpoint">
-                        <span className="icon">🔗</span>
-                        Endpoint
-                    </label>
-                    <input
-                        type="text"
-                        id="endpoint"
-                        name="endpoint"
-                        value={formData.endpoint}
-                        onChange={handleChange}
-                        placeholder="https://oss-cn-hangzhou.aliyuncs.com"
-                    />
-                    {errors.endpoint && <div className="error-message">{errors.endpoint}</div>}
+            {initialLoading ? (
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <div className="loading-text">加载中...</div>
                 </div>
+            ) : (
+                <form onSubmit={handleSubmit}>
+                    {/* 基本配置字段 */}
+                    {['endpoint', 'region', 'accessKeyId', 'accessKeySecret', 'bucketName', 'imagePath', 'blogPath'].map(key => {
+                        const fieldKey = key as keyof OSSConfigFormData;
+                        const config = FIELD_CONFIG[fieldKey];
+                        return (
+                            <div className="form-group" key={fieldKey}>
+                                <label htmlFor={fieldKey}>
+                                    <span className="icon">{config.icon}</span>
+                                    {config.label}
+                                </label>
+                                <input
+                                    type={config.type}
+                                    id={fieldKey}
+                                    name={fieldKey}
+                                    value={formData[fieldKey] as string}
+                                    onChange={handleChange}
+                                    placeholder={config.placeholder}
+                                />
+                                {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
+                            </div>
+                        );
+                    })}
 
-                <div className="form-group">
-                    <label htmlFor="region">
-                        <span className="icon">🌏</span>
-                        地域
-                    </label>
-                    <input
-                        type="text"
-                        id="region"
-                        name="region"
-                        value={formData.region}
-                        onChange={handleChange}
-                        placeholder="cn-hangzhou"
-                    />
-                    {errors.region && <div className="error-message">{errors.region}</div>}
-                </div>
+                    <div className="form-section-header">
+                        <h3>
+                            <span className="icon"><FiImage /></span>
+                            WebP配置
+                        </h3>
+                    </div>
 
-                <div className="form-group">
-                    <label htmlFor="accessKeyId">
-                        <span className="icon">🔑</span>
-                        AccessKey ID
-                    </label>
-                    <input
-                        type="password"
-                        id="accessKeyId"
-                        name="accessKeyId"
-                        value={formData.accessKeyId}
-                        onChange={handleChange}
-                    />
-                    {errors.accessKeyId && <div className="error-message">{errors.accessKeyId}</div>}
-                </div>
+                    {/* WebP 启用选项 */}
+                    <div className="form-group checkbox-group">
+                        <input
+                            type="checkbox"
+                            id="webpEnabled"
+                            name="webpEnabled"
+                            checked={formData.webpEnabled}
+                            onChange={handleChange}
+                        />
+                        <label htmlFor="webpEnabled">
+                            <span className="icon">{FIELD_CONFIG.webpEnabled.icon}</span>
+                            {FIELD_CONFIG.webpEnabled.label}
+                        </label>
+                    </div>
 
-                <div className="form-group">
-                    <label htmlFor="accessKeySecret">
-                        <span className="icon">🔐</span>
-                        AccessKey Secret
-                    </label>
-                    <input
-                        type="password"
-                        id="accessKeySecret"
-                        name="accessKeySecret"
-                        value={formData.accessKeySecret}
-                        onChange={handleChange}
-                    />
-                    {errors.accessKeySecret && <div className="error-message">{errors.accessKeySecret}</div>}
-                </div>
+                    {/* WebP 参数设置，仅在启用时显示 */}
+                    {formData.webpEnabled && (
+                        <>
+                            {['webpQuality', 'webpMaxSize'].map(key => {
+                                const fieldKey = key as keyof OSSConfigFormData;
+                                const config = FIELD_CONFIG[fieldKey];
+                                return (
+                                    <div className="form-group" key={fieldKey}>
+                                        <label htmlFor={fieldKey}>
+                                            <span className="icon">{config.icon}</span>
+                                            {config.label}
+                                        </label>
+                                        <input
+                                            type={config.type}
+                                            id={fieldKey}
+                                            name={fieldKey}
+                                            value={formData[fieldKey] as string}
+                                            onChange={handleChange}
+                                            placeholder={config.placeholder}
+                                        />
+                                        {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
+                                    </div>
+                                );
+                            })}
+                        </>
+                    )}
 
-                <div className="form-group">
-                    <label htmlFor="bucketName">
-                        <span className="icon">📦</span>
-                        Bucket 名称
-                    </label>
-                    <input
-                        type="text"
-                        id="bucketName"
-                        name="bucketName"
-                        value={formData.bucketName}
-                        onChange={handleChange}
-                    />
-                    {errors.bucketName && <div className="error-message">{errors.bucketName}</div>}
-                </div>
+                    <button
+                        type="submit"
+                        className="submit-button"
+                        disabled={loading}
+                    >
+                        {loading ? '提交中...' : '保存配置'}
+                    </button>
 
-                <div className="form-group">
-                    <label htmlFor="imagePath">
-                        <span className="icon">🖼️</span>
-                        图片在 OSS 路径
-                    </label>
-                    <input
-                        type="text"
-                        id="imagePath"
-                        name="imagePath"
-                        value={formData.imagePath}
-                        onChange={handleChange}
-                    />
-                    {errors.imagePath && <div className="error-message">{errors.imagePath}</div>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="avatarPath">
-                        <span className="icon">👤</span>
-                        头像在 OSS 路径
-                    </label>
-                    <input
-                        type="text"
-                        id="avatarPath"
-                        name="avatarPath"
-                        value={formData.avatarPath}
-                        onChange={handleChange}
-                    />
-                    {errors.avatarPath && <div className="error-message">{errors.avatarPath}</div>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="blogPath">
-                        <span className="icon">📝</span>
-                        博客在 OSS 路径
-                    </label>
-                    <input
-                        type="text"
-                        id="blogPath"
-                        name="blogPath"
-                        value={formData.blogPath}
-                        onChange={handleChange}
-                    />
-                    {errors.blogPath && <div className="error-message">{errors.blogPath}</div>}
-                </div>
-
-                <div className="form-section-header">
-                    <h3>
-                        <span className="icon">🖼️</span>
-                        Webp 配置
-                    </h3>
-                </div>
-
-                <div className="form-group checkbox-group">
-                    <input
-                        type="checkbox"
-                        id="webpEnabled"
-                        name="webpEnabled"
-                        checked={formData.webpEnabled}
-                        onChange={handleChange}
-                    />
-                    <label htmlFor="webpEnabled">开启 Webp 功能</label>
-                </div>
-
-                {formData.webpEnabled && (
-                    <>
-                        <div className="form-group">
-                            <label htmlFor="webpQuality">
-                                <span className="icon">✨</span>
-                                Webp 压缩质量 (1-100)
-                            </label>
-                            <input
-                                type="text"
-                                id="webpQuality"
-                                name="webpQuality"
-                                value={formData.webpQuality}
-                                onChange={handleChange}
-                            />
-                            {errors.webpQuality && <div className="error-message">{errors.webpQuality}</div>}
+                    {/* 显示成功消息 */}
+                    {successMessage && (
+                        <div className="success-message-container">
+                            <div className="success-message">{successMessage}</div>
                         </div>
+                    )}
 
-                        <div className="form-group">
-                            <label htmlFor="webpMaxSize">
-                                <span className="icon">📏</span>
-                                压缩后的大小 (MB)
-                            </label>
-                            <input
-                                type="text"
-                                id="webpMaxSize"
-                                name="webpMaxSize"
-                                value={formData.webpMaxSize}
-                                onChange={handleChange}
-                            />
-                            {errors.webpMaxSize && <div className="error-message">{errors.webpMaxSize}</div>}
+                    {/* 显示提交错误信息 */}
+                    {submitError && (
+                        <div className="error-message-container">
+                            <div className="error-message">
+                                <span className="error-title">错误：</span>
+                                {submitError}
+                            </div>
+                            {errorData && (
+                                <div className="error-details">
+                                    <div className="error-details-title">详细信息：</div>
+                                    <pre>{formatErrorData(errorData)}</pre>
+                                </div>
+                            )}
                         </div>
-                    </>
-                )}
-
-                <button type="submit" className="submit-button">保存配置</button>
-                {serverError && <div className="server-error-message">{serverError}</div>}
-            </form>
+                    )}
+                </form>
+            )}
         </div>
     );
 };
