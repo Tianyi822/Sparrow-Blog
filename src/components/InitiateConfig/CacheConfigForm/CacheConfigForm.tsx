@@ -1,4 +1,4 @@
-import { saveCacheConfig } from '@/services/configService';
+import { saveCacheConfig } from '@/services/configService.ts';
 import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { FiDatabase, FiFolder, FiHardDrive, FiZap } from 'react-icons/fi';

@@ -5,8 +5,8 @@ import {
     VerificationCodeData,
     saveUserConfig,
     UserConfigData
-} from '@/services/configService';
-import { ApiResponse } from '@/services/api';
+} from '@/services/configService.ts';
+import { ApiResponse } from '@/services/api.ts';
 import { AxiosError } from 'axios';
 import { FiUser, FiMail, FiServer, FiKey, FiLock, FiHash } from 'react-icons/fi';
 

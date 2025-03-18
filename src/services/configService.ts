@@ -1,11 +1,11 @@
 import { apiRequest, ApiResponse } from './api';
 
 // Types for configuration data
-import { LoggerFormData } from '@/components/ConfigServer/LoggerConfigForm/LoggerConfigForm';
-import { MySQLFormData } from '@/components/ConfigServer/MySqlConfigForm/MySqlConfigForm';
-import { OSSConfigFormData } from '@/components/ConfigServer/OSSConfigForm/OSSConfigForm';
-import { CacheConfigFormData } from '@/components/ConfigServer/CacheConfigForm/CacheConfigForm';
-import { UserEmailConfigFormData } from '@/components/ConfigServer/UserConfigForm/UserConfigForm';
+import { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm';
+import { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm/MySqlConfigForm';
+import { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm/OSSConfigForm';
+import { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm/CacheConfigForm';
+import { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm';
 
 // 服务器基础配置数据接口
 export interface ServerBaseConfig {

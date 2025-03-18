@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
-import ConfigServer from "@/components/ConfigServer/ConfigServer";
+import InitiateConfig from "@/components/InitiateConfig/InitiateConfig.tsx";
 import Home from "@/components/Home/Home";
 import FriendLink from "@/components/FriendLink/FriendLink";
 import BlogLayout from "@/layouts/BlogLayout";
@@ -52,7 +52,7 @@ const routes: RouteObject[] = [
     },
     {
         path: "/config",
-        element: <ConfigServer />,
+        element: <InitiateConfig />,
         loader: async () => {
             const { status } = await checkApiConfig();
             if (status === 'RUNTIME_ENV') {

@@ -1,13 +1,13 @@
-import LoggerConfigForm, { LoggerFormData } from '@/components/ConfigServer/LoggerConfigForm/LoggerConfigForm.tsx';
-import MySqlConfigForm, { MySQLFormData } from '@/components/ConfigServer/MySqlConfigForm/MySqlConfigForm.tsx';
+import LoggerConfigForm, { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm.tsx';
+import MySqlConfigForm, { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm/MySqlConfigForm.tsx';
 import ServerBaseConfigForm, {
     ServerBaseFormData
-} from '@/components/ConfigServer/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
+} from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
 import React, { useEffect, useState } from 'react';
-import CacheConfigForm, { CacheConfigFormData } from './CacheConfigForm/CacheConfigForm';
-import './ConfigServer.scss';
-import OSSConfigForm, { OSSConfigFormData } from './OSSConfigForm/OSSConfigForm';
-import UserConfigForm, { UserEmailConfigFormData } from '@/components/ConfigServer/UserConfigForm/UserConfigForm.tsx';
+import CacheConfigForm, { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm/CacheConfigForm.tsx';
+import './InitiateConfig.scss';
+import OSSConfigForm, { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm/OSSConfigForm.tsx';
+import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm.tsx';
 
 interface ConfigServerProps {
     initialServerData?: ServerBaseFormData;
@@ -18,7 +18,7 @@ interface ConfigServerProps {
     initialUserEmailData?: UserEmailConfigFormData;
 }
 
-const ConfigServer: React.FC<ConfigServerProps> = ({
+const InitiateConfig: React.FC<ConfigServerProps> = ({
                                                        initialServerData,
                                                        initialLoggerData,
                                                        initialMySQLData,
@@ -210,4 +210,4 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
     );
 };
 
-export default ConfigServer;
+export default InitiateConfig;

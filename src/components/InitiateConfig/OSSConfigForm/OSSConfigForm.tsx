@@ -1,4 +1,4 @@
-import { saveOSSConfig } from '@/services/configService';
+import { saveOSSConfig } from '@/services/configService.ts';
 import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { FiBox, FiCloud, FiFile, FiGlobe, FiImage, FiKey, FiLock, FiMaximize, FiPercent, FiToggleRight } from 'react-icons/fi';
