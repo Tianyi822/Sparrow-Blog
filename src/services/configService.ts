@@ -36,19 +36,11 @@ interface ServerBaseBackendData {
 }
 
 export const transformServerBaseData = (data: ServerBaseConfig): ServerBaseBackendData => {
-    // 处理corsOrigins，确保格式正确
-    let corsOrigins = data.corsOrigins.trim();
-
-    // 如果不包含协议前缀，添加https://
-    if (corsOrigins && !corsOrigins.startsWith('http://') && !corsOrigins.startsWith('https://')) {
-        corsOrigins = `https://${corsOrigins}`;
-    }
-
     return {
         'server.port': data.port,
         'server.token_key': data.tokenKey,
         'server.token_expire_duration': data.tokenExpireDuration,
-        'server.cors.origins': JSON.stringify([corsOrigins])
+        'server.cors.origins': data.corsOrigins.trim()
     };
 };
 
