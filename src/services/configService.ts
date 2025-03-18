@@ -6,7 +6,7 @@ import { LoggerFormData } from '@/components/ConfigServer/LoggerConfigForm/Logge
 import { MySQLFormData } from '@/components/ConfigServer/MySqlConfigForm/MySqlConfigForm';
 import { OSSConfigFormData } from '@/components/ConfigServer/OSSConfigForm/OSSConfigForm';
 import { CacheConfigFormData } from '@/components/ConfigServer/CacheConfigForm/CacheConfigForm';
-import { UserEmailConfigFormData } from '@/components/ConfigServer/UserEmailConfigForm/UserEmailConfigForm';
+import { UserEmailConfigFormData } from '@/components/ConfigServer/UserConfigForm/UserConfigForm.tsx';
 
 // 服务器基础配置数据接口
 export interface ServerBaseConfig {
@@ -25,16 +25,6 @@ export interface ServerConfig {
     cache?: CacheConfigFormData;
     userEmail?: UserEmailConfigFormData;
 }
-
-/**
- * Fetch all server configurations
- */
-export const getAllConfigs = async (): Promise<ServerConfig> => {
-    return apiRequest<ServerConfig>({
-        method: 'GET',
-        url: '/config'
-    });
-};
 
 /**
  * Fetch server base configuration
@@ -295,44 +285,36 @@ export const saveCacheConfig = async (data: CacheConfigFormData): Promise<ApiRes
 };
 
 /**
- * Fetch User & Email configuration
+ * Save User configuration with verification code
  */
-export const getUserEmailConfig = async (): Promise<UserEmailConfigFormData> => {
-    return apiRequest<UserEmailConfigFormData>({
-        method: 'GET',
-        url: '/config/user-email'
-    });
-};
+export interface UserConfigData {
+    'user.username': string;
+    'user.verification_code': string;
+}
 
-/**
- * Save User & Email configuration
- */
-export const saveUserEmailConfig = async (data: UserEmailConfigFormData): Promise<ApiResponse<UserEmailConfigFormData>> => {
-    return apiRequest<ApiResponse<UserEmailConfigFormData>>({
+export const saveUserConfig = async (data: UserConfigData): Promise<ApiResponse<null>> => {
+    return apiRequest<ApiResponse<null>>({
         method: 'POST',
-        url: '/config/user-email',
+        url: '/config/user',
         data
     });
 };
 
 /**
- * Test database connection
+ * Send verification code to email
  */
-export const testDatabaseConnection = async (data: MySQLFormData): Promise<ApiResponse<{ connected: boolean }>> => {
-    return apiRequest<ApiResponse<{ connected: boolean }>>({
-        method: 'POST',
-        url: '/config/mysql/test-connection',
-        data
-    });
-};
+export interface VerificationCodeData {
+    'user.user_email': string;
+    'user.smtp_account': string;
+    'user.smtp_address': string;
+    'user.smtp_port': string;
+    'user.smtp_auth_code': string;
+}
 
-/**
- * Test SMTP configuration
- */
-export const testSmtpConnection = async (data: UserEmailConfigFormData): Promise<ApiResponse<{ sent: boolean }>> => {
-    return apiRequest<ApiResponse<{ sent: boolean }>>({
+export const sendVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
+    return apiRequest<ApiResponse<null>>({
         method: 'POST',
-        url: '/config/email/test-smtp',
+        url: '/config/send-verification-code',
         data
     });
 };
@@ -348,7 +330,6 @@ export const applyConfigurations = async (): Promise<ApiResponse<null>> => {
 };
 
 export default {
-    getAllConfigs,
     getServerBaseConfig,
     saveServerBaseConfig,
     getLoggerConfig,
@@ -359,9 +340,7 @@ export default {
     saveOSSConfig,
     getCacheConfig,
     saveCacheConfig,
-    getUserEmailConfig,
-    saveUserEmailConfig,
-    testDatabaseConnection,
-    testSmtpConnection,
+    saveUserConfig,
+    sendVerificationCode,
     applyConfigurations
 };

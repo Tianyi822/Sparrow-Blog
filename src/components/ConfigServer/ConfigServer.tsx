@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import CacheConfigForm, { CacheConfigFormData } from './CacheConfigForm/CacheConfigForm';
 import './ConfigServer.scss';
 import OSSConfigForm, { OSSConfigFormData } from './OSSConfigForm/OSSConfigForm';
-import UserEmailConfigForm, { UserEmailConfigFormData } from './UserEmailConfigForm/UserEmailConfigForm';
+import UserConfigForm, { UserEmailConfigFormData } from '@/components/ConfigServer/UserConfigForm/UserConfigForm.tsx';
 
 interface ConfigServerProps {
     initialServerData?: ServerBaseFormData;
@@ -150,7 +150,7 @@ const ConfigServer: React.FC<ConfigServerProps> = ({
                 );
             case 5:
                 return (
-                    <UserEmailConfigForm
+                    <UserConfigForm
                         onSubmit={handleUserEmailSubmit}
                         initialData={initialUserEmailData}
                     />
