@@ -259,13 +259,38 @@ export const getCacheConfig = async (): Promise<CacheConfigFormData> => {
 };
 
 /**
+ * 转换缓存配置数据为后端格式
+ */
+interface CacheBackendData {
+    'cache.aof.enable': string;
+    'cache.aof.path': string;
+    'cache.aof.max_size': string;
+    'cache.aof.compress': string;
+}
+
+export const transformCacheData = (data: CacheConfigFormData): CacheBackendData => {
+    return {
+        'cache.aof.enable': data.aofEnabled ? '1' : '0',
+        'cache.aof.path': data.aofPath || '',
+        'cache.aof.max_size': data.aofMaxSize,
+        'cache.aof.compress': data.compressEnabled ? '1' : '0'
+    };
+};
+
+/**
  * Save Cache configuration
  */
 export const saveCacheConfig = async (data: CacheConfigFormData): Promise<ApiResponse<CacheConfigFormData>> => {
+    const transformedData = transformCacheData(data);
+    console.log('转换后的缓存配置数据:', transformedData); // 调试用
+
     return apiRequest<ApiResponse<CacheConfigFormData>>({
         method: 'POST',
         url: '/config/cache',
-        data
+        data: transformedData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 };
 
