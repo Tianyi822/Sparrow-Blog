@@ -149,13 +149,44 @@ export const getMySQLConfig = async (): Promise<MySQLFormData> => {
 };
 
 /**
+ * 转换MySQL配置数据为后端格式
+ */
+interface MySQLBackendData {
+    'mysql.user': string;
+    'mysql.password': string;
+    'mysql.host': string;
+    'mysql.port': string;
+    'mysql.database': string;
+    'mysql.max_open': string;
+    'mysql.max_idle': string;
+}
+
+export const transformMySQLData = (data: MySQLFormData): MySQLBackendData => {
+    return {
+        'mysql.user': data.username,
+        'mysql.password': data.password,
+        'mysql.host': data.host,
+        'mysql.port': data.port,
+        'mysql.database': data.database,
+        'mysql.max_open': data.maxOpenConns,
+        'mysql.max_idle': data.maxIdleConns
+    };
+};
+
+/**
  * Save MySQL configuration
  */
 export const saveMySQLConfig = async (data: MySQLFormData): Promise<ApiResponse<MySQLFormData>> => {
+    const transformedData = transformMySQLData(data);
+    console.log('转换后的MySQL配置数据:', transformedData); // 调试用
+
     return apiRequest<ApiResponse<MySQLFormData>>({
         method: 'POST',
         url: '/config/mysql',
-        data
+        data: transformedData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 };
 
