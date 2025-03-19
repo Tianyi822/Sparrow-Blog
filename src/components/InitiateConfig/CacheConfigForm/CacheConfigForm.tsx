@@ -9,12 +9,10 @@ interface ValidationErrors {
 }
 
 export interface CacheConfigFormData {
-    useRedis: boolean;
-    redisHost: string;
-    redisPort: string;
-    redisPassword: string;
-    redisDb: string;
-    redisKeyPrefix: string;
+    aofEnabled: boolean;
+    aofPath: string;
+    aofMaxSize: string;
+    compressEnabled: boolean;
 }
 
 export interface CacheConfigFormProps {
@@ -121,8 +119,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
             });
         }
         
-        // 清除成功和错误消息
-        if (successMessage) setSuccessMessage('');
+        // 清除错误消息
         if (submitError) setSubmitError('');
     };
 
@@ -178,7 +175,8 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
         e.preventDefault();
         setSubmitError('');
         setErrorData(null);
-        setSuccessMessage('');
+        // 不清除成功消息
+        // setSuccessMessage('');
 
         if (!validateForm()) {
             return;
@@ -326,17 +324,25 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
                     </>
                 )}
 
-                <button 
-                    type="submit" 
-                    className="submit-button"
-                    disabled={loading}
-                    onClick={submitSuccess && onNext ? (e) => {
-                        e.preventDefault();
-                        onNext();
-                    } : undefined}
-                >
-                    {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
-                </button>
+                <div className="form-actions">
+                    <button
+                        type="submit"
+                        className="submit-button"
+                        disabled={loading}
+                    >
+                        {loading ? '提交中...' : '保存配置'}
+                    </button>
+                    
+                    {submitSuccess && onNext && (
+                        <button 
+                            type="button" 
+                            className="next-button"
+                            onClick={onNext}
+                        >
+                            进行下一项配置
+                        </button>
+                    )}
+                </div>
                 
                 {/* 显示成功消息 */}
                 {successMessage && (

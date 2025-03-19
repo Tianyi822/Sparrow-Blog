@@ -346,17 +346,25 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
                     );
                 })}
 
-                <button
-                    type="submit"
-                    className="submit-button"
-                    disabled={loading}
-                    onClick={submitSuccess && onNext ? (e) => {
-                        e.preventDefault();
-                        onNext();
-                    } : undefined}
-                >
-                    {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
-                </button>
+                <div className="form-actions">
+                    <button
+                        type="submit"
+                        className="submit-button"
+                        disabled={loading}
+                    >
+                        {loading ? '提交中...' : '保存配置'}
+                    </button>
+                    
+                    {submitSuccess && onNext && (
+                        <button 
+                            type="button" 
+                            className="next-button"
+                            onClick={onNext}
+                        >
+                            进行下一项配置
+                        </button>
+                    )}
+                </div>
 
                 {/* 显示成功消息 */}
                 {successMessage && (

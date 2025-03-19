@@ -416,7 +416,6 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
         e.preventDefault();
         setSubmitError('');
         setErrorData(null);
-        setSuccessMessage('');
         
         // 确保同步状态正确
         if (syncWithEmail) {
@@ -689,17 +688,25 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
                         {errors.verifyCode && <div className="error-message">{errors.verifyCode}</div>}
                     </div>
 
-                    <button
-                        type="submit"
-                        className="submit-button"
-                        disabled={loading}
-                        onClick={submitSuccess && onNext ? (e) => {
-                            e.preventDefault();
-                            onNext();
-                        } : undefined}
-                    >
-                        {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
-                    </button>
+                    <div className="form-actions">
+                        <button
+                            type="submit"
+                            className="submit-button"
+                            disabled={loading}
+                        >
+                            {loading ? '提交中...' : '保存配置'}
+                        </button>
+                        
+                        {submitSuccess && onNext && (
+                            <button 
+                                type="button" 
+                                className="next-button"
+                                onClick={onNext}
+                            >
+                                进行下一项配置
+                            </button>
+                        )}
+                    </div>
 
                     {/* 显示成功消息 */}
                     {successMessage && (

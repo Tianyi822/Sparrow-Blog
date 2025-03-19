@@ -471,13 +471,25 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, is
                     </>
                 )}
 
-                <button
-                    type="submit"
-                    className="submit-button"
-                    disabled={loading}
-                >
-                    {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
-                </button>
+                <div className="form-actions">
+                    <button
+                        type="submit"
+                        className="submit-button"
+                        disabled={loading}
+                    >
+                        {loading ? '提交中...' : '保存配置'}
+                    </button>
+                    
+                    {submitSuccess && onNext && (
+                        <button 
+                            type="button" 
+                            className="next-button"
+                            onClick={onNext}
+                        >
+                            进行下一项配置
+                        </button>
+                    )}
+                </div>
 
                 {/* 显示成功消息 */}
                 {successMessage && (
