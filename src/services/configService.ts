@@ -270,6 +270,16 @@ export const applyConfigurations = async (): Promise<ApiResponse<null>> => {
     });
 };
 
+/**
+ * Complete configuration and restart server
+ */
+export const completeConfig = async (): Promise<ApiResponse<null>> => {
+    return apiRequest<ApiResponse<null>>({
+        method: 'GET',
+        url: '/config/complete-config'
+    });
+};
+
 export default {
     saveServerBaseConfig,
     saveLoggerConfig,
@@ -278,5 +288,6 @@ export default {
     saveCacheConfig,
     saveUserConfig,
     sendVerificationCode,
-    applyConfigurations
+    applyConfigurations,
+    completeConfig
 };

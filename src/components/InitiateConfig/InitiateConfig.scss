@@ -238,6 +238,69 @@ body {
   }
 }
 
+// 重启等待界面样式
+.restart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  animation: configServerFadeIn 0.3s ease-in-out;
+  
+  .restart-content {
+    text-align: center;
+    max-width: 500px;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(214, 51, 132, 0.2);
+    border: 1px solid rgba(214, 51, 132, 0.3);
+    
+    h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 1rem;
+      margin-top: 0.5rem;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+    }
+    
+    .restart-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(214, 51, 132, 0.1);
+      border-top-color: rgba(214, 51, 132, 0.8);
+      border-radius: 50%;
+      animation: configServerSpin 1s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    
+    .restart-countdown {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: rgba(214, 51, 132, 0.9);
+      background: rgba(214, 51, 132, 0.1);
+      border-radius: 8px;
+      padding: 0.8rem 1.5rem;
+      display: inline-block;
+      margin-top: 1rem;
+      animation: pulse 1.5s infinite;
+    }
+  }
+}
+
 // 向下入场动画关键帧
 @keyframes slideDownIn {
   from {
@@ -312,6 +375,21 @@ body {
 @keyframes configServerSpin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

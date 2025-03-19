@@ -281,6 +281,18 @@
           background: rgba(40, 167, 69, 0.3);
         }
       }
+      
+      .restart-button {
+        background: rgba(214, 51, 132, 0.25);
+        border: 1px solid rgba(214, 51, 132, 0.4);
+        color: rgba(255, 255, 255, 0.95);
+        font-weight: 600;
+        
+        &:hover {
+          background: rgba(214, 51, 132, 0.4);
+          box-shadow: 0 0 15px rgba(214, 51, 132, 0.4);
+        }
+      }
     }
     
     .success-message-container {

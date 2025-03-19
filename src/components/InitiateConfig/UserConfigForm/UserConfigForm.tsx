@@ -697,13 +697,13 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
                             {loading ? '提交中...' : '保存配置'}
                         </button>
                         
-                        {submitSuccess && onNext && (
+                        {submitSuccess && (
                             <button 
                                 type="button" 
-                                className="next-button"
+                                className="restart-button"
                                 onClick={onNext}
                             >
-                                进行下一项配置
+                                完成配置并重启
                             </button>
                         )}
                     </div>

@@ -6,6 +6,8 @@ import ServerBaseConfigForm, { ServerBaseFormData } from '@/components/InitiateC
 import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm.tsx';
 import React, { useEffect, useState } from 'react';
 import './InitiateConfig.scss';
+import { useNavigate } from 'react-router-dom';
+import { completeConfig } from '@/services/configService';
 
 interface InitiateConfigProps {
     initialServerData?: ServerBaseFormData;
@@ -100,6 +102,12 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     const [animationDirection, setAnimationDirection] = useState(0);
     // State to track if animation is in progress
     const [isAnimating, setIsAnimating] = useState(false);
+    // 重启状态
+    const [isRestarting, setIsRestarting] = useState(false);
+    const [restartCountdown, setRestartCountdown] = useState(5);
+    
+    // 导航hook
+    const navigate = useNavigate();
 
     // 初始化时设置文档标题
     useEffect(() => {
@@ -187,6 +195,48 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         setUserEmailData(data);
         setSubmittedForms(prev => ({ ...prev, userEmailSubmitted: true }));
         // 最后一个表单可以不跳转
+    };
+
+    // 处理完成配置并重启
+    const handleCompleteConfig = async () => {
+        try {
+            setIsRestarting(true);
+            // 请求完成配置接口
+            const response = await completeConfig();
+            
+            // 检查响应状态
+            if (response && response.code !== 200) {
+                // 不使用throw，直接显示错误并返回
+                console.error('Failed to complete configuration:', response.msg);
+                alert(response.msg || '配置完成请求失败');
+                setIsRestarting(false);
+                return;
+            }
+            
+            // 清空localStorage中的配置信息，防止泄露
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem('verifyCodeCountdown');
+            localStorage.removeItem('verifyCodeTimestamp');
+            
+            // 开始倒计时
+            let count = 5;
+            setRestartCountdown(count);
+            
+            const timer = setInterval(() => {
+                count -= 1;
+                setRestartCountdown(count);
+                
+                if (count <= 0) {
+                    clearInterval(timer);
+                    // 倒计时结束后跳转到首页
+                    navigate('/');
+                }
+            }, 1000);
+        } catch (error) {
+            console.error('Failed to complete configuration:', error);
+            alert('完成配置请求失败，请检查网络连接或联系管理员');
+            setIsRestarting(false);
+        }
     };
 
     const goToForm = (index: number) => {
@@ -321,7 +371,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                         onSubmit={handleUserEmailSubmit}
                         initialData={userEmailData}
                         isSubmitted={submittedForms.userEmailSubmitted}
-                        onNext={goToNextForm}
+                        onNext={handleCompleteConfig}
                     />
                 );
             default:
@@ -331,6 +381,20 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
 
     return (
         <div className="initiate-config-container">
+            {/* 重启等待界面 */}
+            {isRestarting && (
+                <div className="restart-overlay">
+                    <div className="restart-content">
+                        <div className="restart-spinner"></div>
+                        <h2>正在重启服务</h2>
+                        <p>配置已保存，系统正在重启中...</p>
+                        <div className="restart-countdown">
+                            {restartCountdown} 秒后将自动跳转到首页
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Navigation dots moved to left side with up/down arrows */}
             <div className="form-navigation-dots">
                 {/* Up arrow for navigating to previous form */}
