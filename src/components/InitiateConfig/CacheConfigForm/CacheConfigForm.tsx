@@ -106,21 +106,33 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
                 ...prev, 
                 [name]: e.target.checked 
             }));
+            
+            // 清除错误和成功消息
+            if (errors[name]) {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors[name];
+                    return newErrors;
+                });
+            }
+            if (submitError) setSubmitError('');
+            if (successMessage) setSuccessMessage('');
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
-        }
 
-        // 清除该字段的错误
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[name];
-                return newErrors;
-            });
+            // 清除该字段的错误
+            if (errors[name]) {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors[name];
+                    return newErrors;
+                });
+            }
+            
+            // 清除错误和成功消息
+            if (submitError) setSubmitError('');
+            if (successMessage) setSuccessMessage('');
         }
-        
-        // 清除错误消息
-        if (submitError) setSubmitError('');
     };
 
     // 验证单个字段
@@ -333,7 +345,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
                         {loading ? '提交中...' : '保存配置'}
                     </button>
                     
-                    {submitSuccess && onNext && (
+                    {submitSuccess && !submitError && onNext && (
                         <button 
                             type="button" 
                             className="next-button"

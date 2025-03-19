@@ -138,8 +138,9 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({ initialData
             });
         }
 
-        // 只清除错误消息，不清除成功消息
+        // 清除错误消息和成功消息
         if (submitError) setSubmitError('');
+        if (successMessage) setSuccessMessage('');
     };
 
     // 验证单个字段
@@ -302,7 +303,7 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({ initialData
                         {loading ? '提交中...' : '保存配置'}
                     </button>
                     
-                    {submitSuccess && onNext && (
+                    {submitSuccess && !submitError && onNext && (
                         <button 
                             type="button" 
                             className="next-button"

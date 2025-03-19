@@ -102,7 +102,7 @@ const FIELD_CONFIG = {
 const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
     // 状态定义
     const [formData, setFormData] = useState<LoggerFormData>({
-        logLevel: initialData?.logLevel || 'debug',
+        logLevel: initialData?.logLevel || 'DEBUG',
         logPath: initialData?.logPath || '',
         maxSize: initialData?.maxSize || '10',
         maxBackups: initialData?.maxBackups || '5',
@@ -120,7 +120,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
     useEffect(() => {
         if (initialData) {
             setFormData(prevFormData => ({
-                logLevel: initialData.logLevel || prevFormData.logLevel,
+                logLevel: initialData.logLevel || 'DEBUG',
                 logPath: initialData.logPath || prevFormData.logPath,
                 maxSize: initialData.maxSize || prevFormData.maxSize,
                 maxBackups: initialData.maxBackups || prevFormData.maxBackups,
@@ -142,6 +142,10 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
                 ...prev,
                 [name]: checked
             }));
+            
+            // 清除成功和错误消息
+            if (submitError) setSubmitError('');
+            if (successMessage) setSuccessMessage('');
             return;
         }
 
@@ -179,6 +183,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
 
         // 清除成功和错误消息
         if (submitError) setSubmitError('');
+        if (successMessage) setSuccessMessage('');
     };
 
     // 验证单个字段
@@ -418,7 +423,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
                         {loading ? '提交中...' : '保存配置'}
                     </button>
                     
-                    {submitSuccess && onNext && (
+                    {submitSuccess && !submitError && onNext && (
                         <button 
                             type="button" 
                             className="next-button"

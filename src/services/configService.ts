@@ -73,7 +73,7 @@ interface LoggerBackendData {
 
 export const transformLoggerData = (data: LoggerFormData): LoggerBackendData => {
     return {
-        'logger.level': data.logLevel.toLowerCase(),
+        'logger.level': data.logLevel,
         'logger.path': data.logPath,
         'logger.max_size': data.maxSize,
         'logger.compress': data.compress ? '1' : '0',

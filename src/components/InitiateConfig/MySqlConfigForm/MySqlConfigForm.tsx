@@ -187,14 +187,15 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
         // 清除该字段的错误
         if (errors[fieldKey]) {
             setErrors(prev => {
-                const newErrors = {...prev};
+                const newErrors = { ...prev };
                 delete newErrors[fieldKey];
                 return newErrors;
             });
         }
 
-        // 只清除错误消息，不清除成功消息
+        // 清除错误消息和成功消息
         if (submitError) setSubmitError('');
+        if (successMessage) setSuccessMessage('');
     };
 
     // 验证单个字段
@@ -355,7 +356,7 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
                         {loading ? '提交中...' : '保存配置'}
                     </button>
                     
-                    {submitSuccess && onNext && (
+                    {submitSuccess && !submitError && onNext && (
                         <button 
                             type="button" 
                             className="next-button"
