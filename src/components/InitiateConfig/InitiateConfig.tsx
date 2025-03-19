@@ -190,6 +190,36 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     };
 
     const goToForm = (index: number) => {
+        // 验证是否可以跳转到目标表单
+        // 只能跳转到已提交的表单或序号比当前可操作表单小或相等的表单
+        const canNavigateTo = () => {
+            // 获取最高可操作的表单索引（已提交的表单的最后一个索引+1）
+            let highestAllowedIndex = 0;
+            
+            if (submittedForms.serverSubmitted) highestAllowedIndex = 1;
+            if (submittedForms.loggerSubmitted) highestAllowedIndex = 2;
+            if (submittedForms.mysqlSubmitted) highestAllowedIndex = 3;
+            if (submittedForms.ossSubmitted) highestAllowedIndex = 4;
+            if (submittedForms.cacheSubmitted) highestAllowedIndex = 5;
+            
+            // 如果目标表单已提交或在最高可操作表单索引范围内，则允许跳转
+            return index <= highestAllowedIndex;
+        };
+
+        // 如果无法跳转，显示提示信息
+        if (index !== currentFormIndex && !canNavigateTo()) {
+            // 查找最后一个未提交的表单索引，作为需要完成的表单
+            let lastIncompleteIndex = -1;
+            if (!submittedForms.serverSubmitted) lastIncompleteIndex = 0;
+            else if (!submittedForms.loggerSubmitted) lastIncompleteIndex = 1;
+            else if (!submittedForms.mysqlSubmitted) lastIncompleteIndex = 2;
+            else if (!submittedForms.ossSubmitted) lastIncompleteIndex = 3;
+            else if (!submittedForms.cacheSubmitted) lastIncompleteIndex = 4;
+            
+            alert(`请先完成 ${formTitles[lastIncompleteIndex]} 再进行后续配置`);
+            return;
+        }
+        
         if (index >= 0 && index <= 5 && index !== currentFormIndex) {
             // Always set animation direction to -1 for exit (up direction)
             // This ensures all forms exit with the same animation (up direction)
@@ -209,13 +239,32 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
 
     // New functions for navigating to previous/next form
     const goToPrevForm = () => {
-        const prevIndex = currentFormIndex > 0 ? currentFormIndex - 1 : 5;
-        goToForm(prevIndex);
+        if (currentFormIndex > 0) {
+            // 上一个表单总是已经可访问的，直接跳转
+            goToForm(currentFormIndex - 1);
+        }
     };
 
     const goToNextForm = () => {
-        const nextIndex = currentFormIndex < 5 ? currentFormIndex + 1 : 0;
-        goToForm(nextIndex);
+        // 只有当前表单已提交成功，才能前进到下一个表单
+        if (currentFormIndex < 5) {
+            const canProceed = (() => {
+                switch (currentFormIndex) {
+                    case 0: return submittedForms.serverSubmitted;
+                    case 1: return submittedForms.loggerSubmitted;
+                    case 2: return submittedForms.mysqlSubmitted;
+                    case 3: return submittedForms.ossSubmitted;
+                    case 4: return submittedForms.cacheSubmitted;
+                    default: return false;
+                }
+            })();
+            
+            if (canProceed) {
+                goToForm(currentFormIndex + 1);
+            } else {
+                alert(`请先完成 ${formTitles[currentFormIndex]} 再进行下一步配置`);
+            }
+        }
     };
 
     // Render the current form based on index
@@ -289,28 +338,90 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                     className="nav-arrow nav-arrow-up"
                     onClick={goToPrevForm}
                     aria-label="上一个配置表单"
-                    title={formTitles[(currentFormIndex > 0 ? currentFormIndex - 1 : 5)]}
+                    title={currentFormIndex > 0 ? formTitles[currentFormIndex - 1] : "已经是第一个表单"}
+                    disabled={currentFormIndex === 0}
                 >
                     <span>&#10094;</span>
                 </button>
 
                 {/* Navigation dots */}
-                {formTitles.map((title, index) => (
-                    <button
-                        key={index}
-                        className={`nav-dot ${currentFormIndex === index ? 'active' : ''}`}
-                        onClick={() => goToForm(index)}
-                        aria-label={title}
-                        title={title}
-                    />
-                ))}
+                {formTitles.map((title, index) => {
+                    // 检查此表单是否可访问
+                    const canAccess = (() => {
+                        // 当前表单总是可访问的
+                        if (index === currentFormIndex) return true;
+                        
+                        // 检查表单是否可访问（前一个表单已提交）
+                        let highestAllowedIndex = 0;
+                        if (submittedForms.serverSubmitted) highestAllowedIndex = 1;
+                        if (submittedForms.loggerSubmitted) highestAllowedIndex = 2;
+                        if (submittedForms.mysqlSubmitted) highestAllowedIndex = 3;
+                        if (submittedForms.ossSubmitted) highestAllowedIndex = 4;
+                        if (submittedForms.cacheSubmitted) highestAllowedIndex = 5;
+                        
+                        return index <= highestAllowedIndex;
+                    })();
+                    
+                    // 检查表单是否已提交
+                    const isSubmitted = (() => {
+                        switch (index) {
+                            case 0: return submittedForms.serverSubmitted;
+                            case 1: return submittedForms.loggerSubmitted;
+                            case 2: return submittedForms.mysqlSubmitted;
+                            case 3: return submittedForms.ossSubmitted;
+                            case 4: return submittedForms.cacheSubmitted;
+                            case 5: return submittedForms.userEmailSubmitted;
+                            default: return false;
+                        }
+                    })();
+
+                    return (
+                        <button
+                            key={index}
+                            className={`nav-dot ${currentFormIndex === index ? 'active' : ''} ${isSubmitted ? 'submitted' : ''} ${!canAccess ? 'disabled' : ''}`}
+                            onClick={() => canAccess && goToForm(index)}
+                            aria-label={title}
+                            title={canAccess ? title : `请先完成${formTitles[index-1]}配置`}
+                            disabled={!canAccess}
+                        />
+                    );
+                })}
 
                 {/* Down arrow for navigating to next form */}
                 <button
                     className="nav-arrow nav-arrow-down"
                     onClick={goToNextForm}
                     aria-label="下一个配置表单"
-                    title={formTitles[(currentFormIndex < 5 ? currentFormIndex + 1 : 0)]}
+                    title={(() => {
+                        // 如果是最后一个表单
+                        if (currentFormIndex === 5) return "已经是最后一个表单";
+                        
+                        // 检查是否可以前往下一个表单
+                        const canProceed = (() => {
+                            switch (currentFormIndex) {
+                                case 0: return submittedForms.serverSubmitted;
+                                case 1: return submittedForms.loggerSubmitted;
+                                case 2: return submittedForms.mysqlSubmitted;
+                                case 3: return submittedForms.ossSubmitted;
+                                case 4: return submittedForms.cacheSubmitted;
+                                default: return false;
+                            }
+                        })();
+                        
+                        return canProceed 
+                            ? formTitles[currentFormIndex + 1] 
+                            : `请先完成${formTitles[currentFormIndex]}配置`;
+                    })()}
+                    disabled={currentFormIndex === 5 || (() => {
+                        switch (currentFormIndex) {
+                            case 0: return !submittedForms.serverSubmitted;
+                            case 1: return !submittedForms.loggerSubmitted;
+                            case 2: return !submittedForms.mysqlSubmitted;
+                            case 3: return !submittedForms.ossSubmitted;
+                            case 4: return !submittedForms.cacheSubmitted;
+                            default: return true;
+                        }
+                    })()}
                 >
                     <span>&#10094;</span>
                 </button>

@@ -125,14 +125,21 @@ body {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       position: relative;
 
-      &:hover {
+      &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.2);
         color: rgba(255, 255, 255, 1);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
       }
 
-      &:active {
+      &:active:not(:disabled) {
         transform: scale(0.95);
+      }
+      
+      &:disabled {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.4);
+        cursor: not-allowed;
+        box-shadow: none;
       }
 
       span {
@@ -170,8 +177,29 @@ body {
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
 
-      &:hover {
+      &:hover:not(.disabled) {
         background: rgba(255, 255, 255, 0.5);
+      }
+      
+      // 已提交的导航点显示绿色
+      &.submitted {
+        background-color: rgba(40, 167, 69, 0.6);
+        
+        &:hover:not(.disabled) {
+          background-color: rgba(40, 167, 69, 0.8);
+        }
+        
+        &.active {
+          background-color: rgba(40, 167, 69, 1);
+          box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+      }
+      
+      // 禁用的导航点显示为灰色
+      &.disabled {
+        background-color: rgba(255, 255, 255, 0.15);
+        cursor: not-allowed;
+        opacity: 0.5;
       }
     }
   }
