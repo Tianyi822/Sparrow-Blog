@@ -1,6 +1,6 @@
-import { saveCacheConfig } from '@/services/configService.ts';
+import { saveCacheConfig } from '@/services/configService';
 import { AxiosError } from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiDatabase, FiFolder, FiHardDrive, FiZap } from 'react-icons/fi';
 import './CacheConfigForm.scss';
 
@@ -9,10 +9,19 @@ interface ValidationErrors {
 }
 
 export interface CacheConfigFormData {
-    aofEnabled: boolean;
-    aofPath: string;
-    aofMaxSize: string;
-    compressEnabled: boolean;
+    useRedis: boolean;
+    redisHost: string;
+    redisPort: string;
+    redisPassword: string;
+    redisDb: string;
+    redisKeyPrefix: string;
+}
+
+export interface CacheConfigFormProps {
+    initialData?: CacheConfigFormData;
+    onSubmit?: (data: CacheConfigFormData) => void;
+    isSubmitted?: boolean;
+    onNext?: () => void;
 }
 
 // 字段配置
@@ -62,19 +71,32 @@ const FIELD_CONFIG = {
     }
 };
 
-const CacheConfigForm: React.FC = () => {
+const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
     // 状态定义
     const [formData, setFormData] = useState<CacheConfigFormData>({
-        aofEnabled: true,
-        aofPath: '',
-        aofMaxSize: '1',
-        compressEnabled: true
+        aofEnabled: initialData?.aofEnabled !== undefined ? initialData.aofEnabled : true,
+        aofPath: initialData?.aofPath || '',
+        aofMaxSize: initialData?.aofMaxSize || '1',
+        compressEnabled: initialData?.compressEnabled !== undefined ? initialData.compressEnabled : true
     });
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [submitError, setSubmitError] = useState<string>('');
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+
+    // 当initialData变化时更新表单数据
+    useEffect(() => {
+        if (initialData) {
+            setFormData(prevFormData => ({
+                aofEnabled: initialData.aofEnabled !== undefined ? initialData.aofEnabled : prevFormData.aofEnabled,
+                aofPath: initialData.aofPath || prevFormData.aofPath,
+                aofMaxSize: initialData.aofMaxSize || prevFormData.aofMaxSize,
+                compressEnabled: initialData.compressEnabled !== undefined ? initialData.compressEnabled : prevFormData.compressEnabled
+            }));
+        }
+    }, [initialData]);
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,6 +199,12 @@ const CacheConfigForm: React.FC = () => {
 
             // 成功提交
             setSuccessMessage('缓存配置保存成功！');
+            setSubmitSuccess(true);
+            
+            // 调用父组件的onSubmit回调函数
+            if (onSubmit) {
+                onSubmit(formData);
+            }
         } catch (error: unknown) {
             console.error('Failed to save cache config:', error);
             
@@ -302,8 +330,12 @@ const CacheConfigForm: React.FC = () => {
                     type="submit" 
                     className="submit-button"
                     disabled={loading}
+                    onClick={submitSuccess && onNext ? (e) => {
+                        e.preventDefault();
+                        onNext();
+                    } : undefined}
                 >
-                    {loading ? '提交中...' : '保存配置'}
+                    {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
                 </button>
                 
                 {/* 显示成功消息 */}

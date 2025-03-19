@@ -11,7 +11,7 @@ body {
 }
 
 // Use more specific selectors to avoid affecting child components
-.config-server-container {
+.initiate-config-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem 2rem 4rem; // Added left padding to make room for vertical nav dots
@@ -224,7 +224,7 @@ body {
 
 // Mobile responsiveness
 @media (max-width: 768px) {
-  .config-server-container {
+  .initiate-config-container {
     padding: 2rem 0.5rem 2rem 3rem;
 
     .form-navigation-dots {
@@ -284,5 +284,40 @@ body {
 @keyframes configServerSpin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+// Mobile responsiveness for smaller screens
+@media (max-width: 480px) {
+  .initiate-config-container {
+    padding: 1.5rem 0.5rem 1.5rem 2.5rem;
+
+    .form-navigation-dots {
+      left: 0.5rem;
+      gap: 0.8rem;
+
+      .nav-dot {
+        width: 10px;
+        height: 10px;
+      }
+
+      .nav-arrow {
+        width: 20px;
+        height: 20px;
+
+        span {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .initiate-config-container {
+    .form-navigation-dots {
+      display: none;
+    }
   }
 }

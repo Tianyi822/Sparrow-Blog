@@ -1,15 +1,13 @@
+import CacheConfigForm, { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm/CacheConfigForm.tsx';
 import LoggerConfigForm, { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm.tsx';
 import MySqlConfigForm, { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm/MySqlConfigForm.tsx';
-import ServerBaseConfigForm, {
-    ServerBaseFormData
-} from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
-import React, { useEffect, useState } from 'react';
-import CacheConfigForm, { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm/CacheConfigForm.tsx';
-import './InitiateConfig.scss';
 import OSSConfigForm, { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm/OSSConfigForm.tsx';
+import ServerBaseConfigForm, { ServerBaseFormData } from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
 import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm.tsx';
+import React, { useEffect, useState } from 'react';
+import './InitiateConfig.scss';
 
-interface ConfigServerProps {
+interface InitiateConfigProps {
     initialServerData?: ServerBaseFormData;
     initialLoggerData?: LoggerFormData;
     initialMySQLData?: MySQLFormData;
@@ -18,24 +16,117 @@ interface ConfigServerProps {
     initialUserEmailData?: UserEmailConfigFormData;
 }
 
-const InitiateConfig: React.FC<ConfigServerProps> = ({
-                                                       initialServerData,
-                                                       initialLoggerData,
-                                                       initialMySQLData,
-                                                       initialOSSData,
-                                                       initialCacheData,
-                                                       initialUserEmailData
-                                                   }) => {
+// 保存在localStorage的数据结构
+interface SavedState {
+    currentFormIndex: number;
+    formData: {
+        serverData?: ServerBaseFormData;
+        loggerData?: LoggerFormData;
+        mysqlData?: MySQLFormData;
+        ossData?: OSSConfigFormData;
+        cacheData?: CacheConfigFormData;
+        userEmailData?: UserEmailConfigFormData;
+    }
+    // Add submitted forms tracking
+    submittedForms: {
+        serverSubmitted: boolean;
+        loggerSubmitted: boolean;
+        mysqlSubmitted: boolean;
+        ossSubmitted: boolean;
+        cacheSubmitted: boolean;
+        userEmailSubmitted: boolean;
+    }
+}
+
+const STORAGE_KEY = 'h2blog_initiate_config_state';
+
+// 从localStorage获取保存的状态
+const getSavedState = (): SavedState | null => {
+    try {
+        const savedState = localStorage.getItem(STORAGE_KEY);
+        if (savedState) {
+            return JSON.parse(savedState) as SavedState;
+        }
+    } catch (error) {
+        console.error('Failed to retrieve state from localStorage:', error);
+    }
+    return null;
+};
+
+const InitiateConfig: React.FC<InitiateConfigProps> = ({
+    initialServerData,
+    initialLoggerData,
+    initialMySQLData,
+    initialOSSData,
+    initialCacheData,
+    initialUserEmailData
+}) => {
+    // 获取保存的状态
+    const savedState = getSavedState();
+
+    // 保存各表单数据的状态
+    const [serverData, setServerData] = useState<ServerBaseFormData | undefined>(
+        savedState?.formData?.serverData || initialServerData
+    );
+    const [loggerData, setLoggerData] = useState<LoggerFormData | undefined>(
+        savedState?.formData?.loggerData || initialLoggerData
+    );
+    const [mysqlData, setMySQLData] = useState<MySQLFormData | undefined>(
+        savedState?.formData?.mysqlData || initialMySQLData
+    );
+    const [ossData, setOSSData] = useState<OSSConfigFormData | undefined>(
+        savedState?.formData?.ossData || initialOSSData
+    );
+    const [cacheData, setCacheData] = useState<CacheConfigFormData | undefined>(
+        savedState?.formData?.cacheData || initialCacheData
+    );
+    const [userEmailData, setUserEmailData] = useState<UserEmailConfigFormData | undefined>(
+        savedState?.formData?.userEmailData || initialUserEmailData
+    );
+
+    // Track which forms have been submitted successfully
+    const [submittedForms, setSubmittedForms] = useState({
+        serverSubmitted: savedState?.submittedForms?.serverSubmitted || false,
+        loggerSubmitted: savedState?.submittedForms?.loggerSubmitted || false,
+        mysqlSubmitted: savedState?.submittedForms?.mysqlSubmitted || false,
+        ossSubmitted: savedState?.submittedForms?.ossSubmitted || false,
+        cacheSubmitted: savedState?.submittedForms?.cacheSubmitted || false,
+        userEmailSubmitted: savedState?.submittedForms?.userEmailSubmitted || false,
+    });
+
     // State to track the current form index
-    const [currentFormIndex, setCurrentFormIndex] = useState(0);
+    const [currentFormIndex, setCurrentFormIndex] = useState(savedState?.currentFormIndex || 0);
     // State to track animation direction (1: down, -1: up)
     const [animationDirection, setAnimationDirection] = useState(0);
     // State to track if animation is in progress
     const [isAnimating, setIsAnimating] = useState(false);
 
+    // 初始化时设置文档标题
     useEffect(() => {
         document.title = "H2Blog 初始化配置";
     }, []);
+
+    // 当表单数据或当前表单索引变化时，保存到localStorage
+    useEffect(() => {
+        try {
+            const stateToSave: SavedState = {
+                currentFormIndex,
+                formData: {
+                    serverData,
+                    loggerData,
+                    mysqlData,
+                    ossData,
+                    cacheData,
+                    userEmailData
+                },
+                submittedForms
+            };
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+        } catch (error) {
+            console.error('Failed to save state to localStorage:', error);
+        }
+    }, [currentFormIndex, serverData, loggerData, mysqlData, ossData, cacheData, userEmailData, submittedForms]);
 
     // Effect to handle animation reset
     useEffect(() => {
@@ -55,34 +146,47 @@ const InitiateConfig: React.FC<ConfigServerProps> = ({
         "用户与邮箱配置"
     ];
 
+    // 处理各表单提交后的回调
     const handleServerSubmit = (data: ServerBaseFormData) => {
         console.log('Server config submitted:', data);
-        // Here you would typically save the data to your backend
+        setServerData(data);
+        setSubmittedForms(prev => ({ ...prev, serverSubmitted: true }));
+        // Removed automatic navigation
     };
 
     const handleLoggerSubmit = (data: LoggerFormData) => {
         console.log('Logger config submitted:', data);
-        // Here you would typically save the data to your backend
+        setLoggerData(data);
+        setSubmittedForms(prev => ({ ...prev, loggerSubmitted: true }));
+        // Removed automatic navigation
     };
 
     const handleMySQLSubmit = (data: MySQLFormData) => {
         console.log('MySQL config submitted:', data);
-        // Here you would typically save the data to your backend
+        setMySQLData(data);
+        setSubmittedForms(prev => ({ ...prev, mysqlSubmitted: true }));
+        // Removed automatic navigation
     };
 
     const handleOSSSubmit = (data: OSSConfigFormData) => {
         console.log('OSS config submitted:', data);
-        // Here you would typically save the data to your backend
+        setOSSData(data);
+        setSubmittedForms(prev => ({ ...prev, ossSubmitted: true }));
+        // Removed automatic navigation
     };
 
     const handleCacheSubmit = (data: CacheConfigFormData) => {
         console.log('Cache config submitted:', data);
-        // Here you would typically save the data to your backend
+        setCacheData(data);
+        setSubmittedForms(prev => ({ ...prev, cacheSubmitted: true }));
+        // Removed automatic navigation
     };
 
     const handleUserEmailSubmit = (data: UserEmailConfigFormData) => {
         console.log('User & Email config submitted:', data);
-        // Here you would typically save the data to your backend
+        setUserEmailData(data);
+        setSubmittedForms(prev => ({ ...prev, userEmailSubmitted: true }));
+        // 最后一个表单可以不跳转
     };
 
     const goToForm = (index: number) => {
@@ -121,42 +225,54 @@ const InitiateConfig: React.FC<ConfigServerProps> = ({
                 return (
                     <ServerBaseConfigForm
                         onSubmit={handleServerSubmit}
-                        initialData={initialServerData}
+                        initialData={serverData}
+                        isSubmitted={submittedForms.serverSubmitted}
+                        onNext={goToNextForm}
                     />
                 );
             case 1:
                 return (
                     <LoggerConfigForm
                         onSubmit={handleLoggerSubmit}
-                        initialData={initialLoggerData}
+                        initialData={loggerData}
+                        isSubmitted={submittedForms.loggerSubmitted}
+                        onNext={goToNextForm}
                     />
                 );
             case 2:
                 return (
                     <MySqlConfigForm
                         onSubmit={handleMySQLSubmit}
-                        initialData={initialMySQLData}
+                        initialData={mysqlData}
+                        isSubmitted={submittedForms.mysqlSubmitted}
+                        onNext={goToNextForm}
                     />
                 );
             case 3:
                 return (
                     <OSSConfigForm
                         onSubmit={handleOSSSubmit}
-                        initialData={initialOSSData}
+                        initialData={ossData}
+                        isSubmitted={submittedForms.ossSubmitted}
+                        onNext={goToNextForm}
                     />
                 );
             case 4:
                 return (
                     <CacheConfigForm
                         onSubmit={handleCacheSubmit}
-                        initialData={initialCacheData}
+                        initialData={cacheData}
+                        isSubmitted={submittedForms.cacheSubmitted}
+                        onNext={goToNextForm}
                     />
                 );
             case 5:
                 return (
                     <UserConfigForm
                         onSubmit={handleUserEmailSubmit}
-                        initialData={initialUserEmailData}
+                        initialData={userEmailData}
+                        isSubmitted={submittedForms.userEmailSubmitted}
+                        onNext={goToNextForm}
                     />
                 );
             default:
@@ -165,7 +281,7 @@ const InitiateConfig: React.FC<ConfigServerProps> = ({
     };
 
     return (
-        <div className="config-server-container">
+        <div className="initiate-config-container">
             {/* Navigation dots moved to left side with up/down arrows */}
             <div className="form-navigation-dots">
                 {/* Up arrow for navigating to previous form */}
@@ -205,7 +321,7 @@ const InitiateConfig: React.FC<ConfigServerProps> = ({
                 <div
                     className={`current-form-container ${isAnimating ? 'animating' : ''} ${animationDirection > 0 ? 'slide-up-out' :
                         animationDirection < 0 ? 'slide-down-out' : ''
-                    }`}
+                        }`}
                 >
                     {renderCurrentForm()}
                 </div>

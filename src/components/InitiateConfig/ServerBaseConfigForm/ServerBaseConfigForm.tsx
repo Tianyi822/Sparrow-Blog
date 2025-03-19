@@ -1,11 +1,11 @@
 import { saveServerBaseConfig } from '@/services/configService.ts';
 import { AxiosError } from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiClock, FiGlobe, FiKey, FiServer } from 'react-icons/fi';
 import './ServerBaseConfigForm.scss';
 
 // 定义接口
-interface FormData {
+export interface ServerBaseFormData {
     port: string;
     tokenKey: string;
     tokenExpireDuration: string;
@@ -14,6 +14,13 @@ interface FormData {
 
 interface ValidationErrors {
     [key: string]: string;
+}
+
+interface ServerBaseConfigFormProps {
+    initialData?: ServerBaseFormData;
+    onSubmit?: (data: ServerBaseFormData) => void;
+    isSubmitted?: boolean;
+    onNext?: () => void;
 }
 
 // 字段映射配置
@@ -68,26 +75,39 @@ const FIELD_CONFIG = {
     }
 };
 
-const ServerBaseConfigForm: React.FC = () => {
+const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
     // 状态定义
-    const [formData, setFormData] = useState<FormData>({
-        port: '',
-        tokenKey: '',
-        tokenExpireDuration: '',
-        corsOrigins: 'tybook.cc'
+    const [formData, setFormData] = useState<ServerBaseFormData>({
+        port: initialData?.port || '',
+        tokenKey: initialData?.tokenKey || '',
+        tokenExpireDuration: initialData?.tokenExpireDuration || '',
+        corsOrigins: initialData?.corsOrigins || 'tybook.cc'
     });
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [submitError, setSubmitError] = useState<string>('');
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+
+    // 当initialData变化时更新表单数据
+    useEffect(() => {
+        if (initialData) {
+            setFormData(prevFormData => ({
+                port: initialData.port || prevFormData.port,
+                tokenKey: initialData.tokenKey || prevFormData.tokenKey,
+                tokenExpireDuration: initialData.tokenExpireDuration || prevFormData.tokenExpireDuration,
+                corsOrigins: initialData.corsOrigins || prevFormData.corsOrigins
+            }));
+        }
+    }, [initialData]);
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         const fieldKey = Object.keys(FIELD_CONFIG).find(
             key => FIELD_CONFIG[key as keyof typeof FIELD_CONFIG].name === name
-        ) as keyof FormData | undefined;
+        ) as keyof ServerBaseFormData | undefined;
 
         if (!fieldKey) return;
 
@@ -118,13 +138,12 @@ const ServerBaseConfigForm: React.FC = () => {
             });
         }
 
-        // 清除成功和错误消息
-        if (successMessage) setSuccessMessage('');
+        // 只清除错误消息，不清除成功消息
         if (submitError) setSubmitError('');
     };
 
     // 验证单个字段
-    const validateField = (field: keyof FormData): string => {
+    const validateField = (field: keyof ServerBaseFormData): string => {
         const config = FIELD_CONFIG[field];
         return config.validate(formData[field]);
     };
@@ -136,7 +155,7 @@ const ServerBaseConfigForm: React.FC = () => {
 
         // 遍历所有字段进行验证
         Object.keys(FIELD_CONFIG).forEach(field => {
-            const fieldKey = field as keyof FormData;
+            const fieldKey = field as keyof ServerBaseFormData;
             const errorMessage = validateField(fieldKey);
 
             if (errorMessage) {
@@ -165,7 +184,8 @@ const ServerBaseConfigForm: React.FC = () => {
         e.preventDefault();
         setSubmitError('');
         setErrorData(null);
-        setSuccessMessage('');
+        // 不清除成功消息
+        // setSuccessMessage('');
 
         if (!validateForm()) {
             return;
@@ -191,6 +211,12 @@ const ServerBaseConfigForm: React.FC = () => {
 
             // 成功提交
             setSuccessMessage('服务器基础配置保存成功！');
+            setSubmitSuccess(true);
+            
+            // 调用父组件的onSubmit回调函数
+            if (onSubmit) {
+                onSubmit(formData);
+            }
         } catch (error: unknown) {
             console.error('Failed to save server config:', error);
 
@@ -247,15 +273,16 @@ const ServerBaseConfigForm: React.FC = () => {
             <form onSubmit={handleSubmit}>
                 {/* 动态生成表单字段 */}
                 {Object.entries(FIELD_CONFIG).map(([key, config]) => {
-                    const fieldKey = key as keyof FormData;
+                    const fieldKey = key as keyof ServerBaseFormData;
                     return (
-                        <div className="form-group" key={fieldKey}>
-                            <label>
+                        <div className="form-group" key={key}>
+                            <label htmlFor={config.name}>
                                 <span className="icon">{config.icon}</span>
                                 {config.label}
                             </label>
                             <input
                                 type="text"
+                                id={config.name}
                                 name={config.name}
                                 value={formData[fieldKey]}
                                 onChange={handleChange}
@@ -266,14 +293,18 @@ const ServerBaseConfigForm: React.FC = () => {
                     );
                 })}
 
-                <button
-                    type="submit"
+                <button 
+                    type="submit" 
                     className="submit-button"
                     disabled={loading}
+                    onClick={submitSuccess && onNext ? (e) => {
+                        e.preventDefault();
+                        onNext();
+                    } : undefined}
                 >
-                    {loading ? '提交中...' : '保存配置'}
+                    {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
                 </button>
-
+                
                 {/* 显示成功消息 */}
                 {successMessage && (
                     <div className="success-message-container">

@@ -1,6 +1,6 @@
 import { saveMySQLConfig } from '@/services/configService.ts';
 import { AxiosError } from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiDatabase, FiLock, FiServer, FiSettings, FiUser, FiRefreshCw, FiClock } from 'react-icons/fi';
 import './MySqlConfigForm.scss';
 
@@ -16,6 +16,13 @@ export interface MySQLFormData {
     database: string;
     maxOpenConns: string;
     maxIdleConns: string;
+}
+
+export interface MySqlConfigFormProps {
+    initialData?: MySQLFormData;
+    onSubmit?: (data: MySQLFormData) => void;
+    isSubmitted?: boolean;
+    onNext?: () => void;
 }
 
 // 字段映射配置
@@ -124,22 +131,38 @@ const FIELD_CONFIG = {
     }
 };
 
-const MySqlConfigForm: React.FC = () => {
+const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
     // 状态定义
     const [formData, setFormData] = useState<MySQLFormData>({
-        username: '',
-        password: '',
-        host: '127.0.0.1',
-        port: '3306',
-        database: 'H2_BLOG_SERVER',
-        maxOpenConns: '10',
-        maxIdleConns: '5'
+        username: initialData?.username || '',
+        password: initialData?.password || '',
+        host: initialData?.host || '127.0.0.1',
+        port: initialData?.port || '3306',
+        database: initialData?.database || 'H2_BLOG_SERVER',
+        maxOpenConns: initialData?.maxOpenConns || '10',
+        maxIdleConns: initialData?.maxIdleConns || '5'
     });
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [submitError, setSubmitError] = useState<string>('');
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+
+    // 当initialData变化时更新表单数据
+    useEffect(() => {
+        if (initialData) {
+            setFormData(prevFormData => ({
+                host: initialData.host || prevFormData.host,
+                port: initialData.port || prevFormData.port,
+                username: initialData.username || prevFormData.username,
+                password: initialData.password || prevFormData.password,
+                database: initialData.database || prevFormData.database,
+                maxOpenConns: initialData.maxOpenConns || prevFormData.maxOpenConns,
+                maxIdleConns: initialData.maxIdleConns || prevFormData.maxIdleConns
+            }));
+        }
+    }, [initialData]);
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,53 +172,38 @@ const MySqlConfigForm: React.FC = () => {
         const fieldKey = Object.keys(FIELD_CONFIG).find(
             key => FIELD_CONFIG[key as keyof typeof FIELD_CONFIG].name === name
         ) as keyof MySQLFormData | undefined;
-        
+
         if (!fieldKey) return;
-        
+
+        // 特殊处理数字类型的输入
         let processedValue = value;
-        
-        // 特殊处理端口字段，确保只有数字
-        if (fieldKey === 'port') {
-            processedValue = value.replace(/\D/g, '');
-            const numValue = parseInt(processedValue, 10);
-            // 范围检查
-            if (!isNaN(numValue) && numValue > 65535) {
-                processedValue = '65535';
-            }
-        }
-        
-        // 处理maxOpenConns和maxIdleConns字段，确保只有数字
-        if (fieldKey === 'maxOpenConns' || fieldKey === 'maxIdleConns') {
+        if (fieldKey === 'port' || fieldKey === 'maxOpenConns' || fieldKey === 'maxIdleConns') {
+            // 确保只接受数字输入
             processedValue = value.replace(/\D/g, '');
         }
 
-        setFormData(prev => ({ ...prev, [fieldKey]: processedValue }));
+        setFormData(prev => ({...prev, [fieldKey]: processedValue}));
 
         // 清除该字段的错误
         if (errors[fieldKey]) {
             setErrors(prev => {
-                const newErrors = { ...prev };
+                const newErrors = {...prev};
                 delete newErrors[fieldKey];
                 return newErrors;
             });
         }
-        
-        // 清除成功和错误消息
-        if (successMessage) setSuccessMessage('');
+
+        // 只清除错误消息，不清除成功消息
         if (submitError) setSubmitError('');
     };
 
     // 验证单个字段
     const validateField = (field: keyof MySQLFormData): string => {
         const config = FIELD_CONFIG[field];
-        if (!config) return '';
-        
-        // 处理特殊字段（maxIdleConns需要传递formData进行比较）
-        if (field === 'maxIdleConns') {
-            return config.validate(formData[field], formData);
-        }
-        
-        return (config.validate as (value: string) => string)(formData[field]);
+        // 部分字段的验证需要整个formData作为上下文
+        return typeof config.validate === 'function' 
+            ? config.validate(formData[field], formData) 
+            : '';
     };
 
     // 验证所有字段
@@ -207,7 +215,7 @@ const MySqlConfigForm: React.FC = () => {
         Object.keys(FIELD_CONFIG).forEach(field => {
             const fieldKey = field as keyof MySQLFormData;
             const errorMessage = validateField(fieldKey);
-            
+
             if (errorMessage) {
                 newErrors[fieldKey] = errorMessage;
                 isValid = false;
@@ -234,7 +242,8 @@ const MySqlConfigForm: React.FC = () => {
         e.preventDefault();
         setSubmitError('');
         setErrorData(null);
-        setSuccessMessage('');
+        // 不清除成功消息
+        // setSuccessMessage('');
 
         if (!validateForm()) {
             return;
@@ -255,15 +264,21 @@ const MySqlConfigForm: React.FC = () => {
 
             // 成功提交
             setSuccessMessage('数据库配置保存成功！');
+            setSubmitSuccess(true);
+            
+            // 调用父组件的onSubmit回调函数
+            if (onSubmit) {
+                onSubmit(formData);
+            }
         } catch (error: unknown) {
             console.error('Failed to save MySQL config:', error);
-            
+
             // 处理错误对象，提取详细信息
             if (error && typeof error === 'object') {
                 // 检查是否是Axios错误并包含响应数据
                 if (error instanceof AxiosError && error.response) {
                     const errorResponse = error.response;
-                    
+
                     // 尝试提取错误消息
                     if (errorResponse.data) {
                         const errorData = errorResponse.data as Record<string, unknown>;
@@ -272,7 +287,7 @@ const MySqlConfigForm: React.FC = () => {
                         } else {
                             setSubmitError(`请求失败: ${errorResponse.status} ${errorResponse.statusText || ''}`);
                         }
-                        
+
                         // 尝试提取错误数据
                         if (errorData.data) {
                             setErrorData(errorData.data as Record<string, unknown>);
@@ -307,20 +322,20 @@ const MySqlConfigForm: React.FC = () => {
     return (
         <div className="mysql-config-form-container">
             <h2>数据库配置</h2>
-            
+
             <form onSubmit={handleSubmit}>
                 {/* 动态生成表单字段 */}
                 {Object.entries(FIELD_CONFIG).map(([key, config]) => {
                     const fieldKey = key as keyof MySQLFormData;
                     return (
-                        <div className="form-group" key={fieldKey}>
-                            <label htmlFor={fieldKey}>
+                        <div className="form-group" key={key}>
+                            <label htmlFor={config.name}>
                                 <span className="icon">{config.icon}</span>
                                 {config.label}
                             </label>
                             <input
                                 type={fieldKey === 'password' ? 'password' : 'text'}
-                                id={fieldKey}
+                                id={config.name}
                                 name={config.name}
                                 value={formData[fieldKey]}
                                 onChange={handleChange}
@@ -331,14 +346,18 @@ const MySqlConfigForm: React.FC = () => {
                     );
                 })}
 
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     className="submit-button"
                     disabled={loading}
+                    onClick={submitSuccess && onNext ? (e) => {
+                        e.preventDefault();
+                        onNext();
+                    } : undefined}
                 >
-                    {loading ? '提交中...' : '保存配置'}
+                    {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
                 </button>
-                
+
                 {/* 显示成功消息 */}
                 {successMessage && (
                     <div className="success-message-container">

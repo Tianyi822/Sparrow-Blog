@@ -1,6 +1,6 @@
 import { saveOSSConfig } from '@/services/configService.ts';
 import { AxiosError } from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiBox, FiCloud, FiFile, FiGlobe, FiImage, FiKey, FiLock, FiMaximize, FiPercent, FiToggleRight } from 'react-icons/fi';
 import './OSSConfigForm.scss';
 
@@ -15,11 +15,18 @@ export interface OSSConfigFormData {
     accessKeySecret: string;
     bucketName: string;
     imagePath: string;
-    avatarPath: string;
     blogPath: string;
     webpEnabled: boolean;
     webpQuality: string;
     webpMaxSize: string;
+}
+
+// OSSConfigForm 组件的 props 接口
+interface OSSConfigFormProps {
+    initialData?: OSSConfigFormData;
+    onSubmit?: (data: OSSConfigFormData) => void;
+    isSubmitted?: boolean;
+    onNext?: () => void;
 }
 
 // 定义字段配置接口，确保字段名与OSSConfigFormData匹配
@@ -167,46 +174,47 @@ const FIELD_CONFIG: FieldConfigType = {
             }
             return '';
         }
-    },
-    // 确保所有OSSConfigFormData中的字段都有对应配置
-    avatarPath: {
-        label: '头像OSS路径',
-        icon: <FiFile />,
-        name: 'avatarPath',
-        type: 'text',
-        placeholder: 'images/avatar/',
-        validate: (value: string) => {
-            if (!value.trim()) {
-                return '头像路径不能为空';
-            }
-            if (!value.endsWith('/')) {
-                return '路径必须以 / 结尾';
-            }
-            return '';
-        }
     }
 };
 
-const OSSConfigForm: React.FC = () => {
+const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
     // 状态定义
     const [formData, setFormData] = useState<OSSConfigFormData>({
-        endpoint: '',
-        region: '',
-        accessKeyId: '',
-        accessKeySecret: '',
-        bucketName: '',
-        imagePath: 'images/',
-        avatarPath: 'images/avatar/',
-        blogPath: 'blogs/',
-        webpEnabled: true,
-        webpQuality: '75',
-        webpMaxSize: '1.5'
+        endpoint: initialData?.endpoint || '',
+        region: initialData?.region || '',
+        accessKeyId: initialData?.accessKeyId || '',
+        accessKeySecret: initialData?.accessKeySecret || '',
+        bucketName: initialData?.bucketName || '',
+        imagePath: initialData?.imagePath || 'images',
+        blogPath: initialData?.blogPath || 'blogs',
+        webpEnabled: initialData?.webpEnabled !== undefined ? initialData.webpEnabled : true,
+        webpQuality: initialData?.webpQuality || '75',
+        webpMaxSize: initialData?.webpMaxSize || '200'
     });
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [submitError, setSubmitError] = useState<string>('');
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+
+    // 当initialData变化时更新表单数据
+    useEffect(() => {
+        if (initialData) {
+            setFormData(prevFormData => ({
+                endpoint: initialData.endpoint || prevFormData.endpoint,
+                region: initialData.region || prevFormData.region,
+                accessKeyId: initialData.accessKeyId || prevFormData.accessKeyId,
+                accessKeySecret: initialData.accessKeySecret || prevFormData.accessKeySecret,
+                bucketName: initialData.bucketName || prevFormData.bucketName,
+                imagePath: initialData.imagePath || prevFormData.imagePath,
+                blogPath: initialData.blogPath || prevFormData.blogPath,
+                webpEnabled: initialData.webpEnabled !== undefined ? initialData.webpEnabled : prevFormData.webpEnabled,
+                webpQuality: initialData.webpQuality || prevFormData.webpQuality,
+                webpMaxSize: initialData.webpMaxSize || prevFormData.webpMaxSize
+            }));
+        }
+    }, [initialData]);
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -238,8 +246,7 @@ const OSSConfigForm: React.FC = () => {
             });
         }
 
-        // 清除成功和错误消息
-        if (successMessage) setSuccessMessage('');
+        // 只清除错误消息，不清除成功消息
         if (submitError) setSubmitError('');
     };
 
@@ -258,21 +265,23 @@ const OSSConfigForm: React.FC = () => {
     };
 
     // 验证所有字段
-    const validateForm = (): boolean => {
+    const validateForm = (): { isValid: boolean; errorSummary: string } => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
+        let errorSummary = '';
 
         // 遍历所有字段进行验证
         Object.keys(formData).forEach(field => {
             const errorMessage = validateField(field);
             if (errorMessage) {
                 newErrors[field] = errorMessage;
+                errorSummary += `${FIELD_CONFIG[field]?.label || field}: ${errorMessage}\n`;
                 isValid = false;
             }
         });
 
         setErrors(newErrors);
-        return isValid;
+        return { isValid, errorSummary };
     };
 
     // 格式化错误数据显示
@@ -289,17 +298,35 @@ const OSSConfigForm: React.FC = () => {
     // 处理表单提交
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // 如果已经提交过，直接跳转到下一步
+        if (submitSuccess && onNext) {
+            onNext();
+            return;
+        }
+        
         setSubmitError('');
         setErrorData(null);
-        setSuccessMessage('');
 
-        if (!validateForm()) {
+        const { isValid, errorSummary } = validateForm();
+        if (!isValid) {
+            // 设置提交错误，显示验证失败信息
+            setSubmitError('表单验证失败，请检查以下字段');
+            setErrorData({ validationErrors: errorSummary });
             return;
         }
 
         try {
             setLoading(true);
-            const response = await saveOSSConfig(formData);
+            
+            // 确保路径以斜杠结尾，并删除avatarPath
+            const dataToSubmit = {
+                ...formData,
+                imagePath: formData.imagePath.endsWith('/') ? formData.imagePath : formData.imagePath + '/',
+                blogPath: formData.blogPath.endsWith('/') ? formData.blogPath : formData.blogPath + '/'
+            };
+            
+            const response = await saveOSSConfig(dataToSubmit);
 
             // 处理非200响应
             if (response && response.code !== 200) {
@@ -312,6 +339,12 @@ const OSSConfigForm: React.FC = () => {
 
             // 成功提交
             setSuccessMessage('OSS配置保存成功！');
+            setSubmitSuccess(true);
+            
+            // 调用父组件的onSubmit回调函数
+            if (onSubmit) {
+                onSubmit(formData);
+            }
         } catch (error: unknown) {
             console.error('Failed to save OSS config:', error);
 
@@ -443,7 +476,7 @@ const OSSConfigForm: React.FC = () => {
                     className="submit-button"
                     disabled={loading}
                 >
-                    {loading ? '提交中...' : '保存配置'}
+                    {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
                 </button>
 
                 {/* 显示成功消息 */}

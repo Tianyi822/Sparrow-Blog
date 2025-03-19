@@ -1,6 +1,6 @@
 import { saveLoggerConfig } from '@/services/configService.ts';
 import { AxiosError } from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiArchive, FiCalendar, FiDatabase, FiFileText, FiFolder, FiZap } from 'react-icons/fi';
 import './LoggerConfigForm.scss';
 
@@ -15,6 +15,13 @@ export interface LoggerFormData {
     maxBackups: string;
     maxDays: string;
     compress: boolean;
+}
+
+interface LoggerConfigFormProps {
+    initialData?: LoggerFormData;
+    onSubmit?: (data: LoggerFormData) => void;
+    isSubmitted?: boolean;
+    onNext?: () => void;
 }
 
 // 字段映射配置
@@ -92,21 +99,36 @@ const FIELD_CONFIG = {
     }
 };
 
-const LoggerConfigForm: React.FC = () => {
+const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
     // 状态定义
     const [formData, setFormData] = useState<LoggerFormData>({
-        logLevel: 'DEBUG',
-        logPath: '', // 允许为空，会使用默认值
-        maxSize: '1',
-        maxBackups: '30',
-        maxDays: '7',
-        compress: true
+        logLevel: initialData?.logLevel || 'debug',
+        logPath: initialData?.logPath || '',
+        maxSize: initialData?.maxSize || '10',
+        maxBackups: initialData?.maxBackups || '5',
+        maxDays: initialData?.maxDays || '7',
+        compress: initialData?.compress !== undefined ? initialData.compress : true
     });
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [submitError, setSubmitError] = useState<string>('');
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+
+    // 添加 useEffect 以在 initialData 更改时更新状态
+    useEffect(() => {
+        if (initialData) {
+            setFormData(prevFormData => ({
+                logLevel: initialData.logLevel || prevFormData.logLevel,
+                logPath: initialData.logPath || prevFormData.logPath,
+                maxSize: initialData.maxSize || prevFormData.maxSize,
+                maxBackups: initialData.maxBackups || prevFormData.maxBackups,
+                maxDays: initialData.maxDays || prevFormData.maxDays,
+                compress: initialData.compress !== undefined ? initialData.compress : prevFormData.compress
+            }));
+        }
+    }, [initialData]);
 
     // 处理输入变化
     const handleChange = (
@@ -156,7 +178,6 @@ const LoggerConfigForm: React.FC = () => {
         }
 
         // 清除成功和错误消息
-        if (successMessage) setSuccessMessage('');
         if (submitError) setSubmitError('');
     };
 
@@ -204,7 +225,8 @@ const LoggerConfigForm: React.FC = () => {
         e.preventDefault();
         setSubmitError('');
         setErrorData(null);
-        setSuccessMessage('');
+        // 不清除成功消息
+        // setSuccessMessage('');
 
         if (!validateForm()) {
             return;
@@ -225,6 +247,12 @@ const LoggerConfigForm: React.FC = () => {
 
             // 成功提交
             setSuccessMessage('日志配置保存成功！');
+            setSubmitSuccess(true);
+            
+            // 调用父组件的onSubmit回调函数
+            if (onSubmit) {
+                onSubmit(formData);
+            }
         } catch (error: unknown) {
             console.error('Failed to save logger config:', error);
 
@@ -385,8 +413,12 @@ const LoggerConfigForm: React.FC = () => {
                     type="submit"
                     className="submit-button"
                     disabled={loading}
+                    onClick={submitSuccess && onNext ? (e) => {
+                        e.preventDefault();
+                        onNext();
+                    } : undefined}
                 >
-                    {loading ? '提交中...' : '保存配置'}
+                    {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
                 </button>
 
                 {/* 显示成功消息 */}

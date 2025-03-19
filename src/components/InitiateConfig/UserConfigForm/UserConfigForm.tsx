@@ -14,9 +14,11 @@ interface ValidationErrors {
     [key: string]: string;
 }
 
-interface UserEmailConfigFormProps {
+export interface UserEmailConfigFormProps {
     onSubmit?: (formData: UserEmailConfigFormData) => void;
     initialData?: UserEmailConfigFormData;
+    isSubmitted?: boolean;
+    onNext?: () => void;
 }
 
 export interface UserEmailConfigFormData {
@@ -129,7 +131,7 @@ const FIELD_CONFIG = {
     }
 };
 
-const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialData }) => {
+const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialData, isSubmitted, onNext }) => {
     // 状态定义
     const [formData, setFormData] = useState<UserEmailConfigFormData & { verifyCode?: string }>({
         username: initialData?.username || '',
@@ -148,6 +150,7 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [successMessage, setSuccessMessage] = useState<string>('');
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
     
     // 验证码相关状态
     const [countdown, setCountdown] = useState<number>(0);
@@ -173,6 +176,24 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
             }
         }
     }, []);
+    
+    // 当initialData变化时更新表单数据
+    useEffect(() => {
+        if (initialData) {
+            setFormData(prevData => ({
+                ...prevData,
+                username: initialData.username || prevData.username,
+                email: initialData.email || prevData.email,
+                smtpUsername: initialData.smtpUsername || prevData.smtpUsername,
+                smtpServer: initialData.smtpServer || prevData.smtpServer,
+                smtpPort: initialData.smtpPort || prevData.smtpPort,
+                smtpPassword: initialData.smtpPassword || prevData.smtpPassword
+            }));
+            
+            // 更新是否同步邮箱用户名的状态
+            setSyncWithEmail(!initialData.smtpUsername || initialData.smtpUsername === initialData.email);
+        }
+    }, [initialData]);
     
     // 处理倒计时
     useEffect(() => {
@@ -441,19 +462,19 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
             }
 
             // 成功提交
-            setSuccessMessage('用户邮箱配置保存成功！');
+            setSuccessMessage('用户和邮件配置保存成功！');
+            setSubmitSuccess(true);
             
-            // 如果提供了onSubmit回调，调用它
+            // 调用父组件的onSubmit回调函数
             if (onSubmit) {
-                const submitData: UserEmailConfigFormData = {
+                onSubmit({
                     username: formData.username,
                     email: formData.email,
                     smtpUsername: syncWithEmail ? formData.email : formData.smtpUsername,
                     smtpServer: formData.smtpServer,
                     smtpPort: formData.smtpPort,
                     smtpPassword: formData.smtpPassword
-                };
-                onSubmit(submitData);
+                });
             }
         } catch (error: unknown) {
             console.error('Failed to save user email config:', error);
@@ -672,8 +693,12 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
                         type="submit"
                         className="submit-button"
                         disabled={loading}
+                        onClick={submitSuccess && onNext ? (e) => {
+                            e.preventDefault();
+                            onNext();
+                        } : undefined}
                     >
-                        {loading ? '提交中...' : '保存配置'}
+                        {loading ? '提交中...' : submitSuccess ? '进行下一项配置' : '保存配置'}
                     </button>
 
                     {/* 显示成功消息 */}
