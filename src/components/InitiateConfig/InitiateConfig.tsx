@@ -33,6 +33,10 @@ const InitiateConfig: React.FC<ConfigServerProps> = ({
     // State to track if animation is in progress
     const [isAnimating, setIsAnimating] = useState(false);
 
+    useEffect(() => {
+        document.title = "H2Blog 初始化配置";
+    }, []);
+
     // Effect to handle animation reset
     useEffect(() => {
         if (!isAnimating) {
