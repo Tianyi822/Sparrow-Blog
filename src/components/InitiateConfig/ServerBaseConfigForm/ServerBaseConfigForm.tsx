@@ -58,17 +58,36 @@ const FIELD_CONFIG = {
         validate: (value: string) => !value ? '令牌过期时间不能为空' : ''
     },
     corsOrigins: {
-        label: '网站地址 (仅输入单个域名，无需http或www前缀)',
+        label: '网站地址 (仅支持单个地址)',
         icon: <FiGlobe/>,
-        placeholder: 'example.com',
+        placeholder: 'example.com 或 localhost:5173',
         name: 'server_cors_origins',
         validate: (value: string) => {
             if (!value) return '网站地址不能为空';
+                
+            // 检查是否是localhost开发地址
+            const localhostRegex = /^localhost(:[0-9]{1,5})?$/;
+            if (localhostRegex.test(value)) {
+                return ''; // localhost格式正确
+            }
 
-            // 验证单个域名格式
+            // 验证IP地址格式（允许带端口）
+            const ipRegex = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:[0-9]{1,5})?$/;
+            if (ipRegex.test(value)) {
+                // 验证IP地址的每个部分是否在0-255范围内
+                const ipParts = value.split(':')[0].split('.');
+                const isValidIp = ipParts.every(part => {
+                    const num = parseInt(part, 10);
+                    return num >= 0 && num <= 255;
+                });
+                
+                if (isValidIp) return ''; // IP格式正确
+            }
+
+            // 验证域名格式
             const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
             if (!domainRegex.test(value)) {
-                return '请输入有效的域名格式 (例如: example.com)';
+                return '请输入有效的域名格式 (例如: example.com) 或开发地址 (例如: localhost:5173)';
             }
             return '';
         }
@@ -81,7 +100,7 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
         port: initialData?.port || '',
         tokenKey: initialData?.tokenKey || '',
         tokenExpireDuration: initialData?.tokenExpireDuration || '',
-        corsOrigins: initialData?.corsOrigins || 'tybook.cc'
+        corsOrigins: initialData?.corsOrigins || ''
     });
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [submitError, setSubmitError] = useState<string>('');
