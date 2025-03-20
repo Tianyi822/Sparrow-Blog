@@ -1,0 +1,251 @@
+@use "@/style/mixins" as *;
+
+.login-container {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #1a237e, #000000); // 从左上角深蓝色到右下角纯黑色的渐变
+  background-attachment: fixed; // 确保背景固定，不随滚动而移动
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+  
+  .login-card {
+    @include glass-card-base;
+    max-width: 350px;
+    width: 100%;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 
+      0 10px 20px rgba(0, 0, 0, 0.1),
+      0 6px 6px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    position: relative;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 15px 30px rgba(0, 0, 0, 0.2),
+        0 10px 10px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    
+    // 登录卡片发光效果
+    &::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      background: linear-gradient(45deg, rgba(26, 35, 126, 0.3), rgba(255, 255, 255, 0.1), rgba(26, 35, 126, 0.3));
+      border-radius: 16px;
+      z-index: -1;
+      filter: blur(8px);
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+    
+    &:hover::before {
+      opacity: 1;
+    }
+  }
+  
+  .login-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    
+    h1 {
+      font-size: 2.3rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(to right, #e2e8f0, #fff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+  
+  .login-form {
+    .form-group {
+      margin-bottom: 1.5rem;
+      
+      label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        
+        .icon {
+          margin-right: 0.5rem;
+          color: rgba(214, 51, 132, 0.8); // 使用粉色系图标
+        }
+      }
+      
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        
+        &:focus {
+          outline: none;
+          border-color: rgba(214, 51, 132, 0.5);
+          box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.15);
+          background: rgba(255, 255, 255, 0.1);
+        }
+        
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+      }
+      
+      .error-message {
+        color: #ff6b6b;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        
+        &::before {
+          content: '!';
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background-color: #ff6b6b;
+          color: white;
+          font-weight: bold;
+          margin-right: 0.5rem;
+          font-size: 0.75rem;
+        }
+      }
+    }
+    
+    .verify-code-group {
+      margin-bottom: 2rem !important;
+      
+      .verify-code-container {
+        display: flex;
+        gap: 10px;
+        
+        input {
+          flex: 1;
+          font-size: 1.25rem;
+          letter-spacing: 3px;
+          text-align: center;
+          padding: 1rem;
+          height: 55px;
+        }
+        
+        .verify-code-button {
+          white-space: nowrap;
+          padding: 0 1.25rem;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          border: none;
+          background: linear-gradient(45deg, rgba(214, 51, 132, 0.8), rgba(214, 51, 132, 0.6));
+          color: white;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          
+          &:hover:not(:disabled) {
+            background: linear-gradient(45deg, rgba(214, 51, 132, 1), rgba(214, 51, 132, 0.8));
+            box-shadow: 0 4px 10px rgba(214, 51, 132, 0.3);
+          }
+          
+          &:disabled {
+            background: rgba(214, 51, 132, 0.3);
+            cursor: not-allowed;
+            color: rgba(255, 255, 255, 0.5);
+          }
+        }
+      }
+    }
+    
+    .login-button {
+      width: 100%;
+      height: 50px;
+      padding: 0.85rem;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(45deg, #1a237e, #283593);
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem !important;
+      cursor: pointer;
+      margin-top: 1.5rem !important;
+      box-shadow: 0 4px 10px rgba(26, 35, 126, 0.3);
+      transition: all 0.3s ease;
+      
+      &:hover:not(:disabled) {
+        background: linear-gradient(45deg, #283593, #3949ab);
+        box-shadow: 0 6px 15px rgba(26, 35, 126, 0.4);
+        transform: translateY(-2px);
+      }
+      
+      &:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(26, 35, 126, 0.2);
+      }
+      
+      &:disabled {
+        background: rgba(26, 35, 126, 0.5);
+        cursor: not-allowed;
+      }
+    }
+    
+    .submit-error-container {
+      margin-top: 1rem;
+      padding: 0.85rem;
+      border-radius: 8px;
+      background-color: rgba(231, 76, 60, 0.15);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      
+      .submit-error {
+        color: rgba(231, 76, 60, 0.9);
+        font-size: 0.9rem;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1rem;
+    
+    .login-card {
+      padding: 1.5rem;
+    }
+    
+    .login-header {
+      h1 {
+        font-size: 1.75rem;
+      }
+      
+      p {
+        font-size: 0.9rem;
+      }
+    }
+  }
+} 

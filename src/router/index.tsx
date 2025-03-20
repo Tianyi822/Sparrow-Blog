@@ -4,6 +4,7 @@ import Home from "@/components/Home/Home";
 import FriendLink from "@/components/FriendLink/FriendLink";
 import BlogLayout from "@/layouts/BlogLayout";
 import { checkSystemStatus } from "@/services/webService";
+import Login from "@/components/Login/Login";
 
 // 检查系统状态的loader函数
 const checkApiConfig = async () => {
@@ -60,6 +61,10 @@ const routes: RouteObject[] = [
             }
             return null;
         }
+    },
+    {
+        path: "/login",
+        element: <Login />
     }
 ];
 
