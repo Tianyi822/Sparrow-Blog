@@ -258,7 +258,7 @@ export interface VerificationCodeData {
 export const sendInitiatedVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
     return configApiRequest<ApiResponse<null>>({
         method: 'POST',
-        url: '/config/send-verification-code',
+        url: '/config/config-email-send-code',
         data: data,
         headers: {
             'Content-Type': 'application/json'
