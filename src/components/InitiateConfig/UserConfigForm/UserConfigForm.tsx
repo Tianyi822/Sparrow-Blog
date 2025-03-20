@@ -703,7 +703,7 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                             className="next-button"
                             onClick={onNext}
                         >
-                            进行下一项配置
+                            完成配置并进入管理后台
                         </button>
                     )}
                 </div>
