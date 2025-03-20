@@ -44,7 +44,7 @@ export const transformServerBaseData = (data: ServerBaseConfig): ServerBaseBacke
     };
 };
 
-export const saveServerBaseConfig = async (data: ServerBaseConfig): Promise<ApiResponse<ServerBaseConfig>> => {
+export const saveInitiatedServerBaseConfig = async (data: ServerBaseConfig): Promise<ApiResponse<ServerBaseConfig>> => {
     const transformedData = transformServerBaseData(data);
     console.log('转换后的数据:', transformedData); // 调试用
 
@@ -85,7 +85,7 @@ export const transformLoggerData = (data: LoggerFormData): LoggerBackendData => 
 /**
  * Save logger configuration
  */
-export const saveLoggerConfig = async (data: LoggerFormData): Promise<ApiResponse<LoggerFormData>> => {
+export const saveInitiatedLoggerConfig = async (data: LoggerFormData): Promise<ApiResponse<LoggerFormData>> => {
     const transformedData = transformLoggerData(data);
     console.log('转换后的日志配置数据:', transformedData); // 调试用
 
@@ -127,7 +127,7 @@ export const transformMySQLData = (data: MySQLFormData): MySQLBackendData => {
 /**
  * Save MySQL configuration
  */
-export const saveMySQLConfig = async (data: MySQLFormData): Promise<ApiResponse<MySQLFormData>> => {
+export const saveInitiatedMySQLConfig = async (data: MySQLFormData): Promise<ApiResponse<MySQLFormData>> => {
     const transformedData = transformMySQLData(data);
     console.log('转换后的MySQL配置数据:', transformedData); // 调试用
 
@@ -175,7 +175,7 @@ export const transformOSSData = (data: OSSConfigFormData): OSSBackendData => {
 /**
  * Save OSS storage configuration
  */
-export const saveOSSConfig = async (data: OSSConfigFormData): Promise<ApiResponse<OSSConfigFormData>> => {
+export const saveInitiatedOSSConfig = async (data: OSSConfigFormData): Promise<ApiResponse<OSSConfigFormData>> => {
     const transformedData = transformOSSData(data);
     console.log('转换后的OSS配置数据:', transformedData); // 调试用
 
@@ -211,7 +211,7 @@ export const transformCacheData = (data: CacheConfigFormData): CacheBackendData 
 /**
  * Save Cache configuration
  */
-export const saveCacheConfig = async (data: CacheConfigFormData): Promise<ApiResponse<CacheConfigFormData>> => {
+export const saveInitiatedCacheConfig = async (data: CacheConfigFormData): Promise<ApiResponse<CacheConfigFormData>> => {
     const transformedData = transformCacheData(data);
     console.log('转换后的缓存配置数据:', transformedData); // 调试用
 
@@ -233,7 +233,7 @@ export interface UserConfigData {
     'user.verification_code': string;
 }
 
-export const saveUserConfig = async (data: UserConfigData): Promise<ApiResponse<null>> => {
+export const saveInitiatedUserConfig = async (data: UserConfigData): Promise<ApiResponse<null>> => {
     return apiRequest<ApiResponse<null>>({
         method: 'POST',
         url: '/config/user',
@@ -252,7 +252,7 @@ export interface VerificationCodeData {
     'user.smtp_auth_code': string;
 }
 
-export const sendVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
+export const sendInitiatedVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
     return apiRequest<ApiResponse<null>>({
         method: 'POST',
         url: '/config/send-verification-code',
@@ -261,19 +261,9 @@ export const sendVerificationCode = async (data: VerificationCodeData): Promise<
 };
 
 /**
- * Apply all configurations (restart server)
- */
-export const applyConfigurations = async (): Promise<ApiResponse<null>> => {
-    return apiRequest<ApiResponse<null>>({
-        method: 'POST',
-        url: '/config/apply'
-    });
-};
-
-/**
  * Complete configuration and restart server
  */
-export const completeConfig = async (): Promise<ApiResponse<null>> => {
+export const completeInitiatedConfig = async (): Promise<ApiResponse<null>> => {
     return apiRequest<ApiResponse<null>>({
         method: 'GET',
         url: '/config/complete-config'
@@ -281,13 +271,12 @@ export const completeConfig = async (): Promise<ApiResponse<null>> => {
 };
 
 export default {
-    saveServerBaseConfig,
-    saveLoggerConfig,
-    saveMySQLConfig,
-    saveOSSConfig,
-    saveCacheConfig,
-    saveUserConfig,
-    sendVerificationCode,
-    applyConfigurations,
-    completeConfig
+    saveInitiatedServerBaseConfig,
+    saveInitiatedLoggerConfig,
+    saveInitiatedMySQLConfig,
+    saveInitiatedOSSConfig,
+    saveInitiatedCacheConfig,
+    saveInitiatedUserConfig,
+    completeInitiatedConfig,
+    sendInitiatedVerificationCode,
 };

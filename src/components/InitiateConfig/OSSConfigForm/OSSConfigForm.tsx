@@ -1,7 +1,18 @@
-import { saveOSSConfig } from '@/services/configService.ts';
+import { saveInitiatedOSSConfig } from '@/services/InitiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useState, useEffect } from 'react';
-import { FiBox, FiCloud, FiFile, FiGlobe, FiImage, FiKey, FiLock, FiMaximize, FiPercent, FiToggleRight } from 'react-icons/fi';
+import React, { useEffect, useState } from 'react';
+import {
+    FiBox,
+    FiCloud,
+    FiFile,
+    FiGlobe,
+    FiImage,
+    FiKey,
+    FiLock,
+    FiMaximize,
+    FiPercent,
+    FiToggleRight
+} from 'react-icons/fi';
 import './OSSConfigForm.scss';
 
 interface ValidationErrors {
@@ -45,7 +56,7 @@ interface FieldConfigType {
 const FIELD_CONFIG: FieldConfigType = {
     endpoint: {
         label: 'OSS Endpoint',
-        icon: <FiCloud />,
+        icon: <FiCloud/>,
         name: 'endpoint',
         type: 'text',
         placeholder: 'oss-cn-guangzhou.aliyuncs.com',
@@ -58,7 +69,7 @@ const FIELD_CONFIG: FieldConfigType = {
     },
     region: {
         label: '区域',
-        icon: <FiGlobe />,
+        icon: <FiGlobe/>,
         name: 'region',
         type: 'text',
         placeholder: 'cn-guangzhou',
@@ -71,7 +82,7 @@ const FIELD_CONFIG: FieldConfigType = {
     },
     accessKeyId: {
         label: 'AccessKey ID',
-        icon: <FiKey />,
+        icon: <FiKey/>,
         name: 'accessKeyId',
         type: 'password',
         placeholder: '请输入AccessKey ID',
@@ -84,7 +95,7 @@ const FIELD_CONFIG: FieldConfigType = {
     },
     accessKeySecret: {
         label: 'AccessKey Secret',
-        icon: <FiLock />,
+        icon: <FiLock/>,
         name: 'accessKeySecret',
         type: 'password',
         placeholder: '请输入AccessKey Secret',
@@ -97,7 +108,7 @@ const FIELD_CONFIG: FieldConfigType = {
     },
     bucketName: {
         label: 'Bucket名称',
-        icon: <FiBox />,
+        icon: <FiBox/>,
         name: 'bucketName',
         type: 'text',
         placeholder: '请输入Bucket名称',
@@ -110,7 +121,7 @@ const FIELD_CONFIG: FieldConfigType = {
     },
     imagePath: {
         label: '图片OSS路径',
-        icon: <FiImage />,
+        icon: <FiImage/>,
         name: 'imagePath',
         type: 'text',
         placeholder: 'images/',
@@ -126,7 +137,7 @@ const FIELD_CONFIG: FieldConfigType = {
     },
     blogPath: {
         label: '博客OSS路径',
-        icon: <FiFile />,
+        icon: <FiFile/>,
         name: 'blogPath',
         type: 'text',
         placeholder: 'blogs/',
@@ -142,14 +153,14 @@ const FIELD_CONFIG: FieldConfigType = {
     },
     webpEnabled: {
         label: '启用WebP转换',
-        icon: <FiToggleRight />,
+        icon: <FiToggleRight/>,
         name: 'webpEnabled',
         type: 'checkbox',
         validate: () => ''
     },
     webpQuality: {
         label: 'WebP质量 (1-100)',
-        icon: <FiPercent />,
+        icon: <FiPercent/>,
         name: 'webpQuality',
         type: 'text',
         placeholder: '75',
@@ -163,7 +174,7 @@ const FIELD_CONFIG: FieldConfigType = {
     },
     webpMaxSize: {
         label: '最大大小 (MB)',
-        icon: <FiMaximize />,
+        icon: <FiMaximize/>,
         name: 'webpMaxSize',
         type: 'text',
         placeholder: '1.5',
@@ -177,7 +188,7 @@ const FIELD_CONFIG: FieldConfigType = {
     }
 };
 
-const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
+const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
     // 状态定义
     const [formData, setFormData] = useState<OSSConfigFormData>({
         endpoint: initialData?.endpoint || '',
@@ -218,7 +229,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, is
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
+        const {name, value, type} = e.target;
 
         // 找出对应的字段
         const fieldKey = Object.keys(FIELD_CONFIG).find(
@@ -234,13 +245,13 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, is
                 [fieldKey]: (e.target as HTMLInputElement).checked
             }));
         } else {
-            setFormData(prev => ({ ...prev, [fieldKey]: value }));
+            setFormData(prev => ({...prev, [fieldKey]: value}));
         }
 
         // 清除该字段的错误
         if (errors[fieldKey]) {
             setErrors(prev => {
-                const newErrors = { ...prev };
+                const newErrors = {...prev};
                 delete newErrors[fieldKey];
                 return newErrors;
             });
@@ -282,7 +293,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, is
         });
 
         setErrors(newErrors);
-        return { isValid, errorSummary };
+        return {isValid, errorSummary};
     };
 
     // 格式化错误数据显示
@@ -299,35 +310,35 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, is
     // 处理表单提交
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // 如果已经提交过，直接跳转到下一步
         if (submitSuccess && onNext) {
             onNext();
             return;
         }
-        
+
         setSubmitError('');
         setErrorData(null);
 
-        const { isValid, errorSummary } = validateForm();
+        const {isValid, errorSummary} = validateForm();
         if (!isValid) {
             // 设置提交错误，显示验证失败信息
             setSubmitError('表单验证失败，请检查以下字段');
-            setErrorData({ validationErrors: errorSummary });
+            setErrorData({validationErrors: errorSummary});
             return;
         }
 
         try {
             setLoading(true);
-            
+
             // 确保路径以斜杠结尾，并删除avatarPath
             const dataToSubmit = {
                 ...formData,
                 imagePath: formData.imagePath.endsWith('/') ? formData.imagePath : formData.imagePath + '/',
                 blogPath: formData.blogPath.endsWith('/') ? formData.blogPath : formData.blogPath + '/'
             };
-            
-            const response = await saveOSSConfig(dataToSubmit);
+
+            const response = await saveInitiatedOSSConfig(dataToSubmit);
 
             // 处理非200响应
             if (response && response.code !== 200) {
@@ -341,7 +352,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, is
             // 成功提交
             setSuccessMessage('OSS配置保存成功！');
             setSubmitSuccess(true);
-            
+
             // 调用父组件的onSubmit回调函数
             if (onSubmit) {
                 onSubmit(formData);
@@ -425,7 +436,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, is
 
                 <div className="form-section-header">
                     <h3>
-                        <span className="icon"><FiImage /></span>
+                        <span className="icon"><FiImage/></span>
                         WebP配置
                     </h3>
                 </div>
@@ -480,10 +491,10 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({ initialData, onSubmit, is
                     >
                         {loading ? '提交中...' : '保存配置'}
                     </button>
-                    
+
                     {submitSuccess && !submitError && onNext && (
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="next-button"
                             onClick={onNext}
                         >

@@ -1,7 +1,7 @@
-import { saveMySQLConfig } from '@/services/configService.ts';
+import { saveInitiatedMySQLConfig } from '@/services/InitiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useState, useEffect } from 'react';
-import { FiDatabase, FiLock, FiServer, FiSettings, FiUser, FiRefreshCw, FiClock } from 'react-icons/fi';
+import React, { useEffect, useState } from 'react';
+import { FiClock, FiDatabase, FiLock, FiRefreshCw, FiServer, FiSettings, FiUser } from 'react-icons/fi';
 import './MySqlConfigForm.scss';
 
 interface ValidationErrors {
@@ -29,7 +29,7 @@ export interface MySqlConfigFormProps {
 const FIELD_CONFIG = {
     username: {
         label: '数据库用户名',
-        icon: <FiUser />,
+        icon: <FiUser/>,
         name: 'username',
         placeholder: 'root',
         validate: (value: string) => {
@@ -41,7 +41,7 @@ const FIELD_CONFIG = {
     },
     password: {
         label: '数据库密码',
-        icon: <FiLock />,
+        icon: <FiLock/>,
         name: 'password',
         placeholder: '请输入数据库密码',
         validate: (value: string) => {
@@ -53,7 +53,7 @@ const FIELD_CONFIG = {
     },
     host: {
         label: '数据库主机地址',
-        icon: <FiServer />,
+        icon: <FiServer/>,
         name: 'host',
         placeholder: '127.0.0.1',
         validate: (value: string) => {
@@ -65,7 +65,7 @@ const FIELD_CONFIG = {
     },
     port: {
         label: '数据库端口号',
-        icon: <FiSettings />,
+        icon: <FiSettings/>,
         name: 'port',
         placeholder: '3306',
         validate: (value: string) => {
@@ -81,7 +81,7 @@ const FIELD_CONFIG = {
     },
     database: {
         label: '数据库名称',
-        icon: <FiDatabase />,
+        icon: <FiDatabase/>,
         name: 'database',
         placeholder: 'H2_BLOG_SERVER',
         validate: (value: string) => {
@@ -93,7 +93,7 @@ const FIELD_CONFIG = {
     },
     maxOpenConns: {
         label: '最大数据库连接数',
-        icon: <FiRefreshCw />,
+        icon: <FiRefreshCw/>,
         name: 'maxOpenConns',
         placeholder: '10',
         validate: (value: string) => {
@@ -109,7 +109,7 @@ const FIELD_CONFIG = {
     },
     maxIdleConns: {
         label: '最大空闲连接数',
-        icon: <FiClock />,
+        icon: <FiClock/>,
         name: 'maxIdleConns',
         placeholder: '5',
         validate: (value: string, formData: MySQLFormData) => {
@@ -131,7 +131,7 @@ const FIELD_CONFIG = {
     }
 };
 
-const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
+const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
     // 状态定义
     const [formData, setFormData] = useState<MySQLFormData>({
         username: initialData?.username || '',
@@ -166,8 +166,8 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        
+        const {name, value} = e.target;
+
         // 找出对应的字段
         const fieldKey = Object.keys(FIELD_CONFIG).find(
             key => FIELD_CONFIG[key as keyof typeof FIELD_CONFIG].name === name
@@ -187,7 +187,7 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
         // 清除该字段的错误
         if (errors[fieldKey]) {
             setErrors(prev => {
-                const newErrors = { ...prev };
+                const newErrors = {...prev};
                 delete newErrors[fieldKey];
                 return newErrors;
             });
@@ -202,8 +202,8 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
     const validateField = (field: keyof MySQLFormData): string => {
         const config = FIELD_CONFIG[field];
         // 部分字段的验证需要整个formData作为上下文
-        return typeof config.validate === 'function' 
-            ? config.validate(formData[field], formData) 
+        return typeof config.validate === 'function'
+            ? config.validate(formData[field], formData)
             : '';
     };
 
@@ -252,7 +252,7 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
 
         try {
             setLoading(true);
-            const response = await saveMySQLConfig(formData);
+            const response = await saveInitiatedMySQLConfig(formData);
 
             // 处理非200响应
             if (response && response.code !== 200) {
@@ -266,7 +266,7 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
             // 成功提交
             setSuccessMessage('数据库配置保存成功！');
             setSubmitSuccess(true);
-            
+
             // 调用父组件的onSubmit回调函数
             if (onSubmit) {
                 onSubmit(formData);
@@ -355,10 +355,10 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({ initialData, onSubmit
                     >
                         {loading ? '提交中...' : '保存配置'}
                     </button>
-                    
+
                     {submitSuccess && !submitError && onNext && (
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="next-button"
                             onClick={onNext}
                         >

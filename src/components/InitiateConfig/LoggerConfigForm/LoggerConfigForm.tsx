@@ -1,6 +1,6 @@
-import { saveLoggerConfig } from '@/services/configService.ts';
+import { saveInitiatedLoggerConfig } from '@/services/InitiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiArchive, FiCalendar, FiDatabase, FiFileText, FiFolder, FiZap } from 'react-icons/fi';
 import './LoggerConfigForm.scss';
 
@@ -28,7 +28,7 @@ interface LoggerConfigFormProps {
 const FIELD_CONFIG = {
     logLevel: {
         label: '日志级别',
-        icon: <FiFileText />,
+        icon: <FiFileText/>,
         name: 'logLevel',
         type: 'select',
         options: ['DEBUG', 'INFO', 'WARN', 'ERROR'],
@@ -41,7 +41,7 @@ const FIELD_CONFIG = {
     },
     logPath: {
         label: '日志目录路径',
-        icon: <FiFolder />,
+        icon: <FiFolder/>,
         name: 'logPath',
         type: 'text',
         placeholder: '可留空，后端将使用默认路径',
@@ -52,7 +52,7 @@ const FIELD_CONFIG = {
     },
     maxSize: {
         label: '日志文件最大大小 (MB)',
-        icon: <FiDatabase />,
+        icon: <FiDatabase/>,
         name: 'maxSize',
         type: 'text',
         validate: (value: string) => {
@@ -65,7 +65,7 @@ const FIELD_CONFIG = {
     },
     maxBackups: {
         label: '日志最大备份数量',
-        icon: <FiArchive />,
+        icon: <FiArchive/>,
         name: 'maxBackups',
         type: 'text',
         validate: (value: string) => {
@@ -78,7 +78,7 @@ const FIELD_CONFIG = {
     },
     maxDays: {
         label: '日志文件最大保存时间 (天)',
-        icon: <FiCalendar />,
+        icon: <FiCalendar/>,
         name: 'maxDays',
         type: 'text',
         placeholder: '7',
@@ -92,14 +92,14 @@ const FIELD_CONFIG = {
     },
     compress: {
         label: '压缩日志文件',
-        icon: <FiZap />,
+        icon: <FiZap/>,
         name: 'compress',
         type: 'checkbox',
         validate: () => ''
     }
 };
 
-const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
+const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
     // 状态定义
     const [formData, setFormData] = useState<LoggerFormData>({
         logLevel: initialData?.logLevel || 'DEBUG',
@@ -134,7 +134,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
-        const { name, value, type } = e.target;
+        const {name, value, type} = e.target;
 
         if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
@@ -142,7 +142,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
                 ...prev,
                 [name]: checked
             }));
-            
+
             // 清除成功和错误消息
             if (submitError) setSubmitError('');
             if (successMessage) setSuccessMessage('');
@@ -175,7 +175,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
         // 清除该字段的错误
         if (errors[name]) {
             setErrors(prev => {
-                const newErrors = { ...prev };
+                const newErrors = {...prev};
                 delete newErrors[name];
                 return newErrors;
             });
@@ -239,7 +239,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
 
         try {
             setLoading(true);
-            const response = await saveLoggerConfig(formData);
+            const response = await saveInitiatedLoggerConfig(formData);
 
             // 处理非200响应
             if (response && response.code !== 200) {
@@ -253,7 +253,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
             // 成功提交
             setSuccessMessage('日志配置保存成功！');
             setSubmitSuccess(true);
-            
+
             // 调用父组件的onSubmit回调函数
             if (onSubmit) {
                 onSubmit(formData);
@@ -422,10 +422,10 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({ initialData, onSubm
                     >
                         {loading ? '提交中...' : '保存配置'}
                     </button>
-                    
+
                     {submitSuccess && !submitError && onNext && (
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="next-button"
                             onClick={onNext}
                         >

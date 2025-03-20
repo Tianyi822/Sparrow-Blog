@@ -1,6 +1,6 @@
-import { saveServerBaseConfig } from '@/services/configService.ts';
+import { saveInitiatedServerBaseConfig } from '@/services/InitiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiClock, FiGlobe, FiKey, FiServer } from 'react-icons/fi';
 import './ServerBaseConfigForm.scss';
 
@@ -75,7 +75,7 @@ const FIELD_CONFIG = {
     }
 };
 
-const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
+const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
     // 状态定义
     const [formData, setFormData] = useState<ServerBaseFormData>({
         port: initialData?.port || '',
@@ -194,7 +194,7 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({ initialData
 
         try {
             setLoading(true);
-            const response = await saveServerBaseConfig({
+            const response = await saveInitiatedServerBaseConfig({
                 port: formData.port,
                 tokenKey: formData.tokenKey,
                 tokenExpireDuration: formData.tokenExpireDuration,
@@ -213,7 +213,7 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({ initialData
             // 成功提交
             setSuccessMessage('服务器基础配置保存成功！');
             setSubmitSuccess(true);
-            
+
             // 调用父组件的onSubmit回调函数
             if (onSubmit) {
                 onSubmit(formData);
@@ -295,17 +295,17 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({ initialData
                 })}
 
                 <div className="form-actions">
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className="submit-button"
                         disabled={loading}
                     >
                         {loading ? '提交中...' : '保存配置'}
                     </button>
-                    
+
                     {submitSuccess && !submitError && onNext && (
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="next-button"
                             onClick={onNext}
                         >
@@ -313,7 +313,7 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({ initialData
                         </button>
                     )}
                 </div>
-                
+
                 {/* 显示成功消息 */}
                 {successMessage && (
                     <div className="success-message-container">

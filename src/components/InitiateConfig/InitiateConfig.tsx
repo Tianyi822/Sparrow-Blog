@@ -2,12 +2,14 @@ import CacheConfigForm, { CacheConfigFormData } from '@/components/InitiateConfi
 import LoggerConfigForm, { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm.tsx';
 import MySqlConfigForm, { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm/MySqlConfigForm.tsx';
 import OSSConfigForm, { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm/OSSConfigForm.tsx';
-import ServerBaseConfigForm, { ServerBaseFormData } from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
+import ServerBaseConfigForm, {
+    ServerBaseFormData
+} from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
 import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm.tsx';
+import { completeInitiatedConfig } from '@/services/InitiateConfigService.ts';
 import React, { useEffect, useState } from 'react';
 import './InitiateConfig.scss';
 import { useNavigate } from 'react-router-dom';
-import { completeConfig } from '@/services/configService';
 
 interface InitiateConfigProps {
     initialServerData?: ServerBaseFormData;
@@ -56,13 +58,13 @@ const getSavedState = (): SavedState | null => {
 };
 
 const InitiateConfig: React.FC<InitiateConfigProps> = ({
-    initialServerData,
-    initialLoggerData,
-    initialMySQLData,
-    initialOSSData,
-    initialCacheData,
-    initialUserEmailData
-}) => {
+                                                           initialServerData,
+                                                           initialLoggerData,
+                                                           initialMySQLData,
+                                                           initialOSSData,
+                                                           initialCacheData,
+                                                           initialUserEmailData
+                                                       }) => {
     // 获取保存的状态
     const savedState = getSavedState();
 
@@ -105,7 +107,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     // 重启状态
     const [isRestarting, setIsRestarting] = useState(false);
     const [restartCountdown, setRestartCountdown] = useState(5);
-    
+
     // 导航hook
     const navigate = useNavigate();
 
@@ -158,42 +160,42 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     const handleServerSubmit = (data: ServerBaseFormData) => {
         console.log('Server config submitted:', data);
         setServerData(data);
-        setSubmittedForms(prev => ({ ...prev, serverSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, serverSubmitted: true}));
         // Removed automatic navigation
     };
 
     const handleLoggerSubmit = (data: LoggerFormData) => {
         console.log('Logger config submitted:', data);
         setLoggerData(data);
-        setSubmittedForms(prev => ({ ...prev, loggerSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, loggerSubmitted: true}));
         // Removed automatic navigation
     };
 
     const handleMySQLSubmit = (data: MySQLFormData) => {
         console.log('MySQL config submitted:', data);
         setMySQLData(data);
-        setSubmittedForms(prev => ({ ...prev, mysqlSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, mysqlSubmitted: true}));
         // Removed automatic navigation
     };
 
     const handleOSSSubmit = (data: OSSConfigFormData) => {
         console.log('OSS config submitted:', data);
         setOSSData(data);
-        setSubmittedForms(prev => ({ ...prev, ossSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, ossSubmitted: true}));
         // Removed automatic navigation
     };
 
     const handleCacheSubmit = (data: CacheConfigFormData) => {
         console.log('Cache config submitted:', data);
         setCacheData(data);
-        setSubmittedForms(prev => ({ ...prev, cacheSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, cacheSubmitted: true}));
         // Removed automatic navigation
     };
 
     const handleUserEmailSubmit = (data: UserEmailConfigFormData) => {
         console.log('User & Email config submitted:', data);
         setUserEmailData(data);
-        setSubmittedForms(prev => ({ ...prev, userEmailSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, userEmailSubmitted: true}));
         // 最后一个表单可以不跳转
     };
 
@@ -202,8 +204,8 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         try {
             setIsRestarting(true);
             // 请求完成配置接口
-            const response = await completeConfig();
-            
+            const response = await completeInitiatedConfig();
+
             // 检查响应状态
             if (response && response.code !== 200) {
                 // 不使用throw，直接显示错误并返回
@@ -212,20 +214,20 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                 setIsRestarting(false);
                 return;
             }
-            
+
             // 清空localStorage中的配置信息，防止泄露
             localStorage.removeItem(STORAGE_KEY);
             localStorage.removeItem('verifyCodeCountdown');
             localStorage.removeItem('verifyCodeTimestamp');
-            
+
             // 开始倒计时
             let count = 5;
             setRestartCountdown(count);
-            
+
             const timer = setInterval(() => {
                 count -= 1;
                 setRestartCountdown(count);
-                
+
                 if (count <= 0) {
                     clearInterval(timer);
                     // 倒计时结束后跳转到首页
@@ -245,13 +247,13 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         const canNavigateTo = () => {
             // 获取最高可操作的表单索引（已提交的表单的最后一个索引+1）
             let highestAllowedIndex = 0;
-            
+
             if (submittedForms.serverSubmitted) highestAllowedIndex = 1;
             if (submittedForms.loggerSubmitted) highestAllowedIndex = 2;
             if (submittedForms.mysqlSubmitted) highestAllowedIndex = 3;
             if (submittedForms.ossSubmitted) highestAllowedIndex = 4;
             if (submittedForms.cacheSubmitted) highestAllowedIndex = 5;
-            
+
             // 如果目标表单已提交或在最高可操作表单索引范围内，则允许跳转
             return index <= highestAllowedIndex;
         };
@@ -265,11 +267,11 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
             else if (!submittedForms.mysqlSubmitted) lastIncompleteIndex = 2;
             else if (!submittedForms.ossSubmitted) lastIncompleteIndex = 3;
             else if (!submittedForms.cacheSubmitted) lastIncompleteIndex = 4;
-            
+
             alert(`请先完成 ${formTitles[lastIncompleteIndex]} 再进行后续配置`);
             return;
         }
-        
+
         if (index >= 0 && index <= 5 && index !== currentFormIndex) {
             // Always set animation direction to -1 for exit (up direction)
             // This ensures all forms exit with the same animation (up direction)
@@ -300,15 +302,21 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         if (currentFormIndex < 5) {
             const canProceed = (() => {
                 switch (currentFormIndex) {
-                    case 0: return submittedForms.serverSubmitted;
-                    case 1: return submittedForms.loggerSubmitted;
-                    case 2: return submittedForms.mysqlSubmitted;
-                    case 3: return submittedForms.ossSubmitted;
-                    case 4: return submittedForms.cacheSubmitted;
-                    default: return false;
+                    case 0:
+                        return submittedForms.serverSubmitted;
+                    case 1:
+                        return submittedForms.loggerSubmitted;
+                    case 2:
+                        return submittedForms.mysqlSubmitted;
+                    case 3:
+                        return submittedForms.ossSubmitted;
+                    case 4:
+                        return submittedForms.cacheSubmitted;
+                    default:
+                        return false;
                 }
             })();
-            
+
             if (canProceed) {
                 goToForm(currentFormIndex + 1);
             } else {
@@ -414,7 +422,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                     const canAccess = (() => {
                         // 当前表单总是可访问的
                         if (index === currentFormIndex) return true;
-                        
+
                         // 检查表单是否可访问（前一个表单已提交）
                         let highestAllowedIndex = 0;
                         if (submittedForms.serverSubmitted) highestAllowedIndex = 1;
@@ -422,20 +430,27 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                         if (submittedForms.mysqlSubmitted) highestAllowedIndex = 3;
                         if (submittedForms.ossSubmitted) highestAllowedIndex = 4;
                         if (submittedForms.cacheSubmitted) highestAllowedIndex = 5;
-                        
+
                         return index <= highestAllowedIndex;
                     })();
-                    
+
                     // 检查表单是否已提交
                     const isSubmitted = (() => {
                         switch (index) {
-                            case 0: return submittedForms.serverSubmitted;
-                            case 1: return submittedForms.loggerSubmitted;
-                            case 2: return submittedForms.mysqlSubmitted;
-                            case 3: return submittedForms.ossSubmitted;
-                            case 4: return submittedForms.cacheSubmitted;
-                            case 5: return submittedForms.userEmailSubmitted;
-                            default: return false;
+                            case 0:
+                                return submittedForms.serverSubmitted;
+                            case 1:
+                                return submittedForms.loggerSubmitted;
+                            case 2:
+                                return submittedForms.mysqlSubmitted;
+                            case 3:
+                                return submittedForms.ossSubmitted;
+                            case 4:
+                                return submittedForms.cacheSubmitted;
+                            case 5:
+                                return submittedForms.userEmailSubmitted;
+                            default:
+                                return false;
                         }
                     })();
 
@@ -445,7 +460,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                             className={`nav-dot ${currentFormIndex === index ? 'active' : ''} ${isSubmitted ? 'submitted' : ''} ${!canAccess ? 'disabled' : ''}`}
                             onClick={() => canAccess && goToForm(index)}
                             aria-label={title}
-                            title={canAccess ? title : `请先完成${formTitles[index-1]}配置`}
+                            title={canAccess ? title : `请先完成${formTitles[index - 1]}配置`}
                             disabled={!canAccess}
                         />
                     );
@@ -459,31 +474,43 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                     title={(() => {
                         // 如果是最后一个表单
                         if (currentFormIndex === 5) return "已经是最后一个表单";
-                        
+
                         // 检查是否可以前往下一个表单
                         const canProceed = (() => {
                             switch (currentFormIndex) {
-                                case 0: return submittedForms.serverSubmitted;
-                                case 1: return submittedForms.loggerSubmitted;
-                                case 2: return submittedForms.mysqlSubmitted;
-                                case 3: return submittedForms.ossSubmitted;
-                                case 4: return submittedForms.cacheSubmitted;
-                                default: return false;
+                                case 0:
+                                    return submittedForms.serverSubmitted;
+                                case 1:
+                                    return submittedForms.loggerSubmitted;
+                                case 2:
+                                    return submittedForms.mysqlSubmitted;
+                                case 3:
+                                    return submittedForms.ossSubmitted;
+                                case 4:
+                                    return submittedForms.cacheSubmitted;
+                                default:
+                                    return false;
                             }
                         })();
-                        
-                        return canProceed 
-                            ? formTitles[currentFormIndex + 1] 
+
+                        return canProceed
+                            ? formTitles[currentFormIndex + 1]
                             : `请先完成${formTitles[currentFormIndex]}配置`;
                     })()}
                     disabled={currentFormIndex === 5 || (() => {
                         switch (currentFormIndex) {
-                            case 0: return !submittedForms.serverSubmitted;
-                            case 1: return !submittedForms.loggerSubmitted;
-                            case 2: return !submittedForms.mysqlSubmitted;
-                            case 3: return !submittedForms.ossSubmitted;
-                            case 4: return !submittedForms.cacheSubmitted;
-                            default: return true;
+                            case 0:
+                                return !submittedForms.serverSubmitted;
+                            case 1:
+                                return !submittedForms.loggerSubmitted;
+                            case 2:
+                                return !submittedForms.mysqlSubmitted;
+                            case 3:
+                                return !submittedForms.ossSubmitted;
+                            case 4:
+                                return !submittedForms.cacheSubmitted;
+                            default:
+                                return true;
                         }
                     })()}
                 >
@@ -496,7 +523,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                 <div
                     className={`current-form-container ${isAnimating ? 'animating' : ''} ${animationDirection > 0 ? 'slide-up-out' :
                         animationDirection < 0 ? 'slide-down-out' : ''
-                        }`}
+                    }`}
                 >
                     {renderCurrentForm()}
                 </div>

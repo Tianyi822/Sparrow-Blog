@@ -1,6 +1,6 @@
-import { saveCacheConfig } from '@/services/configService';
+import { saveInitiatedCacheConfig } from '@/services/InitiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiDatabase, FiFolder, FiHardDrive, FiZap } from 'react-icons/fi';
 import './CacheConfigForm.scss';
 
@@ -26,14 +26,14 @@ export interface CacheConfigFormProps {
 const FIELD_CONFIG = {
     aofEnabled: {
         label: '启用AOF持久化',
-        icon: <FiDatabase />,
+        icon: <FiDatabase/>,
         name: 'aofEnabled',
         type: 'checkbox',
         validate: () => ''
     },
     aofPath: {
         label: 'AOF文件目录',
-        icon: <FiFolder />,
+        icon: <FiFolder/>,
         name: 'aofPath',
         type: 'text',
         placeholder: '可留空，将使用默认路径',
@@ -48,7 +48,7 @@ const FIELD_CONFIG = {
     },
     aofMaxSize: {
         label: 'AOF文件最大大小 (MB)',
-        icon: <FiHardDrive />,
+        icon: <FiHardDrive/>,
         name: 'aofMaxSize',
         type: 'text',
         placeholder: '1',
@@ -62,14 +62,14 @@ const FIELD_CONFIG = {
     },
     compressEnabled: {
         label: '启用压缩',
-        icon: <FiZap />,
+        icon: <FiZap/>,
         name: 'compressEnabled',
         type: 'checkbox',
         validate: () => ''
     }
 };
 
-const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit, isSubmitted, onNext }) => {
+const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
     // 状态定义
     const [formData, setFormData] = useState<CacheConfigFormData>({
         aofEnabled: initialData?.aofEnabled !== undefined ? initialData.aofEnabled : true,
@@ -98,19 +98,19 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
 
     // 处理输入变化
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type } = e.target;
-        
+        const {name, value, type} = e.target;
+
         // 处理不同类型的输入
         if (type === 'checkbox') {
-            setFormData(prev => ({ 
-                ...prev, 
-                [name]: e.target.checked 
+            setFormData(prev => ({
+                ...prev,
+                [name]: e.target.checked
             }));
-            
+
             // 清除错误和成功消息
             if (errors[name]) {
                 setErrors(prev => {
-                    const newErrors = { ...prev };
+                    const newErrors = {...prev};
                     delete newErrors[name];
                     return newErrors;
                 });
@@ -118,17 +118,17 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
             if (submitError) setSubmitError('');
             if (successMessage) setSuccessMessage('');
         } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
+            setFormData(prev => ({...prev, [name]: value}));
 
             // 清除该字段的错误
             if (errors[name]) {
                 setErrors(prev => {
-                    const newErrors = { ...prev };
+                    const newErrors = {...prev};
                     delete newErrors[name];
                     return newErrors;
                 });
             }
-            
+
             // 清除错误和成功消息
             if (submitError) setSubmitError('');
             if (successMessage) setSuccessMessage('');
@@ -139,12 +139,12 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
     const validateField = (field: keyof CacheConfigFormData): string => {
         const config = FIELD_CONFIG[field];
         if (!config || typeof config.validate !== 'function') return '';
-        
+
         // 对于布尔类型字段，不需要验证
         if (field === 'aofEnabled' || field === 'compressEnabled') {
             return '';
         }
-        
+
         // 对于其他字段，执行验证
         return config.validate(formData[field] as string);
     };
@@ -196,7 +196,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
 
         try {
             setLoading(true);
-            const response = await saveCacheConfig(formData);
+            const response = await saveInitiatedCacheConfig(formData);
 
             // 处理非200响应
             if (response && response.code !== 200) {
@@ -210,20 +210,20 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
             // 成功提交
             setSuccessMessage('缓存配置保存成功！');
             setSubmitSuccess(true);
-            
+
             // 调用父组件的onSubmit回调函数
             if (onSubmit) {
                 onSubmit(formData);
             }
         } catch (error: unknown) {
             console.error('Failed to save cache config:', error);
-            
+
             // 处理错误对象，提取详细信息
             if (error && typeof error === 'object') {
                 // 检查是否是Axios错误并包含响应数据
                 if (error instanceof AxiosError && error.response) {
                     const errorResponse = error.response;
-                    
+
                     // 尝试提取错误消息
                     if (errorResponse.data) {
                         const errorData = errorResponse.data as Record<string, unknown>;
@@ -232,7 +232,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
                         } else {
                             setSubmitError(`请求失败: ${errorResponse.status} ${errorResponse.statusText || ''}`);
                         }
-                        
+
                         // 尝试提取错误数据
                         if (errorData.data) {
                             setErrorData(errorData.data as Record<string, unknown>);
@@ -267,7 +267,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
     return (
         <div className="cache-config-form-container">
             <h2>缓存配置</h2>
-            
+
             <form onSubmit={handleSubmit}>
                 {/* AOF启用选项 */}
                 <div className="form-group checkbox-group">
@@ -344,10 +344,10 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
                     >
                         {loading ? '提交中...' : '保存配置'}
                     </button>
-                    
+
                     {submitSuccess && !submitError && onNext && (
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="next-button"
                             onClick={onNext}
                         >
@@ -355,7 +355,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({ initialData, onSubmit
                         </button>
                     )}
                 </div>
-                
+
                 {/* 显示成功消息 */}
                 {successMessage && (
                     <div className="success-message-container">
