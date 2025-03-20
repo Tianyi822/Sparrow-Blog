@@ -3,22 +3,17 @@ import InitiateConfig from "@/components/InitiateConfig/InitiateConfig.tsx";
 import Home from "@/components/Home/Home";
 import FriendLink from "@/components/FriendLink/FriendLink";
 import BlogLayout from "@/layouts/BlogLayout";
-import { getWebStatus } from "@/services/webService";
+import { checkSystemStatus } from "@/services/webService";
 
-// 检查API配置状态的loader函数
+// 检查系统状态的loader函数
 const checkApiConfig = async () => {
     try {
-        const response = await getWebStatus();
-        if (response.code === 200) {
-            return {
-                isRuntime: response.data.status === 'RUNTIME_ENV',
-                status: response.data.status
-            };
-        }
-        return { isRuntime: false, status: 'CONFIG_SERVER_ENV' };
+        const { isRuntime, errorMessage } = await checkSystemStatus();
+        console.log('系统状态检查结果:', { isRuntime, errorMessage });
+        return { isRuntime };
     } catch (error) {
-        console.error('API检查失败:', error);
-        return { isRuntime: false, status: 'CONFIG_SERVER_ENV' };
+        console.error('系统状态检查失败:', error);
+        return { isRuntime: false };
     }
 };
 
@@ -54,8 +49,8 @@ const routes: RouteObject[] = [
         path: "/config",
         element: <InitiateConfig />,
         loader: async () => {
-            const { status } = await checkApiConfig();
-            if (status === 'RUNTIME_ENV') {
+            const { isRuntime } = await checkApiConfig();
+            if (isRuntime) {
                 throw new Response("", {
                     status: 302,
                     headers: {

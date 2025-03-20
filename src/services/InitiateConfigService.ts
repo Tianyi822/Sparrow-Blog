@@ -1,4 +1,4 @@
-import { apiRequest, ApiResponse } from './api';
+import { configApiRequest, ApiResponse } from './api';
 
 // Types for configuration data
 import { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm';
@@ -49,7 +49,7 @@ export const saveInitiatedServerBaseConfig = async (data: ServerBaseConfig): Pro
     console.log('转换后的数据:', transformedData); // 调试用
 
     // 使用JSON格式提交数据
-    return apiRequest<ApiResponse<ServerBaseConfig>>({
+    return configApiRequest<ApiResponse<ServerBaseConfig>>({
         method: 'POST',
         url: '/config/base',
         data: transformedData,
@@ -89,7 +89,7 @@ export const saveInitiatedLoggerConfig = async (data: LoggerFormData): Promise<A
     const transformedData = transformLoggerData(data);
     console.log('转换后的日志配置数据:', transformedData); // 调试用
 
-    return apiRequest<ApiResponse<LoggerFormData>>({
+    return configApiRequest<ApiResponse<LoggerFormData>>({
         method: 'POST',
         url: '/config/logger',
         data: transformedData,
@@ -131,7 +131,7 @@ export const saveInitiatedMySQLConfig = async (data: MySQLFormData): Promise<Api
     const transformedData = transformMySQLData(data);
     console.log('转换后的MySQL配置数据:', transformedData); // 调试用
 
-    return apiRequest<ApiResponse<MySQLFormData>>({
+    return configApiRequest<ApiResponse<MySQLFormData>>({
         method: 'POST',
         url: '/config/mysql',
         data: transformedData,
@@ -179,7 +179,7 @@ export const saveInitiatedOSSConfig = async (data: OSSConfigFormData): Promise<A
     const transformedData = transformOSSData(data);
     console.log('转换后的OSS配置数据:', transformedData); // 调试用
 
-    return apiRequest<ApiResponse<OSSConfigFormData>>({
+    return configApiRequest<ApiResponse<OSSConfigFormData>>({
         method: 'POST',
         url: '/config/oss',
         data: transformedData,
@@ -215,7 +215,7 @@ export const saveInitiatedCacheConfig = async (data: CacheConfigFormData): Promi
     const transformedData = transformCacheData(data);
     console.log('转换后的缓存配置数据:', transformedData); // 调试用
 
-    return apiRequest<ApiResponse<CacheConfigFormData>>({
+    return configApiRequest<ApiResponse<CacheConfigFormData>>({
         method: 'POST',
         url: '/config/cache',
         data: transformedData,
@@ -234,10 +234,13 @@ export interface UserConfigData {
 }
 
 export const saveInitiatedUserConfig = async (data: UserConfigData): Promise<ApiResponse<null>> => {
-    return apiRequest<ApiResponse<null>>({
+    return configApiRequest<ApiResponse<null>>({
         method: 'POST',
         url: '/config/user',
-        data
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 };
 
@@ -253,10 +256,13 @@ export interface VerificationCodeData {
 }
 
 export const sendInitiatedVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
-    return apiRequest<ApiResponse<null>>({
+    return configApiRequest<ApiResponse<null>>({
         method: 'POST',
         url: '/config/send-verification-code',
-        data
+        data: data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     });
 };
 
@@ -264,14 +270,14 @@ export const sendInitiatedVerificationCode = async (data: VerificationCodeData):
  * Complete configuration and restart server
  */
 export const completeInitiatedConfig = async (): Promise<ApiResponse<null>> => {
-    return apiRequest<ApiResponse<null>>({
+    return configApiRequest<ApiResponse<null>>({
         method: 'GET',
         url: '/config/complete-config'
     });
 };
 
 export default {
-    saveInitiatedServerBaseConfig,
+    saveServerBaseConfig: saveInitiatedServerBaseConfig,
     saveInitiatedLoggerConfig,
     saveInitiatedMySQLConfig,
     saveInitiatedOSSConfig,

@@ -1,12 +1,12 @@
-import CacheConfigForm, { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm/CacheConfigForm.tsx';
-import LoggerConfigForm, { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm.tsx';
-import MySqlConfigForm, { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm/MySqlConfigForm.tsx';
-import OSSConfigForm, { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm/OSSConfigForm.tsx';
+import CacheConfigForm, { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm/CacheConfigForm';
+import LoggerConfigForm, { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm';
+import MySqlConfigForm, { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm/MySqlConfigForm';
+import OSSConfigForm, { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm/OSSConfigForm';
 import ServerBaseConfigForm, {
     ServerBaseFormData
-} from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm.tsx';
-import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm.tsx';
-import { completeInitiatedConfig } from '@/services/InitiateConfigService.ts';
+} from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm';
+import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm';
+import { completeInitiatedConfig } from '@/services/InitiateConfigService';
 import React, { useEffect, useState } from 'react';
 import './InitiateConfig.scss';
 import { useNavigate } from 'react-router-dom';
