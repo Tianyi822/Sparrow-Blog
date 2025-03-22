@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FiLock } from 'react-icons/fi';
+import { FiLock, FiMail } from 'react-icons/fi';
 import './Login.scss';
 
 interface LoginFormData {
+  email: string;
   verifyCode: string;
 }
 
@@ -10,9 +11,13 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
+// 本地存储键名
+const COUNTDOWN_END_TIME_KEY = 'verify_code_end_time';
+
 const Login: React.FC = () => {
   // 状态定义
   const [formData, setFormData] = useState<LoginFormData>({
+    email: '',
     verifyCode: ''
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -21,9 +26,35 @@ const Login: React.FC = () => {
   const [countdown, setCountdown] = useState<number>(0);
   const [verifyCodeSending, setVerifyCodeSending] = useState<boolean>(false);
 
+  // 初始化时从localStorage恢复倒计时状态
+  useEffect(() => {
+    const endTimeStr = localStorage.getItem(COUNTDOWN_END_TIME_KEY);
+    if (endTimeStr) {
+      const endTime = parseInt(endTimeStr, 10);
+      const now = Date.now();
+      
+      // 如果结束时间还未到，计算剩余时间
+      if (endTime > now) {
+        const remainingSeconds = Math.ceil((endTime - now) / 1000);
+        setCountdown(remainingSeconds);
+      } else {
+        // 倒计时已结束，清除存储
+        localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
+      }
+    }
+  }, []);
+
   // 倒计时效果
   useEffect(() => {
-    if (countdown <= 0) return;
+    if (countdown <= 0) {
+      // 倒计时结束，清除存储
+      localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
+      return;
+    }
+
+    // 保存结束时间到localStorage (当前时间 + 剩余秒数)
+    const endTime = Date.now() + countdown * 1000;
+    localStorage.setItem(COUNTDOWN_END_TIME_KEY, endTime.toString());
 
     const timer = setTimeout(() => {
       setCountdown(countdown - 1);
@@ -58,10 +89,14 @@ const Login: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {};
 
+    if (!formData.email.trim()) {
+      newErrors.email = '邮箱不能为空';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = '请输入有效的邮箱地址';
+    }
+
     if (!formData.verifyCode.trim()) {
       newErrors.verifyCode = '验证码不能为空';
-    } else if (formData.verifyCode.length !== 6) {
-      newErrors.verifyCode = '验证码必须是6位数字';
     }
 
     setErrors(newErrors);
@@ -70,10 +105,27 @@ const Login: React.FC = () => {
 
   // 发送验证码
   const handleSendVerifyCode = async () => {
+    // 先验证邮箱
+    if (!formData.email.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        email: '邮箱不能为空'
+      }));
+      return;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setErrors(prev => ({
+        ...prev,
+        email: '请输入有效的邮箱地址'
+      }));
+      return;
+    }
+
     try {
       setVerifyCodeSending(true);
       // TODO: 实际发送验证码的API调用
-      // const response = await sendVerificationCode();
+      // const response = await sendVerificationCode(formData.email);
 
       // 模拟API调用延迟
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -104,11 +156,12 @@ const Login: React.FC = () => {
       // 模拟API调用延迟
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // 模拟登录成功后的重定向
-      // window.location.href = '/dashboard';
+      // 登录成功后，清除倒计时状态
+      localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
 
-      // 测试错误显示
-      throw new Error('验证码错误或已过期，请重新获取');
+      // 模拟登录成功后的重定向
+      console.log('登录成功，即将跳转到管理页面');
+      // window.location.href = '/dashboard'; // 实际项目中取消注释
 
     } catch (error) {
       console.error('登录失败:', error);
@@ -127,6 +180,24 @@ const Login: React.FC = () => {
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email">
+              <FiMail className="icon" />
+              <span>邮箱</span>
+            </label>
+            <div className="input-container">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="请输入您的邮箱"
+              />
+            </div>
+            {errors.email && <div className="error-message">{errors.email}</div>}
+          </div>
+
           <div className="form-group verify-code-group">
             <label htmlFor="verifyCode">
               <FiLock className="icon" />
@@ -139,8 +210,8 @@ const Login: React.FC = () => {
                 name="verifyCode"
                 value={formData.verifyCode}
                 onChange={handleChange}
-                placeholder="6位验证码"
-                maxLength={6}
+                placeholder="请输入验证码"
+                maxLength={20}
               />
               <button
                 type="button"
