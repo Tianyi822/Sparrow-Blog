@@ -3,6 +3,8 @@ import InitiateConfig from "@/components/InitiateConfig/InitiateConfig.tsx";
 import Home from "@/components/Home/Home";
 import FriendLink from "@/components/FriendLink/FriendLink";
 import BlogLayout from "@/layouts/BlogLayout";
+import AdminLayout from "@/layouts/AdminLayout";
+import Dashboard from "@/components/Admin/Dashboard/Dashboard";
 import { checkSystemStatus } from "@/services/webService";
 import Login from "@/components/Admin/Login/Login";
 
@@ -16,6 +18,12 @@ const checkApiConfig = async () => {
         console.error('系统状态检查失败:', error);
         return { isRuntime: false };
     }
+};
+
+// 检查登录状态的loader函数
+const checkAuthStatus = () => {
+    const token = localStorage.getItem('auth_token');
+    return { isAuthenticated: !!token };
 };
 
 // 定义路由配置
@@ -76,8 +84,40 @@ const routes: RouteObject[] = [
                     },
                 });
             }
+            
+            // 如果已登录，重定向到管理后台
+            const { isAuthenticated } = checkAuthStatus();
+            if (isAuthenticated) {
+                throw new Response("", {
+                    status: 302,
+                    headers: {
+                        Location: "/admin",
+                    },
+                });
+            }
+            
             return null;
         }
+    },
+    {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [
+            {
+                index: true,
+                element: <Dashboard />
+            },
+            // 这里可以添加更多的管理页面路由
+            // {
+            //     path: "posts",
+            //     element: <PostsManagement />
+            // },
+            // {
+            //     path: "categories",
+            //     element: <CategoriesManagement />
+            // },
+            // 等等
+        ]
     }
 ];
 
