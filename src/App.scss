@@ -1,4 +1,4 @@
-/* 隐藏滚动条 */
+/* 全局隐藏滚动条 - 保持此处以确保向后兼容性 */
 ::-webkit-scrollbar {
     display: none; /* Chrome, Safari 和 Opera */
 }
@@ -8,55 +8,15 @@
     min-height: 100vh;
     position: relative;
 
-    // 隐藏默认滚动条
+    // 隐藏默认滚动条 - 保持此处以确保向后兼容性
     &::-webkit-scrollbar {
         display: none;
     }
     -ms-overflow-style: none;
     scrollbar-width: none;
-
-    .app-back-to-top {
-        position: fixed;
-        right: 1rem;
-        bottom: calc(1rem + 48px);  // WebsiteRecord高度(36px) + 间距(12px)
-        z-index: 100;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-
-        &.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        &.animating {
-            animation: floatUp 0.3s ease forwards;
-            pointer-events: none;
-        }
-    }
-
-    .app-website-record {
-        position: fixed;
-        right: 1rem;
-        bottom: 1rem;
-        z-index: 100;
-    }
-
-    .app-tools {
-        position: fixed;
-        right: 1rem;
-        bottom: 1rem;
-        z-index: 100;
-    }
-
-    .app-scroll-bar {
-        position: fixed;
-        right: 0;
-        top: 0;
-        z-index: 1000;
-    }
 }
 
+/* 全局动画 - 保持动画定义以确保向后兼容性 */
 @keyframes floatUp {
     0% {
         opacity: 1;

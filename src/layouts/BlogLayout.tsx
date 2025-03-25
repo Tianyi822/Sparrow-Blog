@@ -4,6 +4,7 @@ import Background from "@/components/Background/Background";
 import Navigator from "@/components/Navigator/Navigator";
 import Tools from "@/components/Tools/Tools";
 import ScrollBar from "@/components/ScrollBar/ScrollBar";
+import "./BlogLayout.scss";
 
 const BlogLayout: FC = () => {
     const [navIndex, setNavIndex] = useState<number>(1);
@@ -14,15 +15,15 @@ const BlogLayout: FC = () => {
     }, []);
 
     return (
-        <>
+        <div className="blog-layout">
             <Background backgroundImage={bgImage}/>
-            <Navigator className="app-navigator" index={navIndex} setIndex={setNavIndex}/>
+            <Navigator className="blog-layout-navigator" index={navIndex} setIndex={setNavIndex}/>
             <div className="blog-content">
                 <Outlet/> {/* 这里会渲染子路由组件 */}
             </div>
             <Tools className="app-tools"/>
             <ScrollBar className="app-scroll-bar"/>
-        </>
+        </div>
     );
 };
 

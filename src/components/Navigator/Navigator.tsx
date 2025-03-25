@@ -22,6 +22,11 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     const [isAtTop, setIsAtTop] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
+    // Log when component renders with new class
+    useEffect(() => {
+        console.log('Navigator rendered with class:', className);
+    }, [className]);
+
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
@@ -45,6 +50,11 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [lastScrollY]);
 
+    // Log menu state changes
+    useEffect(() => {
+        console.log('Menu state changed:', isMenuOpen);
+    }, [isMenuOpen]);
+
     // 添加点击外部关闭菜单的处理函数
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -53,6 +63,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
                 event.target && 
                 !(event.target as Element).closest('.nav-menu-button') && 
                 !(event.target as Element).closest('.nav-list')) {
+                console.log('Clicked outside, closing menu');
                 setIsMenuOpen(false);
             }
         };
@@ -100,8 +111,9 @@ const handleClick = useCallback((idx: number, item: NavItem) => {
     }, [setIndex]);
 
     const toggleMenu = useCallback(() => {
+        console.log('Menu button clicked, toggling menu. Current state:', isMenuOpen);
         setIsMenuOpen(prev => !prev);
-    }, []);
+    }, [isMenuOpen]);
 
     const navClasses = classNames(
         'navigator',
