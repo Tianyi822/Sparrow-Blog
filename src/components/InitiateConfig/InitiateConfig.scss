@@ -238,8 +238,8 @@ body {
   }
 }
 
-// 重启等待界面样式
-.restart-overlay {
+// 等待界面样式
+.waiting-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -254,14 +254,14 @@ body {
   z-index: 1100;
   animation: configServerFadeIn 0.3s ease-in-out;
   
-  .restart-content {
+  .waiting-content {
     text-align: center;
     max-width: 500px;
     padding: 2rem;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    box-shadow: 0 0 30px rgba(214, 51, 132, 0.2);
-    border: 1px solid rgba(214, 51, 132, 0.3);
+    box-shadow: 0 0 30px rgba(33, 150, 243, 0.2);
+    border: 1px solid rgba(33, 150, 243, 0.3);
     
     h2 {
       font-size: 1.8rem;
@@ -274,29 +274,17 @@ body {
     p {
       font-size: 1.1rem;
       color: rgba(255, 255, 255, 0.8);
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5rem;
     }
     
-    .restart-spinner {
+    .waiting-spinner {
       width: 60px;
       height: 60px;
-      border: 4px solid rgba(214, 51, 132, 0.1);
-      border-top-color: rgba(214, 51, 132, 0.8);
+      border: 4px solid rgba(33, 150, 243, 0.1);
+      border-top-color: rgba(33, 150, 243, 0.8);
       border-radius: 50%;
       animation: configServerSpin 1s linear infinite;
       margin: 0 auto 1.5rem;
-    }
-    
-    .restart-countdown {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: rgba(214, 51, 132, 0.9);
-      background: rgba(214, 51, 132, 0.1);
-      border-radius: 8px;
-      padding: 0.8rem 1.5rem;
-      display: inline-block;
-      margin-top: 1rem;
-      animation: pulse 1.5s infinite;
     }
   }
 }

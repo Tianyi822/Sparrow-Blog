@@ -64,7 +64,20 @@ const routes: RouteObject[] = [
     },
     {
         path: "/login",
-        element: <Login />
+        element: <Login />,
+        loader: async () => {
+            // 检查系统状态，如果未配置，重定向到配置页面
+            const { isRuntime } = await checkApiConfig();
+            if (!isRuntime) {
+                throw new Response("", {
+                    status: 302,
+                    headers: {
+                        Location: "/config",
+                    },
+                });
+            }
+            return null;
+        }
     }
 ];
 

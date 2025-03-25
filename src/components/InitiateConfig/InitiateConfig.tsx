@@ -7,6 +7,7 @@ import ServerBaseConfigForm, {
 } from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm';
 import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm';
 import { completeInitiatedConfig } from '@/services/InitiateConfigService';
+import { checkSystemStatus } from '@/services/webService';
 import React, { useEffect, useState } from 'react';
 import './InitiateConfig.scss';
 import { useNavigate } from 'react-router-dom';
@@ -58,13 +59,13 @@ const getSavedState = (): SavedState | null => {
 };
 
 const InitiateConfig: React.FC<InitiateConfigProps> = ({
-                                                           initialServerData,
-                                                           initialLoggerData,
-                                                           initialMySQLData,
-                                                           initialOSSData,
-                                                           initialCacheData,
-                                                           initialUserEmailData
-                                                       }) => {
+    initialServerData,
+    initialLoggerData,
+    initialMySQLData,
+    initialOSSData,
+    initialCacheData,
+    initialUserEmailData
+}) => {
     // 获取保存的状态
     const savedState = getSavedState();
 
@@ -104,9 +105,10 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     const [animationDirection, setAnimationDirection] = useState(0);
     // State to track if animation is in progress
     const [isAnimating, setIsAnimating] = useState(false);
-    // 重启状态
-    const [isRestarting, setIsRestarting] = useState(false);
-    const [restartCountdown, setRestartCountdown] = useState(5);
+    // 等待状态
+    const [isWaiting, setIsWaiting] = useState(false);
+    const [statusMessage, setStatusMessage] = useState('');
+    const [pollingCount, setPollingCount] = useState(0);
 
     // 导航hook
     const navigate = useNavigate();
@@ -146,6 +148,48 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         }
     }, [isAnimating]);
 
+    // 轮询用户信息接口状态
+    useEffect(() => {
+        if (!isWaiting) return;
+
+        let timerId: number;
+        const checkSystemReady = async () => {
+            try {
+                const { isRuntime, errorMessage } = await checkSystemStatus();
+
+                // 如果系统状态检查成功，表示服务已经启动完成
+                if (isRuntime) {
+                    setIsWaiting(false);
+                    // 清空localStorage中的配置信息，防止泄露
+                    localStorage.removeItem(STORAGE_KEY);
+                    localStorage.removeItem('verifyCodeCountdown');
+                    localStorage.removeItem('verifyCodeTimestamp');
+                    // 跳转到登录页
+                    navigate('/login');
+                } else {
+                    // 系统状态检查失败，继续轮询
+                    setPollingCount(prev => prev + 1);
+                    setStatusMessage(`正在检查服务状态... (尝试 ${pollingCount + 1}次) ${errorMessage ? `- ${errorMessage}` : ''}`);
+                    timerId = window.setTimeout(checkSystemReady, 3000);
+                }
+            } catch (error) {
+                // 请求出错，继续轮询
+                console.error('检查服务状态失败:', error);
+                setPollingCount(prev => prev + 1);
+                setStatusMessage(`等待服务启动中... (尝试 ${pollingCount + 1}次)`);
+                timerId = window.setTimeout(checkSystemReady, 3000);
+            }
+        };
+
+        // 开始轮询
+        timerId = window.setTimeout(checkSystemReady, 1000);
+
+        // 清理定时器
+        return () => {
+            if (timerId) window.clearTimeout(timerId);
+        };
+    }, [isWaiting, pollingCount, navigate]);
+
     // Form titles for reference
     const formTitles = [
         "服务基础配置",
@@ -160,49 +204,50 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     const handleServerSubmit = (data: ServerBaseFormData) => {
         console.log('Server config submitted:', data);
         setServerData(data);
-        setSubmittedForms(prev => ({...prev, serverSubmitted: true}));
+        setSubmittedForms(prev => ({ ...prev, serverSubmitted: true }));
         // Removed automatic navigation
     };
 
     const handleLoggerSubmit = (data: LoggerFormData) => {
         console.log('Logger config submitted:', data);
         setLoggerData(data);
-        setSubmittedForms(prev => ({...prev, loggerSubmitted: true}));
+        setSubmittedForms(prev => ({ ...prev, loggerSubmitted: true }));
         // Removed automatic navigation
     };
 
     const handleMySQLSubmit = (data: MySQLFormData) => {
         console.log('MySQL config submitted:', data);
         setMySQLData(data);
-        setSubmittedForms(prev => ({...prev, mysqlSubmitted: true}));
+        setSubmittedForms(prev => ({ ...prev, mysqlSubmitted: true }));
         // Removed automatic navigation
     };
 
     const handleOSSSubmit = (data: OSSConfigFormData) => {
         console.log('OSS config submitted:', data);
         setOSSData(data);
-        setSubmittedForms(prev => ({...prev, ossSubmitted: true}));
+        setSubmittedForms(prev => ({ ...prev, ossSubmitted: true }));
         // Removed automatic navigation
     };
 
     const handleCacheSubmit = (data: CacheConfigFormData) => {
         console.log('Cache config submitted:', data);
         setCacheData(data);
-        setSubmittedForms(prev => ({...prev, cacheSubmitted: true}));
+        setSubmittedForms(prev => ({ ...prev, cacheSubmitted: true }));
         // Removed automatic navigation
     };
 
     const handleUserEmailSubmit = (data: UserEmailConfigFormData) => {
         console.log('User & Email config submitted:', data);
         setUserEmailData(data);
-        setSubmittedForms(prev => ({...prev, userEmailSubmitted: true}));
+        setSubmittedForms(prev => ({ ...prev, userEmailSubmitted: true }));
         // 最后一个表单可以不跳转
     };
 
-    // 处理完成配置并重启
+    // 处理完成配置并进入登录页面
     const handleCompleteConfig = async () => {
         try {
-            setIsRestarting(true);
+            setIsWaiting(true);
+            setStatusMessage('正在完成配置...');
             // 请求完成配置接口
             const response = await completeInitiatedConfig();
 
@@ -211,33 +256,18 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                 // 不使用throw，直接显示错误并返回
                 console.error('Failed to complete configuration:', response.msg);
                 alert(response.msg || '配置完成请求失败');
-                setIsRestarting(false);
+                setIsWaiting(false);
                 return;
             }
 
-            // 清空localStorage中的配置信息，防止泄露
-            localStorage.removeItem(STORAGE_KEY);
-            localStorage.removeItem('verifyCodeCountdown');
-            localStorage.removeItem('verifyCodeTimestamp');
+            // 启动轮询检查
+            setStatusMessage('配置已完成，正在等待服务启动...');
+            setPollingCount(0);
 
-            // 开始倒计时
-            let count = 5;
-            setRestartCountdown(count);
-
-            const timer = setInterval(() => {
-                count -= 1;
-                setRestartCountdown(count);
-
-                if (count <= 0) {
-                    clearInterval(timer);
-                    // 倒计时结束后跳转到首页
-                    navigate('/');
-                }
-            }, 1000);
         } catch (error) {
             console.error('Failed to complete configuration:', error);
             alert('完成配置请求失败，请检查网络连接或联系管理员');
-            setIsRestarting(false);
+            setIsWaiting(false);
         }
     };
 
@@ -389,16 +419,13 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
 
     return (
         <div className="initiate-config-container">
-            {/* 重启等待界面 */}
-            {isRestarting && (
-                <div className="restart-overlay">
-                    <div className="restart-content">
-                        <div className="restart-spinner"></div>
-                        <h2>正在重启服务</h2>
-                        <p>配置已保存，系统正在重启中...</p>
-                        <div className="restart-countdown">
-                            {restartCountdown} 秒后将自动跳转到首页
-                        </div>
+            {/* 等待界面 */}
+            {isWaiting && (
+                <div className="waiting-overlay">
+                    <div className="waiting-content">
+                        <div className="waiting-spinner"></div>
+                        <h2>服务启动中</h2>
+                        <p>{statusMessage}</p>
                     </div>
                 </div>
             )}
@@ -523,7 +550,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                 <div
                     className={`current-form-container ${isAnimating ? 'animating' : ''} ${animationDirection > 0 ? 'slide-up-out' :
                         animationDirection < 0 ? 'slide-down-out' : ''
-                    }`}
+                        }`}
                 >
                     {renderCurrentForm()}
                 </div>

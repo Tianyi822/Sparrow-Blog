@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiLock, FiMail } from 'react-icons/fi';
+import { businessApiRequest, ApiResponse } from '@/services/api';
 import './Login.scss';
 
 interface LoginFormData {
@@ -9,6 +10,10 @@ interface LoginFormData {
 
 interface ValidationErrors {
   [key: string]: string;
+}
+
+interface UserBasicInfo {
+  user_name: string;
 }
 
 // 本地存储键名
@@ -25,6 +30,31 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
   const [verifyCodeSending, setVerifyCodeSending] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string>('');
+  const [fetchingUserData, setFetchingUserData] = useState<boolean>(true);
+
+  // 获取用户基本信息
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setFetchingUserData(true);
+        const response = await businessApiRequest<ApiResponse<UserBasicInfo>>({
+          method: 'GET',
+          url: '/config/user-basic-info'
+        });
+        
+        if (response.code === 200 && response.data?.user_name) {
+          setUserName(response.data.user_name);
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error);
+      } finally {
+        setFetchingUserData(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // 初始化时从localStorage恢复倒计时状态
   useEffect(() => {
@@ -175,8 +205,10 @@ const Login: React.FC = () => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1>验证码登录</h1>
-          <p>请输入验证码完成登录</p>
+          <h1>
+            {fetchingUserData ? '验证码登录' : userName ? `欢迎回来，${userName}` : '验证码登录'}
+          </h1>
+          <p>{userName ? '请输入验证码以安全登录您的管理后台' : '请输入验证码完成登录'}</p>
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
