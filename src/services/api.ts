@@ -67,7 +67,7 @@ const setupInterceptors = (api: typeof configApi | typeof businessApi) => {
                 if (status === 401) {
                     // Clear token and redirect to login
                     localStorage.removeItem('auth_token');
-                    window.location.href = '/login';
+                    window.location.href = '/admin/login';
                 }
 
                 // Handle forbidden errors
@@ -129,6 +129,12 @@ export const businessApiRequest = async <T>(config: AxiosRequestConfig): Promise
     }
 };
 
+// 通用请求函数 (兼容 InitiateConfigService 中的用法)
+export const request = async <T>(config: AxiosRequestConfig): Promise<T> => {
+    // 默认使用配置服务
+    return configApiRequest<T>(config);
+};
+
 // 兼容旧代码，默认使用业务服务
 export const apiRequest = businessApiRequest;
 
@@ -137,5 +143,6 @@ export default {
     businessApi,
     configApiRequest,
     businessApiRequest,
-    apiRequest
+    apiRequest,
+    request
 };

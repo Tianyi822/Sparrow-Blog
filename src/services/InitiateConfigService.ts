@@ -1,11 +1,10 @@
-import { configApiRequest, ApiResponse } from './api';
-
-// Types for configuration data
-import { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm';
-import { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm/MySqlConfigForm';
-import { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm/OSSConfigForm';
-import { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm/CacheConfigForm';
-import { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm';
+import { request } from './api';
+import { ApiResponse } from '../types/apiTypes';
+import { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm';
+import { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm';
+import { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm';
+import { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm';
+import { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm';
 
 // 服务器基础配置数据接口
 export interface ServerBaseConfig {
@@ -49,7 +48,7 @@ export const saveInitiatedServerBaseConfig = async (data: ServerBaseConfig): Pro
     console.log('转换后的数据:', transformedData); // 调试用
 
     // 使用JSON格式提交数据
-    return configApiRequest<ApiResponse<ServerBaseConfig>>({
+    return request<ApiResponse<ServerBaseConfig>>({
         method: 'POST',
         url: '/config/base',
         data: transformedData,
@@ -89,7 +88,7 @@ export const saveInitiatedLoggerConfig = async (data: LoggerFormData): Promise<A
     const transformedData = transformLoggerData(data);
     console.log('转换后的日志配置数据:', transformedData); // 调试用
 
-    return configApiRequest<ApiResponse<LoggerFormData>>({
+    return request<ApiResponse<LoggerFormData>>({
         method: 'POST',
         url: '/config/logger',
         data: transformedData,
@@ -131,7 +130,7 @@ export const saveInitiatedMySQLConfig = async (data: MySQLFormData): Promise<Api
     const transformedData = transformMySQLData(data);
     console.log('转换后的MySQL配置数据:', transformedData); // 调试用
 
-    return configApiRequest<ApiResponse<MySQLFormData>>({
+    return request<ApiResponse<MySQLFormData>>({
         method: 'POST',
         url: '/config/mysql',
         data: transformedData,
@@ -179,7 +178,7 @@ export const saveInitiatedOSSConfig = async (data: OSSConfigFormData): Promise<A
     const transformedData = transformOSSData(data);
     console.log('转换后的OSS配置数据:', transformedData); // 调试用
 
-    return configApiRequest<ApiResponse<OSSConfigFormData>>({
+    return request<ApiResponse<OSSConfigFormData>>({
         method: 'POST',
         url: '/config/oss',
         data: transformedData,
@@ -215,7 +214,7 @@ export const saveInitiatedCacheConfig = async (data: CacheConfigFormData): Promi
     const transformedData = transformCacheData(data);
     console.log('转换后的缓存配置数据:', transformedData); // 调试用
 
-    return configApiRequest<ApiResponse<CacheConfigFormData>>({
+    return request<ApiResponse<CacheConfigFormData>>({
         method: 'POST',
         url: '/config/cache',
         data: transformedData,
@@ -234,7 +233,7 @@ export interface UserConfigData {
 }
 
 export const saveInitiatedUserConfig = async (data: UserConfigData): Promise<ApiResponse<null>> => {
-    return configApiRequest<ApiResponse<null>>({
+    return request<ApiResponse<null>>({
         method: 'POST',
         url: '/config/user',
         data: data,
@@ -256,7 +255,7 @@ export interface VerificationCodeData {
 }
 
 export const sendInitiatedVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
-    return configApiRequest<ApiResponse<null>>({
+    return request<ApiResponse<null>>({
         method: 'POST',
         url: '/config/config-email-send-code',
         data: data,
@@ -270,7 +269,7 @@ export const sendInitiatedVerificationCode = async (data: VerificationCodeData):
  * Complete configuration and restart server
  */
 export const completeInitiatedConfig = async (): Promise<ApiResponse<null>> => {
-    return configApiRequest<ApiResponse<null>>({
+    return request<ApiResponse<null>>({
         method: 'GET',
         url: '/config/complete-config'
     });

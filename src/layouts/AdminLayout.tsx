@@ -1,22 +1,37 @@
 import React, { useState } from 'react';
-import { Outlet, useNavigate, Link } from 'react-router-dom';
+import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { FiHome, FiFileText, FiTag, FiFolder, FiSettings, FiUsers, FiMessageCircle, FiLogOut } from 'react-icons/fi';
 import './AdminLayout.scss';
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // 检查当前路径是否为登录页
+  const isLoginPage = location.pathname === '/admin/login';
 
   const handleLogout = () => {
     // 清除登录状态
     localStorage.removeItem('auth_token');
     // 跳转到登录页
-    navigate('/login');
+    navigate('/admin/login');
   };
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
   };
+
+  // 如果是登录页，则只渲染Outlet部分，不显示侧边栏和导航
+  if (isLoginPage) {
+    return (
+      <div className="admin-layout login-only">
+        <main className="admin-main full-width">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={`admin-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>

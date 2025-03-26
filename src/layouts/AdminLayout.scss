@@ -6,6 +6,22 @@
   background-color: #f5f7fb;
   transition: all 0.3s ease;
   
+  // 登录页特殊样式
+  &.login-only {
+    display: block;
+    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    .admin-main.full-width {
+      height: 100vh;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 0;
+      overflow: hidden;
+    }
+  }
+  
   // Sidebar styles
   .admin-sidebar {
     width: 250px;
@@ -331,6 +347,12 @@
           background: rgba(0, 0, 0, 0.5);
           z-index: 5;
         }
+      }
+    }
+    
+    &.login-only {
+      .admin-main.full-width {
+        padding: 1rem;
       }
     }
   }

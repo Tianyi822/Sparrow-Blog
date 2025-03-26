@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FiLock, FiMail } from 'react-icons/fi';
-import { businessApiRequest, ApiResponse } from '@/services/api';
+import { useNavigate } from 'react-router-dom';
+import { 
+  sendVerificationCode, 
+  loginWithVerificationCode, 
+  getUserBasicInfo 
+} from '@/services/adminService';
 import './Login.scss';
 
 interface LoginFormData {
@@ -12,14 +17,12 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-interface UserBasicInfo {
-  user_name: string;
-}
-
 // 本地存储键名
 const COUNTDOWN_END_TIME_KEY = 'verify_code_end_time';
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  
   // 状态定义
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -38,10 +41,7 @@ const Login: React.FC = () => {
     const fetchUserData = async () => {
       try {
         setFetchingUserData(true);
-        const response = await businessApiRequest<ApiResponse<UserBasicInfo>>({
-          method: 'GET',
-          url: '/config/user-basic-info'
-        });
+        const response = await getUserBasicInfo();
         
         if (response.code === 200 && response.data?.user_name) {
           setUserName(response.data.user_name);
@@ -154,11 +154,10 @@ const Login: React.FC = () => {
 
     try {
       setVerifyCodeSending(true);
-      // TODO: 实际发送验证码的API调用
-      // const response = await sendVerificationCode(formData.email);
-
-      // 模拟API调用延迟
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 调用验证码发送接口
+      await sendVerificationCode({ 
+        user_email: formData.email 
+      });
 
       setCountdown(60); // 设置60秒倒计时
       // 成功提示可以在这里添加
@@ -180,19 +179,26 @@ const Login: React.FC = () => {
 
     try {
       setLoading(true);
-      // TODO: 实际验证码登录的API调用
-      // const response = await verifyCodeLogin(formData);
+      console.log('开始登录请求...');
+      // 调用登录接口
+      const response = await loginWithVerificationCode({
+        user_email: formData.email,
+        verified_code: formData.verifyCode
+      });
 
-      // 模拟API调用延迟
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // 登录成功后，清除倒计时状态
-      localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
-
-      // 模拟登录成功后的重定向
-      console.log('登录成功，即将跳转到管理页面');
-      // window.location.href = '/dashboard'; // 实际项目中取消注释
-
+      console.log('登录响应:', response);
+      
+      // 登录成功直接跳转到管理后台
+      if (response.code === 200) {
+        console.log('登录成功，准备跳转');
+        // 清除倒计时状态
+        localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
+        
+        // 跳转到管理页面
+        navigate('/admin');
+      } else {
+        setSubmitError(response.msg || '登录失败，请稍后再试');
+      }
     } catch (error) {
       console.error('登录失败:', error);
       setSubmitError(error instanceof Error ? error.message : '登录失败，请稍后再试');

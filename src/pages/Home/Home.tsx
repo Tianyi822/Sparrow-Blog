@@ -1,7 +1,7 @@
 import BlogCard from '@/components/Blog/BlogCard';
-import Clock from '@/components/Home/Clock/Clock';
-import Introduction from "@/components/Home/Introduction/Introduction";
-import Pagination from '@/components/Home/Pagination/Pagination';
+import Clock from '@/components/Home/Clock';
+import Introduction from "@/components/Home/Introduction";
+import Pagination from '@/components/Home/Pagination';
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import WebContent from '@/components/WebContent/WebContent';
 import { useCallback, useState } from "react";

@@ -1,11 +1,11 @@
-import CacheConfigForm, { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm/CacheConfigForm';
-import LoggerConfigForm, { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm/LoggerConfigForm';
-import MySqlConfigForm, { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm/MySqlConfigForm';
-import OSSConfigForm, { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm/OSSConfigForm';
+import CacheConfigForm, { CacheConfigFormData } from '@/components/InitiateConfig/CacheConfigForm';
+import LoggerConfigForm, { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm';
+import MySqlConfigForm, { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm';
+import OSSConfigForm, { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm';
 import ServerBaseConfigForm, {
-    ServerBaseFormData
-} from '@/components/InitiateConfig/ServerBaseConfigForm/ServerBaseConfigForm';
-import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm/UserConfigForm';
+    ServerBaseConfigFormData
+} from '@/components/InitiateConfig/ServerBaseConfigForm';
+import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm';
 import { completeInitiatedConfig } from '@/services/InitiateConfigService';
 import { checkSystemStatus } from '@/services/webService';
 import React, { useEffect, useState } from 'react';
@@ -13,7 +13,7 @@ import './InitiateConfig.scss';
 import { useNavigate } from 'react-router-dom';
 
 interface InitiateConfigProps {
-    initialServerData?: ServerBaseFormData;
+    initialServerData?: ServerBaseConfigFormData;
     initialLoggerData?: LoggerFormData;
     initialMySQLData?: MySQLFormData;
     initialOSSData?: OSSConfigFormData;
@@ -25,7 +25,7 @@ interface InitiateConfigProps {
 interface SavedState {
     currentFormIndex: number;
     formData: {
-        serverData?: ServerBaseFormData;
+        serverData?: ServerBaseConfigFormData;
         loggerData?: LoggerFormData;
         mysqlData?: MySQLFormData;
         ossData?: OSSConfigFormData;
@@ -70,7 +70,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     const savedState = getSavedState();
 
     // 保存各表单数据的状态
-    const [serverData, setServerData] = useState<ServerBaseFormData | undefined>(
+    const [serverData, setServerData] = useState<ServerBaseConfigFormData | undefined>(
         savedState?.formData?.serverData || initialServerData
     );
     const [loggerData, setLoggerData] = useState<LoggerFormData | undefined>(
@@ -165,7 +165,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                     localStorage.removeItem('verifyCodeCountdown');
                     localStorage.removeItem('verifyCodeTimestamp');
                     // 跳转到登录页
-                    navigate('/login');
+                    navigate('/admin/login');
                 } else {
                     // 系统状态检查失败，继续轮询
                     setPollingCount(prev => prev + 1);
@@ -201,7 +201,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     ];
 
     // 处理各表单提交后的回调
-    const handleServerSubmit = (data: ServerBaseFormData) => {
+    const handleServerSubmit = (data: ServerBaseConfigFormData) => {
         console.log('Server config submitted:', data);
         setServerData(data);
         setSubmittedForms(prev => ({ ...prev, serverSubmitted: true }));

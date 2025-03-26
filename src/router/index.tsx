@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
-import InitiateConfig from "@/components/InitiateConfig/InitiateConfig.tsx";
-import Home from "@/components/Home/Home";
-import FriendLink from "@/components/FriendLink/FriendLink";
+import InitiateConfig from "@/pages/InitiateConfig";
+import Home from "@/pages/Home";
+import FriendLink from "@/pages/FriendLink";
 import BlogLayout from "@/layouts/BlogLayout";
 import AdminLayout from "@/layouts/AdminLayout";
-import Dashboard from "@/components/Admin/Dashboard/Dashboard";
+import Dashboard from "@/pages/Admin/Dashboard";
 import { checkSystemStatus } from "@/services/webService";
-import Login from "@/components/Admin/Login/Login";
+import Login from "@/pages/Admin/Login";
 import NotFound from "@/pages/NotFound/NotFound";
 
 // 检查系统状态的loader函数
@@ -72,41 +72,41 @@ const routes: RouteObject[] = [
         }
     },
     {
-        path: "/login",
-        element: <Login />,
-        loader: async () => {
-            // 检查系统状态，如果未配置，重定向到配置页面
-            const { isRuntime } = await checkApiConfig();
-            if (!isRuntime) {
-                throw new Response("", {
-                    status: 302,
-                    headers: {
-                        Location: "/config",
-                    },
-                });
-            }
-            
-            // 如果已登录，重定向到管理后台
-            const { isAuthenticated } = checkAuthStatus();
-            if (isAuthenticated) {
-                throw new Response("", {
-                    status: 302,
-                    headers: {
-                        Location: "/admin",
-                    },
-                });
-            }
-            
-            return null;
-        }
-    },
-    {
         path: "/admin",
         element: <AdminLayout />,
         children: [
             {
                 index: true,
                 element: <Dashboard />
+            },
+            {
+                path: "login",
+                element: <Login />,
+                loader: async () => {
+                    // 检查系统状态，如果未配置，重定向到配置页面
+                    const { isRuntime } = await checkApiConfig();
+                    if (!isRuntime) {
+                        throw new Response("", {
+                            status: 302,
+                            headers: {
+                                Location: "/config",
+                            },
+                        });
+                    }
+                    
+                    // 如果已登录，重定向到管理后台
+                    const { isAuthenticated } = checkAuthStatus();
+                    if (isAuthenticated) {
+                        throw new Response("", {
+                            status: 302,
+                            headers: {
+                                Location: "/admin",
+                            },
+                        });
+                    }
+                    
+                    return null;
+                }
             },
             // 这里可以添加更多的管理页面路由
             // {
