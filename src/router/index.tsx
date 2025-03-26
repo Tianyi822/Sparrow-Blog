@@ -7,6 +7,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import Dashboard from "@/components/Admin/Dashboard/Dashboard";
 import { checkSystemStatus } from "@/services/webService";
 import Login from "@/components/Admin/Login/Login";
+import NotFound from "@/pages/NotFound/NotFound";
 
 // 检查系统状态的loader函数
 const checkApiConfig = async () => {
@@ -118,6 +119,11 @@ const routes: RouteObject[] = [
             // },
             // 等等
         ]
+    },
+    // 添加 404 路由，匹配所有未匹配的路径
+    {
+        path: "*",
+        element: <NotFound />
     }
 ];
 
