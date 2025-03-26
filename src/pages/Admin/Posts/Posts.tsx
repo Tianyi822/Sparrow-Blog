@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo, useRef} from 'react';
 import {
     FiEdit,
     FiTrash2,
@@ -71,6 +71,12 @@ const Posts: React.FC = () => {
     const [selectedTag, setSelectedTag] = useState<string>('');
     const [postsPerPage, setPostsPerPage] = useState<number>(25); // 默认每页25条
     const [showPageSizeSelector, setShowPageSizeSelector] = useState<boolean>(false);
+    const [isNarrowScreen, setIsNarrowScreen] = useState<boolean>(window.innerWidth <= 1500);
+    const [activeTagPopup, setActiveTagPopup] = useState<number | null>(null);
+    const [popupPosition, setPopupPosition] = useState<{top: number, left: number} | null>(null);
+    const [isWideScreen, setIsWideScreen] = useState<boolean>(window.innerWidth > 1800);
+    const [isClosing, setIsClosing] = useState<boolean>(false);
+    const tagsRef = useRef<HTMLDivElement>(null);
 
     // 从所有文章中提取唯一的分类和标签
     const categories = useMemo(() => {
@@ -165,6 +171,55 @@ const Posts: React.FC = () => {
         }
     };
 
+    // 监听窗口大小变化
+    useEffect(() => {
+        const handleResize = () => {
+            setIsNarrowScreen(window.innerWidth <= 1500);
+            setIsWideScreen(window.innerWidth > 1800);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // 获取标签显示数量
+    const getTagDisplayCount = () => {
+        return isWideScreen ? 5 : 3;
+    };
+
+    // 获取标签限制展示数量
+    const getTagLimitCount = () => {
+        return isWideScreen ? 4 : 2;
+    };
+
+    // 处理点击more-tags显示弹窗
+    const handleMoreTagsClick = (postId: number, event: React.MouseEvent) => {
+        event.stopPropagation(); // 阻止事件冒泡
+        
+        if (activeTagPopup === postId) {
+            closePopup();
+        } else {
+            setIsClosing(false);
+            const target = event.currentTarget as HTMLElement;
+            const rect = target.getBoundingClientRect();
+            setPopupPosition({
+                top: rect.top,
+                left: rect.left + rect.width + 5
+            });
+            setActiveTagPopup(postId);
+        }
+    };
+    
+    // 处理弹窗关闭
+    const closePopup = () => {
+        setIsClosing(true);
+        setTimeout(() => {
+            setActiveTagPopup(null);
+            setPopupPosition(null);
+            setIsClosing(false);
+        }, 200); // 动画持续时间
+    };
+
     // 渲染搜索组件
     const renderSearchComponent = () => {
         return (
@@ -236,7 +291,7 @@ const Posts: React.FC = () => {
                     title="设置每页显示数量"
                 >
                     <FiSettings/>
-                    <span>{postsPerPage}条/页</span>
+                    <span>{postsPerPage} 条 / 页</span>
                 </button>
 
                 {showPageSizeSelector && (
@@ -299,25 +354,50 @@ const Posts: React.FC = () => {
         );
     };
 
+    // 点击页面其他地方关闭标签弹窗
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (activeTagPopup !== null) {
+                const popupElement = document.querySelector('.tags-popup');
+                const clickedElement = event.target as Node;
+                
+                // 检查是否点击的是more-tags按钮
+                const isMoreTagsButton = (target: EventTarget | null): boolean => {
+                    if (!target || !(target instanceof Element)) return false;
+                    return target.classList.contains('more-tags');
+                };
+                
+                if (popupElement && !popupElement.contains(clickedElement) && 
+                    !isMoreTagsButton(event.target)) {
+                    closePopup();
+                }
+            }
+        };
+        
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [activeTagPopup]);
+
     return (
         <div className="admin-posts">
             {renderSearchComponent()}
 
             {renderResultSummary()}
 
-            <div className="posts-table-container">
+            <div className="posts-table-container" ref={tagsRef}>
                 <table className="posts-table">
                     <thead>
                     <tr>
                         <th className="fixed-column index-column">序号</th>
                         <th className="fixed-column title-column">标题</th>
                         <th className="status-column">状态</th>
-                        <th>简介</th>
-                        <th className="category-column">分类</th>
-                        <th>标签</th>
-                        <th className="word-count-column">字数</th>
-                        <th className="date-column">创建时间</th>
-                        <th className="date-column">修改时间</th>
+                        {!isNarrowScreen && <th className="category-column">分类</th>}
+                        {!isNarrowScreen && <th className="tags-column">标签</th>}
+                        {!isNarrowScreen && <th className="word-count-column">字数</th>}
+                        <th className="date-column created-date-column">创建时间</th>
+                        {!isNarrowScreen && <th className="date-column updated-date-column">修改时间</th>}
                         <th className="action-column">操作</th>
                     </tr>
                     </thead>
@@ -326,24 +406,42 @@ const Posts: React.FC = () => {
                         <tr key={post.id} className={post.pinned ? 'pinned-row' : ''}>
                             <td className="fixed-column index-column">{post.id}</td>
                             <td className="fixed-column title-column" data-full-title={post.title}>
-                                <span className="post-title">{post.title}</span>
-                                {post.pinned && <span className="pinned-indicator">已置顶</span>}
+                                <div className="title-wrapper">
+                                    <span className="post-title" title={post.title}>{post.title}</span>
+                                </div>
                             </td>
                             <td className="status-column">
-                  <span className={`status-badge ${post.status}`}>
-                    {post.status === 'public' ? '公开' : '隐藏'}
-                  </span>
+                              <span className={`status-badge ${post.status}`}>
+                                {post.status === 'public' ? '公开' : '隐藏'}
+                              </span>
                             </td>
-                            <td className="description-column">{post.description}</td>
-                            <td className="category-column">{post.category}</td>
-                            <td className="tags-column">
-                                {post.tags.map(tag => (
-                                    <span key={tag} className="tag-badge">{tag}</span>
-                                ))}
-                            </td>
-                            <td className="word-count-column">{post.wordCount}</td>
-                            <td className="date-column">{formatDateTime(post.createdAt)}</td>
-                            <td className="date-column">{formatDateTime(post.updatedAt)}</td>
+                            {!isNarrowScreen && <td className="category-column">{post.category}</td>}
+                            {!isNarrowScreen && (
+                                <td className="tags-column">
+                                    <div className="tag-container">
+                                    {post.tags.length <= getTagDisplayCount() ? (
+                                        post.tags.map(tag => (
+                                            <span key={tag} className="tag-badge">{tag}</span>
+                                        ))
+                                    ) : (
+                                        <>
+                                            {post.tags.slice(0, getTagLimitCount()).map(tag => (
+                                                <span key={tag} className="tag-badge">{tag}</span>
+                                            ))}
+                                            <span 
+                                                className="tag-badge more-tags" 
+                                                onClick={(e) => handleMoreTagsClick(post.id, e)}
+                                            >
+                                                +{post.tags.length - getTagLimitCount()}
+                                            </span>
+                                        </>
+                                    )}
+                                    </div>
+                                </td>
+                            )}
+                            {!isNarrowScreen && <td className="word-count-column">{post.wordCount}</td>}
+                            <td className="date-column created-date-column">{formatDateTime(post.createdAt)}</td>
+                            {!isNarrowScreen && <td className="date-column updated-date-column">{formatDateTime(post.updatedAt)}</td>}
                             <td className="action-column">
                                 <div className="action-buttons">
                                     <button
@@ -383,6 +481,22 @@ const Posts: React.FC = () => {
             </div>
 
             {renderPagination()}
+            
+            {/* 独立的弹窗容器 */}
+            {activeTagPopup !== null && popupPosition && (
+                <div 
+                    className={`tags-popup ${isClosing ? 'closing' : ''}`}
+                    style={{
+                        position: 'fixed',
+                        top: `${popupPosition.top}px`,
+                        left: `${popupPosition.left}px`
+                    }}
+                >
+                    {getCurrentPagePosts().find(post => post.id === activeTagPopup)?.tags.slice(getTagLimitCount()).map(tag => (
+                        <span key={tag} className="popup-tag">{tag}</span>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
