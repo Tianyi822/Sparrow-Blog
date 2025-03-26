@@ -19,11 +19,11 @@ interface Post {
 // 格式化日期时间函数
 const formatDateTime = (dateStr: string): string => {
   const date = new Date(dateStr);
-  
+
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
-  
+
   return `${year}-${month}-${day}`;
 };
 
@@ -31,13 +31,13 @@ const formatDateTime = (dateStr: string): string => {
 const pageSizeOptions = [25, 50, 75, 100];
 
 const mockPosts: Post[] = Array.from({ length: 100 }, (_, index) => {
-  // 生成随机数量的标签，有些文章会超过5个
-  const tagCount = Math.floor(Math.random() * 8) + 1; // 1到8个标签
+  // 生成随机数量的标签，限制最多5个标签
+  const tagCount = Math.min(Math.floor(Math.random() * 5) + 1, 5); // 1到5个标签
   const tags = [];
   for (let i = 0; i < tagCount; i++) {
     tags.push(`标签${(index + i) % 10 + 1}`);
   }
-  
+
   return {
     id: index + 1,
     title: `文章标题 ${index + 1} ${index % 3 === 0 ? '这是一个较长的标题用来测试标题显示效果' : ''}`,
@@ -60,34 +60,34 @@ const Posts: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [postsPerPage, setPostsPerPage] = useState<number>(25); // 默认每页25条
   const [showPageSizeSelector, setShowPageSizeSelector] = useState<boolean>(false);
-  
+
   // 从所有文章中提取唯一的分类和标签
   const categories = useMemo(() => {
     const categorySet = new Set(mockPosts.map(post => post.category));
     return Array.from(categorySet);
   }, []);
-  
+
   const tags = useMemo(() => {
     const tagSet = new Set(mockPosts.flatMap(post => post.tags));
     return Array.from(tagSet);
   }, []);
-  
+
   // 过滤文章
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
       // 标题搜索（不区分大小写）
       const titleMatch = searchTitle ? post.title.toLowerCase().includes(searchTitle.toLowerCase()) : true;
-      
+
       // 分类筛选
       const categoryMatch = selectedCategory ? post.category === selectedCategory : true;
-      
+
       // 标签筛选
       const tagMatch = selectedTag ? post.tags.includes(selectedTag) : true;
-      
+
       return titleMatch && categoryMatch && tagMatch;
     });
   }, [posts, searchTitle, selectedCategory, selectedTag]);
-  
+
   // 重置所有筛选条件
   const resetFilters = () => {
     setSearchTitle('');
@@ -95,65 +95,65 @@ const Posts: React.FC = () => {
     setSelectedTag('');
     setCurrentPage(1);
   };
-  
+
   // 计算总页数
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-  
+
   // 获取当前页的文章
   const getCurrentPagePosts = () => {
     const startIndex = (currentPage - 1) * postsPerPage;
     return filteredPosts.slice(startIndex, startIndex + postsPerPage);
   };
-  
+
   // 当筛选条件改变时，重置到第一页
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTitle, selectedCategory, selectedTag]);
-  
+
   // 当每页显示条数改变时，重置到第一页
   useEffect(() => {
     setCurrentPage(1);
   }, [postsPerPage]);
-  
+
   // 处理页码变化
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
-  
+
   // 处理每页显示条数变化
   const handlePageSizeChange = (size: number) => {
     setPostsPerPage(size);
     setShowPageSizeSelector(false);
   };
-  
+
   // 处理置顶文章
   const handleTogglePin = (id: number) => {
-    setPosts(prevPosts => prevPosts.map(post => 
+    setPosts(prevPosts => prevPosts.map(post =>
       post.id === id ? { ...post, pinned: !post.pinned } : post
     ));
   };
-  
+
   // 处理切换文章状态
   const handleToggleStatus = (id: number) => {
-    setPosts(prevPosts => prevPosts.map(post => 
+    setPosts(prevPosts => prevPosts.map(post =>
       post.id === id ? { ...post, status: post.status === 'public' ? 'hidden' : 'public' } : post
     ));
   };
-  
+
   // 处理编辑文章
   const handleEditPost = (id: number) => {
     console.log(`编辑文章: ${id}`);
     // 实际项目中这里会跳转到编辑页面
   };
-  
+
   // 处理删除文章
   const handleDeletePost = (id: number) => {
     if (window.confirm('确定要删除这篇文章吗？此操作不可恢复。')) {
       setPosts(prevPosts => prevPosts.filter(post => post.id !== id));
     }
   };
-  
+
   // 渲染搜索组件
   const renderSearchComponent = () => {
     return (
@@ -173,7 +173,7 @@ const Posts: React.FC = () => {
             </button>
           )}
         </div>
-        
+
         <div className="filter-section">
           <div className="filter-item">
             <label htmlFor="category-filter">分类:</label>
@@ -189,7 +189,7 @@ const Posts: React.FC = () => {
               ))}
             </select>
           </div>
-          
+
           <div className="filter-item">
             <label htmlFor="tag-filter">标签:</label>
             <select
@@ -204,7 +204,7 @@ const Posts: React.FC = () => {
               ))}
             </select>
           </div>
-          
+
           {(searchTitle || selectedCategory || selectedTag) && (
             <button className="reset-filters" onClick={resetFilters}>
               重置筛选
@@ -214,20 +214,20 @@ const Posts: React.FC = () => {
       </div>
     );
   };
-  
+
   // 渲染每页显示条数选择器
   const renderPageSizeSelector = () => {
     return (
       <div className="page-size-selector">
-        <button 
-          className="page-size-toggle" 
+        <button
+          className="page-size-toggle"
           onClick={() => setShowPageSizeSelector(!showPageSizeSelector)}
           title="设置每页显示数量"
         >
           <FiSettings />
           <span>{postsPerPage}条/页</span>
         </button>
-        
+
         {showPageSizeSelector && (
           <div className="page-size-dropdown">
             {pageSizeOptions.map(size => (
@@ -244,43 +244,40 @@ const Posts: React.FC = () => {
       </div>
     );
   };
-  
+
   // 生成页码按钮
   const renderPagination = () => {
-    // 如果只有一页，不显示分页
-    if (totalPages <= 1) return null;
-    
     return (
       <div className="pagination-container">
         <div className="pagination">
-          <button 
-            className="pagination-btn prev" 
+          <button
+            className="pagination-btn prev"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
             <FiChevronLeft />
           </button>
-          
+
           <div className="pagination-info">
             <span className="current-page">{currentPage}</span>
             <span className="page-separator">/</span>
             <span className="total-pages">{totalPages}</span>
           </div>
-          
-          <button 
-            className="pagination-btn next" 
+
+          <button
+            className="pagination-btn next"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
             <FiChevronRight />
           </button>
         </div>
-        
+
         {renderPageSizeSelector()}
       </div>
     );
   };
-  
+
   // 渲染结果统计
   const renderResultSummary = () => {
     return (
@@ -290,13 +287,13 @@ const Posts: React.FC = () => {
       </div>
     );
   };
-  
+
   return (
     <div className="admin-posts">
       {renderSearchComponent()}
-      
+
       {renderResultSummary()}
-      
+
       <div className="posts-table-container">
         <table className="posts-table">
           <thead>
@@ -329,41 +326,38 @@ const Posts: React.FC = () => {
                 <td className="description-column">{post.description}</td>
                 <td className="category-column">{post.category}</td>
                 <td className="tags-column">
-                  {post.tags.slice(0, 5).map(tag => (
+                  {post.tags.map(tag => (
                     <span key={tag} className="tag-badge">{tag}</span>
                   ))}
-                  {post.tags.length > 5 && (
-                    <span className="more-tags">+{post.tags.length - 5}</span>
-                  )}
                 </td>
                 <td className="word-count-column">{post.wordCount}</td>
                 <td className="date-column">{formatDateTime(post.createdAt)}</td>
                 <td className="date-column">{formatDateTime(post.updatedAt)}</td>
                 <td className="action-column">
                   <div className="action-buttons">
-                    <button 
-                      className="action-btn toggle-status" 
+                    <button
+                      className="action-btn toggle-status"
                       title={post.status === 'public' ? '隐藏' : '公开'}
                       onClick={() => handleToggleStatus(post.id)}
                     >
                       {post.status === 'public' ? <FiEye /> : <FiEyeOff />}
                     </button>
-                    <button 
+                    <button
                       className={`action-btn toggle-pin ${post.pinned ? 'active' : ''}`}
                       title={post.pinned ? '取消置顶' : '置顶'}
                       onClick={() => handleTogglePin(post.id)}
                     >
                       <FiArrowUp />
                     </button>
-                    <button 
-                      className="action-btn edit" 
+                    <button
+                      className="action-btn edit"
                       title="编辑"
                       onClick={() => handleEditPost(post.id)}
                     >
                       <FiEdit />
                     </button>
-                    <button 
-                      className="action-btn delete" 
+                    <button
+                      className="action-btn delete"
                       title="删除"
                       onClick={() => handleDeletePost(post.id)}
                     >
@@ -376,7 +370,7 @@ const Posts: React.FC = () => {
           </tbody>
         </table>
       </div>
-      
+
       {renderPagination()}
     </div>
   );

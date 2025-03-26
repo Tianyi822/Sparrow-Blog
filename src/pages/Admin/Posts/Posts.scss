@@ -5,18 +5,13 @@
   height: 100%;
   padding: 0;
   
-  // 主容器使用grid布局，确保分页区域固定在底部
-  display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  grid-template-areas: 
-    "search"
-    "summary"
-    "table"
-    "pagination";
+  // 使用flex布局代替grid，确保更好的高度控制
+  display: flex;
+  flex-direction: column;
   
   // 搜索组件样式
   .search-container {
-    grid-area: search;
+    flex-shrink: 0; // 不允许收缩
     width: 100%;
     margin-bottom: 1rem;
     padding: 1rem;
@@ -137,7 +132,7 @@
   
   // 结果统计样式
   .result-summary {
-    grid-area: summary;
+    flex-shrink: 0; // 不允许收缩
     width: 100%;
     margin-bottom: 0.5rem;
     font-size: 0.85rem;
@@ -147,7 +142,7 @@
   }
   
   .posts-table-container {
-    grid-area: table;
+    flex: 1; // 表格容器占用剩余空间
     overflow: auto;
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -158,9 +153,11 @@
       0 6px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
     margin-bottom: 20px;
-    // 高度不再依赖于内容数量，而是填充可用空间
-    height: 100%;
-    min-height: 300px; // 确保表格有最小高度
+    
+    // 固定高度 - 关键修改
+    height: 1000px; // 明确固定表格高度为400px
+    min-height: 1000px; 
+    max-height: 1000px;
     
     // 表格样式 - 完全重写
     .posts-table {
@@ -198,6 +195,11 @@
         &.action-column {
           width: 180px; // 设置操作列宽度
           text-align: center;
+        }
+        
+        // 添加标签列的固定宽度
+        &:nth-child(6) { // 标签列是第6列
+          width: 320px; // 设置为刚好容纳5个标签，每个标签约60px宽度，加上间距
         }
       }
       
@@ -282,38 +284,38 @@
           
           td.fixed-column {
             &.index-column {
-              background-color: rgba(45, 46, 65, 0.95);
+              background-color: rgba(41, 98, 155, 0.9);
             }
             
             &.title-column {
-              background-color: rgba(45, 46, 65, 0.95);
+              background-color: rgba(41, 98, 155, 0.9);
             }
           }
         }
         
         &.pinned-row {
-          background-color: rgba(50, 50, 70, 0.3);
+          background-color: rgba(30, 80, 130, 0.25);
           
           td.fixed-column {
             &.index-column {
-              background-color: rgba(45, 46, 65, 0.95);
+              background-color: rgba(38, 90, 143, 0.9);
             }
             
             &.title-column {
-              background-color: rgba(45, 46, 65, 0.95);
+              background-color: rgba(38, 90, 143, 0.9);
             }
           }
           
           &:hover {
-            background-color: rgba(60, 60, 80, 0.4);
+            background-color: rgba(35, 95, 145, 0.35);
             
             td.fixed-column {
               &.index-column {
-                background-color: rgba(55, 56, 75, 0.95);
+                background-color: rgba(44, 116, 179, 0.9);
               }
               
               &.title-column {
-                background-color: rgba(55, 56, 75, 0.95);
+                background-color: rgba(44, 116, 179, 0.9);
               }
             }
           }
@@ -348,21 +350,12 @@
           color: rgba(255, 255, 255, 0.9);
           border-radius: 4px;
           font-size: 0.8rem;
-          margin-right: 0.5rem;
+          margin-right: 0.3rem;
           margin-bottom: 0.25rem;
-        }
-        
-        // 更多标签提示样式
-        .more-tags {
-          display: inline-block;
-          padding: 0.2rem 0.5rem;
-          background-color: rgba(100, 100, 120, 0.3);
-          color: rgba(255, 255, 255, 0.8);
-          border-radius: 4px;
-          font-size: 0.8rem;
-          margin-right: 0.5rem;
-          margin-bottom: 0.25rem;
-          cursor: default;
+          white-space: nowrap;
+          max-width: 60px;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
       
@@ -420,19 +413,22 @@
   
   // 分页样式
   .pagination-container {
-    grid-area: pagination;
+    flex-shrink: 0; // 不允许收缩
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1rem;
     width: 100%;
-    z-index: 10; // 确保分页始终在顶层
+    z-index: 10;
+    background: rgba(18, 18, 18, 0.95); // 增加背景不透明度
+    padding: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     
     .pagination {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0.5rem 1rem;
+      padding: 0.5rem;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 50px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
