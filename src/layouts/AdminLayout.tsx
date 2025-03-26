@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
-import { FiHome, FiFileText, FiTag, FiFolder, FiSettings, FiUsers, FiMessageCircle, FiLogOut } from 'react-icons/fi';
+import { FiFileText, FiTag, FiFolder, FiSettings, FiUsers, FiMessageCircle, FiLogOut } from 'react-icons/fi';
+import { getUserBasicInfo } from '@/services/adminService';
 import './AdminLayout.scss';
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [userName, setUserName] = useState<string>('');
   const navigate = useNavigate();
   const location = useLocation();
   
   // 检查当前路径是否为登录页
   const isLoginPage = location.pathname === '/admin/login';
+
+  // 获取用户信息
+  useEffect(() => {
+    if (isLoginPage) return;
+    
+    const fetchUserData = async () => {
+      try {
+        const response = await getUserBasicInfo();
+        
+        if (response.code === 200 && response.data?.user_name) {
+          setUserName(response.data.user_name);
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error);
+      }
+    };
+
+    fetchUserData();
+  }, [isLoginPage]);
 
   const handleLogout = () => {
     // 清除登录状态
@@ -38,7 +59,7 @@ const AdminLayout: React.FC = () => {
       {/* Sidebar */}
       <aside className="admin-sidebar">
         <div className="sidebar-header">
-          <h1 className="logo">H2Blog</h1>
+          <h1 className="logo">{userName || '加载中...'}</h1>
           <button className="collapse-btn" onClick={toggleSidebar}>
             {collapsed ? '→' : '←'}
           </button>
@@ -48,12 +69,6 @@ const AdminLayout: React.FC = () => {
           <ul>
             <li>
               <Link to="/admin" className="nav-item active">
-                <FiHome className="nav-icon" />
-                <span className="nav-text">仪表盘</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin/posts" className="nav-item">
                 <FiFileText className="nav-icon" />
                 <span className="nav-text">文章管理</span>
               </Link>
@@ -101,18 +116,6 @@ const AdminLayout: React.FC = () => {
       
       {/* Main content */}
       <div className="admin-content">
-        <header className="admin-header">
-          <div className="header-left">
-            <h2 className="page-title">文章管理</h2>
-          </div>
-          <div className="header-right">
-            <div className="user-info">
-              <span className="user-name">管理员</span>
-              <img src="https://via.placeholder.com/40" alt="用户头像" className="user-avatar" />
-            </div>
-          </div>
-        </header>
-        
         <main className="admin-main">
           <Outlet />
         </main>

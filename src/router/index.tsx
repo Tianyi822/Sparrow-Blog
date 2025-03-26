@@ -4,7 +4,7 @@ import Home from "@/pages/Home";
 import FriendLink from "@/pages/FriendLink";
 import BlogLayout from "@/layouts/BlogLayout";
 import AdminLayout from "@/layouts/AdminLayout";
-import Dashboard from "@/pages/Admin/Dashboard";
+import Posts from "@/pages/Admin/Posts";
 import { checkSystemStatus } from "@/services/webService";
 import Login from "@/pages/Admin/Login";
 import NotFound from "@/pages/NotFound/NotFound";
@@ -77,7 +77,7 @@ const routes: RouteObject[] = [
         children: [
             {
                 index: true,
-                element: <Dashboard />
+                element: <Posts />
             },
             {
                 path: "login",
@@ -109,10 +109,10 @@ const routes: RouteObject[] = [
                 }
             },
             // 这里可以添加更多的管理页面路由
-            // {
-            //     path: "posts",
-            //     element: <PostsManagement />
-            // },
+            {
+                path: "posts",
+                element: <Posts />
+            },
             // {
             //     path: "categories",
             //     element: <CategoriesManagement />
