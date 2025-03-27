@@ -1,31 +1,21 @@
-import React, {useState, useEffect, useMemo, useRef} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-    FiEdit,
-    FiTrash2,
     FiArrowUp,
-    FiEye,
-    FiEyeOff,
     FiChevronLeft,
     FiChevronRight,
+    FiEdit,
+    FiEye,
+    FiEyeOff,
     FiSearch,
-    FiX,
-    FiSettings
+    FiSettings,
+    FiTrash2,
+    FiX
 } from 'react-icons/fi';
 import './Posts.scss';
+import { BlogItem, getAllBlogs } from '@/services/adminService';
 
-// Mock data for posts
-interface Post {
-    id: number;
-    title: string;
-    status: 'public' | 'hidden';
-    description: string;
-    category: string;
-    tags: string[];
-    wordCount: number;
-    createdAt: string;
-    updatedAt: string;
-    pinned: boolean;
-}
+// 可选的每页条数选项
+const pageSizeOptions = [25, 50, 75, 100];
 
 // 格式化日期时间函数
 const formatDateTime = (dateStr: string): string => {
@@ -38,33 +28,10 @@ const formatDateTime = (dateStr: string): string => {
     return `${year}-${month}-${day}`;
 };
 
-// 可选的每页条数选项
-const pageSizeOptions = [25, 50, 75, 100];
-
-const mockPosts: Post[] = Array.from({length: 100}, (_, index) => {
-    // 生成随机数量的标签，限制最多5个标签
-    const tagCount = Math.min(Math.floor(Math.random() * 5) + 1, 5); // 1到5个标签
-    const tags = [];
-    for (let i = 0; i < tagCount; i++) {
-        tags.push(`标签${(index + i) % 10 + 1}`);
-    }
-
-    return {
-        id: index + 1,
-        title: `文章标题 ${index + 1} ${index % 3 === 0 ? '这是一个较长的标题用来测试标题显示效果' : ''}`,
-        status: index % 4 === 0 ? 'hidden' : 'public',
-        description: `这是文章 ${index + 1} 的简介，简要描述了文章的主要内容和亮点。`,
-        category: `分类${index % 5 + 1}`,
-        tags: tags,
-        wordCount: Math.floor(Math.random() * 5000) + 500,
-        createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-        updatedAt: new Date(Date.now() - Math.floor(Math.random() * 1000000000)).toISOString(),
-        pinned: index % 10 === 0
-    };
-});
-
 const Posts: React.FC = () => {
-    const [posts, setPosts] = useState<Post[]>(mockPosts);
+    const [posts, setPosts] = useState<BlogItem[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTitle, setSearchTitle] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -72,34 +39,63 @@ const Posts: React.FC = () => {
     const [postsPerPage, setPostsPerPage] = useState<number>(25); // 默认每页25条
     const [showPageSizeSelector, setShowPageSizeSelector] = useState<boolean>(false);
     const [isNarrowScreen, setIsNarrowScreen] = useState<boolean>(window.innerWidth <= 1500);
-    const [activeTagPopup, setActiveTagPopup] = useState<number | null>(null);
-    const [popupPosition, setPopupPosition] = useState<{top: number, left: number} | null>(null);
+    const [activeTagPopup, setActiveTagPopup] = useState<string | null>(null);
+    const [popupPosition, setPopupPosition] = useState<{ top: number, left: number } | null>(null);
     const [isWideScreen, setIsWideScreen] = useState<boolean>(window.innerWidth > 1800);
     const [isClosing, setIsClosing] = useState<boolean>(false);
     const tagsRef = useRef<HTMLDivElement>(null);
 
-    // 从所有文章中提取唯一的分类和标签
-    const categories = useMemo(() => {
-        const categorySet = new Set(mockPosts.map(post => post.category));
-        return Array.from(categorySet);
+    // 获取博客列表数据
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                setLoading(true);
+                const response = await getAllBlogs();
+                if (response.code === 200) {
+                    setPosts(response.data || []);
+                } else {
+                    setError(response.msg || '获取博客列表失败');
+                }
+            } catch (err) {
+                setError('获取博客列表时发生错误');
+                console.error('获取博客列表错误:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBlogs();
     }, []);
 
+    // 从所有文章中提取唯一的分类和标签
+    const categories = useMemo(() => {
+        if (!posts.length) return [];
+        const categorySet = new Set(posts.map(post => post.category.category_name));
+        return Array.from(categorySet);
+    }, [posts]);
+
     const tags = useMemo(() => {
-        const tagSet = new Set(mockPosts.flatMap(post => post.tags));
+        if (!posts.length) return [];
+        const tagSet = new Set<string>();
+        posts.forEach(post => {
+            post.tags.forEach(tag => {
+                tagSet.add(tag.tag_name);
+            });
+        });
         return Array.from(tagSet);
-    }, []);
+    }, [posts]);
 
     // 过滤文章
     const filteredPosts = useMemo(() => {
         return posts.filter(post => {
             // 标题搜索（不区分大小写）
-            const titleMatch = searchTitle ? post.title.toLowerCase().includes(searchTitle.toLowerCase()) : true;
+            const titleMatch = searchTitle ? post.blog_title.toLowerCase().includes(searchTitle.toLowerCase()) : true;
 
             // 分类筛选
-            const categoryMatch = selectedCategory ? post.category === selectedCategory : true;
+            const categoryMatch = selectedCategory ? post.category.category_name === selectedCategory : true;
 
             // 标签筛选
-            const tagMatch = selectedTag ? post.tags.includes(selectedTag) : true;
+            const tagMatch = selectedTag ? post.tags.some(tag => tag.tag_name === selectedTag) : true;
 
             return titleMatch && categoryMatch && tagMatch;
         });
@@ -145,29 +141,29 @@ const Posts: React.FC = () => {
     };
 
     // 处理置顶文章
-    const handleTogglePin = (id: number) => {
+    const handleTogglePin = (id: string) => {
         setPosts(prevPosts => prevPosts.map(post =>
-            post.id === id ? {...post, pinned: !post.pinned} : post
+            post.blog_id === id ? {...post, blog_is_top: !post.blog_is_top} : post
         ));
     };
 
     // 处理切换文章状态
-    const handleToggleStatus = (id: number) => {
+    const handleToggleStatus = (id: string) => {
         setPosts(prevPosts => prevPosts.map(post =>
-            post.id === id ? {...post, status: post.status === 'public' ? 'hidden' : 'public'} : post
+            post.blog_id === id ? {...post, blog_state: !post.blog_state} : post
         ));
     };
 
     // 处理编辑文章
-    const handleEditPost = (id: number) => {
+    const handleEditPost = (id: string) => {
         console.log(`编辑文章: ${id}`);
         // 实际项目中这里会跳转到编辑页面
     };
 
     // 处理删除文章
-    const handleDeletePost = (id: number) => {
+    const handleDeletePost = (id: string) => {
         if (window.confirm('确定要删除这篇文章吗？此操作不可恢复。')) {
-            setPosts(prevPosts => prevPosts.filter(post => post.id !== id));
+            setPosts(prevPosts => prevPosts.filter(post => post.blog_id !== id));
         }
     };
 
@@ -193,9 +189,9 @@ const Posts: React.FC = () => {
     };
 
     // 处理点击more-tags显示弹窗
-    const handleMoreTagsClick = (postId: number, event: React.MouseEvent) => {
+    const handleMoreTagsClick = (postId: string, event: React.MouseEvent) => {
         event.stopPropagation(); // 阻止事件冒泡
-        
+
         if (activeTagPopup === postId) {
             closePopup();
         } else {
@@ -209,7 +205,7 @@ const Posts: React.FC = () => {
             setActiveTagPopup(postId);
         }
     };
-    
+
     // 处理弹窗关闭
     const closePopup = () => {
         setIsClosing(true);
@@ -360,25 +356,33 @@ const Posts: React.FC = () => {
             if (activeTagPopup !== null) {
                 const popupElement = document.querySelector('.tags-popup');
                 const clickedElement = event.target as Node;
-                
+
                 // 检查是否点击的是more-tags按钮
                 const isMoreTagsButton = (target: EventTarget | null): boolean => {
                     if (!target || !(target instanceof Element)) return false;
                     return target.classList.contains('more-tags');
                 };
-                
-                if (popupElement && !popupElement.contains(clickedElement) && 
+
+                if (popupElement && !popupElement.contains(clickedElement) &&
                     !isMoreTagsButton(event.target)) {
                     closePopup();
                 }
             }
         };
-        
+
         document.addEventListener('click', handleClickOutside);
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, [activeTagPopup]);
+
+    if (loading) {
+        return <div className="loading-container">加载中...</div>;
+    }
+
+    if (error) {
+        return <div className="error-container">{error}</div>;
+    }
 
     return (
         <div className="admin-posts">
@@ -402,73 +406,74 @@ const Posts: React.FC = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {getCurrentPagePosts().map(post => (
-                        <tr key={post.id} className={post.pinned ? 'pinned-row' : ''}>
-                            <td className="fixed-column index-column">{post.id}</td>
-                            <td className="fixed-column title-column" data-full-title={post.title}>
+                    {getCurrentPagePosts().map((post, index) => (
+                        <tr key={post.blog_id} className={post.blog_is_top ? 'pinned-row' : ''}>
+                            <td className="fixed-column index-column">{(currentPage - 1) * postsPerPage + index + 1}</td>
+                            <td className="fixed-column title-column" data-full-title={post.blog_title}>
                                 <div className="title-wrapper">
-                                    <span className="post-title" title={post.title}>{post.title}</span>
+                                    <span className="post-title" title={post.blog_title}>{post.blog_title}</span>
                                 </div>
                             </td>
                             <td className="status-column">
-                              <span className={`status-badge ${post.status}`}>
-                                {post.status === 'public' ? '公开' : '隐藏'}
-                              </span>
+                                    <span className={`status-badge ${post.blog_state ? 'public' : 'hidden'}`}>
+                                        {post.blog_state ? '公开' : '隐藏'}
+                                    </span>
                             </td>
-                            {!isNarrowScreen && <td className="category-column">{post.category}</td>}
+                            {!isNarrowScreen && <td className="category-column">{post.category.category_name}</td>}
                             {!isNarrowScreen && (
                                 <td className="tags-column">
                                     <div className="tag-container">
-                                    {post.tags.length <= getTagDisplayCount() ? (
-                                        post.tags.map(tag => (
-                                            <span key={tag} className="tag-badge">{tag}</span>
-                                        ))
-                                    ) : (
-                                        <>
-                                            {post.tags.slice(0, getTagLimitCount()).map(tag => (
-                                                <span key={tag} className="tag-badge">{tag}</span>
-                                            ))}
-                                            <span 
-                                                className="tag-badge more-tags" 
-                                                onClick={(e) => handleMoreTagsClick(post.id, e)}
-                                            >
-                                                +{post.tags.length - getTagLimitCount()}
-                                            </span>
-                                        </>
-                                    )}
+                                        {post.tags.length <= getTagDisplayCount() ? (
+                                            post.tags.map(tag => (
+                                                <span key={tag.tag_id} className="tag-badge">{tag.tag_name}</span>
+                                            ))
+                                        ) : (
+                                            <>
+                                                {post.tags.slice(0, getTagLimitCount()).map(tag => (
+                                                    <span key={tag.tag_id} className="tag-badge">{tag.tag_name}</span>
+                                                ))}
+                                                <span
+                                                    className="tag-badge more-tags"
+                                                    onClick={(e) => handleMoreTagsClick(post.blog_id, e)}
+                                                >
+                                                        +{post.tags.length - getTagLimitCount()}
+                                                    </span>
+                                            </>
+                                        )}
                                     </div>
                                 </td>
                             )}
-                            {!isNarrowScreen && <td className="word-count-column">{post.wordCount}</td>}
-                            <td className="date-column created-date-column">{formatDateTime(post.createdAt)}</td>
-                            {!isNarrowScreen && <td className="date-column updated-date-column">{formatDateTime(post.updatedAt)}</td>}
+                            {!isNarrowScreen && <td className="word-count-column">{post.blog_words_num}</td>}
+                            <td className="date-column created-date-column">{formatDateTime(post.create_time)}</td>
+                            {!isNarrowScreen &&
+                                <td className="date-column updated-date-column">{formatDateTime(post.update_time)}</td>}
                             <td className="action-column">
                                 <div className="action-buttons">
                                     <button
                                         className="action-btn toggle-status"
-                                        title={post.status === 'public' ? '隐藏' : '公开'}
-                                        onClick={() => handleToggleStatus(post.id)}
+                                        title={post.blog_state ? '隐藏' : '公开'}
+                                        onClick={() => handleToggleStatus(post.blog_id)}
                                     >
-                                        {post.status === 'public' ? <FiEye/> : <FiEyeOff/>}
+                                        {post.blog_state ? <FiEye/> : <FiEyeOff/>}
                                     </button>
                                     <button
-                                        className={`action-btn toggle-pin ${post.pinned ? 'active' : ''}`}
-                                        title={post.pinned ? '取消置顶' : '置顶'}
-                                        onClick={() => handleTogglePin(post.id)}
+                                        className={`action-btn toggle-pin ${post.blog_is_top ? 'active' : ''}`}
+                                        title={post.blog_is_top ? '取消置顶' : '置顶'}
+                                        onClick={() => handleTogglePin(post.blog_id)}
                                     >
                                         <FiArrowUp/>
                                     </button>
                                     <button
                                         className="action-btn edit"
                                         title="编辑"
-                                        onClick={() => handleEditPost(post.id)}
+                                        onClick={() => handleEditPost(post.blog_id)}
                                     >
                                         <FiEdit/>
                                     </button>
                                     <button
                                         className="action-btn delete"
                                         title="删除"
-                                        onClick={() => handleDeletePost(post.id)}
+                                        onClick={() => handleDeletePost(post.blog_id)}
                                     >
                                         <FiTrash2/>
                                     </button>
@@ -481,10 +486,10 @@ const Posts: React.FC = () => {
             </div>
 
             {renderPagination()}
-            
+
             {/* 独立的弹窗容器 */}
             {activeTagPopup !== null && popupPosition && (
-                <div 
+                <div
                     className={`tags-popup ${isClosing ? 'closing' : ''}`}
                     style={{
                         position: 'fixed',
@@ -492,8 +497,8 @@ const Posts: React.FC = () => {
                         left: `${popupPosition.left}px`
                     }}
                 >
-                    {getCurrentPagePosts().find(post => post.id === activeTagPopup)?.tags.slice(getTagLimitCount()).map(tag => (
-                        <span key={tag} className="popup-tag">{tag}</span>
+                    {posts.find(post => post.blog_id === activeTagPopup)?.tags.slice(getTagLimitCount()).map(tag => (
+                        <span key={tag.tag_id} className="popup-tag">{tag.tag_name}</span>
                     ))}
                 </div>
             )}

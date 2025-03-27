@@ -1,26 +1,55 @@
-import { businessApiRequest, businessApi } from './api';
+import { businessApi, businessApiRequest } from './api';
 import { ApiResponse } from '../types/apiTypes';
 
 // 验证码请求数据接口
 export interface VerificationCodeRequest {
-  user_email: string;
+    user_email: string;
 }
 
 // 登录请求数据接口
 export interface LoginRequest {
-  user_email: string;
-  verified_code: string;
+    user_email: string;
+    verified_code: string;
 }
 
 // 登录响应数据接口
 export interface LoginResponse {
-  token: string;
-  user_info: {
-    user_id: number;
-    user_name: string;
-    user_email: string;
-    user_avatar?: string;
-  };
+    token: string;
+    user_info: {
+        user_id: number;
+        user_name: string;
+        user_email: string;
+        user_avatar?: string;
+    };
+}
+
+// Blog相关接口
+export interface BlogTag {
+    tag_id: string;
+    tag_name: string;
+}
+
+export interface BlogCategory {
+    category_id: string;
+    category_name: string;
+}
+
+export interface BlogItem {
+    blog_id: string;
+    blog_title: string;
+    category: BlogCategory;
+    tags: BlogTag[];
+    blog_state: boolean;
+    blog_words_num: number;
+    blog_is_top: boolean;
+    create_time: string;
+    update_time: string;
+}
+
+export interface BlogListResponse {
+    code: number;
+    msg: string;
+    data: BlogItem[];
 }
 
 /**
@@ -29,14 +58,14 @@ export interface LoginResponse {
  * @returns 发送结果
  */
 export const sendVerificationCode = async (data: VerificationCodeRequest): Promise<ApiResponse<null>> => {
-  return businessApiRequest<ApiResponse<null>>({
-    method: 'POST',
-    url: '/admin/verification-code',
-    data,
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'POST',
+        url: '/admin/verification-code',
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
 };
 
 /**
@@ -45,48 +74,60 @@ export const sendVerificationCode = async (data: VerificationCodeRequest): Promi
  * @returns 登录结果
  */
 export const loginWithVerificationCode = async (data: LoginRequest): Promise<ApiResponse<null>> => {
-  try {
-    const response = await businessApi.post<ApiResponse<null>>(
-      '/admin/login',
-      data,
-      {
-        headers: {
-          'Content-Type': 'application/json'
+    try {
+        const response = await businessApi.post<ApiResponse<null>>(
+            '/admin/login',
+            data,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        // 检查响应头中是否有token
+        const authHeader = response.headers['authorization'] || response.headers['Authorization'];
+        if (authHeader) {
+            // 保存token到localStorage
+            const token = typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+                ? authHeader.substring(7)
+                : authHeader;
+            localStorage.setItem('auth_token', token);
+            console.log('已保存token:', token);
         }
-      }
-    );
-    
-    // 检查响应头中是否有token
-    const authHeader = response.headers['authorization'] || response.headers['Authorization'];
-    if (authHeader) {
-      // 保存token到localStorage
-      const token = typeof authHeader === 'string' && authHeader.startsWith('Bearer ') 
-        ? authHeader.substring(7) 
-        : authHeader;
-      localStorage.setItem('auth_token', token);
-      console.log('已保存token:', token);
+
+        return response.data;
+    } catch (error) {
+        console.error('登录失败:', error);
+        throw error;
     }
-    
-    return response.data;
-  } catch (error) {
-    console.error('登录失败:', error);
-    throw error;
-  }
 };
 
 /**
  * 获取用户基本信息
  * @returns 用户基本信息
  */
-export const getUserBasicInfo = async (): Promise<ApiResponse<{user_name: string}>> => {
-  return businessApiRequest<ApiResponse<{user_name: string}>>({
-    method: 'GET',
-    url: '/config/user-basic-info'
-  });
+export const getUserBasicInfo = async (): Promise<ApiResponse<{ user_name: string }>> => {
+    return businessApiRequest<ApiResponse<{ user_name: string }>>({
+        method: 'GET',
+        url: '/config/user-basic-info'
+    });
+};
+
+/**
+ * 获取所有博客列表
+ * @returns 博客列表数据
+ */
+export const getAllBlogs = async (): Promise<BlogListResponse> => {
+    return businessApiRequest<BlogListResponse>({
+        method: 'GET',
+        url: '/admin/all-blogs'
+    });
 };
 
 export default {
-  sendVerificationCode,
-  loginWithVerificationCode,
-  getUserBasicInfo
+    sendVerificationCode,
+    loginWithVerificationCode,
+    getUserBasicInfo,
+    getAllBlogs
 }; 
