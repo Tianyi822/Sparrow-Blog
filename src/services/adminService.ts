@@ -60,7 +60,7 @@ export interface BlogListResponse {
 export const sendVerificationCode = async (data: VerificationCodeRequest): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'POST',
-        url: '/admin/verification-code',
+        url: '/admin/login/verification-code',
         data,
         headers: {
             'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ export const sendVerificationCode = async (data: VerificationCodeRequest): Promi
 export const loginWithVerificationCode = async (data: LoginRequest): Promise<ApiResponse<null>> => {
     try {
         const response = await businessApi.post<ApiResponse<null>>(
-            '/admin/login',
+            '/admin/login/login',
             data,
             {
                 headers: {
@@ -121,7 +121,7 @@ export const getUserBasicInfo = async (): Promise<ApiResponse<{ user_name: strin
 export const getAllBlogs = async (): Promise<BlogListResponse> => {
     return businessApiRequest<BlogListResponse>({
         method: 'GET',
-        url: '/admin/all-blogs'
+        url: '/admin/posts/all-blogs'
     });
 };
 
