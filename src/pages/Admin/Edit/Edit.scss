@@ -5,16 +5,22 @@
   padding: 0;
   overflow-y: auto;
   
+  // 使用flex布局代替grid，确保更好的高度控制
+  display: flex;
+  flex-direction: column;
+  
   .edit-container {
-    max-width: 95%;
+    width: 100%; // Change from max-width: 95% to width: 100%
     margin: 0 auto;
-    padding: 1rem;
+    padding: 0; // Remove the padding to match Posts component
   }
   
   .edit-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem; // Add specific padding here
     
     h1 {
       margin: 0;
@@ -53,12 +59,17 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    padding: 0 0.5rem; // Add padding to match the Posts component spacing
+    width: 100%;       // Ensure full width
+    box-sizing: border-box;
   }
   
   .edit-section {
     @include glass-card-base;
     padding: 1.5rem;
     border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
     
     .section-label {
       display: block;
@@ -72,6 +83,7 @@
       width: 100%;
       padding: 0.8rem;
       border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
       background: rgba(255, 255, 255, 0.05);
       color: rgba(255, 255, 255, 0.9);
       font-size: 0.95rem;
@@ -289,6 +301,7 @@
     display: flex;
     justify-content: flex-start;
     gap: 2rem;
+    align-items: center;
     
     .toggle-setting {
       display: flex;
@@ -302,14 +315,21 @@
         font-size: 1rem;
         color: rgba(255, 255, 255, 0.9);
         cursor: pointer;
+        margin: 0;
         
         .toggle-icon {
           font-size: 1.2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
       
       .toggle-switch-container {
         position: relative;
+        display: flex;
+        align-items: center;
+        height: 26px;
         
         .toggle-switch {
           position: absolute;
@@ -318,7 +338,8 @@
           height: 0;
           
           & + .toggle-switch-label {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             width: 50px;
             height: 26px;
             background: rgba(255, 255, 255, 0.1);
@@ -326,6 +347,7 @@
             position: relative;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin: 0;
             
             &::after {
               content: '';
@@ -390,9 +412,10 @@
         line-height: 1.5;
         background: rgba(25, 25, 35, 0.5);
         overflow-y: auto;
+        border-radius: 0;
       }
       
-      .edit-header, .preview-header {
+      .markdown-edit-header, .preview-header {
         padding: 0.5rem 1rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         background: rgba(35, 35, 45, 0.5);

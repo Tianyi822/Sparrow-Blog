@@ -68,25 +68,25 @@ const AdminLayout: React.FC = () => {
         <nav className="sidebar-nav">
           <ul>
             <li>
-              <Link to="/admin" className="nav-item active">
+              <Link to="/admin" className={`nav-item ${location.pathname === '/admin' ? 'active' : ''}`}>
                 <FiFileText className="nav-icon" />
                 <span className="nav-text">文章管理</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/edit" className="nav-item">
+              <Link to="/admin/edit" className={`nav-item ${location.pathname === '/admin/edit' ? 'active' : ''}`}>
                 <FiEdit className="nav-icon" />
                 <span className="nav-text">文章编辑</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/comments" className="nav-item">
+              <Link to="/admin/comments" className={`nav-item ${location.pathname === '/admin/comments' ? 'active' : ''}`}>
                 <FiMessageCircle className="nav-icon" />
                 <span className="nav-text">评论管理</span>
               </Link>
             </li>
             <li>
-              <Link to="/admin/settings" className="nav-item">
+              <Link to="/admin/settings" className={`nav-item ${location.pathname === '/admin/settings' ? 'active' : ''}`}>
                 <FiSettings className="nav-icon" />
                 <span className="nav-text">系统设置</span>
               </Link>

@@ -1,6 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiX, FiPlus, FiArrowUp, FiEye } from 'react-icons/fi';
+import { marked } from 'marked';
 import './Edit.scss';
+
+// 配置marked选项
+const options = {
+    breaks: true,  // 支持换行符变为<br>标签
+    gfm: true      // 支持GitHub风格的Markdown
+};
 
 // 文章编辑页面组件
 const Edit: React.FC = () => {
@@ -8,6 +15,7 @@ const Edit: React.FC = () => {
     const [title, setTitle] = useState<string>('');
     const [intro, setIntro] = useState<string>('');
     const [content, setContent] = useState<string>('');
+    const [parsedContent, setParsedContent] = useState<string>('');
     const [isTop, setIsTop] = useState<boolean>(false);
     const [isPublic, setIsPublic] = useState<boolean>(true);
 
@@ -79,6 +87,25 @@ const Edit: React.FC = () => {
             preview.scrollTop = scrollPercentage * (preview.scrollHeight - preview.clientHeight);
         }
     };
+
+    // 渲染Markdown内容
+    useEffect(() => {
+        const renderMarkdown = async () => {
+            if (content) {
+                try {
+                    const html = await marked(content, options);
+                    setParsedContent(html);
+                } catch (error) {
+                    console.error('Error parsing markdown:', error);
+                    setParsedContent('<p>Error parsing markdown content</p>');
+                }
+            } else {
+                setParsedContent('');
+            }
+        };
+        
+        renderMarkdown();
+    }, [content]);
 
     // 保存文章的处理函数
     const handleSave = () => {
@@ -315,7 +342,7 @@ const Edit: React.FC = () => {
                         <label className="section-label">文章内容</label>
                         <div className="markdown-editor-container">
                             <div className="markdown-editor">
-                                <div className="edit-header">编辑</div>
+                                <div className="markdown-edit-header">编辑</div>
                                 <textarea
                                     className="markdown-input"
                                     value={content}
@@ -330,7 +357,7 @@ const Edit: React.FC = () => {
                                 <div
                                     className="preview-content"
                                     ref={previewRef}
-                                    dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
+                                    dangerouslySetInnerHTML={{ __html: parsedContent }}
                                 ></div>
                             </div>
                         </div>
@@ -340,39 +367,5 @@ const Edit: React.FC = () => {
         </div>
     );
 };
-
-// 简单的Markdown渲染函数，实际项目中可以使用第三方库如marked.js
-function renderMarkdown(markdown: string): string {
-    // 这里应该使用实际的Markdown解析库，这里只是一个非常简单的示例
-    // 在实际项目中，建议使用成熟的库如marked.js或markdown-it
-    let html = markdown
-        // 转义HTML标签
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        // 标题
-        .replace(/^# (.*?)$/gm, '<h1>$1</h1>')
-        .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
-        .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
-        // 粗体与斜体
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        // 链接
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-        // 图片
-        .replace(/!\[([^\]]+)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
-        // 代码块
-        .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-        // 行内代码
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        // 列表
-        .replace(/^- (.*?)$/gm, '<li>$1</li>')
-        // 段落
-        .replace(/^(?!<[a-z]).+$/gm, (match) => {
-            return match.trim() ? `<p>${match}</p>` : '';
-        });
-
-    return html;
-}
 
 export default Edit; 
