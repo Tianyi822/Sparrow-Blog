@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
-import { FiFileText, FiTag, FiFolder, FiSettings, FiUsers, FiMessageCircle, FiLogOut } from 'react-icons/fi';
+import { FiFileText, FiEdit, FiSettings, FiMessageCircle, FiLogOut } from 'react-icons/fi';
 import { getUserBasicInfo } from '@/services/adminService';
 import './AdminLayout.scss';
 
@@ -74,27 +74,15 @@ const AdminLayout: React.FC = () => {
               </Link>
             </li>
             <li>
-              <Link to="/admin/categories" className="nav-item">
-                <FiFolder className="nav-icon" />
-                <span className="nav-text">分类管理</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin/tags" className="nav-item">
-                <FiTag className="nav-icon" />
-                <span className="nav-text">标签管理</span>
+              <Link to="/admin/edit" className="nav-item">
+                <FiEdit className="nav-icon" />
+                <span className="nav-text">文章编辑</span>
               </Link>
             </li>
             <li>
               <Link to="/admin/comments" className="nav-item">
                 <FiMessageCircle className="nav-icon" />
                 <span className="nav-text">评论管理</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin/users" className="nav-item">
-                <FiUsers className="nav-icon" />
-                <span className="nav-text">用户管理</span>
               </Link>
             </li>
             <li>
