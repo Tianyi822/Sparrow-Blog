@@ -8,6 +8,7 @@ import Posts from "@/pages/Admin/Posts";
 import { checkSystemStatus } from "@/services/webService";
 import Login from "@/pages/Admin/Login";
 import NotFound from "@/pages/NotFound/NotFound";
+import Edit from "@/pages/Admin/Edit";
 
 // 检查系统状态的loader函数
 const checkApiConfig = async () => {
@@ -113,11 +114,10 @@ const routes: RouteObject[] = [
                 path: "posts",
                 element: <Posts />
             },
-            // {
-            //     path: "categories",
-            //     element: <CategoriesManagement />
-            // },
-            // 等等
+            {
+                path: "edit",
+                element: <Edit />
+            }
         ]
     },
     // 添加 404 路由，匹配所有未匹配的路径
