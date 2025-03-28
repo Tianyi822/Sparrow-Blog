@@ -149,11 +149,24 @@ export const setBlogTop = async (blogId: string): Promise<ApiResponse<null>> => 
     });
 };
 
+/**
+ * 删除博客
+ * @param blogId 博客ID
+ * @returns 删除结果
+ */
+export const deleteBlog = async (blogId: string): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'DELETE',
+        url: `/admin/posts/delete/${blogId}`
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
     getUserBasicInfo,
     getAllBlogs,
     changeBlogState,
-    setBlogTop
+    setBlogTop,
+    deleteBlog
 }; 

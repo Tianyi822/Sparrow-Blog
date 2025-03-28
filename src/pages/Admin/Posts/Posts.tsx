@@ -12,7 +12,7 @@ import {
     FiX
 } from 'react-icons/fi';
 import './Posts.scss';
-import { BlogItem, getAllBlogs, changeBlogState, setBlogTop } from '@/services/adminService';
+import { BlogItem, getAllBlogs, changeBlogState, setBlogTop, deleteBlog } from '@/services/adminService';
 
 // 可选的每页条数选项
 const pageSizeOptions = [25, 50, 75, 100];
@@ -185,9 +185,21 @@ const Posts: React.FC = () => {
     };
 
     // 处理删除文章
-    const handleDeletePost = (id: string) => {
+    const handleDeletePost = async (id: string) => {
         if (window.confirm('确定要删除这篇文章吗？此操作不可恢复。')) {
-            setPosts(prevPosts => prevPosts.filter(post => post.blog_id !== id));
+            try {
+                const response = await deleteBlog(id);
+                if (response.code === 200) {
+                    // 删除成功，更新本地状态
+                    setPosts(prevPosts => prevPosts.filter(post => post.blog_id !== id));
+                } else {
+                    // 显示错误消息
+                    setError(response.msg || '删除博客失败');
+                }
+            } catch (err) {
+                console.error('删除博客错误:', err);
+                setError('删除博客时发生错误');
+            }
         }
     };
 
