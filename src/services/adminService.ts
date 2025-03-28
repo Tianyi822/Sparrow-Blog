@@ -125,9 +125,35 @@ export const getAllBlogs = async (): Promise<BlogListResponse> => {
     });
 };
 
+/**
+ * 修改博客状态
+ * @param blogId 博客ID
+ * @returns 修改结果
+ */
+export const changeBlogState = async (blogId: string): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'GET',
+        url: `/admin/posts/change-blog-state/${blogId}`
+    });
+};
+
+/**
+ * 修改博客置顶状态
+ * @param blogId 博客ID
+ * @returns 修改结果
+ */
+export const setBlogTop = async (blogId: string): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'GET',
+        url: `/admin/posts/set-top/${blogId}`
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
     getUserBasicInfo,
-    getAllBlogs
+    getAllBlogs,
+    changeBlogState,
+    setBlogTop
 }; 

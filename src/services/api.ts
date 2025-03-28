@@ -9,8 +9,8 @@ export interface ApiResponse<T> {
 
 // 服务地址配置
 export const SERVICE_URLS = {
-    CONFIG: import.meta.env.VITE_INITIATE_CONFIG_SERVICE_URL || 'http://localhost:2234',
-    BUSINESS: import.meta.env.VITE_BUSINESS_SERVICE_URL || 'http://localhost:2233',
+    CONFIG: import.meta.env.VITE_INITIATE_CONFIG_SERVICE_URL,
+    BUSINESS: import.meta.env.VITE_BUSINESS_SERVICE_URL,
 };
 
 // 创建两个不同的axios实例
