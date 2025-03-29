@@ -52,6 +52,15 @@ export interface BlogListResponse {
     data: BlogItem[];
 }
 
+export interface TagsAndCategoriesResponse {
+    code: number;
+    msg: string;
+    data: {
+        categories: BlogCategory[];
+        tags: BlogTag[];
+    };
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -161,6 +170,17 @@ export const deleteBlog = async (blogId: string): Promise<ApiResponse<null>> => 
     });
 };
 
+/**
+ * 获取所有标签和分类
+ * @returns 标签和分类数据
+ */
+export const getAllTagsAndCategories = async (): Promise<TagsAndCategoriesResponse> => {
+    return businessApiRequest<TagsAndCategoriesResponse>({
+        method: 'GET',
+        url: '/admin/edit/all-tags-categories'
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -168,5 +188,6 @@ export default {
     getAllBlogs,
     changeBlogState,
     setBlogTop,
-    deleteBlog
+    deleteBlog,
+    getAllTagsAndCategories
 }; 

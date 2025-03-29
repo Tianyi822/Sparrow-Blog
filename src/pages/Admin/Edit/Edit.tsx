@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiX, FiPlus, FiArrowUp, FiEye } from 'react-icons/fi';
 import { marked } from 'marked';
+import { getAllTagsAndCategories, BlogTag, BlogCategory } from '@/services/adminService';
 import './Edit.scss';
 
 // 配置marked选项
@@ -20,25 +21,36 @@ const Edit: React.FC = () => {
     const [isPublic, setIsPublic] = useState<boolean>(true);
 
     // 分类相关状态
-    const [category, setCategory] = useState<string>('');
+    const [category, setCategory] = useState<BlogCategory | null>(null);
     const [categoryInput, setCategoryInput] = useState<string>('');
-    const [availableCategories, setAvailableCategories] = useState<string[]>([
-        '技术博客', '学习笔记', '生活随笔', '心得体会', '项目分享'
-    ]);
+    const [availableCategories, setAvailableCategories] = useState<BlogCategory[]>([]);
 
     // 标签相关状态
-    const [tags, setTags] = useState<string[]>([]);
+    const [tags, setTags] = useState<BlogTag[]>([]);
     const [tagInput, setTagInput] = useState<string>('');
-    const [availableTags, setAvailableTags] = useState<string[]>([
-        'JavaScript', 'TypeScript', 'React', 'Vue', 'Node.js',
-        'CSS', 'HTML', 'Webpack', 'Git', 'Docker', 'Python',
-        'Java', 'Go', 'C++', 'MongoDB', 'MySQL', 'Redis'
-    ]);
+    const [availableTags, setAvailableTags] = useState<BlogTag[]>([]);
 
     // 标签输入框引用
     const tagInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
+
+    // 获取标签和分类数据
+    useEffect(() => {
+        const fetchTagsAndCategories = async () => {
+            try {
+                const response = await getAllTagsAndCategories();
+                if (response.code === 200) {
+                    setAvailableCategories(response.data.categories);
+                    setAvailableTags(response.data.tags);
+                }
+            } catch (error) {
+                console.error('获取标签和分类数据失败:', error);
+            }
+        };
+
+        fetchTagsAndCategories();
+    }, []);
 
     // 自动调整文本区域高度
     useEffect(() => {
@@ -75,7 +87,7 @@ const Edit: React.FC = () => {
     }, [content]);
 
     // Markdown内容变化时同步滚动预览
-    const handleEditorScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    const handleEditorScroll = () => {
         if (previewRef.current && textareaRef.current) {
             const textarea = textareaRef.current;
             const preview = previewRef.current;
@@ -131,12 +143,27 @@ const Edit: React.FC = () => {
     const handleCategoryInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && categoryInput.trim()) {
             e.preventDefault();
-            setCategory(categoryInput.trim());
+            // 先尝试在已有分类中查找
+            const matchedCategory = availableCategories.find(
+                cat => cat.category_name.toLowerCase() === categoryInput.trim().toLowerCase()
+            );
+            
+            if (matchedCategory) {
+                // 如果找到匹配的分类，使用已有的分类
+                setCategory(matchedCategory);
+            } else {
+                // 如果没有找到匹配的分类，创建新的分类
+                const newCategory: BlogCategory = {
+                    category_id: `cat_${Date.now()}`, // 临时ID
+                    category_name: categoryInput.trim()
+                };
+                setCategory(newCategory);
+            }
             setCategoryInput('');
         }
     };
 
-    const handleCategorySelect = (selectedCategory: string) => {
+    const handleCategorySelect = (selectedCategory: BlogCategory) => {
         setCategory(selectedCategory);
         setCategoryInput('');
     };
@@ -149,24 +176,39 @@ const Edit: React.FC = () => {
     const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && tagInput.trim()) {
             e.preventDefault();
-            addTag(tagInput.trim());
+            // 先尝试在已有标签中查找
+            const matchedTag = availableTags.find(
+                tag => tag.tag_name.toLowerCase() === tagInput.trim().toLowerCase()
+            );
+            
+            if (matchedTag) {
+                // 如果找到匹配的标签，使用已有的标签
+                addTag(matchedTag);
+            } else {
+                // 如果没有找到匹配的标签，创建新的标签
+                const newTag: BlogTag = {
+                    tag_id: `tag_${Date.now()}`, // 临时ID
+                    tag_name: tagInput.trim()
+                };
+                addTag(newTag);
+            }
         }
     };
 
-    const addTag = (tag: string) => {
-        if (tag && !tags.includes(tag)) {
+    const addTag = (tag: BlogTag) => {
+        if (tag && !tags.some(t => t.tag_id === tag.tag_id)) {
             setTags([...tags, tag]);
         }
         setTagInput('');
         tagInputRef.current?.focus();
     };
 
-    const removeTag = (tagToRemove: string) => {
-        setTags(tags.filter(tag => tag !== tagToRemove));
+    const removeTag = (tagToRemove: BlogTag) => {
+        setTags(tags.filter(tag => tag.tag_id !== tagToRemove.tag_id));
     };
 
-    const handleTagSelect = (selectedTag: string) => {
-        if (!tags.includes(selectedTag)) {
+    const handleTagSelect = (selectedTag: BlogTag) => {
+        if (!tags.some(t => t.tag_id === selectedTag.tag_id)) {
             setTags([...tags, selectedTag]);
         }
     };
@@ -223,12 +265,12 @@ const Edit: React.FC = () => {
                                     value={categoryInput}
                                     onChange={handleCategoryInputChange}
                                     onKeyDown={handleCategoryInputKeyDown}
-                                    placeholder={category ? `当前分类: ${category}` : "输入分类名称并回车，或从下方选择"}
+                                    placeholder={category ? `当前分类: ${category.category_name}` : "输入分类名称并回车，或从下方选择"}
                                 />
                                 {category && (
                                     <div className="selected-category">
-                                        <span>{category}</span>
-                                        <button className="remove-btn" onClick={() => setCategory('')}>
+                                        <span>{category.category_name}</span>
+                                        <button className="remove-btn" onClick={() => setCategory(null)}>
                                             <FiX />
                                         </button>
                                     </div>
@@ -238,11 +280,11 @@ const Edit: React.FC = () => {
                             <div className="category-options">
                                 {availableCategories.map((cat) => (
                                     <button
-                                        key={cat}
-                                        className={`category-option ${cat === category ? 'selected' : ''}`}
+                                        key={cat.category_id}
+                                        className={`category-option ${cat.category_id === category?.category_id ? 'selected' : ''}`}
                                         onClick={() => handleCategorySelect(cat)}
                                     >
-                                        {cat}
+                                        {cat.category_name}
                                     </button>
                                 ))}
                             </div>
@@ -256,8 +298,8 @@ const Edit: React.FC = () => {
                             <div className="tags-input-container">
                                 <div className="tags-input-wrapper">
                                     {tags.map((tag) => (
-                                        <div key={tag} className="tag-item">
-                                            <span>{tag}</span>
+                                        <div key={tag.tag_id} className="tag-item">
+                                            <span>{tag.tag_name}</span>
                                             <button className="remove-btn" onClick={() => removeTag(tag)}>
                                                 <FiX />
                                             </button>
@@ -277,7 +319,24 @@ const Edit: React.FC = () => {
                                 {tagInput && (
                                     <button
                                         className="add-tag-btn"
-                                        onClick={() => addTag(tagInput)}
+                                        onClick={() => {
+                                            // 先尝试在已有标签中查找
+                                            const matchedTag = availableTags.find(
+                                                tag => tag.tag_name.toLowerCase() === tagInput.trim().toLowerCase()
+                                            );
+                                            
+                                            if (matchedTag) {
+                                                // 如果找到匹配的标签，使用已有的标签
+                                                addTag(matchedTag);
+                                            } else {
+                                                // 如果没有找到匹配的标签，创建新的标签
+                                                const newTag: BlogTag = {
+                                                    tag_id: `tag_${Date.now()}`, // 临时ID
+                                                    tag_name: tagInput.trim()
+                                                };
+                                                addTag(newTag);
+                                            }
+                                        }}
                                     >
                                         <FiPlus />
                                     </button>
@@ -286,14 +345,14 @@ const Edit: React.FC = () => {
 
                             <div className="tags-options">
                                 {availableTags
-                                    .filter(tag => !tags.includes(tag))
+                                    .filter(tag => !tags.some(t => t.tag_id === tag.tag_id))
                                     .map((tag) => (
                                         <button
-                                            key={tag}
+                                            key={tag.tag_id}
                                             className="tag-option"
                                             onClick={() => handleTagSelect(tag)}
                                         >
-                                            {tag}
+                                            {tag.tag_name}
                                         </button>
                                     ))}
                             </div>
