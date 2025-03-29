@@ -115,8 +115,11 @@ const Edit: React.FC = () => {
                 setParsedContent('');
             }
         };
-        
-        renderMarkdown();
+
+        // 使用 .catch 捕获异常
+        renderMarkdown().catch((error) => {
+            console.error('Unhandled error in renderMarkdown:', error);
+        });
     }, [content]);
 
     // 保存文章的处理函数
@@ -147,7 +150,7 @@ const Edit: React.FC = () => {
             const matchedCategory = availableCategories.find(
                 cat => cat.category_name.toLowerCase() === categoryInput.trim().toLowerCase()
             );
-            
+
             if (matchedCategory) {
                 // 如果找到匹配的分类，使用已有的分类
                 setCategory(matchedCategory);
@@ -180,7 +183,7 @@ const Edit: React.FC = () => {
             const matchedTag = availableTags.find(
                 tag => tag.tag_name.toLowerCase() === tagInput.trim().toLowerCase()
             );
-            
+
             if (matchedTag) {
                 // 如果找到匹配的标签，使用已有的标签
                 addTag(matchedTag);
@@ -271,7 +274,7 @@ const Edit: React.FC = () => {
                                     <div className="selected-category">
                                         <span>{category.category_name}</span>
                                         <button className="remove-btn" onClick={() => setCategory(null)}>
-                                            <FiX />
+                                            <FiX/>
                                         </button>
                                     </div>
                                 )}
@@ -301,7 +304,7 @@ const Edit: React.FC = () => {
                                         <div key={tag.tag_id} className="tag-item">
                                             <span>{tag.tag_name}</span>
                                             <button className="remove-btn" onClick={() => removeTag(tag)}>
-                                                <FiX />
+                                                <FiX/>
                                             </button>
                                         </div>
                                     ))}
@@ -324,7 +327,7 @@ const Edit: React.FC = () => {
                                             const matchedTag = availableTags.find(
                                                 tag => tag.tag_name.toLowerCase() === tagInput.trim().toLowerCase()
                                             );
-                                            
+
                                             if (matchedTag) {
                                                 // 如果找到匹配的标签，使用已有的标签
                                                 addTag(matchedTag);
@@ -338,7 +341,7 @@ const Edit: React.FC = () => {
                                             }
                                         }}
                                     >
-                                        <FiPlus />
+                                        <FiPlus/>
                                     </button>
                                 )}
                             </div>
@@ -363,7 +366,7 @@ const Edit: React.FC = () => {
                     <div className="edit-section settings-section">
                         <div className="toggle-setting">
                             <label htmlFor="isTop" className="toggle-label">
-                                <FiArrowUp className="toggle-icon" />
+                                <FiArrowUp className="toggle-icon"/>
                                 <span>是否置顶</span>
                             </label>
                             <div className="toggle-switch-container">
@@ -380,7 +383,7 @@ const Edit: React.FC = () => {
 
                         <div className="toggle-setting">
                             <label htmlFor="isPublic" className="toggle-label">
-                                <FiEye className="toggle-icon" />
+                                <FiEye className="toggle-icon"/>
                                 <span>是否公开</span>
                             </label>
                             <div className="toggle-switch-container">
@@ -416,7 +419,7 @@ const Edit: React.FC = () => {
                                 <div
                                     className="preview-content"
                                     ref={previewRef}
-                                    dangerouslySetInnerHTML={{ __html: parsedContent }}
+                                    dangerouslySetInnerHTML={{__html: parsedContent}}
                                 ></div>
                             </div>
                         </div>
