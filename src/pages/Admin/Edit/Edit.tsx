@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiX, FiPlus, FiArrowUp, FiEye } from 'react-icons/fi';
 import { marked } from 'marked';
-import { getAllTagsAndCategories, BlogTag, BlogCategory } from '@/services/adminService';
+import { 
+    getAllTagsAndCategories, 
+    updateOrAddBlog, 
+    BlogTag, 
+    BlogCategory, 
+    UpdateOrAddBlogRequest 
+} from '@/services/adminService';
 import './Edit.scss';
 
 // 配置marked选项
@@ -123,19 +129,65 @@ const Edit: React.FC = () => {
     }, [content]);
 
     // 保存文章的处理函数
-    const handleSave = () => {
-        const articleData = {
-            title,
-            intro,
-            category,
-            tags,
-            isTop,
-            isPublic,
-            content
+    const handleSave = async () => {
+        if (!title.trim()) {
+            console.error('文章标题不能为空');
+            return;
+        }
+
+        if (!category) {
+            console.error('请选择或输入文章分类');
+            return;
+        }
+
+        // 计算文章的字数
+        const wordsCount = content.length;
+
+        // 准备请求数据
+        const requestData: UpdateOrAddBlogRequest = {
+            blog_id: '', // 新文章，ID为空
+            blog_title: title,
+            blog_brief: intro,
+            blog_content: content,
+            blog_state: isPublic,
+            blog_is_top: isTop,
+            blog_words_num: wordsCount,
+            // 处理分类信息
+            category_id: category.category_id && !category.category_id.startsWith('cat_') 
+                ? category.category_id 
+                : '', // 如果是新分类或临时ID，则category_id为空
+            category: {
+                category_name: category.category_name
+            },
+            // 处理标签信息
+            tags: tags.map(tag => {
+                // 如果是从选择区选择的标签（有效的tag_id且不是临时ID）
+                if (tag.tag_id && !tag.tag_id.startsWith('tag_')) {
+                    return {
+                        tag_id: tag.tag_id,
+                        tag_name: tag.tag_name
+                    };
+                }
+                // 如果是新增的标签，只传name
+                return {
+                    tag_name: tag.tag_name
+                };
+            })
         };
 
-        console.log('保存文章数据:', articleData);
-        // 这里后续可以添加实际的API调用来保存文章
+        try {
+            console.log('正在保存文章:', requestData);
+            const response = await updateOrAddBlog(requestData);
+            
+            if (response.code === 200) {
+                console.log('文章保存成功');
+                // 这里可以添加保存成功后的逻辑，如重置表单或跳转到文章列表
+            } else {
+                console.error(`保存失败: ${response.msg}`);
+            }
+        } catch (error) {
+            console.error('保存文章时出错:', error);
+        }
     };
 
     // 分类相关处理函数

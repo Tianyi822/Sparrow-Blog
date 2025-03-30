@@ -61,6 +61,24 @@ export interface TagsAndCategoriesResponse {
     };
 }
 
+export interface UpdateOrAddBlogRequest {
+    blog_id: string;
+    blog_title: string;
+    blog_brief: string;
+    category_id: string;
+    category: {
+        category_name: string;
+    };
+    tags: Array<{
+        tag_id?: string;
+        tag_name: string;
+    }>;
+    blog_state: boolean;
+    blog_words_num: number;
+    blog_is_top: boolean;
+    blog_content?: string;
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -181,6 +199,22 @@ export const getAllTagsAndCategories = async (): Promise<TagsAndCategoriesRespon
     });
 };
 
+/**
+ * 更新或添加博客
+ * @param data 博客数据
+ * @returns 操作结果
+ */
+export const updateOrAddBlog = async (data: UpdateOrAddBlogRequest): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'POST',
+        url: '/admin/edit/update-or-add-blog',
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -189,5 +223,6 @@ export default {
     changeBlogState,
     setBlogTop,
     deleteBlog,
-    getAllTagsAndCategories
+    getAllTagsAndCategories,
+    updateOrAddBlog
 }; 
