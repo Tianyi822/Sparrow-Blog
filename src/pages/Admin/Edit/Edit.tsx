@@ -7,8 +7,10 @@ import {
     updateOrAddBlog, 
     BlogTag, 
     BlogCategory, 
-    UpdateOrAddBlogRequest 
+    UpdateOrAddBlogRequest,
+    deleteBlog 
 } from '@/services/adminService';
+import { uploadToOSS } from '@/services/ossService';
 import './Edit.scss';
 
 // 配置marked选项
@@ -218,8 +220,26 @@ const Edit: React.FC = () => {
             const response = await updateOrAddBlog(requestData);
             
             if (response.code === 200) {
-                // 保存成功后跳转回文章管理页面
-                navigate('/admin'); // 或者使用 navigate('/admin/posts')
+                try {
+                    // 上传文章内容到OSS
+                    const uploadSuccess = await uploadToOSS(response.data.presign_url, content);
+                    if (uploadSuccess) {
+                        // 上传成功，跳转回文章管理页面
+                        navigate('/admin');
+                    } else {
+                        throw new Error('上传到OSS失败');
+                    }
+                } catch (uploadError) {
+                    // 上传失败，删除已创建的文章
+                    try {
+                        await deleteBlog(response.data.blog_id);
+                    } catch (deleteError) {
+                        console.error('删除文章失败:', deleteError);
+                    }
+                    // 显示具体的错误信息
+                    const errorMessage = uploadError instanceof Error ? uploadError.message : '上传文章内容失败，请稍后重试';
+                    setErrors({ submit: `上传失败: ${errorMessage}` });
+                }
             } else {
                 setErrors({ submit: `保存失败: ${response.msg}` });
             }
@@ -565,4 +585,4 @@ const Edit: React.FC = () => {
     );
 };
 
-export default Edit; 
+export default Edit;

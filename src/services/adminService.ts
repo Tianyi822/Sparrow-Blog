@@ -61,6 +61,15 @@ export interface TagsAndCategoriesResponse {
     };
 }
 
+export interface UploadToOSSResponse {
+    code: number;
+    msg: string;
+    data: {
+        blog_id: string;
+        presign_url: string;
+    };
+}
+
 export interface UpdateOrAddBlogRequest {
     blog_id: string;
     blog_title: string;
@@ -204,8 +213,8 @@ export const getAllTagsAndCategories = async (): Promise<TagsAndCategoriesRespon
  * @param data 博客数据
  * @returns 操作结果
  */
-export const updateOrAddBlog = async (data: UpdateOrAddBlogRequest): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
+export const updateOrAddBlog = async (data: UpdateOrAddBlogRequest): Promise<UploadToOSSResponse> => {
+    return businessApiRequest<UploadToOSSResponse>({
         method: 'POST',
         url: '/admin/edit/update-or-add-blog',
         data,
