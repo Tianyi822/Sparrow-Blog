@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiX, FiPlus, FiArrowUp, FiEye } from 'react-icons/fi';
 import { marked } from 'marked';
+import { useNavigate } from 'react-router-dom';
 import { 
     getAllTagsAndCategories, 
     updateOrAddBlog, 
@@ -18,6 +19,8 @@ const options = {
 
 // 文章编辑页面组件
 const Edit: React.FC = () => {
+    const navigate = useNavigate();
+    
     // 文章信息状态
     const [title, setTitle] = useState<string>('');
     const [intro, setIntro] = useState<string>('');
@@ -131,12 +134,12 @@ const Edit: React.FC = () => {
     // 保存文章的处理函数
     const handleSave = async () => {
         if (!title.trim()) {
-            console.error('文章标题不能为空');
+            alert('文章标题不能为空');
             return;
         }
 
         if (!category) {
-            console.error('请选择或输入文章分类');
+            alert('请选择或输入文章分类');
             return;
         }
 
@@ -180,13 +183,15 @@ const Edit: React.FC = () => {
             const response = await updateOrAddBlog(requestData);
             
             if (response.code === 200) {
-                console.log('文章保存成功');
-                // 这里可以添加保存成功后的逻辑，如重置表单或跳转到文章列表
+                alert('文章保存成功');
+                // 保存成功后跳转回文章管理页面
+                navigate('/admin'); // 或者使用 navigate('/admin/posts')
             } else {
-                console.error(`保存失败: ${response.msg}`);
+                alert(`保存失败: ${response.msg}`);
             }
         } catch (error) {
             console.error('保存文章时出错:', error);
+            alert('保存文章时发生错误，请稍后重试');
         }
     };
 
