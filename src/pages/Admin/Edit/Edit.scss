@@ -44,6 +44,7 @@
       
       &:hover {
         background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       }
       
@@ -51,7 +52,22 @@
         transform: translateY(0);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
     }
+  }
+  
+  .submit-error {
+    margin: 0 0.5rem 1rem;
+    padding: 0.75rem 1rem;
+    background-color: rgba(255, 107, 107, 0.15);
+    border-radius: 6px;
+    border-left: 3px solid #ff6b6b;
   }
   
   .edit-main {
@@ -78,6 +94,47 @@
       color: rgba(255, 255, 255, 0.9);
     }
     
+    .content-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+      
+      .section-label {
+        margin-bottom: 0;
+        margin-right: 0.75rem;
+      }
+      
+      .content-error-message {
+        color: #ff6b6b;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        position: relative;
+        top: 1px;
+        background: rgba(255, 107, 107, 0.1);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        
+        &::before {
+          content: '!';
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background-color: #ff6b6b;
+          color: white;
+          font-weight: bold;
+          margin-right: 0.4rem;
+          font-size: 0.75rem;
+        }
+      }
+    }
+    
     input[type="text"], textarea {
       width: 100%;
       padding: 0.8rem;
@@ -97,11 +154,39 @@
       &::placeholder {
         color: rgba(255, 255, 255, 0.4);
       }
+      
+      &.error {
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.4);
+      }
     }
     
     textarea {
       resize: vertical;
       min-height: 80px;
+    }
+    
+    .error-message {
+      color: #ff6b6b;
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+      display: flex;
+      align-items: center;
+      
+      &::before {
+        content: '!';
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #ff6b6b;
+        color: white;
+        font-weight: bold;
+        margin-right: 0.4rem;
+        font-size: 0.75rem;
+      }
     }
   }
   

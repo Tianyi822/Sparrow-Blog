@@ -17,6 +17,11 @@ const options = {
     gfm: true      // 支持GitHub风格的Markdown
 };
 
+// 定义错误类型接口
+interface ValidationErrors {
+    [key: string]: string;
+}
+
 // 文章编辑页面组件
 const Edit: React.FC = () => {
     const navigate = useNavigate();
@@ -39,6 +44,10 @@ const Edit: React.FC = () => {
     const [tagInput, setTagInput] = useState<string>('');
     const [availableTags, setAvailableTags] = useState<BlogTag[]>([]);
 
+    // 错误状态
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+
     // 标签输入框引用
     const tagInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -60,6 +69,37 @@ const Edit: React.FC = () => {
 
         fetchTagsAndCategories();
     }, []);
+
+    // 清除指定字段的错误
+    const clearError = (field: string) => {
+        if (errors[field]) {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[field];
+                return newErrors;
+            });
+        }
+    };
+
+    // 验证表单
+    const validateForm = (): boolean => {
+        const newErrors: ValidationErrors = {};
+
+        if (!title.trim()) {
+            newErrors.title = '文章标题不能为空';
+        }
+
+        if (!category) {
+            newErrors.category = '请选择或输入文章分类';
+        }
+
+        if (!content.trim()) {
+            newErrors.content = '文章内容不能为空';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     // 自动调整文本区域高度
     useEffect(() => {
@@ -133,13 +173,7 @@ const Edit: React.FC = () => {
 
     // 保存文章的处理函数
     const handleSave = async () => {
-        if (!title.trim()) {
-            alert('文章标题不能为空');
-            return;
-        }
-
-        if (!category) {
-            alert('请选择或输入文章分类');
+        if (!validateForm()) {
             return;
         }
 
@@ -156,11 +190,11 @@ const Edit: React.FC = () => {
             blog_is_top: isTop,
             blog_words_num: wordsCount,
             // 处理分类信息
-            category_id: category.category_id && !category.category_id.startsWith('cat_') 
+            category_id: category?.category_id && !category.category_id.startsWith('cat_') 
                 ? category.category_id 
                 : '', // 如果是新分类或临时ID，则category_id为空
             category: {
-                category_name: category.category_name
+                category_name: category?.category_name || ''
             },
             // 处理标签信息
             tags: tags.map(tag => {
@@ -179,25 +213,28 @@ const Edit: React.FC = () => {
         };
 
         try {
+            setSubmitLoading(true);
             console.log('正在保存文章:', requestData);
             const response = await updateOrAddBlog(requestData);
             
             if (response.code === 200) {
-                alert('文章保存成功');
                 // 保存成功后跳转回文章管理页面
                 navigate('/admin'); // 或者使用 navigate('/admin/posts')
             } else {
-                alert(`保存失败: ${response.msg}`);
+                setErrors({ submit: `保存失败: ${response.msg}` });
             }
         } catch (error) {
             console.error('保存文章时出错:', error);
-            alert('保存文章时发生错误，请稍后重试');
+            setErrors({ submit: '保存文章时发生错误，请稍后重试' });
+        } finally {
+            setSubmitLoading(false);
         }
     };
 
     // 分类相关处理函数
     const handleCategoryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCategoryInput(e.target.value);
+        clearError('category');
     };
 
     const handleCategoryInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -220,12 +257,14 @@ const Edit: React.FC = () => {
                 setCategory(newCategory);
             }
             setCategoryInput('');
+            clearError('category');
         }
     };
 
     const handleCategorySelect = (selectedCategory: BlogCategory) => {
         setCategory(selectedCategory);
         setCategoryInput('');
+        clearError('category');
     };
 
     // 标签相关处理函数
@@ -276,6 +315,13 @@ const Edit: React.FC = () => {
     // 文章内容变化处理
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setContent(e.target.value);
+        clearError('content');
+    };
+
+    // 标题变化处理
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.target.value);
+        clearError('title');
     };
 
     return (
@@ -283,8 +329,20 @@ const Edit: React.FC = () => {
             <div className="edit-container">
                 <div className="edit-header">
                     <h1>文章编辑</h1>
-                    <button className="save-button" onClick={handleSave}>保存文章</button>
+                    <button 
+                        className="save-button" 
+                        onClick={handleSave}
+                        disabled={submitLoading}
+                    >
+                        {submitLoading ? '保存中...' : '保存文章'}
+                    </button>
                 </div>
+
+                {errors.submit && (
+                    <div className="error-message submit-error">
+                        {errors.submit}
+                    </div>
+                )}
 
                 <div className="edit-main">
                     {/* 文章标题编辑 */}
@@ -293,11 +351,16 @@ const Edit: React.FC = () => {
                         <input
                             id="title"
                             type="text"
-                            className="title-input"
+                            className={`title-input ${errors.title ? 'error' : ''}`}
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={handleTitleChange}
                             placeholder="请输入文章标题"
                         />
+                        {errors.title && (
+                            <div className="error-message">
+                                {errors.title}
+                            </div>
+                        )}
                     </div>
 
                     {/* 文章简介编辑 */}
@@ -321,7 +384,7 @@ const Edit: React.FC = () => {
                                 <input
                                     id="category"
                                     type="text"
-                                    className="category-input"
+                                    className={`category-input ${errors.category ? 'error' : ''}`}
                                     value={categoryInput}
                                     onChange={handleCategoryInputChange}
                                     onKeyDown={handleCategoryInputKeyDown}
@@ -330,12 +393,20 @@ const Edit: React.FC = () => {
                                 {category && (
                                     <div className="selected-category">
                                         <span>{category.category_name}</span>
-                                        <button className="remove-btn" onClick={() => setCategory(null)}>
+                                        <button className="remove-btn" onClick={() => {
+                                            setCategory(null);
+                                            setErrors(prev => ({...prev, category: '请选择或输入文章分类'}));
+                                        }}>
                                             <FiX/>
                                         </button>
                                     </div>
                                 )}
                             </div>
+                            {errors.category && (
+                                <div className="error-message">
+                                    {errors.category}
+                                </div>
+                            )}
 
                             <div className="category-options">
                                 {availableCategories.map((cat) => (
@@ -458,12 +529,19 @@ const Edit: React.FC = () => {
 
                     {/* Markdown编辑器 */}
                     <div className="edit-section markdown-section">
-                        <label className="section-label">文章内容</label>
+                        <div className="content-header">
+                            <label className="section-label">文章内容</label>
+                            {errors.content && (
+                                <div className="content-error-message">
+                                    {errors.content}
+                                </div>
+                            )}
+                        </div>
                         <div className="markdown-editor-container">
                             <div className="markdown-editor">
                                 <div className="markdown-edit-header">编辑</div>
                                 <textarea
-                                    className="markdown-input"
+                                    className={`markdown-input ${errors.content ? 'error' : ''}`}
                                     value={content}
                                     onChange={handleContentChange}
                                     onScroll={handleEditorScroll}
