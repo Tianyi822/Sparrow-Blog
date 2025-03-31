@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fi';
 import './Posts.scss';
 import { BlogItem, getAllBlogs, changeBlogState, setBlogTop, deleteBlog } from '@/services/adminService';
+import { useNavigate } from 'react-router-dom';
 
 // 可选的每页条数选项
 const pageSizeOptions = [25, 50, 75, 100];
@@ -44,6 +45,7 @@ const Posts: React.FC = () => {
     const [isWideScreen, setIsWideScreen] = useState<boolean>(window.innerWidth > 1800);
     const [isClosing, setIsClosing] = useState<boolean>(false);
     const tagsRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     // 获取博客列表数据
     useEffect(() => {
@@ -181,7 +183,7 @@ const Posts: React.FC = () => {
     // 处理编辑文章
     const handleEditPost = (id: string) => {
         console.log(`编辑文章: ${id}`);
-        // 实际项目中这里会跳转到编辑页面
+        navigate(`/admin/edit?blog_id=${id}`);
     };
 
     // 处理删除文章

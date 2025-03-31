@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiX, FiPlus, FiArrowUp, FiEye } from 'react-icons/fi';
 import { marked } from 'marked';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
     getAllTagsAndCategories, 
     updateOrAddBlog, 
     BlogTag, 
     BlogCategory, 
     UpdateOrAddBlogRequest,
-    deleteBlog 
+    deleteBlog,
+    getBlogDataForEdit
 } from '@/services/adminService';
 import { uploadToOSS } from '@/services/ossService';
 import './Edit.scss';
@@ -27,6 +28,9 @@ interface ValidationErrors {
 // 文章编辑页面组件
 const Edit: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const blogId = new URLSearchParams(location.search).get('blog_id');
+    const isEditMode = !!blogId;
     
     // 文章信息状态
     const [title, setTitle] = useState<string>('');
@@ -35,6 +39,7 @@ const Edit: React.FC = () => {
     const [parsedContent, setParsedContent] = useState<string>('');
     const [isTop, setIsTop] = useState<boolean>(false);
     const [isPublic, setIsPublic] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
 
     // 分类相关状态
     const [category, setCategory] = useState<BlogCategory | null>(null);
@@ -71,6 +76,61 @@ const Edit: React.FC = () => {
 
         fetchTagsAndCategories();
     }, []);
+
+    // 如果是编辑模式，获取博客数据
+    useEffect(() => {
+        const fetchBlogData = async () => {
+            if (isEditMode && blogId) {
+                try {
+                    setLoading(true);
+                    const response = await getBlogDataForEdit(blogId);
+                    
+                    if (response.code === 200) {
+                        const { blog_data, content_url } = response.data;
+                        
+                        // 设置基本信息
+                        setTitle(blog_data.blog_title);
+                        setIntro(blog_data.blog_brief || '');
+                        setCategory(blog_data.category);
+                        setTags(blog_data.tags);
+                        
+                        // 设置文章状态
+                        if (blog_data.blog_is_top !== undefined) {
+                            setIsTop(blog_data.blog_is_top);
+                        }
+                        if (blog_data.blog_state !== undefined) {
+                            setIsPublic(blog_data.blog_state);
+                        }
+                        
+                        // 获取文章内容
+                        try {
+                            const contentResponse = await fetch(content_url);
+                            if (contentResponse.ok) {
+                                const markdownContent = await contentResponse.text();
+                                setContent(markdownContent);
+                            } else {
+                                // 直接处理错误情况，而不是抛出异常
+                                console.error('获取文章内容失败:', contentResponse.status, contentResponse.statusText);
+                                setErrors(prev => ({ ...prev, content: '无法加载文章内容' }));
+                            }
+                        } catch (contentError) {
+                            console.error('获取文章内容错误:', contentError);
+                            setErrors(prev => ({ ...prev, content: '无法加载文章内容' }));
+                        }
+                    } else {
+                        setErrors(prev => ({ ...prev, submit: `获取博客数据失败: ${response.msg}` }));
+                    }
+                } catch (error) {
+                    console.error('获取博客数据错误:', error);
+                    setErrors(prev => ({ ...prev, submit: '获取博客数据时发生错误' }));
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchBlogData();
+    }, [isEditMode, blogId]);
 
     // 清除指定字段的错误
     const clearError = (field: string) => {
@@ -184,7 +244,7 @@ const Edit: React.FC = () => {
 
         // 准备请求数据
         const requestData: UpdateOrAddBlogRequest = {
-            blog_id: '', // 新文章，ID为空
+            blog_id: isEditMode && blogId ? blogId : '', // 如果是编辑模式，使用现有ID
             blog_title: title,
             blog_brief: intro,
             blog_content: content,
@@ -227,18 +287,15 @@ const Edit: React.FC = () => {
                         // 上传成功，跳转回文章管理页面
                         navigate('/admin');
                     } else {
-                        throw new Error('上传到OSS失败');
+                        // 上传失败处理
+                        await handleUploadFailure(response.data.blog_id, '上传到OSS失败');
                     }
                 } catch (uploadError) {
                     // 上传失败，删除已创建的文章
-                    try {
-                        await deleteBlog(response.data.blog_id);
-                    } catch (deleteError) {
-                        console.error('删除文章失败:', deleteError);
-                    }
-                    // 显示具体的错误信息
-                    const errorMessage = uploadError instanceof Error ? uploadError.message : '上传文章内容失败，请稍后重试';
-                    setErrors({ submit: `上传失败: ${errorMessage}` });
+                    await handleUploadFailure(
+                        response.data.blog_id, 
+                        uploadError instanceof Error ? uploadError.message : '上传文章内容失败，请稍后重试'
+                    );
                 }
             } else {
                 setErrors({ submit: `保存失败: ${response.msg}` });
@@ -249,6 +306,18 @@ const Edit: React.FC = () => {
         } finally {
             setSubmitLoading(false);
         }
+    };
+
+    // 添加处理上传失败的函数
+    const handleUploadFailure = async (blogId: string, errorMessage: string) => {
+        // 尝试删除已创建的文章
+        try {
+            await deleteBlog(blogId);
+        } catch (deleteError) {
+            console.error('删除文章失败:', deleteError);
+        }
+        // 显示错误信息
+        setErrors({ submit: `上传失败: ${errorMessage}` });
     };
 
     // 分类相关处理函数
@@ -348,11 +417,11 @@ const Edit: React.FC = () => {
         <div className="edit-page">
             <div className="edit-container">
                 <div className="edit-header">
-                    <h1>文章编辑</h1>
+                    <h1>{isEditMode ? '编辑文章' : '新建文章'}</h1>
                     <button 
                         className="save-button" 
                         onClick={handleSave}
-                        disabled={submitLoading}
+                        disabled={submitLoading || loading}
                     >
                         {submitLoading ? '保存中...' : '保存文章'}
                     </button>
@@ -364,222 +433,226 @@ const Edit: React.FC = () => {
                     </div>
                 )}
 
-                <div className="edit-main">
-                    {/* 文章标题编辑 */}
-                    <div className="edit-section">
-                        <label htmlFor="title" className="section-label">文章标题</label>
-                        <input
-                            id="title"
-                            type="text"
-                            className={`title-input ${errors.title ? 'error' : ''}`}
-                            value={title}
-                            onChange={handleTitleChange}
-                            placeholder="请输入文章标题"
-                        />
-                        {errors.title && (
-                            <div className="error-message">
-                                {errors.title}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* 文章简介编辑 */}
-                    <div className="edit-section">
-                        <label htmlFor="intro" className="section-label">文章简介</label>
-                        <textarea
-                            id="intro"
-                            className="intro-input"
-                            value={intro}
-                            onChange={(e) => setIntro(e.target.value)}
-                            placeholder="请输入文章简介"
-                            rows={3}
-                        ></textarea>
-                    </div>
-
-                    {/* 分类编辑 */}
-                    <div className="edit-section">
-                        <label htmlFor="category" className="section-label">文章分类</label>
-                        <div className="category-container">
-                            <div className="category-input-container">
-                                <input
-                                    id="category"
-                                    type="text"
-                                    className={`category-input ${errors.category ? 'error' : ''}`}
-                                    value={categoryInput}
-                                    onChange={handleCategoryInputChange}
-                                    onKeyDown={handleCategoryInputKeyDown}
-                                    placeholder={category ? `当前分类: ${category.category_name}` : "输入分类名称并回车，或从下方选择"}
-                                />
-                                {category && (
-                                    <div className="selected-category">
-                                        <span>{category.category_name}</span>
-                                        <button className="remove-btn" onClick={() => {
-                                            setCategory(null);
-                                            setErrors(prev => ({...prev, category: '请选择或输入文章分类'}));
-                                        }}>
-                                            <FiX/>
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                            {errors.category && (
+                {loading ? (
+                    <div className="loading-container">正在加载文章数据...</div>
+                ) : (
+                    <div className="edit-main">
+                        {/* 文章标题编辑 */}
+                        <div className="edit-section">
+                            <label htmlFor="title" className="section-label">文章标题</label>
+                            <input
+                                id="title"
+                                type="text"
+                                className={`title-input ${errors.title ? 'error' : ''}`}
+                                value={title}
+                                onChange={handleTitleChange}
+                                placeholder="请输入文章标题"
+                            />
+                            {errors.title && (
                                 <div className="error-message">
-                                    {errors.category}
+                                    {errors.title}
                                 </div>
                             )}
-
-                            <div className="category-options">
-                                {availableCategories.map((cat) => (
-                                    <button
-                                        key={cat.category_id}
-                                        className={`category-option ${cat.category_id === category?.category_id ? 'selected' : ''}`}
-                                        onClick={() => handleCategorySelect(cat)}
-                                    >
-                                        {cat.category_name}
-                                    </button>
-                                ))}
-                            </div>
                         </div>
-                    </div>
 
-                    {/* 标签编辑 */}
-                    <div className="edit-section">
-                        <label htmlFor="tags" className="section-label">文章标签</label>
-                        <div className="tags-container">
-                            <div className="tags-input-container">
-                                <div className="tags-input-wrapper">
-                                    {tags.map((tag) => (
-                                        <div key={tag.tag_id} className="tag-item">
-                                            <span>{tag.tag_name}</span>
-                                            <button className="remove-btn" onClick={() => removeTag(tag)}>
+                        {/* 文章简介编辑 */}
+                        <div className="edit-section">
+                            <label htmlFor="intro" className="section-label">文章简介</label>
+                            <textarea
+                                id="intro"
+                                className="intro-input"
+                                value={intro}
+                                onChange={(e) => setIntro(e.target.value)}
+                                placeholder="请输入文章简介"
+                                rows={3}
+                            ></textarea>
+                        </div>
+
+                        {/* 分类编辑 */}
+                        <div className="edit-section">
+                            <label htmlFor="category" className="section-label">文章分类</label>
+                            <div className="category-container">
+                                <div className="category-input-container">
+                                    <input
+                                        id="category"
+                                        type="text"
+                                        className={`category-input ${errors.category ? 'error' : ''}`}
+                                        value={categoryInput}
+                                        onChange={handleCategoryInputChange}
+                                        onKeyDown={handleCategoryInputKeyDown}
+                                        placeholder={category ? `当前分类: ${category.category_name}` : "输入分类名称并回车，或从下方选择"}
+                                    />
+                                    {category && (
+                                        <div className="selected-category">
+                                            <span>{category.category_name}</span>
+                                            <button className="remove-btn" onClick={() => {
+                                                setCategory(null);
+                                                setErrors(prev => ({...prev, category: '请选择或输入文章分类'}));
+                                            }}>
                                                 <FiX/>
                                             </button>
                                         </div>
-                                    ))}
-                                    <input
-                                        id="tags"
-                                        ref={tagInputRef}
-                                        type="text"
-                                        className="tags-input"
-                                        value={tagInput}
-                                        onChange={handleTagInputChange}
-                                        onKeyDown={handleTagInputKeyDown}
-                                        placeholder={tags.length ? "" : "输入标签名称并回车添加，或从下方选择"}
-                                    />
+                                    )}
                                 </div>
-                                {tagInput && (
-                                    <button
-                                        className="add-tag-btn"
-                                        onClick={() => {
-                                            // 先尝试在已有标签中查找
-                                            const matchedTag = availableTags.find(
-                                                tag => tag.tag_name.toLowerCase() === tagInput.trim().toLowerCase()
-                                            );
-
-                                            if (matchedTag) {
-                                                // 如果找到匹配的标签，使用已有的标签
-                                                addTag(matchedTag);
-                                            } else {
-                                                // 如果没有找到匹配的标签，创建新的标签
-                                                const newTag: BlogTag = {
-                                                    tag_id: `tag_${Date.now()}`, // 临时ID
-                                                    tag_name: tagInput.trim()
-                                                };
-                                                addTag(newTag);
-                                            }
-                                        }}
-                                    >
-                                        <FiPlus/>
-                                    </button>
+                                {errors.category && (
+                                    <div className="error-message">
+                                        {errors.category}
+                                    </div>
                                 )}
-                            </div>
 
-                            <div className="tags-options">
-                                {availableTags
-                                    .filter(tag => !tags.some(t => t.tag_id === tag.tag_id))
-                                    .map((tag) => (
+                                <div className="category-options">
+                                    {availableCategories.map((cat) => (
                                         <button
-                                            key={tag.tag_id}
-                                            className="tag-option"
-                                            onClick={() => handleTagSelect(tag)}
+                                            key={cat.category_id}
+                                            className={`category-option ${cat.category_id === category?.category_id ? 'selected' : ''}`}
+                                            onClick={() => handleCategorySelect(cat)}
                                         >
-                                            {tag.tag_name}
+                                            {cat.category_name}
                                         </button>
                                     ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 文章设置 */}
-                    <div className="edit-section settings-section">
-                        <div className="toggle-setting">
-                            <label htmlFor="isTop" className="toggle-label">
-                                <FiArrowUp className="toggle-icon"/>
-                                <span>是否置顶</span>
-                            </label>
-                            <div className="toggle-switch-container">
-                                <input
-                                    id="isTop"
-                                    type="checkbox"
-                                    className="toggle-switch"
-                                    checked={isTop}
-                                    onChange={() => setIsTop(!isTop)}
-                                />
-                                <label htmlFor="isTop" className="toggle-switch-label"></label>
-                            </div>
-                        </div>
-
-                        <div className="toggle-setting">
-                            <label htmlFor="isPublic" className="toggle-label">
-                                <FiEye className="toggle-icon"/>
-                                <span>是否公开</span>
-                            </label>
-                            <div className="toggle-switch-container">
-                                <input
-                                    id="isPublic"
-                                    type="checkbox"
-                                    className="toggle-switch"
-                                    checked={isPublic}
-                                    onChange={() => setIsPublic(!isPublic)}
-                                />
-                                <label htmlFor="isPublic" className="toggle-switch-label"></label>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Markdown编辑器 */}
-                    <div className="edit-section markdown-section">
-                        <div className="content-header">
-                            <label className="section-label">文章内容</label>
-                            {errors.content && (
-                                <div className="content-error-message">
-                                    {errors.content}
                                 </div>
-                            )}
-                        </div>
-                        <div className="markdown-editor-container">
-                            <div className="markdown-editor">
-                                <div className="markdown-edit-header">编辑</div>
-                                <textarea
-                                    className={`markdown-input ${errors.content ? 'error' : ''}`}
-                                    value={content}
-                                    onChange={handleContentChange}
-                                    onScroll={handleEditorScroll}
-                                    ref={textareaRef}
-                                    placeholder="在此输入Markdown格式的文章内容..."
-                                ></textarea>
                             </div>
-                            <div className="markdown-preview">
-                                <div className="preview-header">预览</div>
-                                <div
-                                    className="preview-content"
-                                    ref={previewRef}
-                                    dangerouslySetInnerHTML={{__html: parsedContent}}
-                                ></div>
+                        </div>
+
+                        {/* 标签编辑 */}
+                        <div className="edit-section">
+                            <label htmlFor="tags" className="section-label">文章标签</label>
+                            <div className="tags-container">
+                                <div className="tags-input-container">
+                                    <div className="tags-input-wrapper">
+                                        {tags.map((tag) => (
+                                            <div key={tag.tag_id} className="tag-item">
+                                                <span>{tag.tag_name}</span>
+                                                <button className="remove-btn" onClick={() => removeTag(tag)}>
+                                                    <FiX/>
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <input
+                                            id="tags"
+                                            ref={tagInputRef}
+                                            type="text"
+                                            className="tags-input"
+                                            value={tagInput}
+                                            onChange={handleTagInputChange}
+                                            onKeyDown={handleTagInputKeyDown}
+                                            placeholder={tags.length ? "" : "输入标签名称并回车添加，或从下方选择"}
+                                        />
+                                    </div>
+                                    {tagInput && (
+                                        <button
+                                            className="add-tag-btn"
+                                            onClick={() => {
+                                                // 先尝试在已有标签中查找
+                                                const matchedTag = availableTags.find(
+                                                    tag => tag.tag_name.toLowerCase() === tagInput.trim().toLowerCase()
+                                                );
+
+                                                if (matchedTag) {
+                                                    // 如果找到匹配的标签，使用已有的标签
+                                                    addTag(matchedTag);
+                                                } else {
+                                                    // 如果没有找到匹配的标签，创建新的标签
+                                                    const newTag: BlogTag = {
+                                                        tag_id: `tag_${Date.now()}`, // 临时ID
+                                                        tag_name: tagInput.trim()
+                                                    };
+                                                    addTag(newTag);
+                                                }
+                                            }}
+                                        >
+                                            <FiPlus/>
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="tags-options">
+                                    {availableTags
+                                        .filter(tag => !tags.some(t => t.tag_id === tag.tag_id))
+                                        .map((tag) => (
+                                            <button
+                                                key={tag.tag_id}
+                                                className="tag-option"
+                                                onClick={() => handleTagSelect(tag)}
+                                            >
+                                                {tag.tag_name}
+                                            </button>
+                                        ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 文章设置 */}
+                        <div className="edit-section settings-section">
+                            <div className="toggle-setting">
+                                <label htmlFor="isTop" className="toggle-label">
+                                    <FiArrowUp className="toggle-icon"/>
+                                    <span>是否置顶</span>
+                                </label>
+                                <div className="toggle-switch-container">
+                                    <input
+                                        id="isTop"
+                                        type="checkbox"
+                                        className="toggle-switch"
+                                        checked={isTop}
+                                        onChange={() => setIsTop(!isTop)}
+                                    />
+                                    <label htmlFor="isTop" className="toggle-switch-label"></label>
+                                </div>
+                            </div>
+
+                            <div className="toggle-setting">
+                                <label htmlFor="isPublic" className="toggle-label">
+                                    <FiEye className="toggle-icon"/>
+                                    <span>是否公开</span>
+                                </label>
+                                <div className="toggle-switch-container">
+                                    <input
+                                        id="isPublic"
+                                        type="checkbox"
+                                        className="toggle-switch"
+                                        checked={isPublic}
+                                        onChange={() => setIsPublic(!isPublic)}
+                                    />
+                                    <label htmlFor="isPublic" className="toggle-switch-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Markdown编辑器 */}
+                        <div className="edit-section markdown-section">
+                            <div className="content-header">
+                                <label className="section-label">文章内容</label>
+                                {errors.content && (
+                                    <div className="content-error-message">
+                                        {errors.content}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="markdown-editor-container">
+                                <div className="markdown-editor">
+                                    <div className="markdown-edit-header">编辑</div>
+                                    <textarea
+                                        className={`markdown-input ${errors.content ? 'error' : ''}`}
+                                        value={content}
+                                        onChange={handleContentChange}
+                                        onScroll={handleEditorScroll}
+                                        ref={textareaRef}
+                                        placeholder="在此输入Markdown格式的文章内容..."
+                                    ></textarea>
+                                </div>
+                                <div className="markdown-preview">
+                                    <div className="preview-header">预览</div>
+                                    <div
+                                        className="preview-content"
+                                        ref={previewRef}
+                                        dangerouslySetInnerHTML={{__html: parsedContent}}
+                                    ></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

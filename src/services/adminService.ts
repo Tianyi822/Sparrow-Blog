@@ -88,6 +88,28 @@ export interface UpdateOrAddBlogRequest {
     blog_content?: string;
 }
 
+// 博客数据接口
+export interface BlogDataResponse {
+    code: number;
+    msg: string;
+    data: {
+        blog_data: {
+            blog_id: string;
+            blog_title: string;
+            blog_brief: string;
+            category_id: string;
+            category: BlogCategory;
+            tags: BlogTag[];
+            blog_words_num: number;
+            create_time: string;
+            update_time: string;
+            blog_is_top?: boolean;
+            blog_state?: boolean;
+        };
+        content_url: string;
+    };
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -224,6 +246,18 @@ export const updateOrAddBlog = async (data: UpdateOrAddBlogRequest): Promise<Upl
     });
 };
 
+/**
+ * 获取博客编辑数据
+ * @param blogId 博客ID
+ * @returns 博客数据和内容URL
+ */
+export const getBlogDataForEdit = async (blogId: string): Promise<BlogDataResponse> => {
+    return businessApiRequest<BlogDataResponse>({
+        method: 'GET',
+        url: `/admin/edit/blog-data/${blogId}`
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -233,5 +267,6 @@ export default {
     setBlogTop,
     deleteBlog,
     getAllTagsAndCategories,
-    updateOrAddBlog
+    updateOrAddBlog,
+    getBlogDataForEdit
 }; 
