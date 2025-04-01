@@ -380,6 +380,7 @@ const Edit: React.FC = () => {
                 };
                 addTag(newTag);
             }
+            setTagInput('');
         }
     };
 
