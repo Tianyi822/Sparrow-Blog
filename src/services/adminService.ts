@@ -110,6 +110,19 @@ export interface BlogDataResponse {
     };
 }
 
+// Gallery相关接口
+export interface GalleryImage {
+    img_id: string;
+    img_name: string;
+    img_type: string;
+}
+
+export interface GalleryImagesResponse {
+    code: number;
+    msg: string;
+    data: GalleryImage[];
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -258,6 +271,17 @@ export const getBlogDataForEdit = async (blogId: string): Promise<BlogDataRespon
     });
 };
 
+/**
+ * 获取所有图片
+ * @returns 图片列表数据
+ */
+export const getAllGalleryImages = async (): Promise<GalleryImagesResponse> => {
+    return businessApiRequest<GalleryImagesResponse>({
+        method: 'GET',
+        url: '/admin/gallery/all-imgs'
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -268,5 +292,6 @@ export default {
     deleteBlog,
     getAllTagsAndCategories,
     updateOrAddBlog,
-    getBlogDataForEdit
+    getBlogDataForEdit,
+    getAllGalleryImages
 }; 

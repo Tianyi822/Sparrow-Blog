@@ -3,46 +3,14 @@ import { FiSearch, FiTrash2, FiCode, FiFileText } from 'react-icons/fi'; // 添�
 import './Gallery.scss';
 import ImageModal from './ImageModal';
 import use3DEffect from '@/hooks/use3DEffect';
-
-// --- 模拟数据生成 ---
-const generateMockImages = (count: number): ImageItem[] => {
-    const mockImages: ImageItem[] = [];
-    const startDate = new Date(2023, 0, 1).getTime();
-    const endDate = new Date().getTime();
-    
-    // 简单的图片名称列表
-    const imageNames = [
-        '山川风景', '城市景观', '花卉特写', '海岸日落', 
-        '建筑设计', '自然景观', '动物写真', '森林小径',
-        '湖泊倒影', '街头人像', '古建筑', '现代艺术'
-    ];
-
-    for (let i = 1; i <= count; i++) {
-        const randomTimestamp = startDate + Math.random() * (endDate - startDate);
-        const randomDate = new Date(randomTimestamp);
-        
-        // 随机选择名称
-        const nameIndex = Math.floor(Math.random() * imageNames.length);
-        const name = `${imageNames[nameIndex]} ${i}`;
-        
-        // 使用 picsum photos 获取高分辨率图片，但不要太大
-        const imageUrl = `https://picsum.photos/seed/${i + 100}/1200/800`;
-
-        mockImages.push({
-            id: i,
-            url: imageUrl,
-            name: name,
-            date: randomDate.toLocaleDateString('zh-CN')
-        });
-    }
-    return mockImages;
-};
+import { getAllGalleryImages } from '@/services/adminService';
 
 // --- 接口定义 ---
 export interface ImageItem {
-    id: number;
+    id: string;
     url: string;
     name: string;
+    type: string;
     date: string;
 }
 
@@ -75,7 +43,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onContextMenu, o
             {/* 保留辉光元素的引用，但设置为不可见 */}
             <div ref={glowRef} style={{ display: 'none' }}></div>
             <div ref={borderGlowRef} style={{ display: 'none' }}></div>
-            
+
             <div className="gallery-item-inner">
                 <img src={item.url} alt={item.name} className="gallery-img" />
                 <div className="gallery-caption">
@@ -89,14 +57,15 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, index, onContextMenu, o
 
 // --- 主图库组件 ---
 const Gallery: React.FC = () => {
-    const [allImages, setAllImages] = useState<ImageItem[]>(() => generateMockImages(40));
+    const [allImages, setAllImages] = useState<ImageItem[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredImages, setFilteredImages] = useState<ImageItem[]>(allImages);
-    const [contextMenu, setContextMenu] = useState<ContextMenuState>({ 
-        visible: false, 
-        x: 0, 
-        y: 0, 
-        targetItem: null 
+    const [filteredImages, setFilteredImages] = useState<ImageItem[]>([]);
+    const [contextMenu, setContextMenu] = useState<ContextMenuState>({
+        visible: false,
+        x: 0,
+        y: 0,
+        targetItem: null
     });
     const [isMenuClosing, setIsMenuClosing] = useState(false);
     const menuCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -107,12 +76,44 @@ const Gallery: React.FC = () => {
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
     const [animationDirection, setAnimationDirection] = useState<'next' | 'prev' | null>(null);
 
+    // 加载真实数据
+    useEffect(() => {
+        const fetchGalleryImages = async () => {
+            try {
+                setIsLoading(true);
+                const response = await getAllGalleryImages();
+                if (response.code === 200 && response.data) {
+                    // 获取环境变量中的业务服务URL
+                    const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
+
+                    // 将API数据转换为组件所需的格式
+                    const formattedImages: ImageItem[] = response.data.map(img => ({
+                        id: img.img_id,
+                        url: `${businessServiceUrl}/img/get/${img.img_id}`,
+                        name: img.img_name,
+                        type: img.img_type,
+                        date: new Date().toLocaleDateString('zh-CN') // 由于API没有返回日期，使用当前日期
+                    }));
+                    setAllImages(formattedImages);
+                    setFilteredImages(formattedImages);
+                } else {
+                    console.error('获取图片失败:', response.msg);
+                }
+            } catch (error) {
+                console.error('获取图片出错:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchGalleryImages();
+    }, []);
+
     // 根据搜索词过滤图片
     useEffect(() => {
         const lowerCaseSearchTerm = searchTerm.toLowerCase();
         const filtered = allImages.filter(img =>
             img.name.toLowerCase().includes(lowerCaseSearchTerm)
-            // 如果需要，可以添加日期搜索: || img.date.includes(lowerCaseSearchTerm)
         );
         setFilteredImages(filtered);
     }, [searchTerm, allImages]);
@@ -148,29 +149,29 @@ const Gallery: React.FC = () => {
 
     const openContextMenu = (event: React.MouseEvent, item: ImageItem) => {
         event.preventDefault(); // 阻止默认的浏览器右键菜单
-        
+
         // 获取窗口尺寸
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
-        
+
         // 估计的菜单尺寸
         const menuWidth = 200; // 预估菜单宽度
         const menuHeight = 140; // 预估菜单高度
-        
+
         // 初始位置
         let x = event.clientX;
         let y = event.clientY;
-        
+
         // 调整X坐标，防止菜单超出右侧
         if (x + menuWidth > windowWidth) {
             x = windowWidth - menuWidth - 10; // 10px 边距
         }
-        
+
         // 调整Y坐标，防止菜单超出底部
         if (y + menuHeight > windowHeight) {
             y = windowHeight - menuHeight - 10; // 10px 边距
         }
-        
+
         setContextMenu({
             visible: true,
             x,
@@ -182,12 +183,12 @@ const Gallery: React.FC = () => {
     const closeContextMenu = () => {
         // 设置关闭动画标志
         setIsMenuClosing(true);
-        
+
         // 清除任何已存在的超时
         if (menuCloseTimeoutRef.current) {
             clearTimeout(menuCloseTimeoutRef.current);
         }
-        
+
         // 延迟隐藏元素，以便动画可以完成
         menuCloseTimeoutRef.current = setTimeout(() => {
             setContextMenu(prev => ({ ...prev, visible: false, targetItem: null }));
@@ -274,21 +275,26 @@ const Gallery: React.FC = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="gallery">
-                {filteredImages.length > 0 ? (
-                    filteredImages.map((img, index) => (
-                        <GalleryItem
-                            key={img.id}
-                            item={img}
-                            index={index} // Pass index
-                            onContextMenu={openContextMenu}
-                            onImageClick={openModal} // Pass click handler
-                        />
-                    ))
-                ) : (
-                    <p className="no-results">没有找到匹配的图片。</p>
-                )}
-            </div>
+
+            {isLoading ? (
+                <div className="loading-indicator">加载中...</div>
+            ) : (
+                <div className="gallery">
+                    {filteredImages.length > 0 ? (
+                        filteredImages.map((img, index) => (
+                            <GalleryItem
+                                key={img.id}
+                                item={img}
+                                index={index}
+                                onContextMenu={openContextMenu}
+                                onImageClick={openModal}
+                            />
+                        ))
+                    ) : (
+                        <p className="no-results">没有找到匹配的图片。</p>
+                    )}
+                </div>
+            )}
 
             {/* 右键菜单 */}
             {contextMenu.visible && (
