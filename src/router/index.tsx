@@ -9,6 +9,7 @@ import { checkSystemStatus } from "@/services/webService";
 import Login from "@/pages/Admin/Login";
 import NotFound from "@/pages/NotFound/NotFound";
 import Edit from "@/pages/Admin/Edit";
+import Gallery from "@/pages/Admin/Gallery";
 
 // 检查系统状态的loader函数
 const checkApiConfig = async () => {
@@ -117,6 +118,10 @@ const routes: RouteObject[] = [
             {
                 path: "edit",
                 element: <Edit />
+            },
+            {
+                path: "gallery",
+                element: <Gallery />
             }
         ]
     },
