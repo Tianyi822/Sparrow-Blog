@@ -89,12 +89,14 @@ const Edit: React.FC = () => {
                         const { blog_data, content_url } = response.data;
                         
                         // 设置基本信息
-                        setTitle(blog_data.blog_title);
+                        setTitle(blog_data.blog_title || '');
                         setIntro(blog_data.blog_brief || '');
-                        setCategory(blog_data.category);
-                        setTags(blog_data.tags);
+                        setCategory(blog_data.category || null);
+                        setTags(blog_data.tags || []);
                         
                         // 设置文章状态
+                        setIsTop(!!blog_data.blog_is_top);
+                        setIsPublic(blog_data.blog_state !== false);
                         if (blog_data.blog_is_top !== undefined) {
                             setIsTop(blog_data.blog_is_top);
                         }
