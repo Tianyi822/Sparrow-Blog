@@ -8,6 +8,7 @@
 
 .gallery-container {
     padding: 20px;
+    position: relative; // 建立定位上下文，使内部的绝对定位元素相对于此元素定位
     // Inherit background and text color from the layout or set explicitly
     // 从布局继承背景和文本颜色或显式设置
     // background: var(--dark-bg); // Remove if inherited from AdminLayout / 如果从 AdminLayout 继承则移除
@@ -284,7 +285,7 @@
 // --- Context Menu Styles ---
 // --- 右键菜单样式 ---
 .context-menu {
-    position: absolute; // 使用absolute而不是fixed以便正确处理滚动
+    position: absolute; // 使用absolute相对于父容器gallery-container定位
     min-width: 180px;
     background-color: rgba(25, 25, 25, 0.85);
     backdrop-filter: blur(12px) saturate(180%);
@@ -300,18 +301,7 @@
     transform-origin: top left;
     animation: contextMenuFadeIn 0.15s ease-out forwards;
     
-    // 添加边界调整
-    &.adjust-right {
-        transform-origin: top right;
-    }
-    
-    &.adjust-bottom {
-        transform-origin: bottom left;
-    }
-    
-    &.adjust-both {
-        transform-origin: bottom right;
-    }
+    // 确保gallery-container的position是relative以实现正确的定位上下文
 
     &.closing {
         animation: contextMenuFadeOut 0.12s ease-in forwards;

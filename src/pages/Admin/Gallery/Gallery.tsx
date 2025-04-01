@@ -199,9 +199,21 @@ const Gallery: React.FC = () => {
     const openContextMenu = useCallback((event: React.MouseEvent, item: ImageItem) => {
         event.preventDefault(); // 阻止默认的浏览器右键菜单
 
-        // 获取鼠标在页面上的精确位置（考虑页面滚动）
-        const x = event.pageX - 250;
-        const y = event.pageY;
+        if (!galleryContainerRef.current) return;
+
+        // 获取Gallery容器的位置信息
+        const containerRect = galleryContainerRef.current.getBoundingClientRect();
+        
+        // 计算鼠标相对于Gallery容器的位置
+        const x = event.clientX - containerRect.left;
+        const y = event.clientY - containerRect.top;
+
+        setContextMenu({
+            visible: true,
+            x,
+            y,
+            targetItem: item,
+        });
 
         // 延迟设置菜单位置，确保DOM已更新
         setTimeout(() => {
@@ -212,39 +224,31 @@ const Gallery: React.FC = () => {
             const menuWidth = menu.offsetWidth;
             const menuHeight = menu.offsetHeight;
 
-            // 获取视口尺寸
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+            // 获取Gallery容器尺寸
+            const containerWidth = containerRect.width;
+            const containerHeight = containerRect.height;
 
             // 根据鼠标位置和菜单尺寸动态添加边界调整类
-            let adjustmentClass = '';
+            let adjustedX = x;
+            let adjustedY = y;
 
             // 检查右边界
-            if (x + menuWidth > viewportWidth) {
-                menu.style.left = `${x - menuWidth}px`;
-                adjustmentClass += ' adjust-right';
-            } else {
-                menu.style.left = `${x}px`;
+            if (x + menuWidth > containerWidth) {
+                adjustedX = x - menuWidth;
             }
 
             // 检查下边界
-            if (y + menuHeight > viewportHeight) {
-                menu.style.top = `${y - menuHeight}px`;
-                adjustmentClass += ' adjust-bottom';
-            } else {
-                menu.style.top = `${y}px`;
+            if (y + menuHeight > containerHeight) {
+                adjustedY = y - menuHeight;
             }
 
-            // 应用调整类
-            menu.className = `context-menu${adjustmentClass}${isMenuClosing ? ' closing' : ''}`;
-        }, 0);
+            // 设置菜单位置，相对于Gallery容器
+            menu.style.left = `${adjustedX}px`;
+            menu.style.top = `${adjustedY}px`;
 
-        setContextMenu({
-            visible: true,
-            x,
-            y,
-            targetItem: item,
-        });
+            // 应用调整类
+            menu.className = `context-menu${isMenuClosing ? ' closing' : ''}`;
+        }, 0);
     }, [isMenuClosing]);
 
     // 点击外部区域关闭右键菜单
@@ -339,10 +343,7 @@ const Gallery: React.FC = () => {
 
             {/* 右键菜单 */}
             {contextMenu.visible && (
-                <div
-                    className="context-menu"
-                // 不再使用内联样式设置位置，而是在useEffect中根据菜单尺寸设置
-                >
+                <div className="context-menu">
                     <ul>
                         <li onClick={handleDelete}><FiTrash2 className="menu-icon" /> 删除</li>
                         <li onClick={handleCopyHTML}><FiCode className="menu-icon" /> 复制 HTML 代码</li>
