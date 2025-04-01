@@ -5,8 +5,9 @@
   min-height: 100vh;
   background: #121212; // 低饱和度黑色背景
   background-attachment: fixed; // 确保背景固定，不随滚动而移动
-  transition: all 0.3s ease;
+  transition: margin 0.3s ease; // 只过渡需要的属性，不使用all
   color: rgba(255, 255, 255, 0.9);
+  will-change: margin-left; // 提示浏览器这个属性会改变
   
   // 登录页特殊样式
   &.login-only {
@@ -30,7 +31,7 @@
     color: #fff;
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    transition: width 0.3s ease, transform 0.3s ease; // 只过渡需要的属性
     position: fixed;
     height: 100vh;
     z-index: 10;
@@ -38,6 +39,7 @@
       0 10px 20px rgba(0, 0, 0, 0.1),
       0 6px 6px rgba(0, 0, 0, 0.1),
       0 0 0 1px rgba(255, 255, 255, 0.05);
+    will-change: width, transform; // 提示浏览器这些属性会改变
     
     &::before {
       content: '';
@@ -177,13 +179,15 @@
   .admin-content {
     flex: 1;
     margin-left: 250px;
-    transition: all 0.3s ease;
+    transition: margin-left 0.3s ease; // 只过渡需要的属性
     position: relative;
+    will-change: margin-left; // 提示浏览器这个属性会改变
     
     .admin-main {
       padding: 2rem;
       height: 100vh;
       overflow: auto;
+      contain: layout; // 告诉浏览器包含子元素的布局变化
       
       // 给内部组件添加毛玻璃效果
       .admin-posts {        
@@ -272,8 +276,7 @@
       width: 70px;
       
       .sidebar-header {
-        justify-content: center;
-        padding: 1.2rem 0;
+        padding: 1.2rem 0.75rem;
         
         .logo {
           display: none;
@@ -285,8 +288,8 @@
       }
       
       .sidebar-nav ul li .nav-item {
-        justify-content: center;
         padding: 0.75rem;
+        justify-content: center;
         
         .nav-icon {
           margin-right: 0;
@@ -294,14 +297,15 @@
       }
       
       .sidebar-footer .logout-btn {
+        padding: 0.75rem;
         justify-content: center;
-        
-        .nav-text {
-          display: none;
-        }
         
         .nav-icon {
           margin-right: 0;
+        }
+        
+        .nav-text {
+          display: none;
         }
       }
     }

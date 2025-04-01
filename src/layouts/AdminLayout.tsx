@@ -1,11 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { FiFileText, FiEdit, FiSettings, FiMessageCircle, FiLogOut, FiImage } from 'react-icons/fi';
 import { getUserBasicInfo } from '@/services/adminService';
 import './AdminLayout.scss';
 
+// 创建上下文以共享折叠状态
+export interface LayoutContextType {
+  collapsed: boolean;
+  isLayoutTransitioning: boolean;
+}
+
+export const LayoutContext = createContext<LayoutContextType>({
+  collapsed: false,
+  isLayoutTransitioning: false
+});
+
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [isLayoutTransitioning, setIsLayoutTransitioning] = useState(false);
   const [userName, setUserName] = useState<string>('');
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,7 +52,16 @@ const AdminLayout: React.FC = () => {
   };
 
   const toggleSidebar = () => {
+    // 标记过渡开始
+    setIsLayoutTransitioning(true);
+    
+    // 切换折叠状态
     setCollapsed(!collapsed);
+    
+    // 过渡结束后解除标记（使用与CSS过渡相同的持续时间）
+    setTimeout(() => {
+      setIsLayoutTransitioning(false);
+    }, 300); // 300ms应该与AdminLayout.scss中的过渡时间匹配
   };
 
   // 如果是登录页，则只渲染Outlet部分，不显示侧边栏和导航
@@ -55,66 +76,68 @@ const AdminLayout: React.FC = () => {
   }
 
   return (
-    <div className={`admin-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
-      {/* Sidebar */}
-      <aside className="admin-sidebar">
-        <div className="sidebar-header">
-          <h1 className="logo">{userName || '加载中...'}</h1>
-          <button className="collapse-btn" onClick={toggleSidebar}>
-            {collapsed ? '→' : '←'}
-          </button>
-        </div>
+    <LayoutContext.Provider value={{ collapsed, isLayoutTransitioning }}>
+      <div className={`admin-layout ${collapsed ? 'sidebar-collapsed' : ''}`}>
+        {/* Sidebar */}
+        <aside className="admin-sidebar">
+          <div className="sidebar-header">
+            <h1 className="logo">{userName || '加载中...'}</h1>
+            <button className="collapse-btn" onClick={toggleSidebar}>
+              {collapsed ? '→' : '←'}
+            </button>
+          </div>
+          
+          <nav className="sidebar-nav">
+            <ul>
+              <li>
+                <Link to="/admin" className={`nav-item ${location.pathname === '/admin' ? 'active' : ''}`}>
+                  <FiFileText className="nav-icon" />
+                  <span className="nav-text">文章管理</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/edit" className={`nav-item ${location.pathname === '/admin/edit' ? 'active' : ''}`}>
+                  <FiEdit className="nav-icon" />
+                  <span className="nav-text">文章编辑</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/gallery" className={`nav-item ${location.pathname.startsWith('/admin/gallery') ? 'active' : ''}`}>
+                  <FiImage className="nav-icon" />
+                  <span className="nav-text">图库管理</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/comments" className={`nav-item ${location.pathname === '/admin/comments' ? 'active' : ''}`}>
+                  <FiMessageCircle className="nav-icon" />
+                  <span className="nav-text">评论管理</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/settings" className={`nav-item ${location.pathname === '/admin/settings' ? 'active' : ''}`}>
+                  <FiSettings className="nav-icon" />
+                  <span className="nav-text">系统设置</span>
+                </Link>
+              </li>
+            </ul>
+          </nav>
+          
+          <div className="sidebar-footer">
+            <button className="logout-btn" onClick={handleLogout}>
+              <FiLogOut className="nav-icon" />
+              <span className="nav-text">退出登录</span>
+            </button>
+          </div>
+        </aside>
         
-        <nav className="sidebar-nav">
-          <ul>
-            <li>
-              <Link to="/admin" className={`nav-item ${location.pathname === '/admin' ? 'active' : ''}`}>
-                <FiFileText className="nav-icon" />
-                <span className="nav-text">文章管理</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin/edit" className={`nav-item ${location.pathname === '/admin/edit' ? 'active' : ''}`}>
-                <FiEdit className="nav-icon" />
-                <span className="nav-text">文章编辑</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin/gallery" className={`nav-item ${location.pathname.startsWith('/admin/gallery') ? 'active' : ''}`}>
-                <FiImage className="nav-icon" />
-                <span className="nav-text">图库管理</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin/comments" className={`nav-item ${location.pathname === '/admin/comments' ? 'active' : ''}`}>
-                <FiMessageCircle className="nav-icon" />
-                <span className="nav-text">评论管理</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/admin/settings" className={`nav-item ${location.pathname === '/admin/settings' ? 'active' : ''}`}>
-                <FiSettings className="nav-icon" />
-                <span className="nav-text">系统设置</span>
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        
-        <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout}>
-            <FiLogOut className="nav-icon" />
-            <span className="nav-text">退出登录</span>
-          </button>
+        {/* Main content */}
+        <div className="admin-content">
+          <main className="admin-main">
+            <Outlet />
+          </main>
         </div>
-      </aside>
-      
-      {/* Main content */}
-      <div className="admin-content">
-        <main className="admin-main">
-          <Outlet />
-        </main>
       </div>
-    </div>
+    </LayoutContext.Provider>
   );
 };
 

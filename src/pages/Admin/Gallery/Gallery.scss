@@ -55,58 +55,115 @@
 }
 
 .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
+    // 删除之前的网格布局
+    // display: grid;
+    // grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    // gap: 25px;
+    
+    // 改用瀑布流布局
+    column-count: 4; // 默认4列
+    column-gap: 25px;
+    width: 100%;
+    
+    // 增加resizing时的优化样式
+    &.resizing {
+        transition: none !important;
+        
+        // 在调整窗口大小时禁用所有子元素的过渡动画，提高性能
+        * {
+            transition: none !important;
+            animation: none !important;
+        }
+        
+        // 减少在调整大小时的渲染复杂度
+        .gallery-item {
+            transform: none !important;
+            
+            .gallery-img {
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+            }
+            
+            .gallery-caption {
+                opacity: 0 !important;
+            }
+        }
+    }
 }
 
 .gallery-item {
     position: relative;
-    transform-style: preserve-3d;
-    perspective: 1000px; // Ensure perspective is set here / 确保在此设置透视
-    aspect-ratio: 4/3;
+    // 瀑布流项目需要显示为块并打破避免列间的断裂
+    display: block;
+    break-inside: avoid;
+    margin-bottom: 25px; // 项目之间的垂直间距
     cursor: pointer;
-    will-change: transform;
+    transition: transform 0.25s ease;
+    overflow: hidden;
+    border-radius: 8px;
+    // 添加硬件加速
+    transform: translateZ(0);
+    
+    // 加载状态
+    &.loading {
+        .image-placeholder {
+            background: linear-gradient(110deg, #2a2a2a 8%, #3a3a3a 18%, #2a2a2a 33%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            width: 100%;
+            min-height: 200px;
+            border-radius: 8px;
+        }
+        
+        .gallery-img {
+            opacity: 0;
+        }
+    }
+    
+    &.loaded .gallery-img {
+        opacity: 1;
+    }
+    
+    &:hover {
+        cursor: default;
+        transform: translateY(-5px) translateZ(0);
+    }
     
     &:hover .gallery-img {
-        transform: scale(1.03);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        transform: scale(1.05) translateZ(0);
+        // 减少hover时的box-shadow复杂度
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
     &:hover .gallery-caption {
         opacity: 1;
-        transform: translateY(0) translateZ(30px);
+        transform: translateY(0) translateZ(0);
     }
-
+    
     &:hover .gallery-caption h3,
     &:hover .gallery-caption p {
         transform: translateY(0);
     }
-
-    width: 100%;
-    height: 100%;
-    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-    transform-origin: center center;
 }
 
 .gallery-item-inner {
     position: relative;
     width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    transform-origin: center center;
-    will-change: transform;
+    overflow: hidden;
+    // 不需要固定高度，让图片决定高度
+    // height: 100%;
+    transform: translateZ(0);
 }
 
 .gallery-img {
-    display: block; // Ensure image takes full width/height properly / 确保图片正确占据全部宽度/高度
+    display: block;
     width: 100%;
-    height: 100%;
+    height: auto; // 让图片保持原始宽高比
     object-fit: cover;
     border-radius: 8px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    backface-visibility: hidden;
-    transition: transform 0.4s, box-shadow 0.4s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .gallery-caption {
@@ -121,18 +178,19 @@
         transparent 100%
     );
     opacity: 0;
-    transform: translateY(30px) translateZ(20px);
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(20px) translateZ(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
     border-radius: 0 0 8px 8px;
     z-index: 2;
-    color: var(--light-text); // Ensure caption text is visible / 确保标题文本可见
+    color: var(--light-text);
+    will-change: transform, opacity;
     
     h3 {
         margin: 0 0 10px 0;
         font-size: 1.3rem;
         font-weight: 500;
         transform: translateY(10px);
-        transition: transform 0.5s 0.1s;
+        transition: transform 0.3s;
     }
     
     p {
@@ -140,7 +198,7 @@
         font-size: 0.95rem;
         opacity: 0.9;
         transform: translateY(10px);
-        transition: transform 0.5s 0.15s, opacity 0.5s;
+        transition: transform 0.3s;
     }
 }
 
@@ -177,25 +235,56 @@
     to { transform: rotate(360deg); }
 }
 
-// Responsive adjustments
-// 响应式调整
-@media (max-width: 768px) {
-    .gallery {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 15px;
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
     }
+    100% {
+        background-position: 200% 0;
+    }
+}
 
-    // Disable 3D effect on smaller screens if it causes issues or isn't desired
-    // 在较小屏幕上如果导致问题或不需要 3D 效果，则禁用它
-    .gallery-item-inner {
-         // transform: none !important; // Uncomment to disable 3D effect / 取消注释以禁用 3D 效果
+// 响应式样式调整
+@media (max-width: 1400px) {
+    .gallery {
+        column-count: 3; // 大屏幕3列
+    }
+}
+
+@media (max-width: 1000px) {
+    .gallery {
+        column-count: 2; // 中等屏幕2列
+        column-gap: 20px;
+    }
+    
+    .gallery-item {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .gallery {
+        column-count: 1; // 小屏幕单列
+        column-gap: 15px;
+    }
+    
+    .gallery-item {
+        margin-bottom: 15px;
+    }
+}
+
+// 为了提高性能，在网格布局计算时添加content-visibility优化
+@supports (content-visibility: auto) {
+    .gallery-item {
+        content-visibility: auto;
+        contain-intrinsic-size: 0 300px; // 预估平均高度
     }
 }
 
 // --- Context Menu Styles ---
 // --- 右键菜单样式 ---
 .context-menu {
-    position: fixed;
+    position: absolute; // 使用absolute而不是fixed以便正确处理滚动
     min-width: 180px;
     background-color: rgba(25, 25, 25, 0.85);
     backdrop-filter: blur(12px) saturate(180%);
@@ -203,14 +292,26 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+    z-index: 9999; // 增加z-index确保显示在最上层
     overflow: hidden;
     color: var(--light-text);
     font-size: 0.95rem;
     padding: 6px 0;
     transform-origin: top left;
     animation: contextMenuFadeIn 0.15s ease-out forwards;
-    will-change: transform, opacity;
+    
+    // 添加边界调整
+    &.adjust-right {
+        transform-origin: top right;
+    }
+    
+    &.adjust-bottom {
+        transform-origin: bottom left;
+    }
+    
+    &.adjust-both {
+        transform-origin: bottom right;
+    }
 
     &.closing {
         animation: contextMenuFadeOut 0.12s ease-in forwards;
