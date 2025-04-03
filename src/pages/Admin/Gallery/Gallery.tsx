@@ -48,6 +48,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, onContextMenu, isRenami
     // 添加图片加载状态跟踪
     const [imageLoaded, setImageLoaded] = useState(false);
     const [newName, setNewName] = useState(item.name);
+    const [nameError, setNameError] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // 处理图片加载完成
@@ -59,6 +60,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, onContextMenu, isRenami
     useEffect(() => {
         if (isRenaming) {
             setNewName(item.name);
+            setNameError(null);
             // 延迟聚焦以确保输入框已经渲染
             setTimeout(() => {
                 if (inputRef.current) {
@@ -71,9 +73,19 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, onContextMenu, isRenami
 
     // 处理重命名完成
     const handleRenameComplete = () => {
-        if (newName.trim() !== '') {
-            onRenameComplete(newName.trim());
+        const trimmedName = newName.trim();
+        if (trimmedName === '') {
+            setNameError('名称不能为空');
+            return;
         }
+        
+        if (trimmedName === item.name) {
+            onRenameComplete(item.name);
+            return;
+        }
+        
+        setNameError(null);
+        onRenameComplete(trimmedName);
     };
 
     // 处理按键事件 - 回车提交，ESC取消
@@ -82,6 +94,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, onContextMenu, isRenami
             handleRenameComplete();
         } else if (e.key === 'Escape') {
             setNewName(item.name); // 重置为原始名称
+            setNameError(null);
             onRenameComplete(item.name); // 取消重命名
         }
     };
@@ -106,12 +119,16 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, onContextMenu, isRenami
                             <input
                                 ref={inputRef}
                                 type="text"
-                                className="rename-input"
+                                className={`rename-input ${nameError ? 'input-error' : ''}`}
                                 value={newName}
-                                onChange={(e) => setNewName(e.target.value)}
+                                onChange={(e) => {
+                                    setNewName(e.target.value);
+                                    if (nameError) setNameError(null);
+                                }}
                                 onBlur={handleRenameComplete}
                                 onKeyDown={handleKeyDown}
                             />
+                            {nameError && <div className="name-error-message">{nameError}</div>}
                         </div>
                     ) : (
                         <>

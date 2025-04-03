@@ -222,6 +222,21 @@
             border-color: var(--accent-color);
             box-shadow: 0 0 0 2px rgba(78, 154, 241, 0.3);
         }
+        
+        &.input-error {
+            border-color: rgba(255, 99, 71, 0.8);
+            box-shadow: 0 0 0 2px rgba(255, 99, 71, 0.3);
+        }
+    }
+    
+    .name-error-message {
+        color: rgba(255, 99, 71, 0.9);
+        font-size: 0.85rem;
+        margin-top: 5px;
+        padding: 2px 5px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 3px;
+        text-align: center;
     }
 }
 
