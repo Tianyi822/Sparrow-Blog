@@ -21,21 +21,6 @@ interface ContextMenuState {
     targetItem: ImageItem | null;
 }
 
-// 添加防抖工具函数
-const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(
-    func: F,
-    waitFor: number
-): ((...args: Parameters<F>) => void) => {
-    let timeout: ReturnType<typeof setTimeout> | null = null;
-
-    return (...args: Parameters<F>): void => {
-        if (timeout !== null) {
-            clearTimeout(timeout);
-        }
-        timeout = setTimeout(() => func(...args), waitFor);
-    };
-};
-
 // --- 图库项组件 ---
 interface GalleryItemProps {
     item: ImageItem;
@@ -290,20 +275,16 @@ const Gallery: React.FC = () => {
 
     // 处理窗口大小调整的防抖效果
     useEffect(() => {
-        // 开始调整窗口大小时设置isResizing为true
-        const handleResizeStart = () => {
-            setIsResizing(true);
-        };
-
-        // 结束调整窗口大小时（防抖后）设置isResizing为false
-        const handleResizeEnd = debounce(() => {
-            setIsResizing(false);
-        }, 300);
-
-        // 合并开始和结束处理器
+        // 直接监听resize事件，不使用防抖
         const handleResize = () => {
-            handleResizeStart();
-            handleResizeEnd();
+            // 只在调整大小期间临时应用样式变化，然后立即移除
+            setIsResizing(true);
+            
+            // 立即恢复正常状态，不再使用延迟
+            // 使用requestAnimationFrame来保证在下一帧渲染前执行
+            requestAnimationFrame(() => {
+                setIsResizing(false);
+            });
         };
 
         window.addEventListener('resize', handleResize);
@@ -322,12 +303,18 @@ const Gallery: React.FC = () => {
             // 存储新的折叠状态
             prevCollapsedRef.current = collapsed;
 
-            // 菜单折叠动画完成后解除调整状态
-            const timerId = setTimeout(() => {
-                setIsResizing(false);
-            }, isLayoutTransitioning ? 300 : 0); // 如果正在过渡，等待300毫秒，否则立即解除
-
-            return () => clearTimeout(timerId);
+            // 使用requestAnimationFrame代替setTimeout，更加平滑
+            requestAnimationFrame(() => {
+                // 如果仍在过渡中，允许过渡效果完成
+                if (!isLayoutTransitioning) {
+                    setIsResizing(false);
+                } else {
+                    // 如果在过渡中，等待下一帧再次检查
+                    requestAnimationFrame(() => {
+                        setIsResizing(false);
+                    });
+                }
+            });
         }
     }, [collapsed, isLayoutTransitioning]);
 
