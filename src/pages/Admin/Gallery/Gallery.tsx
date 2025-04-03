@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react';
-import { FiSearch, FiTrash2, FiCode, FiFileText } from 'react-icons/fi'; // 添加所需图标
+import { FiSearch, FiTrash2, FiCode, FiFileText, FiEdit } from 'react-icons/fi'; // 添加 FiEdit 图标
 import './Gallery.scss';
-import { getAllGalleryImages } from '@/services/adminService';
+import { getAllGalleryImages, renameGalleryImage, RenameImageRequest } from '@/services/adminService';
 import { LayoutContext } from '@/layouts/AdminLayout'; // 导入布局上下文
+import { createPortal } from 'react-dom';
 
 // --- 接口定义 ---
 export interface ImageItem {
@@ -39,16 +40,51 @@ const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(
 interface GalleryItemProps {
     item: ImageItem;
     onContextMenu: (event: React.MouseEvent<HTMLDivElement>, item: ImageItem) => void;
+    isRenaming: boolean;
+    onRenameComplete: (newName: string) => void;
 }
 
-const GalleryItem: React.FC<GalleryItemProps> = ({ item, onContextMenu }) => {
+const GalleryItem: React.FC<GalleryItemProps> = ({ item, onContextMenu, isRenaming, onRenameComplete }) => {
     // 添加图片加载状态跟踪
     const [imageLoaded, setImageLoaded] = useState(false);
+    const [newName, setNewName] = useState(item.name);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     // 处理图片加载完成
     const handleImageLoad = useCallback(() => {
         setImageLoaded(true);
     }, []);
+
+    // 当进入重命名模式时，设置名称并聚焦输入框
+    useEffect(() => {
+        if (isRenaming) {
+            setNewName(item.name);
+            // 延迟聚焦以确保输入框已经渲染
+            setTimeout(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                    inputRef.current.select();
+                }
+            }, 50);
+        }
+    }, [isRenaming, item.name]);
+
+    // 处理重命名完成
+    const handleRenameComplete = () => {
+        if (newName.trim() !== '') {
+            onRenameComplete(newName.trim());
+        }
+    };
+
+    // 处理按键事件 - 回车提交，ESC取消
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleRenameComplete();
+        } else if (e.key === 'Escape') {
+            setNewName(item.name); // 重置为原始名称
+            onRenameComplete(item.name); // 取消重命名
+        }
+    };
 
     return (
         <div
@@ -65,11 +101,118 @@ const GalleryItem: React.FC<GalleryItemProps> = ({ item, onContextMenu }) => {
                     onLoad={handleImageLoad}
                 />
                 <div className="gallery-caption">
-                    <h3>{item.name}</h3>
-                    <p>{item.date}</p>
+                    {isRenaming ? (
+                        <div className="rename-input-container">
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                className="rename-input"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                onBlur={handleRenameComplete}
+                                onKeyDown={handleKeyDown}
+                            />
+                        </div>
+                    ) : (
+                        <>
+                            <h3>{item.name}</h3>
+                            <p>{item.date}</p>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
+    );
+};
+
+// --- 右键菜单组件 ---
+interface ContextMenuProps {
+    visible: boolean;
+    x: number;
+    y: number;
+    targetItem: ImageItem | null;
+    isMenuClosing: boolean;
+    onRename: () => void;
+    onDelete: () => void;
+    onCopyHTML: () => void;
+    onCopyMarkdown: () => void;
+}
+
+const ContextMenu: React.FC<ContextMenuProps> = ({
+    visible,
+    x,
+    y,
+    isMenuClosing,
+    onRename,
+    onDelete,
+    onCopyHTML,
+    onCopyMarkdown,
+}) => {
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    // 每当菜单显示状态改变时调整位置
+    useEffect(() => {
+        if (visible && menuRef.current) {
+            // 先将菜单定位到鼠标位置，但不设置尺寸限制，让它自然展开
+            menuRef.current.style.left = `${x}px`;
+            menuRef.current.style.top = `${y}px`;
+            
+            // 确保菜单完全渲染后再进行边界检查
+            requestAnimationFrame(() => {
+                if (menuRef.current) {
+                    // 获取菜单尺寸
+                    const menuWidth = menuRef.current.offsetWidth;
+                    const menuHeight = menuRef.current.offsetHeight;
+
+                    // 获取视口尺寸
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+
+                    // 计算菜单的最终位置
+                    let finalX = x;
+                    let finalY = y;
+                    let adjustmentClass = 'context-menu';
+
+                    // 检查右边界
+                    if (x + menuWidth > viewportWidth) {
+                        finalX = x - menuWidth;
+                        adjustmentClass += ' adjust-right';
+                    }
+
+                    // 检查下边界
+                    if (y + menuHeight > viewportHeight) {
+                        finalY = y - menuHeight;
+                        adjustmentClass += ' adjust-bottom';
+                    }
+
+                    // 设置菜单位置
+                    menuRef.current.style.left = `${finalX}px`;
+                    menuRef.current.style.top = `${finalY}px`;
+
+                    // 应用调整类
+                    menuRef.current.className = `${adjustmentClass}${isMenuClosing ? ' closing' : ''}`;
+                }
+            });
+        }
+    }, [visible, x, y, isMenuClosing]);
+
+    // 如果不可见，不渲染任何内容
+    if (!visible) return null;
+
+    // 使用Portal将菜单渲染到body上
+    return createPortal(
+        <div
+            ref={menuRef}
+            className="context-menu"
+        >
+            <ul>
+                <li onClick={onRename}><FiEdit className="menu-icon" /> 重命名</li>
+                <li onClick={onDelete}><FiTrash2 className="menu-icon" /> 删除</li>
+                <li onClick={onCopyHTML}><FiCode className="menu-icon" /> 复制 HTML 代码</li>
+                <li onClick={onCopyMarkdown}><FiFileText className="menu-icon" /> 复制 Markdown 代码</li>
+            </ul>
+        </div>,
+        document.body
     );
 };
 
@@ -85,6 +228,7 @@ const Gallery: React.FC = () => {
         targetItem: null
     });
     const [isMenuClosing, setIsMenuClosing] = useState(false);
+    const [renamingImageId, setRenamingImageId] = useState<string | null>(null);
     const menuCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const galleryContainerRef = useRef<HTMLDivElement>(null);
     // 添加是否正在调整窗口大小的状态
@@ -203,51 +347,13 @@ const Gallery: React.FC = () => {
         const x = event.pageX;
         const y = event.pageY;
 
-        // 延迟设置菜单位置，确保DOM已更新
-        setTimeout(() => {
-            const menu = document.querySelector('.context-menu') as HTMLElement;
-            if (!menu) return;
-
-            // 获取菜单尺寸
-            const menuWidth = menu.offsetWidth;
-            const menuHeight = menu.offsetHeight;
-
-            // 获取视口尺寸
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-
-            // 计算菜单的最终位置
-            let finalX = x;
-            let finalY = y;
-            let adjustmentClass = '';
-
-            // 检查右边界
-            if (x + menuWidth > viewportWidth) {
-                finalX = x - menuWidth;
-                adjustmentClass += ' adjust-right';
-            }
-
-            // 检查下边界
-            if (y + menuHeight > viewportHeight) {
-                finalY = y - menuHeight;
-                adjustmentClass += ' adjust-bottom';
-            }
-
-            // 设置菜单位置
-            menu.style.left = `${finalX}px`;
-            menu.style.top = `${finalY}px`;
-
-            // 应用调整类
-            menu.className = `context-menu${adjustmentClass}${isMenuClosing ? ' closing' : ''}`;
-        }, 0);
-
         setContextMenu({
             visible: true,
             x,
             y,
             targetItem: item,
         });
-    }, [isMenuClosing]);
+    }, []);
 
     // 点击外部区域关闭右键菜单
     useEffect(() => {
@@ -257,22 +363,35 @@ const Gallery: React.FC = () => {
         }
 
         const handleClickOutside = (event: MouseEvent) => {
-            const menuElement = document.querySelector('.context-menu');
+            // 因为菜单是在body中渲染的，所以我们需要检查事件目标是否是菜单或其子元素
+            if (event.target instanceof Node) {
+                // 查找点击元素是否在菜单内
+                const menuElement = document.querySelector('.context-menu');
+                
+                // 如果点击的不是菜单或其子元素，则关闭菜单
+                if (!menuElement || !menuElement.contains(event.target)) {
+                    closeContextMenu();
+                }
+            }
+        };
 
-            // 检查点击目标是否在菜单元素之外
-            if (menuElement && !menuElement.contains(event.target as Node)) {
+        // ESC键关闭菜单
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
                 closeContextMenu();
             }
         };
 
-        // 添加监听器
-        document.addEventListener('mousedown', handleClickOutside);
+        // 使用捕获阶段添加事件监听器，确保在事件冒泡之前捕获点击
+        document.addEventListener('mousedown', handleClickOutside, true);
+        document.addEventListener('keydown', handleKeyDown);
 
         // 清理：在菜单隐藏或组件卸载时移除监听器
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside, true);
+            document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [contextMenu.visible, closeContextMenu]); // 添加closeContextMenu作为依赖项
+    }, [contextMenu.visible, closeContextMenu]);
 
     const handleDelete = useCallback(() => {
         if (!contextMenu.targetItem) return;
@@ -298,6 +417,55 @@ const Gallery: React.FC = () => {
             .catch(err => console.error('复制 Markdown 失败: ', err));
         closeContextMenu();
     }, [contextMenu.targetItem, closeContextMenu]);
+
+    // 处理重命名操作
+    const handleRename = useCallback(() => {
+        if (!contextMenu.targetItem) return;
+        setRenamingImageId(contextMenu.targetItem.id);
+        closeContextMenu();
+    }, [contextMenu.targetItem, closeContextMenu]);
+
+    // 处理重命名完成
+    const handleRenameComplete = useCallback(async (imageId: string, newName: string) => {
+        // 找到当前正在重命名的图片
+        const imageToRename = allImages.find(img => img.id === imageId);
+
+        // 如果找不到图片或名称没有变化，则取消重命名
+        if (!imageToRename || imageToRename.name === newName) {
+            setRenamingImageId(null);
+            return;
+        }
+
+        try {
+            // 准备请求数据
+            const requestData: RenameImageRequest = {
+                img_id: imageId,
+                img_name: newName
+            };
+
+            // 发送重命名请求
+            const response = await renameGalleryImage(imageId, requestData);
+
+            if (response.code === 200) {
+                // 更新本地状态
+                setAllImages(prevImages =>
+                    prevImages.map(img =>
+                        img.id === imageId ? { ...img, name: newName } : img
+                    )
+                );
+                console.log('图片重命名成功!');
+            } else {
+                console.error('重命名失败:', response.msg);
+                // 可以添加错误提示
+            }
+        } catch (error) {
+            console.error('重命名请求出错:', error);
+            // 可以添加错误提示
+        } finally {
+            // 无论成功还是失败，退出重命名模式
+            setRenamingImageId(null);
+        }
+    }, [allImages]);
 
     // 组件卸载时清理
     useEffect(() => {
@@ -331,6 +499,8 @@ const Gallery: React.FC = () => {
                                 key={img.id}
                                 item={img}
                                 onContextMenu={openContextMenu}
+                                isRenaming={renamingImageId === img.id}
+                                onRenameComplete={(newName) => handleRenameComplete(img.id, newName)}
                             />
                         ))
                     ) : (
@@ -339,19 +509,18 @@ const Gallery: React.FC = () => {
                 </div>
             )}
 
-            {/* 右键菜单 */}
-            {contextMenu.visible && (
-                <div
-                    className="context-menu"
-                // 不再使用内联样式设置位置，而是在useEffect中根据菜单尺寸设置
-                >
-                    <ul>
-                        <li onClick={handleDelete}><FiTrash2 className="menu-icon" /> 删除</li>
-                        <li onClick={handleCopyHTML}><FiCode className="menu-icon" /> 复制 HTML 代码</li>
-                        <li onClick={handleCopyMarkdown}><FiFileText className="menu-icon" /> 复制 Markdown 代码</li>
-                    </ul>
-                </div>
-            )}
+            {/* 使用Portal渲染右键菜单 */}
+            <ContextMenu
+                visible={contextMenu.visible}
+                x={contextMenu.x}
+                y={contextMenu.y}
+                targetItem={contextMenu.targetItem}
+                isMenuClosing={isMenuClosing}
+                onRename={handleRename}
+                onDelete={handleDelete}
+                onCopyHTML={handleCopyHTML}
+                onCopyMarkdown={handleCopyMarkdown}
+            />
         </div>
     );
 };

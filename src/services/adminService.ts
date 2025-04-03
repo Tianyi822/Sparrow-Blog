@@ -123,6 +123,12 @@ export interface GalleryImagesResponse {
     data: GalleryImage[];
 }
 
+// 重命名图片请求接口
+export interface RenameImageRequest {
+    img_id: string;
+    img_name: string;
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -282,6 +288,23 @@ export const getAllGalleryImages = async (): Promise<GalleryImagesResponse> => {
     });
 };
 
+/**
+ * 重命名图片
+ * @param imageId 图片ID
+ * @param data 包含图片ID和新名称的请求数据
+ * @returns 操作结果
+ */
+export const renameGalleryImage = async (imageId: string, data: RenameImageRequest): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: `/admin/gallery/${imageId}`,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -293,5 +316,6 @@ export default {
     getAllTagsAndCategories,
     updateOrAddBlog,
     getBlogDataForEdit,
-    getAllGalleryImages
+    getAllGalleryImages,
+    renameGalleryImage
 }; 

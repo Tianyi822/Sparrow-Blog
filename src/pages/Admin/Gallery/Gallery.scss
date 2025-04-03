@@ -201,6 +201,28 @@
         transform: translateY(10px);
         transition: transform 0.3s;
     }
+
+    // 重命名输入框样式
+    .rename-input-container {
+        width: 100%;
+    }
+    
+    .rename-input {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+        color: white;
+        padding: 8px 10px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        
+        &:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(78, 154, 241, 0.3);
+        }
+    }
 }
 
 .no-results {
@@ -285,6 +307,12 @@
         p {
             font-size: 0.8rem; // 缩小日期字体
         }
+        
+        // 调整小屏幕上的输入框
+        .rename-input {
+            padding: 6px 8px;
+            font-size: 0.95rem;
+        }
     }
 }
 
@@ -300,6 +328,12 @@
         p {
             font-size: 0.75rem;
         }
+        
+        // 调整更小屏幕上的输入框
+        .rename-input {
+            padding: 5px 6px;
+            font-size: 0.9rem;
+        }
     }
 }
 
@@ -314,7 +348,7 @@
 // --- Context Menu Styles ---
 // --- 右键菜单样式 ---
 .context-menu {
-    position: absolute; // 使用absolute相对于父容器gallery-container定位
+    position: fixed; // 改为固定定位，相对于视口
     min-width: 180px;
     background-color: rgba(25, 25, 25, 0.85);
     backdrop-filter: blur(12px) saturate(180%);
