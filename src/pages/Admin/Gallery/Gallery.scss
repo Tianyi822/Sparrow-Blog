@@ -84,6 +84,7 @@
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
             }
             
+            // Ensure captions are hidden during resize
             .gallery-caption {
                 opacity: 0 !important;
             }
@@ -134,7 +135,7 @@
         // 减少hover时的box-shadow复杂度
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
-
+    
     &:hover .gallery-caption {
         opacity: 1;
         transform: translateY(0) translateZ(0);
@@ -188,15 +189,18 @@
     
     h3 {
         margin: 0 0 10px 0;
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         font-weight: 500;
         transform: translateY(10px);
         transition: transform 0.3s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     p {
         margin: 0;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         opacity: 0.9;
         transform: translateY(10px);
         transition: transform 0.3s;
@@ -283,6 +287,26 @@
 }
 
 // 响应式样式调整
+@media (max-width: 1500px) {
+    // 1500px以下的屏幕，减小字体大小
+    .gallery-caption {
+        padding: 20px;
+        
+        h3 {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        
+        p {
+            font-size: 0.85rem;
+        }
+        
+        .rename-input {
+            font-size: 0.95rem;
+        }
+    }
+}
+
 @media (max-width: 1400px) {
     .gallery {
         column-count: 3; // 大屏幕3列
@@ -312,21 +336,21 @@
     
     // 小屏幕上减小图片名称和日期的字体大小
     .gallery-caption {
-        padding: 18px; // 减小内边距
+        padding: 12px; // 进一步减小内边距
         
         h3 {
-            font-size: 1.1rem; // 缩小名称字体
-            margin-bottom: 5px;
+            font-size: 0.85rem; // 缩小名称字体
+            margin-bottom: 3px;
         }
         
         p {
-            font-size: 0.8rem; // 缩小日期字体
+            font-size: 0.65rem; // 缩小日期字体
         }
         
         // 调整小屏幕上的输入框
         .rename-input {
             padding: 6px 8px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
     }
 }
@@ -334,20 +358,21 @@
 // 更小屏幕的额外调整
 @media (max-width: 400px) {
     .gallery-caption {
-        padding: 15px;
+        padding: 8px; // 更小屏幕上进一步减小内边距
         
         h3 {
-            font-size: 1rem;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
         }
         
         p {
-            font-size: 0.75rem;
+            font-size: 0.6rem;
         }
         
         // 调整更小屏幕上的输入框
         .rename-input {
-            padding: 5px 6px;
-            font-size: 0.9rem;
+            padding: 4px 6px;
+            font-size: 0.85rem;
         }
     }
 }
