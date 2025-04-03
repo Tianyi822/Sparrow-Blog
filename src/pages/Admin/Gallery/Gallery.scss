@@ -272,6 +272,35 @@
     .gallery-item {
         margin-bottom: 15px;
     }
+    
+    // 小屏幕上减小图片名称和日期的字体大小
+    .gallery-caption {
+        padding: 18px; // 减小内边距
+        
+        h3 {
+            font-size: 1.1rem; // 缩小名称字体
+            margin-bottom: 5px;
+        }
+        
+        p {
+            font-size: 0.8rem; // 缩小日期字体
+        }
+    }
+}
+
+// 更小屏幕的额外调整
+@media (max-width: 400px) {
+    .gallery-caption {
+        padding: 15px;
+        
+        h3 {
+            font-size: 1rem;
+        }
+        
+        p {
+            font-size: 0.75rem;
+        }
+    }
 }
 
 // 为了提高性能，在网格布局计算时添加content-visibility优化
