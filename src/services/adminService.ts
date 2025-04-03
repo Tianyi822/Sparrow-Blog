@@ -305,6 +305,18 @@ export const renameGalleryImage = async (imageId: string, data: RenameImageReque
     });
 };
 
+/**
+ * 删除图片
+ * @param imageId 图片ID
+ * @returns 操作结果
+ */
+export const deleteGalleryImage = async (imageId: string): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'DELETE',
+        url: `/admin/gallery/${imageId}`
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -317,5 +329,6 @@ export default {
     updateOrAddBlog,
     getBlogDataForEdit,
     getAllGalleryImages,
-    renameGalleryImage
+    renameGalleryImage,
+    deleteGalleryImage
 }; 

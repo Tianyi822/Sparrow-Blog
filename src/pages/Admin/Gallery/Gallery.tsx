@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react';
 import { FiSearch, FiTrash2, FiCode, FiFileText, FiEdit } from 'react-icons/fi'; // 添加 FiEdit 图标
 import './Gallery.scss';
-import { getAllGalleryImages, renameGalleryImage, RenameImageRequest } from '@/services/adminService';
+import { getAllGalleryImages, renameGalleryImage, deleteGalleryImage, RenameImageRequest } from '@/services/adminService';
 import { LayoutContext } from '@/layouts/AdminLayout'; // 导入布局上下文
 import { createPortal } from 'react-dom';
 
@@ -410,11 +410,27 @@ const Gallery: React.FC = () => {
         };
     }, [contextMenu.visible, closeContextMenu]);
 
-    const handleDelete = useCallback(() => {
+    const handleDelete = useCallback(async () => {
         if (!contextMenu.targetItem) return;
-        // 从 allImages 状态中过滤掉选定的图片
-        setAllImages(prevImages => prevImages.filter(img => img.id !== contextMenu.targetItem!.id));
-        closeContextMenu();
+        
+        try {
+            // 发送删除请求
+            const response = await deleteGalleryImage(contextMenu.targetItem.id);
+            
+            if (response.code === 200) {
+                // 从 allImages 状态中过滤掉选定的图片
+                setAllImages(prevImages => prevImages.filter(img => img.id !== contextMenu.targetItem!.id));
+                console.log('图片删除成功!');
+            } else {
+                console.error('删除失败:', response.msg);
+                // 可以添加错误提示
+            }
+        } catch (error) {
+            console.error('删除请求出错:', error);
+            // 可以添加错误提示
+        } finally {
+            closeContextMenu();
+        }
     }, [contextMenu.targetItem, closeContextMenu]);
 
     const handleCopyHTML = useCallback(() => {
