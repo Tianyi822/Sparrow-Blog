@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } 
 import { FiSearch, FiTrash2, FiCode, FiFileText, FiEdit } from 'react-icons/fi'; // 添加 FiEdit 图标
 import './Gallery.scss';
 import { getAllGalleryImages, renameGalleryImage, deleteGalleryImage, RenameImageRequest } from '@/services/adminService';
-import { LayoutContext } from '@/layouts/AdminLayout'; // 导入布局上下文
+// 导入布局上下文
 import { createPortal } from 'react-dom';
+import { LayoutContext } from "@/layouts/LayoutContext.tsx";
 
 // --- 接口定义 ---
 export interface ImageItem {

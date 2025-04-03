@@ -1,19 +1,9 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
-import { FiFileText, FiEdit, FiSettings, FiMessageCircle, FiLogOut, FiImage } from 'react-icons/fi';
+import { FiFileText, FiEdit, FiSettings, FiMessageCircle, FiLogOut, FiImage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { getUserBasicInfo } from '@/services/adminService';
+import { LayoutContext } from './LayoutContext';
 import './AdminLayout.scss';
-
-// 创建上下文以共享折叠状态
-export interface LayoutContextType {
-  collapsed: boolean;
-  isLayoutTransitioning: boolean;
-}
-
-export const LayoutContext = createContext<LayoutContextType>({
-  collapsed: false,
-  isLayoutTransitioning: false
-});
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -83,7 +73,7 @@ const AdminLayout: React.FC = () => {
           <div className="sidebar-header">
             <h1 className="logo">{userName || '加载中...'}</h1>
             <button className="collapse-btn" onClick={toggleSidebar}>
-              {collapsed ? '→' : '←'}
+              {collapsed ? <FiChevronRight /> : <FiChevronLeft />}
             </button>
           </div>
           

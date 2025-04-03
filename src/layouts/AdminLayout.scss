@@ -89,6 +89,11 @@
         &:hover {
           background: rgba(255, 255, 255, 0.1);
         }
+        
+        svg {
+          width: 1.2rem;
+          height: 1.2rem;
+        }
       }
     }
     
@@ -276,10 +281,22 @@
       width: 70px;
       
       .sidebar-header {
-        padding: 1.2rem 0.75rem;
+        padding: 0.75rem 0;
+        display: flex;
+        justify-content: center;
+        height: 54px; // Match the height of nav items
         
         .logo {
           display: none;
+        }
+        
+        .collapse-btn {
+          margin: 0;
+          
+          svg {
+            width: 1.2rem; // Match size with nav icons
+            height: 1.2rem;
+          }
         }
       }
       
