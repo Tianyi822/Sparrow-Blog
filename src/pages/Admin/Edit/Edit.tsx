@@ -8,7 +8,7 @@ import {
 } from '@/services/adminService';
 import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
 import { marked } from 'marked';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { FiArrowUp, FiEye, FiPlus, FiX, FiSave, FiAlertCircle } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Edit.scss';
@@ -26,7 +26,7 @@ interface ValidationErrors {
 
 // 缓存数据结构接口
 interface BlogDraft {
-    blog_id: string | null; // 新增字段，用于区分编辑现有文章和新建文章
+    blog_id?: string | null; // 可选字段，用于区分编辑现有文章和新建文章
     title: string;
     intro: string;
     content: string;
@@ -37,17 +37,23 @@ interface BlogDraft {
     lastSaved: number; // 时间戳
 }
 
+// 缓存键常量
+const CACHE_KEY = 'blog_draft';
+// 缓存过期时间 (24小时)
+const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
+
 // 文章编辑页面组件
 const Edit: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const blogId = new URLSearchParams(location.search).get('blog_id');
+    const fromCache = new URLSearchParams(location.search).get('cache') === 'true';
     const isEditMode = !!blogId;
 
     // 缓存相关状态
     const [lastSavedTime, setLastSavedTime] = useState<string>('');
     const [showCachePrompt, setShowCachePrompt] = useState<boolean>(false);
-    
+
     // 文章信息状态
     const [title, setTitle] = useState<string>('');
     const [intro, setIntro] = useState<string>('');
@@ -82,15 +88,9 @@ const Edit: React.FC = () => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
 
-    // 缓存键生成函数
-    const getCacheKey = (): string => {
-        return 'blog_draft'; // 使用固定的缓存键
-    };
-
     // 保存草稿到本地缓存
-    const saveDraftToCache = () => {
+    const saveDraftToCache = useCallback(() => {
         const draftData: BlogDraft = {
-            blog_id: isEditMode ? blogId : null,
             title,
             intro,
             content,
@@ -101,108 +101,138 @@ const Edit: React.FC = () => {
             lastSaved: Date.now()
         };
 
+        // 如果是编辑模式，添加blog_id
+        if (isEditMode && blogId) {
+            draftData.blog_id = blogId;
+        }
+
         try {
-            const cacheKey = getCacheKey();
-            
-            console.log('保存草稿，使用缓存键:', cacheKey, '当前blog_id:', draftData.blog_id);
-            localStorage.setItem(cacheKey, JSON.stringify(draftData));
-            
+            console.log('保存草稿到缓存:', draftData.blog_id ? '编辑模式' : '新建模式');
+            localStorage.setItem(CACHE_KEY, JSON.stringify(draftData));
+
             // 更新最后保存时间
             setLastSavedTime(new Date().toLocaleTimeString());
-            
+
             // 显示自动保存通知
             setShowAutoSaveNotification(true);
             setTimeout(() => setShowAutoSaveNotification(false), 3000);
-            
+
             // 重置数据变更标志
             hasDataChangedRef.current = false;
             console.log('草稿保存成功');
         } catch (error) {
             console.error('保存草稿到本地缓存失败:', error);
         }
-    };
+    }, [blogId, category, content, intro, isEditMode, isPublic, isTop, tags, title]);
 
     // 从本地缓存中获取草稿
-    const loadDraftFromCache = (): BlogDraft | null => {
+    const loadDraftFromCache = useCallback((): BlogDraft | null => {
         try {
-            const cacheKey = getCacheKey();
-            
-            console.log('加载缓存，使用缓存键:', cacheKey);
-            
-            const cachedData = localStorage.getItem(cacheKey);
+            const cachedData = localStorage.getItem(CACHE_KEY);
             if (!cachedData) {
                 console.log('未找到缓存数据');
                 return null;
             }
-            
-            console.log('找到缓存数据:', cachedData.substring(0, 100) + '...');
-            
+
             const draftData = JSON.parse(cachedData) as BlogDraft;
-            
+
             // 检查缓存是否过期（24小时）
             const now = Date.now();
-            const cacheDuration = 24 * 60 * 60 * 1000; // 24小时
-            
-            if (now - draftData.lastSaved > cacheDuration) {
+            if (now - draftData.lastSaved > CACHE_EXPIRATION) {
                 // 缓存已过期，清除并返回null
                 console.log('缓存已过期，清除缓存');
-                localStorage.removeItem(cacheKey);
+                localStorage.removeItem(CACHE_KEY);
                 return null;
             }
-            
-            console.log('成功加载缓存数据');
+
+            console.log('成功加载缓存数据:', draftData.blog_id ? `编辑模式(ID: ${draftData.blog_id})` : '新建模式');
             return draftData;
         } catch (error) {
             console.error('从本地缓存中加载草稿失败:', error);
             return null;
         }
-    };
+    }, []);
 
     // 清除本地缓存
-    const clearCache = () => {
+    const clearCache = useCallback(() => {
         try {
-            const cacheKey = getCacheKey();
-            
-            console.log('清除缓存，使用缓存键:', cacheKey);
-            localStorage.removeItem(cacheKey);
-            
+            console.log('清除缓存');
+            localStorage.removeItem(CACHE_KEY);
             setShowCachePrompt(false);
+            setLastSavedTime('');
             console.log('缓存已清除');
         } catch (error) {
             console.error('清除本地缓存失败:', error);
         }
-    };
+    }, []);
 
-    // 从缓存中恢复数据
-    const restoreFromCache = () => {
-        const cachedDraft = loadDraftFromCache();
-        if (!cachedDraft) return;
-        
-        setTitle(cachedDraft.title);
-        setIntro(cachedDraft.intro);
-        setContent(cachedDraft.content);
-        setCategory(cachedDraft.category);
-        setTags(cachedDraft.tags);
-        setIsTop(cachedDraft.isTop);
-        setIsPublic(cachedDraft.isPublic);
-        
-        // 如果缓存中有blog_id但当前不是编辑模式，更新URL参数并切换到编辑模式
-        if (cachedDraft.blog_id && !isEditMode) {
-            // 使用replace而不是navigate，避免创建新的历史记录
-            navigate(`/admin/edit?blog_id=${cachedDraft.blog_id}`, { replace: true });
-            console.log('从草稿恢复，切换到编辑模式，blog_id:', cachedDraft.blog_id);
-        }
-        
+    // 加载缓存数据到表单
+    const loadCacheDataToForm = useCallback((draftData: BlogDraft) => {
+        setTitle(draftData.title);
+        setIntro(draftData.intro);
+        setContent(draftData.content);
+        setCategory(draftData.category);
+        setTags(draftData.tags);
+        setIsTop(draftData.isTop);
+        setIsPublic(draftData.isPublic);
+
         // 更新最后保存时间
+        const date = new Date(draftData.lastSaved);
+        setLastSavedTime(date.toLocaleString());
+
+        console.log('已加载缓存数据到表单');
+    }, []);
+
+    // 初始页面加载时检查缓存数据
+    useEffect(() => {
+        // 如果URL中已包含cache=true参数，表示已经是从缓存加载，不需要再处理
+        if (fromCache) {
+            console.log('URL中包含cache=true参数，跳过缓存检查');
+            return;
+        }
+
+        const cachedDraft = loadDraftFromCache();
+        if (!cachedDraft) {
+            console.log('没有发现缓存数据');
+            return;
+        }
+
+        console.log('发现缓存数据:', cachedDraft);
+
+        // 无论缓存是否包含blog_id，都显示恢复提示，不自动重定向
+        console.log('显示缓存恢复提示，等待用户确认');
+        setShowCachePrompt(true);
+
+        // 更新最后保存时间显示
         const date = new Date(cachedDraft.lastSaved);
         setLastSavedTime(date.toLocaleString());
-        
+    }, [loadDraftFromCache, fromCache]);
+
+    // 从缓存中恢复数据
+    const restoreFromCache = useCallback(() => {
+        const cachedDraft = loadDraftFromCache();
+        if (!cachedDraft) return;
+
+        // 如果缓存中有blog_id，重定向到编辑页面
+        if (cachedDraft.blog_id) {
+            console.log('缓存有blog_id，重定向到编辑页面:', cachedDraft.blog_id);
+            // 重定向到带有cache=true参数的URL，表示需要从缓存加载数据
+            navigate(`/admin/edit?blog_id=${cachedDraft.blog_id}&cache=true`, { replace: true });
+            return;
+        }
+
+        // 如果没有blog_id，直接加载缓存数据
+        loadCacheDataToForm(cachedDraft);
         setShowCachePrompt(false);
-        
-        // 恢复草稿后清除缓存，避免重复提示
+
+        console.log('已从缓存恢复数据');
+    }, [loadDraftFromCache, loadCacheDataToForm, navigate]);
+
+    // 丢弃缓存
+    const discardCache = useCallback(() => {
         clearCache();
-        console.log('恢复草稿后已清除缓存');
-    };
+        console.log('已丢弃缓存');
+    }, [clearCache]);
 
     // 设置自动保存定时器
     useEffect(() => {
@@ -212,26 +242,29 @@ const Edit: React.FC = () => {
                 saveDraftToCache();
             }
         }, 30000);
-        
+
         return () => {
             if (autoSaveTimerRef.current) {
                 clearInterval(autoSaveTimerRef.current);
             }
         };
-    }, []);
+    }, [saveDraftToCache]);
 
     // 检查页面离开
     useEffect(() => {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             if (hasDataChangedRef.current) {
-                const message = "您有未保存的更改，确定要离开吗？";
-                e.returnValue = message;
-                return message;
+                // 阻止默认行为
+                e.preventDefault();
+                // 现代浏览器需要通过 returnValue 设置提示信息
+                const message = '您有未保存的更改，确定要离开吗？';
+                e.returnValue = message; // 保留以兼容旧浏览器
+                return message; // 返回值用于现代浏览器
             }
         };
-        
+
         window.addEventListener('beforeunload', handleBeforeUnload);
-        
+
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
@@ -254,89 +287,89 @@ const Edit: React.FC = () => {
         fetchTagsAndCategories();
     }, []);
 
-    // 检查是否有缓存数据
+    // 处理数据加载逻辑
     useEffect(() => {
-        const cachedDraft = loadDraftFromCache();
-        if (cachedDraft) {
-            // 无条件展示缓存恢复提示，无论是编辑模式还是新建模式
-            
-            setShowCachePrompt(true);
-            
-            // 更新最后保存时间
-            const date = new Date(cachedDraft.lastSaved);
-            setLastSavedTime(date.toLocaleString());
-            
-            console.log('找到草稿数据，显示恢复提示');
-            console.log('缓存blog_id:', cachedDraft.blog_id, '当前blog_id:', blogId, '当前模式:', isEditMode ? '编辑' : '新建');
-        }
-    }, [isEditMode, blogId]);
+        const loadData = async () => {
+            setLoading(true);
 
-    // 如果是编辑模式，获取博客数据
-    useEffect(() => {
-        const fetchBlogData = async () => {
-            if (isEditMode && blogId) {
-                try {
-                    setLoading(true);
-                    
-                    // 先检查是否有缓存数据
+            try {
+                // 如果是从缓存加载的请求
+                if (fromCache) {
+                    console.log('从缓存加载数据');
                     const cachedDraft = loadDraftFromCache();
-                    
-                    // 如果缓存数据存在且用户已确认使用缓存，则不请求服务器数据
-                    if (cachedDraft && showCachePrompt) {
-                        setLoading(false);
-                        return;
-                    }
-                    
-                    const response = await getBlogDataForEdit(blogId);
 
-                    if (response.code === 200) {
-                        const { blog_data, content_url } = response.data;
+                    if (cachedDraft) {
+                        // 加载缓存数据到表单
+                        loadCacheDataToForm(cachedDraft);
 
-                        // 设置基本信息
-                        setTitle(blog_data.blog_title || '');
-                        setIntro(blog_data.blog_brief || '');
-                        setCategory(blog_data.category || null);
-                        setTags(blog_data.tags || []);
-
-                        // 设置文章状态
-                        setIsTop(!!blog_data.blog_is_top);
-                        setIsPublic(blog_data.blog_state !== false);
-                        if (blog_data.blog_is_top !== undefined) {
-                            setIsTop(blog_data.blog_is_top);
-                        }
-                        if (blog_data.blog_state !== undefined) {
-                            setIsPublic(blog_data.blog_state);
-                        }
-
-                        // 获取文章内容
-                        try {
-                            const contentResponse = await fetch(content_url);
-                            if (contentResponse.ok) {
-                                const markdownContent = await contentResponse.text();
-                                setContent(markdownContent);
-                            } else {
-                                // 直接处理错误情况，而不是抛出异常
-                                console.error('获取文章内容失败:', contentResponse.status, contentResponse.statusText);
-                                setErrors(prev => ({ ...prev, content: '无法加载文章内容' }));
-                            }
-                        } catch (contentError) {
-                            console.error('获取文章内容错误:', contentError);
-                            setErrors(prev => ({ ...prev, content: '无法加载文章内容' }));
+                        // 如果是编辑模式并且cache=true，加载完成后清除缓存
+                        if (isEditMode) {
+                            clearCache();
+                            console.log('已从URL参数加载缓存数据，清除缓存');
                         }
                     } else {
-                        setErrors(prev => ({ ...prev, submit: `获取博客数据失败: ${response.msg}` }));
+                        console.log('找不到缓存数据，尝试从服务器加载');
+                        await loadDataFromServer();
                     }
-                } catch (error) {
-                    console.error('获取博客数据错误:', error);
-                    setErrors(prev => ({ ...prev, submit: '获取博客数据时发生错误' }));
-                } finally {
-                    setLoading(false);
                 }
+                // 如果是编辑模式且不是从缓存加载，从服务器获取数据
+                else if (isEditMode && blogId) {
+                    await loadDataFromServer();
+                }
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                setErrors(prev => ({ ...prev, submit: '加载数据失败，请稍后重试' }));
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchBlogData();
-    }, [isEditMode, blogId, showCachePrompt]);
+        const loadDataFromServer = async () => {
+            if (!blogId) return;
+
+            console.log('从服务器加载数据:', blogId);
+            const response = await getBlogDataForEdit(blogId);
+
+            if (response.code === 200) {
+                const { blog_data, content_url } = response.data;
+
+                // 设置基本信息
+                setTitle(blog_data.blog_title || '');
+                setIntro(blog_data.blog_brief || '');
+                setCategory(blog_data.category || null);
+                setTags(blog_data.tags || []);
+
+                // 设置文章状态
+                setIsTop(!!blog_data.blog_is_top);
+                setIsPublic(blog_data.blog_state !== false);
+                if (blog_data.blog_is_top !== undefined) {
+                    setIsTop(blog_data.blog_is_top);
+                }
+                if (blog_data.blog_state !== undefined) {
+                    setIsPublic(blog_data.blog_state);
+                }
+
+                // 获取文章内容
+                try {
+                    const contentResponse = await fetch(content_url);
+                    if (contentResponse.ok) {
+                        const markdownContent = await contentResponse.text();
+                        setContent(markdownContent);
+                    } else {
+                        console.error('获取文章内容失败:', contentResponse.status, contentResponse.statusText);
+                        setErrors(prev => ({ ...prev, content: '无法加载文章内容' }));
+                    }
+                } catch (contentError) {
+                    console.error('获取文章内容错误:', contentError);
+                    setErrors(prev => ({ ...prev, content: '无法加载文章内容' }));
+                }
+            } else {
+                setErrors(prev => ({ ...prev, submit: `获取博客数据失败: ${response.msg}` }));
+            }
+        };
+
+        loadData();
+    }, [blogId, isEditMode, fromCache, loadDraftFromCache, loadCacheDataToForm, clearCache]);
 
     // 清除指定字段的错误
     const clearError = (field: string) => {
@@ -667,7 +700,7 @@ const Edit: React.FC = () => {
                         <span>发现未保存的草稿（{lastSavedTime}），是否恢复？</span>
                         <div className="cache-actions">
                             <button onClick={restoreFromCache} className="restore-button">恢复草稿</button>
-                            <button onClick={clearCache} className="discard-button">丢弃草稿</button>
+                            <button onClick={discardCache} className="discard-button">丢弃草稿</button>
                         </div>
                     </div>
                 )}
@@ -894,8 +927,8 @@ const Edit: React.FC = () => {
                                 <div className="markdown-editor" style={{ width: '100%' }}>
                                     <div className="markdown-edit-header">
                                         {isPreviewMode ? '预览' : '编辑'}
-                                        <button 
-                                            className="preview-toggle-btn" 
+                                        <button
+                                            className="preview-toggle-btn"
                                             onClick={togglePreviewMode}
                                         >
                                             <FiEye className="toggle-icon" />
