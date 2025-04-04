@@ -246,43 +246,53 @@ const Gallery: React.FC = () => {
     // 添加是否正在调整窗口大小的状态
     const [isResizing, setIsResizing] = useState(false);
     const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
+    // 添加错误消息状态
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     // 使用布局上下文
     const {collapsed, isLayoutTransitioning} = useContext(LayoutContext);
     // 跟踪上一次的collapsed状态，以便检测变化
     const prevCollapsedRef = useRef(collapsed);
 
-    // 加载真实数据
-    useEffect(() => {
-        const fetchGalleryImages = async () => {
-            try {
-                setIsLoading(true);
-                const response = await getAllGalleryImages();
-                if (response.code === 200 && response.data) {
-                    // 获取环境变量中的业务服务URL
-                    const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
-
-                    // 将API数据转换为组件所需的格式
-                    const formattedImages: ImageItem[] = response.data.map(img => ({
-                        id: img.img_id,
-                        url: `${businessServiceUrl}/img/get/${img.img_id}`,
-                        name: img.img_name,
-                        type: img.img_type,
-                        date: new Date().toLocaleDateString('zh-CN') // 由于API没有返回日期，使用当前日期
-                    }));
-                    setAllImages(formattedImages);
-                } else {
-                    console.error('获取图片失败:', response.msg);
-                }
-            } catch (error) {
-                console.error('获取图片出错:', error);
-            } finally {
-                setIsLoading(false);
+    // 刷新图库
+    const refreshGallery = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const response = await getAllGalleryImages();
+            console.log('图库API响应:', response);
+            
+            if (response.code === 200) {
+                // 获取环境变量中的业务服务URL
+                const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
+                console.log('业务服务URL:', businessServiceUrl);
+                
+                // 将API数据转换为组件所需的格式
+                const formattedImages: ImageItem[] = response.data.map(img => ({
+                    id: img.img_id,
+                    url: `${businessServiceUrl}/img/get/${img.img_id}`,
+                    name: img.img_name,
+                    type: img.img_type,
+                    date: new Date().toLocaleDateString('zh-CN') // 由于API没有返回日期，使用当前日期
+                }));
+                console.log('格式化后的图片数据:', formattedImages);
+                setAllImages(formattedImages);
+                setErrorMessage(null);
+            } else {
+                console.error('API返回错误码:', response.code, response.msg);
+                setErrorMessage(`获取图片失败: ${response.msg}`);
             }
-        };
-
-        fetchGalleryImages();
+        } catch (error) {
+            console.error('加载图片失败:', error);
+            setErrorMessage(error instanceof Error ? error.message : '加载图片失败');
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
+
+    // 初始加载图片
+    useEffect(() => {
+        refreshGallery();
+    }, [refreshGallery]);
 
     // 处理窗口大小调整的防抖效果
     useEffect(() => {
@@ -517,13 +527,17 @@ const Gallery: React.FC = () => {
         setIsUploadModalVisible(false);
     }, []);
 
-    // 处理图片上传完成
-    const handleImagesUploaded = useCallback((images: File[]) => {
-        console.log('图片上传完成，获取到压缩后的文件:', images);
-        // 这里可以实现上传到服务器的逻辑，然后刷新图库
-        // 在实际项目中，这里会调用API上传图片，然后刷新图库列表
-        alert(`已完成${images.length}张图片的压缩，实际项目中会上传到服务器`);
-    }, []);
+    // 处理完成图片上传后的回调
+    const handleImagesUploaded = useCallback(async (_uploadedImages: any[]) => {
+        try {
+            // 已在UploadModal组件中处理上传逻辑
+            // 这里只需要刷新图库
+            await refreshGallery();
+        } catch (error) {
+            console.error('处理上传图片失败:', error);
+            setErrorMessage(error instanceof Error ? error.message : '处理上传图片失败');
+        }
+    }, [refreshGallery]);
 
     return (
         <div className="gallery-container" ref={galleryContainerRef}>
@@ -541,6 +555,18 @@ const Gallery: React.FC = () => {
                     添加图片
                 </button>
             </div>
+
+            {errorMessage && (
+                <div className="error-message">
+                    {errorMessage}
+                    <button 
+                        className="close-error-btn" 
+                        onClick={() => setErrorMessage(null)}
+                    >
+                        &times;
+                    </button>
+                </div>
+            )}
 
             {isLoading ? (
                 <div className="loading-indicator">加载中...</div>

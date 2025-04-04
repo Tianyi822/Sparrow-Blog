@@ -3,6 +3,8 @@ import { FiLoader, FiCheckCircle, FiUploadCloud } from 'react-icons/fi';
 import { createPortal } from 'react-dom';
 import imageCompression from 'browser-image-compression';
 import './Gallery.scss';
+import { getPreSignUrl, uploadToOSS, FileType, ContentType } from '@/services/ossService';
+import { addGalleryImages, AddImagesRequest } from '@/services/adminService';
 
 // 添加上传文件接口
 interface UploadFile {
@@ -15,6 +17,10 @@ interface UploadFile {
     compressedSize?: number;
     compressedFile?: File;
     compressionProgress: number; // 压缩进度 0-100
+    isUploading?: boolean; // 是否正在上传
+    isUploaded?: boolean; // 是否已上传完成
+    uploadProgress?: number; // 上传进度 0-100
+    uploadError?: string; // 上传错误信息
 }
 
 // --- 文件上传模态框组件 ---
@@ -24,10 +30,11 @@ interface UploadModalProps {
     onImagesUploaded?: (images: File[]) => void;
 }
 
-const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUploaded}) => {
+const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUploaded }) => {
     const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [areAllFilesCompressed, setAreAllFilesCompressed] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // 清理预览URL
@@ -176,6 +183,120 @@ const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUplo
         }
     };
 
+    // 上传图片到OSS
+    const uploadImageToOSS = async (file: UploadFile, index: number): Promise<{ success: boolean, fileName: string } | false> => {
+        try {
+            if (!file.compressedFile) {
+                console.error(`文件 ${file.name} 没有压缩后的文件对象`);
+                return false;
+            }
+
+            // 更新状态为上传中
+            setUploadFiles(prev => {
+                const updated = [...prev];
+                if (index < updated.length) {
+                    updated[index] = {
+                        ...updated[index],
+                        isUploading: true,
+                        uploadProgress: 0,
+                        uploadError: undefined
+                    };
+                }
+                return updated;
+            });
+
+            // 1. 获取文件名，去除扩展名，只保留文件名本身并添加时间戳
+            const timestamp = new Date().getTime();
+            let fileName = file.name;
+
+            // 移除原始文件扩展名，只保留文件名本身
+            const nameParts = fileName.split('.');
+            // 如果文件名包含扩展名，则去掉扩展名
+            if (nameParts.length > 1) {
+                // 去掉最后一部分(扩展名)
+                nameParts.pop();
+            }
+            // 只保留文件名和时间戳，不添加任何扩展名
+            const uploadFileName = `${nameParts.join('.')}_${timestamp}`;
+
+            // 2. 获取预签名URL
+            console.log(`获取预签名URL: ${uploadFileName}`);
+            const preSignUrlResponse = await getPreSignUrl(uploadFileName, FileType.WEBP);
+
+            if (preSignUrlResponse.code !== 200) {
+                throw new Error(`获取预签名URL失败: ${preSignUrlResponse.msg}`);
+            }
+
+            const preSignUrl = preSignUrlResponse.data.pre_sign_put_url;
+
+            // 3. 读取文件内容
+            const fileContent = await file.compressedFile.arrayBuffer();
+
+            // 更新上传进度为50%
+            setUploadFiles(prev => {
+                const updated = [...prev];
+                if (index < updated.length) {
+                    updated[index] = {
+                        ...updated[index],
+                        uploadProgress: 50
+                    };
+                }
+                return updated;
+            });
+
+            // 4. 上传到OSS
+            console.log(`上传文件到OSS: ${uploadFileName}`);
+            const uploadSuccess = await uploadToOSS(
+                preSignUrl,
+                fileContent,
+                ContentType.WEBP
+            );
+
+            if (!uploadSuccess) {
+                throw new Error(`上传到OSS失败`);
+            }
+
+            // 5. 更新状态为上传完成
+            setUploadFiles(prev => {
+                const updated = [...prev];
+                if (index < updated.length) {
+                    updated[index] = {
+                        ...updated[index],
+                        isUploading: false,
+                        isUploaded: true,
+                        uploadProgress: 100
+                    };
+                }
+                return updated;
+            });
+
+            console.log(`文件 ${uploadFileName} 上传成功`);
+            return { 
+                success: true, 
+                fileName: uploadFileName 
+            };
+
+        } catch (error) {
+            console.error(`上传文件 ${file.name} 失败:`, error);
+
+            // 更新错误状态
+            setUploadFiles(prev => {
+                const updated = [...prev];
+                if (index < updated.length) {
+                    updated[index] = {
+                        ...updated[index],
+                        isUploading: false,
+                        isUploaded: false,
+                        uploadError: error instanceof Error ? error.message : '上传失败'
+                    };
+                }
+                return updated;
+            });
+
+            return false;
+        }
+    };
+
     // 处理多个文件的上传 - 完全重写
     const processFiles = async (files: FileList) => {
         console.log(`处理 ${files.length} 个文件`);
@@ -275,24 +396,80 @@ const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUplo
     };
 
     // 处理上传按钮点击
-    const handleUpload = () => {
-        console.log('已完成压缩，可以上传:', uploadFiles.map(f => ({
-            name: f.name,
-            originalSize: formatFileSize(f.originalSize),
-            compressedSize: f.compressedSize ? formatFileSize(f.compressedSize) : 'N/A',
-            compressionRate: f.compressedSize ? getCompressionRate(f.originalSize, f.compressedSize) : 'N/A'
-        })));
+    const handleUpload = async () => {
+        const compressedFiles = uploadFiles.filter(f => f.isCompressed && f.compressedFile);
+
+        if (compressedFiles.length === 0) {
+            console.warn('没有压缩完成的文件可上传');
+            return;
+        }
+
+        console.log(`开始上传 ${compressedFiles.length} 张图片到OSS`);
+        setIsUploading(true);
+
+        const uploadedFiles: File[] = [];
+        const uploadedImageInfo: { img_name: string; img_type: string }[] = [];
+
+        // 依次上传每张图片
+        for (let i = 0; i < compressedFiles.length; i++) {
+            const file = compressedFiles[i];
+            const fileIndex = uploadFiles.findIndex(f => f === file);
+
+            if (fileIndex === -1) {
+                console.error(`找不到文件索引: ${file.name}`);
+                continue;
+            }
+
+            try {
+                const result = await uploadImageToOSS(file, fileIndex);
+                if (result && result.success && file.compressedFile) {
+                    uploadedFiles.push(file.compressedFile);
+                    
+                    // 收集上传成功的图片信息
+                    uploadedImageInfo.push({
+                        img_name: result.fileName,
+                        img_type: "webp"
+                    });
+                }
+            } catch (error) {
+                console.error(`上传文件 ${file.name} 失败:`, error);
+            }
+        }
+
+        if (uploadedImageInfo.length > 0) {
+            try {
+                // 将上传的图片信息提交到API
+                console.log('添加图片到图库，数据:', uploadedImageInfo);
+                
+                const addRequest: AddImagesRequest = {
+                    imgs: uploadedImageInfo
+                };
+                
+                const response = await addGalleryImages(addRequest);
+                
+                if (response.code === 200) {
+                    console.log('添加图片到图库成功');
+                } else {
+                    console.error('添加图片到图库失败:', response.msg);
+                    alert(`添加图片到图库失败: ${response.msg}`);
+                }
+            } catch (error) {
+                console.error('API调用失败:', error);
+                alert('添加图片到图库失败: ' + (error instanceof Error ? error.message : String(error)));
+            }
+        }
+
+        setIsUploading(false);
+
+        console.log(`上传完成，成功上传 ${uploadedFiles.length}/${compressedFiles.length} 张图片`);
 
         // 如果提供了回调函数，则调用它
-        if (onImagesUploaded) {
-            const compressedFiles = uploadFiles
-                .filter(f => f.isCompressed && f.compressedFile)
-                .map(f => f.compressedFile as File);
-            onImagesUploaded(compressedFiles);
-        } else {
-            // 这里只是前端功能演示，不实际调用后端接口
-            alert('压缩完成！在实际项目中，这里会调用上传API');
+        if (onImagesUploaded && uploadedFiles.length > 0) {
+            onImagesUploaded(uploadedFiles);
         }
+        
+        // 清空上传列表
+        setUploadFiles([]);
 
         // 关闭模态框
         onClose();
@@ -322,7 +499,7 @@ const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUplo
                         <input
                             type="file"
                             ref={fileInputRef}
-                            style={{display: 'none'}}
+                            style={{ display: 'none' }}
                             accept=".jpg,.jpeg,.png,.webp"
                             multiple
                             onChange={handleFileInputChange}
@@ -336,15 +513,27 @@ const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUplo
                                 {uploadFiles.map((file, index) => (
                                     <div key={index} className="file-item">
                                         <div className="file-preview">
-                                            <img src={file.preview} alt={file.name}/>
+                                            <img src={file.preview} alt={file.name} />
                                             {file.isCompressing && (
                                                 <div className="compression-overlay">
-                                                    <FiLoader className="compression-spinner"/>
+                                                    <FiLoader className="compression-spinner" />
                                                     <span>压缩中 {file.compressionProgress}%</span>
                                                     <div className="progress-bar-container">
                                                         <div
                                                             className="progress-bar"
-                                                            style={{width: `${file.compressionProgress}%`}}
+                                                            style={{ width: `${file.compressionProgress}%` }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {file.isUploading && (
+                                                <div className="compression-overlay upload-overlay">
+                                                    <FiLoader className="compression-spinner" />
+                                                    <span>上传中 {file.uploadProgress || 0}%</span>
+                                                    <div className="progress-bar-container">
+                                                        <div
+                                                            className="progress-bar upload-progress"
+                                                            style={{ width: `${file.uploadProgress || 0}%` }}
                                                         ></div>
                                                     </div>
                                                 </div>
@@ -356,8 +545,11 @@ const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUplo
                                                 {file.isCompressed ? (
                                                     <div className="compression-info">
                                                         <div className="compression-status success">
-                                                            <FiCheckCircle/>
-                                                            <span>已完成</span>
+                                                            <FiCheckCircle />
+                                                            <span>
+                                                                {file.isUploaded ? '已上传' :
+                                                                    file.uploadError ? '上传失败' : '已压缩'}
+                                                            </span>
                                                         </div>
                                                         <div className="size-info">
                                                             <span>{formatFileSize(file.originalSize)}</span>
@@ -367,6 +559,11 @@ const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUplo
                                                                 (-{getCompressionRate(file.originalSize, file.compressedSize || 0)})
                                                             </span>
                                                         </div>
+                                                        {file.uploadError && (
+                                                            <div className="upload-error">
+                                                                {file.uploadError}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 ) : (
                                                     <div className="compression-status">
@@ -381,6 +578,7 @@ const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUplo
                                             <button
                                                 className="remove-file"
                                                 onClick={() => handleRemoveFile(index)}
+                                                disabled={file.isUploading}
                                             >
                                                 &times;
                                             </button>
@@ -390,12 +588,12 @@ const UploadModal: React.FC<UploadModalProps> = ({visible, onClose, onImagesUplo
                             </div>
                             <div className="upload-actions">
                                 <button
-                                    className={`upload-button ${areAllFilesCompressed ? 'enabled' : 'disabled'}`}
-                                    disabled={!areAllFilesCompressed}
+                                    className={`upload-button ${areAllFilesCompressed && !isUploading ? 'enabled' : 'disabled'}`}
+                                    disabled={!areAllFilesCompressed || isUploading}
                                     onClick={handleUpload}
                                 >
-                                    <FiUploadCloud/>
-                                    上传图片 ({uploadFiles.filter(f => f.isCompressed).length}/{uploadFiles.length})
+                                    <FiUploadCloud />
+                                    {isUploading ? '上传中...' : `上传图片 (${uploadFiles.filter(f => f.isCompressed).length}/${uploadFiles.length})`}
                                 </button>
                             </div>
                         </div>

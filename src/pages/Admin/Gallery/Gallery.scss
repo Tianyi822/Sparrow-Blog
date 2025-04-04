@@ -860,4 +860,54 @@
   100% {
     box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
   }
+}
+
+// 添加上传相关样式
+.upload-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+    
+    .compression-spinner {
+        color: #2ecc71;
+    }
+}
+
+.upload-progress {
+    background-color: #2ecc71;
+}
+
+.upload-error {
+    color: #e74c3c;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    padding: 2px 4px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: 2px;
+}
+
+.error-message {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border-left: 3px solid #e74c3c;
+    margin: 10px 0;
+    padding: 10px 15px;
+    position: relative;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.9rem;
+    
+    .close-error-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #e74c3c;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0 5px;
+        
+        &:hover {
+            color: #c0392b;
+        }
+    }
 } 

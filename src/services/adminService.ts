@@ -123,6 +123,21 @@ export interface GalleryImagesResponse {
     data: GalleryImage[];
 }
 
+// 添加图片请求接口
+export interface AddImagesRequest {
+    imgs: Array<{
+        img_name: string;
+        img_type: string;
+    }>;
+}
+
+// 添加图片响应接口
+export interface AddImagesResponse {
+    code: number;
+    msg: string;
+    data: null;
+}
+
 // 重命名图片请求接口
 export interface RenameImageRequest {
     img_id: string;
@@ -338,6 +353,22 @@ export const getPreSignUrl = async (fileName: string, fileType: string): Promise
     });
 };
 
+/**
+ * 添加多张图片到图库
+ * @param data 包含图片信息的请求数据
+ * @returns 添加结果
+ */
+export const addGalleryImages = async (data: AddImagesRequest): Promise<AddImagesResponse> => {
+    return businessApiRequest<AddImagesResponse>({
+        method: 'POST',
+        url: '/admin/gallery/add',
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -352,5 +383,6 @@ export default {
     getAllGalleryImages,
     renameGalleryImage,
     deleteGalleryImage,
-    getPreSignUrl
+    getPreSignUrl,
+    addGalleryImages
 }; 

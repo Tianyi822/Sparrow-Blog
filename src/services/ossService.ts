@@ -5,17 +5,11 @@ import { businessApiRequest } from './api';
 export const FileType = {
     MARKDOWN: "markdown",
     WEBP: "webp",
-    JPG: "jpg",
-    JPEG: "jpeg",
-    PNG: "png"
 };
 
 export const ContentType = {
     MARKDOWN: "text/markdown",
     WEBP: "image/webp",
-    JPG: "image/jpg",
-    JPEG: "image/jpeg",
-    PNG: "image/png"
 }
 
 // 预签名URL响应接口
@@ -41,7 +35,7 @@ export const getPreSignUrl = async (fileName: string, fileType: string): Promise
 };
 
 // 上传文件到OSS
-export const uploadToOSS = async (presignUrl: string, content: string, contentType: string = 'text/markdown'): Promise<boolean> => {
+export const uploadToOSS = async (presignUrl: string, content: string | Blob | ArrayBuffer, contentType: string = 'text/markdown'): Promise<boolean> => {
     const response = await axios.put(presignUrl, content, {
         headers: {
             'Content-Type': contentType
