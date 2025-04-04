@@ -1,7 +1,25 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { FiLoader, FiPlus, FiX, FiCopy, FiCheckCircle } from 'react-icons/fi';
-import { GalleryImage, getAllGalleryImages } from '@/services/adminService';
+import { FiLoader, FiPlus, FiX, FiCopy, FiCheckCircle, FiUploadCloud } from 'react-icons/fi';
+import { GalleryImage, getAllGalleryImages, addGalleryImages, AddImagesRequest } from '@/services/adminService';
+import { getPreSignUrl, uploadToOSS, FileType, ContentType } from '@/services/ossService';
+import imageCompression from 'browser-image-compression';
 import './ImageGalleryModal.scss';
+
+// 上传文件状态接口
+interface UploadFileState {
+    file: File;
+    name: string;
+    isCompressing: boolean;
+    isCompressed: boolean;
+    originalSize: number;
+    compressedSize?: number;
+    compressedFile?: File;
+    compressionProgress: number;
+    isUploading: boolean;
+    isUploaded: boolean;
+    uploadProgress: number;
+    uploadError?: string;
+}
 
 interface ImageGalleryModalProps {
     isOpen: boolean;
@@ -14,6 +32,11 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
     const [galleryLoading, setGalleryLoading] = useState<boolean>(false);
     const [copiedImageId, setCopiedImageId] = useState<string | null>(null);
     const galleryRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    
+    // 上传状态
+    const [uploadFile, setUploadFile] = useState<UploadFileState | null>(null);
+    const [isUploading, setIsUploading] = useState<boolean>(false);
 
     // 加载图片库数据
     const loadImageGallery = useCallback(async () => {
@@ -38,22 +61,278 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
         }
     }, []);
 
+    // 验证文件类型
+    const validateFile = (file: File) => {
+        const validTypes = ['image/webp', 'image/jpeg', 'image/jpg', 'image/png'];
+        return validTypes.includes(file.type);
+    };
+
+    // 压缩图片
+    const compressImage = async (file: File): Promise<File | null> => {
+        console.log(`开始压缩图片: ${file.name}`);
+        
+        try {
+            // 更新压缩状态
+            setUploadFile(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    isCompressing: true,
+                    compressionProgress: 5
+                };
+            });
+
+            // 压缩选项
+            const options = {
+                maxSizeMB: 1, // 最大1MB
+                useWebWorker: true, // 使用Web Worker避免阻塞UI
+                fileType: 'image/webp', // 输出WebP格式
+                quality: 0.95, // 95%质量，优先保证图片质量
+                initialQuality: 0.95, // 初始质量设置（部分浏览器需要）
+                alwaysKeepResolution: true, // 保持原始分辨率
+                preserveExif: true, // 保留图片元数据
+                onProgress: (progress: number) => {
+                    // 更新压缩进度
+                    setUploadFile(prev => {
+                        if (!prev) return null;
+                        return {
+                            ...prev,
+                            compressionProgress: Math.round(progress)
+                        };
+                    });
+                }
+            };
+
+            // 执行压缩
+            console.log(`执行压缩: ${file.name}`);
+            const compressedFile = await imageCompression(file, options);
+            console.log(`压缩完成: ${file.name}, 从 ${file.size} 减小到 ${compressedFile.size}`);
+
+            // 更新完成状态
+            setUploadFile(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    isCompressing: false,
+                    isCompressed: true,
+                    compressedSize: compressedFile.size,
+                    compressedFile: compressedFile,
+                    compressionProgress: 100
+                };
+            });
+
+            return compressedFile;
+        } catch (error) {
+            console.error(`压缩失败 ${file.name}:`, error);
+
+            // 更新错误状态
+            setUploadFile(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    isCompressing: false,
+                    isCompressed: false,
+                    compressionProgress: 0
+                };
+            });
+
+            return null;
+        }
+    };
+
+    // 上传图片到OSS
+    const uploadImageToOSS = async (file: File): Promise<{success: boolean, fileName: string} | null> => {
+        try {
+            // 更新状态为上传中
+            setUploadFile(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    isUploading: true,
+                    uploadProgress: 0,
+                    uploadError: undefined
+                };
+            });
+
+            // 1. 获取文件名，去除扩展名，只保留文件名本身并添加时间戳
+            const timestamp = new Date().getTime();
+            const fileName = file.name;
+
+            // 移除原始文件扩展名，只保留文件名本身
+            const nameParts = fileName.split('.');
+            // 如果文件名包含扩展名，则去掉扩展名
+            if (nameParts.length > 1) {
+                // 去掉最后一部分(扩展名)
+                nameParts.pop();
+            }
+            // 只保留文件名和时间戳，不添加任何扩展名
+            const uploadFileName = `${nameParts.join('.')}_${timestamp}`;
+
+            // 2. 获取预签名URL
+            console.log(`获取预签名URL: ${uploadFileName}`);
+            const preSignUrlResponse = await getPreSignUrl(uploadFileName, FileType.WEBP);
+
+            if (preSignUrlResponse.code !== 200) {
+                console.error(`获取预签名URL失败: ${preSignUrlResponse.msg}`);
+                
+                setUploadFile(prev => {
+                    if (!prev) return null;
+                    return {
+                        ...prev,
+                        isUploading: false,
+                        uploadError: `获取预签名URL失败: ${preSignUrlResponse.msg}`
+                    };
+                });
+                
+                return null;
+            }
+
+            const preSignUrl = preSignUrlResponse.data.pre_sign_put_url;
+
+            // 3. 读取文件内容
+            const fileContent = await file.arrayBuffer();
+
+            // 更新上传进度为50%
+            setUploadFile(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    uploadProgress: 50
+                };
+            });
+
+            // 4. 上传到OSS
+            console.log(`上传文件到OSS: ${uploadFileName}`);
+            const uploadSuccess = await uploadToOSS(
+                preSignUrl,
+                fileContent,
+                ContentType.WEBP
+            );
+
+            if (!uploadSuccess) {
+                console.error('上传到OSS失败');
+                
+                setUploadFile(prev => {
+                    if (!prev) return null;
+                    return {
+                        ...prev,
+                        isUploading: false,
+                        uploadError: '上传到OSS失败'
+                    };
+                });
+                
+                return null;
+            }
+
+            // 5. 更新状态为上传完成
+            setUploadFile(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    isUploading: false,
+                    isUploaded: true,
+                    uploadProgress: 100
+                };
+            });
+
+            console.log(`文件 ${uploadFileName} 上传成功`);
+            return { 
+                success: true, 
+                fileName: uploadFileName 
+            };
+
+        } catch (error) {
+            console.error(`上传文件失败:`, error);
+
+            // 更新错误状态
+            setUploadFile(prev => {
+                if (!prev) return null;
+                return {
+                    ...prev,
+                    isUploading: false,
+                    isUploaded: false,
+                    uploadError: error instanceof Error ? error.message : '上传失败'
+                };
+            });
+
+            return null;
+        }
+    };
+
+    // 添加图片到图库
+    const addImageToGallery = async (fileName: string) => {
+        try {
+            // 将上传的图片信息提交到API
+            console.log('添加图片到图库，数据:', fileName);
+            
+            const addRequest: AddImagesRequest = {
+                imgs: [{
+                    img_name: fileName,
+                    img_type: "webp"
+                }]
+            };
+            
+            const response = await addGalleryImages(addRequest);
+            
+            if (response.code === 200) {
+                console.log('添加图片到图库成功');
+                // 重新加载图片库数据
+                await loadImageGallery();
+                // 清空上传状态
+                setUploadFile(null);
+            } else {
+                console.error('添加图片到图库失败:', response.msg);
+                alert(`添加图片到图库失败: ${response.msg}`);
+            }
+        } catch (error) {
+            console.error('API调用失败:', error);
+            alert('添加图片到图库失败: ' + (error instanceof Error ? error.message : String(error)));
+        }
+    };
+
     // 处理图片上传
-    const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
-        // TODO: 实现图片上传逻辑
-        console.log('上传图片:', file.name);
-
+        
         // 清空input值，允许再次选择同一文件
         e.target.value = '';
-
-        // 示例上传过程
-        alert('图片上传功能即将实现，请检查控制台日志');
-
-        // 上传成功后应该重新加载图片库
-        // loadImageGallery();
+        
+        // 验证文件类型
+        if (!validateFile(file)) {
+            alert('请选择有效的图片文件 (WEBP, JPG, JPEG, PNG)');
+            return;
+        }
+        
+        setIsUploading(true);
+        
+        // 初始化上传状态
+        setUploadFile({
+            file,
+            name: file.name,
+            isCompressing: false,
+            isCompressed: false,
+            originalSize: file.size,
+            compressionProgress: 0,
+            isUploading: false,
+            isUploaded: false,
+            uploadProgress: 0
+        });
+        
+        // 压缩图片
+        const compressedFile = await compressImage(file);
+        
+        if (compressedFile) {
+            // 上传到OSS
+            const result = await uploadImageToOSS(compressedFile);
+            
+            if (result && result.success) {
+                // 添加图片到图库
+                await addImageToGallery(result.fileName);
+            }
+        }
+        
+        setIsUploading(false);
     }, []);
 
     // 点击图片时处理
@@ -85,6 +364,19 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
             loadImageGallery();
         }
     }, [isOpen, galleryImages.length, loadImageGallery]);
+    
+    // 格式化文件大小显示
+    const formatFileSize = (bytes: number): string => {
+        if (bytes < 1024) return bytes + ' B';
+        else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+        else return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    };
+    
+    // 计算压缩率
+    const getCompressionRate = (original: number, compressed: number): string => {
+        const rate = ((original - compressed) / original * 100).toFixed(0);
+        return rate + '%';
+    };
 
     if (!isOpen) return null;
 
@@ -97,16 +389,19 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
                         <button
                             className="gallery-upload-btn"
                             title="上传图片"
-                            onClick={() => document.getElementById('image-upload-input')?.click()}
+                            onClick={() => !isUploading && document.getElementById('image-upload-input')?.click()}
+                            disabled={isUploading}
                         >
-                            <FiPlus />
+                            {isUploading ? <FiLoader className="spin-icon" /> : <FiPlus />}
                         </button>
                         <input
                             type="file"
                             id="image-upload-input"
+                            ref={fileInputRef}
                             style={{ display: 'none' }}
-                            accept="image/*"
+                            accept="image/webp,image/jpeg,image/jpg,image/png"
                             onChange={handleImageUpload}
+                            disabled={isUploading}
                         />
                     </div>
                     <button
@@ -116,6 +411,63 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
                         <FiX />
                     </button>
                 </div>
+                
+                {uploadFile && (
+                    <div className="upload-preview">
+                        <div className="upload-file-info">
+                            <p>{uploadFile.name}</p>
+                            {uploadFile.isCompressed && uploadFile.compressedSize && (
+                                <div className="upload-size-info">
+                                    <span>{formatFileSize(uploadFile.originalSize)}</span>
+                                    <span className="arrow">→</span>
+                                    <span>{formatFileSize(uploadFile.compressedSize)}</span>
+                                    <span className="compression-rate">
+                                        (-{getCompressionRate(uploadFile.originalSize, uploadFile.compressedSize)})
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                        
+                        {uploadFile.isCompressing && (
+                            <div className="upload-progress-container">
+                                <FiLoader className="spin-icon" />
+                                <span>压缩中 {uploadFile.compressionProgress}%</span>
+                                <div className="progress-bar">
+                                    <div 
+                                        className="progress-bar-inner"
+                                        style={{ width: `${uploadFile.compressionProgress}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {uploadFile.isUploading && (
+                            <div className="upload-progress-container">
+                                <FiUploadCloud className="upload-icon" />
+                                <span>上传中 {uploadFile.uploadProgress}%</span>
+                                <div className="progress-bar">
+                                    <div 
+                                        className="progress-bar-inner upload-bar"
+                                        style={{ width: `${uploadFile.uploadProgress}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {uploadFile.uploadError && (
+                            <div className="upload-error">
+                                <p>上传失败: {uploadFile.uploadError}</p>
+                                <button 
+                                    className="retry-button"
+                                    onClick={() => setUploadFile(null)}
+                                >
+                                    关闭
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+                
                 <div className="gallery-content">
                     {galleryLoading ? (
                         <div className="gallery-loading">
