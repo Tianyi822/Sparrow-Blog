@@ -115,6 +115,7 @@ export interface GalleryImage {
     img_id: string;
     img_name: string;
     img_type: string;
+    create_time: string;
 }
 
 export interface GalleryImagesResponse {
