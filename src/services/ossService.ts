@@ -12,10 +12,10 @@ export const FileType = {
 
 export const ContentType = {
     MARKDOWN: "text/markdown",
-    WEBP: "img/webp",
-    JPG: "img/jpg",
-    JPEG: "img/jpeg",
-    PNG: "img/png"
+    WEBP: "image/webp",
+    JPG: "image/jpg",
+    JPEG: "image/jpeg",
+    PNG: "image/png"
 }
 
 // 预签名URL响应接口
