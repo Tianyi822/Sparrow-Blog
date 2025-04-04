@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react';
-import { FiSearch, FiTrash2, FiCode, FiFileText, FiEdit } from 'react-icons/fi'; // 添加 FiEdit 图标
+import { FiSearch, FiTrash2, FiCode, FiFileText, FiEdit, FiPlus } from 'react-icons/fi'; // 添加 FiEdit 和 FiPlus 图标
 import './Gallery.scss';
 import { getAllGalleryImages, renameGalleryImage, deleteGalleryImage, RenameImageRequest } from '@/services/adminService';
 // 导入布局上下文
@@ -20,6 +20,14 @@ interface ContextMenuState {
     x: number;
     y: number;
     targetItem: ImageItem | null;
+}
+
+// 添加上传文件接口
+interface UploadFile {
+    id: string;
+    file: File;
+    preview: string;
+    name: string;
 }
 
 // --- 图库项组件 ---
@@ -219,6 +227,147 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     );
 };
 
+// --- 文件上传模态框组件 ---
+interface UploadModalProps {
+    visible: boolean;
+    onClose: () => void;
+}
+
+const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose }) => {
+    const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
+    const [isDragging, setIsDragging] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // 清理预览URL
+    useEffect(() => {
+        return () => {
+            uploadFiles.forEach(file => URL.revokeObjectURL(file.preview));
+        };
+    }, [uploadFiles]);
+
+    // 处理拖拽事件
+    const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const validateFile = (file: File) => {
+        const validTypes = ['image/webp', 'image/jpeg', 'image/jpg', 'image/png'];
+        return validTypes.includes(file.type);
+    };
+
+    const processFiles = (files: FileList) => {
+        const fileArray = Array.from(files);
+        const validFiles = fileArray.filter(validateFile);
+        
+        const newFiles = validFiles.map(file => {
+            return {
+                id: crypto.randomUUID(),
+                file: file,
+                preview: URL.createObjectURL(file),
+                name: file.name
+            };
+        });
+
+        setUploadFiles(prev => [...prev, ...newFiles]);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+        
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            processFiles(e.dataTransfer.files);
+        }
+    };
+
+    const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            processFiles(e.target.files);
+        }
+    };
+
+    const handleRemoveFile = (id: string) => {
+        setUploadFiles(prev => {
+            const fileToRemove = prev.find(f => f.id === id);
+            if (fileToRemove) {
+                URL.revokeObjectURL(fileToRemove.preview);
+            }
+            return prev.filter(f => f.id !== id);
+        });
+    };
+
+    if (!visible) return null;
+
+    return createPortal(
+        <div className="upload-modal-overlay">
+            <div className="upload-modal">
+                <div className="upload-modal-header">
+                    <h2>添加图片</h2>
+                    <button className="close-button" onClick={onClose}>&times;</button>
+                </div>
+                <div className="upload-modal-body">
+                    <div 
+                        className={`drop-zone ${isDragging ? 'dragging' : ''}`}
+                        onDragEnter={handleDragEnter}
+                        onDragLeave={handleDragLeave}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        <p>点击或拖拽图片到此处上传</p>
+                        <p className="file-type-hint">支持的格式: WEBP, JPG, JPEG, PNG</p>
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            style={{ display: 'none' }} 
+                            accept=".jpg,.jpeg,.png,.webp"
+                            multiple
+                            onChange={handleFileInputChange}
+                        />
+                    </div>
+                    
+                    {uploadFiles.length > 0 && (
+                        <div className="upload-file-list">
+                            <h3>已选择的文件</h3>
+                            <div className="file-items">
+                                {uploadFiles.map(file => (
+                                    <div key={file.id} className="file-item">
+                                        <img src={file.preview} alt={file.name} />
+                                        <div className="file-info">
+                                            <p>{file.name}</p>
+                                            <button 
+                                                className="remove-file" 
+                                                onClick={() => handleRemoveFile(file.id)}
+                                            >
+                                                &times;
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>,
+        document.body
+    );
+};
+
 // --- 主图库组件 ---
 const Gallery: React.FC = () => {
     const [allImages, setAllImages] = useState<ImageItem[]>([]);
@@ -236,6 +385,7 @@ const Gallery: React.FC = () => {
     const galleryContainerRef = useRef<HTMLDivElement>(null);
     // 添加是否正在调整窗口大小的状态
     const [isResizing, setIsResizing] = useState(false);
+    const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
 
     // 使用布局上下文
     const { collapsed, isLayoutTransitioning } = useContext(LayoutContext);
@@ -497,6 +647,16 @@ const Gallery: React.FC = () => {
         };
     }, []);
 
+    // 处理打开上传模态框
+    const openUploadModal = useCallback(() => {
+        setIsUploadModalVisible(true);
+    }, []);
+
+    // 处理关闭上传模态框
+    const closeUploadModal = useCallback(() => {
+        setIsUploadModalVisible(false);
+    }, []);
+
     return (
         <div className="gallery-container" ref={galleryContainerRef}>
             <div className="search-box">
@@ -508,6 +668,10 @@ const Gallery: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                <button className="add-image-btn" onClick={openUploadModal}>
+                    <FiPlus className="add-icon" />
+                    添加图片
+                </button>
             </div>
 
             {isLoading ? (
@@ -541,6 +705,12 @@ const Gallery: React.FC = () => {
                 onDelete={handleDelete}
                 onCopyHTML={handleCopyHTML}
                 onCopyMarkdown={handleCopyMarkdown}
+            />
+
+            {/* 上传模态框 */}
+            <UploadModal 
+                visible={isUploadModalVisible} 
+                onClose={closeUploadModal} 
             />
         </div>
     );
