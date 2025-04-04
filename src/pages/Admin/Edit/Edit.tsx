@@ -39,6 +39,7 @@ const Edit: React.FC = () => {
     const [isTop, setIsTop] = useState<boolean>(false);
     const [isPublic, setIsPublic] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
+    const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
 
     // 分类相关状态
     const [category, setCategory] = useState<BlogCategory | null>(null);
@@ -198,18 +199,9 @@ const Edit: React.FC = () => {
         };
     }, [content]);
 
-    // Markdown内容变化时同步滚动预览
-    const handleEditorScroll = () => {
-        if (previewRef.current && textareaRef.current) {
-            const textarea = textareaRef.current;
-            const preview = previewRef.current;
-
-            // 计算滚动比例
-            const scrollPercentage = textarea.scrollTop / (textarea.scrollHeight - textarea.clientHeight);
-
-            // 应用相同的滚动比例到预览区域
-            preview.scrollTop = scrollPercentage * (preview.scrollHeight - preview.clientHeight);
-        }
+    // 切换预览模式
+    const togglePreviewMode = () => {
+        setIsPreviewMode(!isPreviewMode);
     };
 
     // 渲染Markdown内容
@@ -638,24 +630,33 @@ const Edit: React.FC = () => {
                                 )}
                             </div>
                             <div className="markdown-editor-container">
-                                <div className="markdown-editor">
-                                    <div className="markdown-edit-header">编辑</div>
-                                    <textarea
-                                        className={`markdown-input ${errors.content ? 'error' : ''}`}
-                                        value={content}
-                                        onChange={handleContentChange}
-                                        onScroll={handleEditorScroll}
-                                        ref={textareaRef}
-                                        placeholder="在此输入Markdown格式的文章内容..."
-                                    ></textarea>
-                                </div>
-                                <div className="markdown-preview">
-                                    <div className="preview-header">预览</div>
-                                    <div
-                                        className="preview-content"
-                                        ref={previewRef}
-                                        dangerouslySetInnerHTML={{ __html: parsedContent }}
-                                    ></div>
+                                <div className="markdown-editor" style={{ width: '100%' }}>
+                                    <div className="markdown-edit-header">
+                                        {isPreviewMode ? '预览' : '编辑'}
+                                        <button 
+                                            className="preview-toggle-btn" 
+                                            onClick={togglePreviewMode}
+                                        >
+                                            <FiEye className="toggle-icon" />
+                                            <span>{isPreviewMode ? '返回编辑' : '预览'}</span>
+                                        </button>
+                                    </div>
+                                    {isPreviewMode ? (
+                                        <div
+                                            className="preview-content"
+                                            ref={previewRef}
+                                            dangerouslySetInnerHTML={{ __html: parsedContent }}
+                                            style={{ minHeight: '300px' }}
+                                        ></div>
+                                    ) : (
+                                        <textarea
+                                            className={`markdown-input ${errors.content ? 'error' : ''}`}
+                                            value={content}
+                                            onChange={handleContentChange}
+                                            ref={textareaRef}
+                                            placeholder="在此输入Markdown格式的文章内容..."
+                                        ></textarea>
+                                    )}
                                 </div>
                             </div>
                         </div>
