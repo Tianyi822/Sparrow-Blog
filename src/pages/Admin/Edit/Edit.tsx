@@ -9,7 +9,7 @@ import {
 import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
 import { marked } from 'marked';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { FiArrowUp, FiEye, FiPlus, FiX, FiSave, FiAlertCircle } from 'react-icons/fi';
+import { FiArrowUp, FiEye, FiPlus, FiX, FiSave, FiAlertCircle, FiLoader } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Edit.scss';
 
@@ -41,6 +41,39 @@ interface BlogDraft {
 const CACHE_KEY = 'blog_draft';
 // 缓存过期时间 (24小时)
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
+// 防抖延迟时间 (毫秒)
+const DEBOUNCE_DELAY = 300;
+
+// 防抖函数
+function useDebounce<T extends (...args: any[]) => any>(
+    fn: T,
+    delay: number
+): (...args: Parameters<T>) => void {
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    
+    const debouncedFn = useCallback(
+        (...args: Parameters<T>) => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+            
+            timeoutRef.current = setTimeout(() => {
+                fn(...args);
+            }, delay);
+        },
+        [fn, delay]
+    );
+    
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+    
+    return debouncedFn;
+}
 
 // 文章编辑页面组件
 const Edit: React.FC = () => {
@@ -124,6 +157,15 @@ const Edit: React.FC = () => {
             console.error('保存草稿到本地缓存失败:', error);
         }
     }, [blogId, category, content, intro, isEditMode, isPublic, isTop, tags, title]);
+
+    // 防抖后的保存草稿函数
+    const debouncedSaveDraft = useDebounce(saveDraftToCache, DEBOUNCE_DELAY);
+    
+    // 当内容变化时标记数据已更改并使用防抖函数保存
+    const markContentChanged = useCallback(() => {
+        hasDataChangedRef.current = true;
+        debouncedSaveDraft();
+    }, [debouncedSaveDraft]);
 
     // 从本地缓存中获取草稿
     const loadDraftFromCache = useCallback((): BlogDraft | null => {
@@ -567,7 +609,7 @@ const Edit: React.FC = () => {
     const handleCategoryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCategoryInput(e.target.value);
         clearError('category');
-        hasDataChangedRef.current = true;
+        markContentChanged();
     };
 
     const handleCategoryInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -591,7 +633,7 @@ const Edit: React.FC = () => {
             }
             setCategoryInput('');
             clearError('category');
-            hasDataChangedRef.current = true;
+            markContentChanged();
         }
     };
 
@@ -599,13 +641,13 @@ const Edit: React.FC = () => {
         setCategory(selectedCategory);
         setCategoryInput('');
         clearError('category');
-        hasDataChangedRef.current = true;
+        markContentChanged();
     };
 
     // 标签相关处理函数
     const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTagInput(e.target.value);
-        hasDataChangedRef.current = true;
+        markContentChanged();
     };
 
     const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -628,14 +670,14 @@ const Edit: React.FC = () => {
                 addTag(newTag);
             }
             setTagInput('');
-            hasDataChangedRef.current = true;
+            markContentChanged();
         }
     };
 
     const addTag = (tag: BlogTag) => {
         if (tag && !tags.some(t => t.tag_id === tag.tag_id)) {
             setTags([...tags, tag]);
-            hasDataChangedRef.current = true;
+            markContentChanged();
         }
         setTagInput('');
         tagInputRef.current?.focus();
@@ -643,13 +685,13 @@ const Edit: React.FC = () => {
 
     const removeTag = (tagToRemove: BlogTag) => {
         setTags(tags.filter(tag => tag.tag_id !== tagToRemove.tag_id));
-        hasDataChangedRef.current = true;
+        markContentChanged();
     };
 
     const handleTagSelect = (selectedTag: BlogTag) => {
         if (!tags.some(t => t.tag_id === selectedTag.tag_id)) {
             setTags([...tags, selectedTag]);
-            hasDataChangedRef.current = true;
+            markContentChanged();
         }
     };
 
@@ -657,14 +699,14 @@ const Edit: React.FC = () => {
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setContent(e.target.value);
         clearError('content');
-        hasDataChangedRef.current = true;
+        markContentChanged();
     };
 
     // 标题变化处理
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
         clearError('title');
-        hasDataChangedRef.current = true;
+        markContentChanged();
     };
 
     return (
@@ -706,8 +748,8 @@ const Edit: React.FC = () => {
                 )}
 
                 {showAutoSaveNotification && (
-                    <div className="auto-save-notification">
-                        草稿已自动保存 {lastSavedTime}
+                    <div className="auto-save-spinner">
+                        <FiLoader className="spinner-icon" />
                     </div>
                 )}
 
@@ -748,7 +790,7 @@ const Edit: React.FC = () => {
                                 value={intro}
                                 onChange={(e) => {
                                     setIntro(e.target.value);
-                                    hasDataChangedRef.current = true;
+                                    markContentChanged();
                                 }}
                                 placeholder="请输入文章简介"
                                 rows={3}
@@ -775,7 +817,7 @@ const Edit: React.FC = () => {
                                             <button className="remove-btn" onClick={() => {
                                                 setCategory(null);
                                                 setErrors(prev => ({ ...prev, category: '请选择或输入文章分类' }));
-                                                hasDataChangedRef.current = true;
+                                                markContentChanged();
                                             }}>
                                                 <FiX />
                                             </button>
@@ -885,7 +927,7 @@ const Edit: React.FC = () => {
                                         checked={isTop}
                                         onChange={() => {
                                             setIsTop(!isTop);
-                                            hasDataChangedRef.current = true;
+                                            markContentChanged();
                                         }}
                                     />
                                     <label htmlFor="isTop" className="toggle-switch-label"></label>
@@ -905,7 +947,7 @@ const Edit: React.FC = () => {
                                         checked={isPublic}
                                         onChange={() => {
                                             setIsPublic(!isPublic);
-                                            hasDataChangedRef.current = true;
+                                            markContentChanged();
                                         }}
                                     />
                                     <label htmlFor="isPublic" className="toggle-switch-label"></label>
