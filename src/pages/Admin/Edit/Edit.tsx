@@ -45,7 +45,7 @@ const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
 const DEBOUNCE_DELAY = 300;
 
 // 防抖函数
-function useDebounce<T extends (...args: any[]) => any>(
+function useDebounce<T extends (...args: unknown[]) => unknown>(
     fn: T,
     delay: number
 ): (...args: Parameters<T>) => void {
