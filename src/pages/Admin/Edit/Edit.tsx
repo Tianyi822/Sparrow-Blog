@@ -9,7 +9,7 @@ import {
 import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
 import { marked } from 'marked';
 import React, { useEffect, useRef, useState } from 'react';
-import { FiArrowUp, FiEye, FiPlus, FiX } from 'react-icons/fi';
+import { FiArrowUp, FiEye, FiPlus, FiX, FiSave, FiAlertCircle } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Edit.scss';
 
@@ -24,6 +24,19 @@ interface ValidationErrors {
     [key: string]: string;
 }
 
+// 缓存数据结构接口
+interface BlogDraft {
+    blog_id: string | null; // 新增字段，用于区分编辑现有文章和新建文章
+    title: string;
+    intro: string;
+    content: string;
+    category: BlogCategory | null;
+    tags: BlogTag[];
+    isTop: boolean;
+    isPublic: boolean;
+    lastSaved: number; // 时间戳
+}
+
 // 文章编辑页面组件
 const Edit: React.FC = () => {
     const navigate = useNavigate();
@@ -31,6 +44,10 @@ const Edit: React.FC = () => {
     const blogId = new URLSearchParams(location.search).get('blog_id');
     const isEditMode = !!blogId;
 
+    // 缓存相关状态
+    const [lastSavedTime, setLastSavedTime] = useState<string>('');
+    const [showCachePrompt, setShowCachePrompt] = useState<boolean>(false);
+    
     // 文章信息状态
     const [title, setTitle] = useState<string>('');
     const [intro, setIntro] = useState<string>('');
@@ -55,10 +72,170 @@ const Edit: React.FC = () => {
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
+    // 自动保存相关
+    const [showAutoSaveNotification, setShowAutoSaveNotification] = useState<boolean>(false);
+    const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const hasDataChangedRef = useRef<boolean>(false);
+
     // 标签输入框引用
     const tagInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
+
+    // 缓存键生成函数
+    const getCacheKey = (): string => {
+        return 'blog_draft'; // 使用固定的缓存键
+    };
+
+    // 保存草稿到本地缓存
+    const saveDraftToCache = () => {
+        const draftData: BlogDraft = {
+            blog_id: isEditMode ? blogId : null,
+            title,
+            intro,
+            content,
+            category,
+            tags,
+            isTop,
+            isPublic,
+            lastSaved: Date.now()
+        };
+
+        try {
+            const cacheKey = getCacheKey();
+            
+            console.log('保存草稿，使用缓存键:', cacheKey, '当前blog_id:', draftData.blog_id);
+            localStorage.setItem(cacheKey, JSON.stringify(draftData));
+            
+            // 更新最后保存时间
+            setLastSavedTime(new Date().toLocaleTimeString());
+            
+            // 显示自动保存通知
+            setShowAutoSaveNotification(true);
+            setTimeout(() => setShowAutoSaveNotification(false), 3000);
+            
+            // 重置数据变更标志
+            hasDataChangedRef.current = false;
+            console.log('草稿保存成功');
+        } catch (error) {
+            console.error('保存草稿到本地缓存失败:', error);
+        }
+    };
+
+    // 从本地缓存中获取草稿
+    const loadDraftFromCache = (): BlogDraft | null => {
+        try {
+            const cacheKey = getCacheKey();
+            
+            console.log('加载缓存，使用缓存键:', cacheKey);
+            
+            const cachedData = localStorage.getItem(cacheKey);
+            if (!cachedData) {
+                console.log('未找到缓存数据');
+                return null;
+            }
+            
+            console.log('找到缓存数据:', cachedData.substring(0, 100) + '...');
+            
+            const draftData = JSON.parse(cachedData) as BlogDraft;
+            
+            // 检查缓存是否过期（24小时）
+            const now = Date.now();
+            const cacheDuration = 24 * 60 * 60 * 1000; // 24小时
+            
+            if (now - draftData.lastSaved > cacheDuration) {
+                // 缓存已过期，清除并返回null
+                console.log('缓存已过期，清除缓存');
+                localStorage.removeItem(cacheKey);
+                return null;
+            }
+            
+            console.log('成功加载缓存数据');
+            return draftData;
+        } catch (error) {
+            console.error('从本地缓存中加载草稿失败:', error);
+            return null;
+        }
+    };
+
+    // 清除本地缓存
+    const clearCache = () => {
+        try {
+            const cacheKey = getCacheKey();
+            
+            console.log('清除缓存，使用缓存键:', cacheKey);
+            localStorage.removeItem(cacheKey);
+            
+            setShowCachePrompt(false);
+            console.log('缓存已清除');
+        } catch (error) {
+            console.error('清除本地缓存失败:', error);
+        }
+    };
+
+    // 从缓存中恢复数据
+    const restoreFromCache = () => {
+        const cachedDraft = loadDraftFromCache();
+        if (!cachedDraft) return;
+        
+        setTitle(cachedDraft.title);
+        setIntro(cachedDraft.intro);
+        setContent(cachedDraft.content);
+        setCategory(cachedDraft.category);
+        setTags(cachedDraft.tags);
+        setIsTop(cachedDraft.isTop);
+        setIsPublic(cachedDraft.isPublic);
+        
+        // 如果缓存中有blog_id但当前不是编辑模式，更新URL参数并切换到编辑模式
+        if (cachedDraft.blog_id && !isEditMode) {
+            // 使用replace而不是navigate，避免创建新的历史记录
+            navigate(`/admin/edit?blog_id=${cachedDraft.blog_id}`, { replace: true });
+            console.log('从草稿恢复，切换到编辑模式，blog_id:', cachedDraft.blog_id);
+        }
+        
+        // 更新最后保存时间
+        const date = new Date(cachedDraft.lastSaved);
+        setLastSavedTime(date.toLocaleString());
+        
+        setShowCachePrompt(false);
+        
+        // 恢复草稿后清除缓存，避免重复提示
+        clearCache();
+        console.log('恢复草稿后已清除缓存');
+    };
+
+    // 设置自动保存定时器
+    useEffect(() => {
+        // 每30秒自动保存一次
+        autoSaveTimerRef.current = setInterval(() => {
+            if (hasDataChangedRef.current) {
+                saveDraftToCache();
+            }
+        }, 30000);
+        
+        return () => {
+            if (autoSaveTimerRef.current) {
+                clearInterval(autoSaveTimerRef.current);
+            }
+        };
+    }, []);
+
+    // 检查页面离开
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (hasDataChangedRef.current) {
+                const message = "您有未保存的更改，确定要离开吗？";
+                e.returnValue = message;
+                return message;
+            }
+        };
+        
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
 
     // 获取标签和分类数据
     useEffect(() => {
@@ -77,12 +254,39 @@ const Edit: React.FC = () => {
         fetchTagsAndCategories();
     }, []);
 
+    // 检查是否有缓存数据
+    useEffect(() => {
+        const cachedDraft = loadDraftFromCache();
+        if (cachedDraft) {
+            // 无条件展示缓存恢复提示，无论是编辑模式还是新建模式
+            
+            setShowCachePrompt(true);
+            
+            // 更新最后保存时间
+            const date = new Date(cachedDraft.lastSaved);
+            setLastSavedTime(date.toLocaleString());
+            
+            console.log('找到草稿数据，显示恢复提示');
+            console.log('缓存blog_id:', cachedDraft.blog_id, '当前blog_id:', blogId, '当前模式:', isEditMode ? '编辑' : '新建');
+        }
+    }, [isEditMode, blogId]);
+
     // 如果是编辑模式，获取博客数据
     useEffect(() => {
         const fetchBlogData = async () => {
             if (isEditMode && blogId) {
                 try {
                     setLoading(true);
+                    
+                    // 先检查是否有缓存数据
+                    const cachedDraft = loadDraftFromCache();
+                    
+                    // 如果缓存数据存在且用户已确认使用缓存，则不请求服务器数据
+                    if (cachedDraft && showCachePrompt) {
+                        setLoading(false);
+                        return;
+                    }
+                    
                     const response = await getBlogDataForEdit(blogId);
 
                     if (response.code === 200) {
@@ -132,7 +336,7 @@ const Edit: React.FC = () => {
         };
 
         fetchBlogData();
-    }, [isEditMode, blogId]);
+    }, [isEditMode, blogId, showCachePrompt]);
 
     // 清除指定字段的错误
     const clearError = (field: string) => {
@@ -306,6 +510,8 @@ const Edit: React.FC = () => {
             const response = await updateOrAddBlog(requestData);
 
             if (response.code === 200) {
+                // 保存成功后清除缓存
+                clearCache();
                 // 上传成功，跳转回文章管理页面
                 navigate('/admin');
             } else {
@@ -319,10 +525,16 @@ const Edit: React.FC = () => {
         }
     };
 
+    // 手动保存草稿
+    const handleSaveDraft = () => {
+        saveDraftToCache();
+    };
+
     // 分类相关处理函数
     const handleCategoryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCategoryInput(e.target.value);
         clearError('category');
+        hasDataChangedRef.current = true;
     };
 
     const handleCategoryInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -346,6 +558,7 @@ const Edit: React.FC = () => {
             }
             setCategoryInput('');
             clearError('category');
+            hasDataChangedRef.current = true;
         }
     };
 
@@ -353,11 +566,13 @@ const Edit: React.FC = () => {
         setCategory(selectedCategory);
         setCategoryInput('');
         clearError('category');
+        hasDataChangedRef.current = true;
     };
 
     // 标签相关处理函数
     const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTagInput(e.target.value);
+        hasDataChangedRef.current = true;
     };
 
     const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -380,12 +595,14 @@ const Edit: React.FC = () => {
                 addTag(newTag);
             }
             setTagInput('');
+            hasDataChangedRef.current = true;
         }
     };
 
     const addTag = (tag: BlogTag) => {
         if (tag && !tags.some(t => t.tag_id === tag.tag_id)) {
             setTags([...tags, tag]);
+            hasDataChangedRef.current = true;
         }
         setTagInput('');
         tagInputRef.current?.focus();
@@ -393,11 +610,13 @@ const Edit: React.FC = () => {
 
     const removeTag = (tagToRemove: BlogTag) => {
         setTags(tags.filter(tag => tag.tag_id !== tagToRemove.tag_id));
+        hasDataChangedRef.current = true;
     };
 
     const handleTagSelect = (selectedTag: BlogTag) => {
         if (!tags.some(t => t.tag_id === selectedTag.tag_id)) {
             setTags([...tags, selectedTag]);
+            hasDataChangedRef.current = true;
         }
     };
 
@@ -405,27 +624,59 @@ const Edit: React.FC = () => {
     const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setContent(e.target.value);
         clearError('content');
+        hasDataChangedRef.current = true;
     };
 
     // 标题变化处理
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
         clearError('title');
+        hasDataChangedRef.current = true;
     };
 
     return (
         <div className="edit-page">
             <div className="edit-container">
                 <div className="edit-header">
-                    <h1>{isEditMode ? '编辑文章' : '新建文章'}</h1>
-                    <button
-                        className="save-button"
-                        onClick={handleSave}
-                        disabled={submitLoading || loading}
-                    >
-                        {submitLoading ? '保存中...' : '保存文章'}
-                    </button>
+                    <h1>{isEditMode ? (title ? `编辑 "${title}" 文章` : '编辑文章') : '新建文章'}</h1>
+                    <div className="header-actions">
+                        {lastSavedTime && (
+                            <div className="last-saved-info">
+                                上次保存: {lastSavedTime}
+                            </div>
+                        )}
+                        <button
+                            className="draft-button"
+                            onClick={handleSaveDraft}
+                        >
+                            <FiSave /> 保存草稿
+                        </button>
+                        <button
+                            className="save-button"
+                            onClick={handleSave}
+                            disabled={submitLoading || loading}
+                        >
+                            {submitLoading ? '保存中...' : '保存文章'}
+                        </button>
+                    </div>
                 </div>
+
+                {showCachePrompt && (
+                    <div className="cache-prompt">
+                        <FiAlertCircle className="alert-icon" />
+                        <span>发现未保存的草稿（{lastSavedTime}），是否恢复？</span>
+                        <div className="cache-actions">
+                            <button onClick={restoreFromCache} className="restore-button">恢复草稿</button>
+                            <button onClick={clearCache} className="discard-button">丢弃草稿</button>
+                        </div>
+                    </div>
+                )}
+
+                {showAutoSaveNotification && (
+                    <div className="auto-save-notification">
+                        草稿已自动保存 {lastSavedTime}
+                    </div>
+                )}
 
                 {errors.submit && (
                     <div className="error-message submit-error">
@@ -462,7 +713,10 @@ const Edit: React.FC = () => {
                                 id="intro"
                                 className="intro-input"
                                 value={intro}
-                                onChange={(e) => setIntro(e.target.value)}
+                                onChange={(e) => {
+                                    setIntro(e.target.value);
+                                    hasDataChangedRef.current = true;
+                                }}
                                 placeholder="请输入文章简介"
                                 rows={3}
                             ></textarea>
@@ -488,6 +742,7 @@ const Edit: React.FC = () => {
                                             <button className="remove-btn" onClick={() => {
                                                 setCategory(null);
                                                 setErrors(prev => ({ ...prev, category: '请选择或输入文章分类' }));
+                                                hasDataChangedRef.current = true;
                                             }}>
                                                 <FiX />
                                             </button>
@@ -595,7 +850,10 @@ const Edit: React.FC = () => {
                                         type="checkbox"
                                         className="toggle-switch"
                                         checked={isTop}
-                                        onChange={() => setIsTop(!isTop)}
+                                        onChange={() => {
+                                            setIsTop(!isTop);
+                                            hasDataChangedRef.current = true;
+                                        }}
                                     />
                                     <label htmlFor="isTop" className="toggle-switch-label"></label>
                                 </div>
@@ -612,7 +870,10 @@ const Edit: React.FC = () => {
                                         type="checkbox"
                                         className="toggle-switch"
                                         checked={isPublic}
-                                        onChange={() => setIsPublic(!isPublic)}
+                                        onChange={() => {
+                                            setIsPublic(!isPublic);
+                                            hasDataChangedRef.current = true;
+                                        }}
                                     />
                                     <label htmlFor="isPublic" className="toggle-switch-label"></label>
                                 </div>

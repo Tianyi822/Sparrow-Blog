@@ -31,6 +31,41 @@
       color: transparent;
     }
     
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .last-saved-info {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .draft-button {
+      @include glass-card-base;
+      padding: 0.7rem 1.2rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+    }
+    
     .save-button {
       @include glass-card-base;
       padding: 0.7rem 1.5rem;
@@ -59,6 +94,84 @@
         box-shadow: none;
       }
     }
+  }
+  
+  .cache-prompt {
+    @include glass-card-base;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0.5rem 1.5rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    border-left: 3px solid #3498db;
+    background-color: rgba(52, 152, 219, 0.1);
+    
+    .alert-icon {
+      color: #3498db;
+      font-size: 1.2rem;
+      margin-right: 0.8rem;
+    }
+    
+    span {
+      flex: 1;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .cache-actions {
+      display: flex;
+      gap: 0.8rem;
+      
+      button {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+      }
+      
+      .restore-button {
+        background-color: rgba(52, 152, 219, 0.2);
+        color: rgba(255, 255, 255, 0.9);
+        
+        &:hover {
+          background-color: rgba(52, 152, 219, 0.3);
+        }
+      }
+      
+      .discard-button {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.15);
+        }
+      }
+    }
+  }
+  
+  .auto-save-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(46, 204, 113, 0.15);
+    border-left: 3px solid #2ecc71;
+    padding: 0.8rem 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    animation: fadeInOut 3s ease-in-out;
+  }
+  
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(10px); }
+    15% { opacity: 1; transform: translateY(0); }
+    85% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
   }
   
   .submit-error {
