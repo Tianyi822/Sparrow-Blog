@@ -207,7 +207,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
 
             // 1. 获取文件名，去除扩展名，只保留文件名本身并添加时间戳
             const timestamp = new Date().getTime();
-            let fileName = file.name;
+            const fileName = file.name;
 
             // 移除原始文件扩展名，只保留文件名本身
             const nameParts = fileName.split('.');
@@ -223,8 +223,9 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             console.log(`获取预签名URL: ${uploadFileName}`);
             const preSignUrlResponse = await getPreSignUrl(uploadFileName, FileType.WEBP);
 
-            if (preSignUrlResponse.code !== 200) {
-                throw new Error(`获取预签名URL失败: ${preSignUrlResponse.msg}`);
+            if (preSignUrlResponse.code !== 0) {
+                console.error(`获取预签名URL失败: ${preSignUrlResponse.msg}`);
+                return false;
             }
 
             const preSignUrl = preSignUrlResponse.data.pre_sign_put_url;
@@ -253,7 +254,8 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             );
 
             if (!uploadSuccess) {
-                throw new Error(`上传到OSS失败`);
+                console.error('上传到OSS失败');
+                return false;
             }
 
             // 5. 更新状态为上传完成

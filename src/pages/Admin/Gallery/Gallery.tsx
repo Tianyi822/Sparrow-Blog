@@ -528,7 +528,7 @@ const Gallery: React.FC = () => {
     }, []);
 
     // 处理完成图片上传后的回调
-    const handleImagesUploaded = useCallback(async (_uploadedImages: any[]) => {
+    const handleImagesUploaded = useCallback(async () => {
         try {
             // 已在UploadModal组件中处理上传逻辑
             // 这里只需要刷新图库
