@@ -333,7 +333,7 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
         }
         
         setIsUploading(false);
-    }, []);
+    }, [compressImage, uploadImageToOSS, addImageToGallery]);
 
     // 点击图片时处理
     const handleImageClick = useCallback((image: GalleryImage) => {
