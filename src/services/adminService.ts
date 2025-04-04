@@ -129,6 +129,14 @@ export interface RenameImageRequest {
     img_name: string;
 }
 
+export interface PreSignUrlResponse {
+    code: number;
+    msg: string;
+    data: {
+        pre_sign_put_url: string;
+    };
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -317,6 +325,19 @@ export const deleteGalleryImage = async (imageId: string): Promise<ApiResponse<n
     });
 };
 
+/**
+ * 获取OSS预签名URL
+ * @param fileName 文件名
+ * @param fileType 文件类型
+ * @returns 包含预签名URL的响应
+ */
+export const getPreSignUrl = async (fileName: string, fileType: string): Promise<PreSignUrlResponse> => {
+    return businessApiRequest<PreSignUrlResponse>({
+        method: 'GET',
+        url: `/admin/oss/pre_sign_url/${fileName}/type/${fileType}`
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -330,5 +351,6 @@ export default {
     getBlogDataForEdit,
     getAllGalleryImages,
     renameGalleryImage,
-    deleteGalleryImage
+    deleteGalleryImage,
+    getPreSignUrl
 }; 

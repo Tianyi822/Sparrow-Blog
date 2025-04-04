@@ -1,17 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FiX, FiPlus, FiArrowUp, FiEye } from 'react-icons/fi';
-import { marked } from 'marked';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-    getAllTagsAndCategories, 
-    updateOrAddBlog, 
-    BlogTag, 
-    BlogCategory, 
+import {
+    BlogCategory,
+    BlogTag,
     UpdateOrAddBlogRequest,
-    deleteBlog,
-    getBlogDataForEdit
+    getAllTagsAndCategories,
+    getBlogDataForEdit,
+    updateOrAddBlog
 } from '@/services/adminService';
-import { uploadToOSS } from '@/services/ossService';
+import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
+import { marked } from 'marked';
+import React, { useEffect, useRef, useState } from 'react';
+import { FiArrowUp, FiEye, FiPlus, FiX } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Edit.scss';
 
 // 配置marked选项
@@ -31,7 +30,7 @@ const Edit: React.FC = () => {
     const location = useLocation();
     const blogId = new URLSearchParams(location.search).get('blog_id');
     const isEditMode = !!blogId;
-    
+
     // 文章信息状态
     const [title, setTitle] = useState<string>('');
     const [intro, setIntro] = useState<string>('');
@@ -84,16 +83,16 @@ const Edit: React.FC = () => {
                 try {
                     setLoading(true);
                     const response = await getBlogDataForEdit(blogId);
-                    
+
                     if (response.code === 200) {
                         const { blog_data, content_url } = response.data;
-                        
+
                         // 设置基本信息
                         setTitle(blog_data.blog_title || '');
                         setIntro(blog_data.blog_brief || '');
                         setCategory(blog_data.category || null);
                         setTags(blog_data.tags || []);
-                        
+
                         // 设置文章状态
                         setIsTop(!!blog_data.blog_is_top);
                         setIsPublic(blog_data.blog_state !== false);
@@ -103,7 +102,7 @@ const Edit: React.FC = () => {
                         if (blog_data.blog_state !== undefined) {
                             setIsPublic(blog_data.blog_state);
                         }
-                        
+
                         // 获取文章内容
                         try {
                             const contentResponse = await fetch(content_url);
@@ -244,61 +243,79 @@ const Edit: React.FC = () => {
         // 计算文章的字数
         const wordsCount = content.length;
 
-        // 准备请求数据
-        const requestData: UpdateOrAddBlogRequest = {
-            blog_id: isEditMode && blogId ? blogId : '', // 如果是编辑模式，使用现有ID
-            blog_title: title,
-            blog_brief: intro,
-            blog_content: content,
-            blog_state: isPublic,
-            blog_is_top: isTop,
-            blog_words_num: wordsCount,
-            // 处理分类信息
-            category_id: category?.category_id && !category.category_id.startsWith('cat_') 
-                ? category.category_id 
-                : '', // 如果是新分类或临时ID，则category_id为空
-            category: {
-                category_name: category?.category_name || ''
-            },
-            // 处理标签信息
-            tags: tags.map(tag => {
-                // 如果是从选择区选择的标签（有效的tag_id且不是临时ID）
-                if (tag.tag_id && !tag.tag_id.startsWith('tag_')) {
-                    return {
-                        tag_id: tag.tag_id,
-                        tag_name: tag.tag_name
-                    };
-                }
-                // 如果是新增的标签，只传name
-                return {
-                    tag_name: tag.tag_name
-                };
-            })
-        };
-
         try {
             setSubmitLoading(true);
+
+            // 1. 获取预签名URL
+            const preSignResponse = await getPreSignUrl(title, FileType.MARKDOWN);
+
+            if (preSignResponse.code !== 200 || !preSignResponse.data.pre_sign_put_url) {
+                setErrors({ submit: `获取上传URL失败: ${preSignResponse.msg}` });
+                setSubmitLoading(false);
+                return;
+            }
+
+            // 2. 使用预签名URL上传文章内容到OSS
+            try {
+                const uploadSuccess = await uploadToOSS(
+                    preSignResponse.data.pre_sign_put_url,
+                    content,
+                    ContentType.MARKDOWN
+                );
+                if (!uploadSuccess) {
+                    setErrors({ submit: '上传到OSS失败' });
+                    setSubmitLoading(false);
+                    return;
+                }
+            } catch (uploadError) {
+                console.error('上传到OSS失败:', uploadError);
+                setErrors({
+                    submit: uploadError instanceof Error
+                        ? `上传失败: ${uploadError.message}`
+                        : '上传文章内容失败，请稍后重试'
+                });
+                setSubmitLoading(false);
+                return;
+            }
+
+            // 3. 上传成功后，提交博客数据
+            // 准备请求数据
+            const requestData: UpdateOrAddBlogRequest = {
+                blog_id: isEditMode && blogId ? blogId : '', // 如果是编辑模式，使用现有ID
+                blog_title: title,
+                blog_brief: intro,
+                blog_state: isPublic,
+                blog_is_top: isTop,
+                blog_words_num: wordsCount,
+                // 处理分类信息
+                category_id: category?.category_id && !category.category_id.startsWith('cat_')
+                    ? category.category_id
+                    : '', // 如果是新分类或临时ID，则category_id为空
+                category: {
+                    category_name: category?.category_name || ''
+                },
+                // 处理标签信息
+                tags: tags.map(tag => {
+                    // 如果是从选择区选择的标签（有效的tag_id且不是临时ID）
+                    if (tag.tag_id && !tag.tag_id.startsWith('tag_')) {
+                        return {
+                            tag_id: tag.tag_id,
+                            tag_name: tag.tag_name
+                        };
+                    }
+                    // 如果是新增的标签，只传name
+                    return {
+                        tag_name: tag.tag_name
+                    };
+                })
+            };
+
             console.log('正在保存文章:', requestData);
             const response = await updateOrAddBlog(requestData);
-            
+
             if (response.code === 200) {
-                try {
-                    // 上传文章内容到OSS
-                    const uploadSuccess = await uploadToOSS(response.data.presign_url, content);
-                    if (uploadSuccess) {
-                        // 上传成功，跳转回文章管理页面
-                        navigate('/admin');
-                    } else {
-                        // 上传失败处理
-                        await handleUploadFailure(response.data.blog_id, '上传到OSS失败');
-                    }
-                } catch (uploadError) {
-                    // 上传失败，删除已创建的文章
-                    await handleUploadFailure(
-                        response.data.blog_id, 
-                        uploadError instanceof Error ? uploadError.message : '上传文章内容失败，请稍后重试'
-                    );
-                }
+                // 上传成功，跳转回文章管理页面
+                navigate('/admin');
             } else {
                 setErrors({ submit: `保存失败: ${response.msg}` });
             }
@@ -308,18 +325,6 @@ const Edit: React.FC = () => {
         } finally {
             setSubmitLoading(false);
         }
-    };
-
-    // 添加处理上传失败的函数
-    const handleUploadFailure = async (blogId: string, errorMessage: string) => {
-        // 尝试删除已创建的文章
-        try {
-            await deleteBlog(blogId);
-        } catch (deleteError) {
-            console.error('删除文章失败:', deleteError);
-        }
-        // 显示错误信息
-        setErrors({ submit: `上传失败: ${errorMessage}` });
     };
 
     // 分类相关处理函数
@@ -421,8 +426,8 @@ const Edit: React.FC = () => {
             <div className="edit-container">
                 <div className="edit-header">
                     <h1>{isEditMode ? '编辑文章' : '新建文章'}</h1>
-                    <button 
-                        className="save-button" 
+                    <button
+                        className="save-button"
                         onClick={handleSave}
                         disabled={submitLoading || loading}
                     >
@@ -490,9 +495,9 @@ const Edit: React.FC = () => {
                                             <span>{category.category_name}</span>
                                             <button className="remove-btn" onClick={() => {
                                                 setCategory(null);
-                                                setErrors(prev => ({...prev, category: '请选择或输入文章分类'}));
+                                                setErrors(prev => ({ ...prev, category: '请选择或输入文章分类' }));
                                             }}>
-                                                <FiX/>
+                                                <FiX />
                                             </button>
                                         </div>
                                     )}
@@ -527,7 +532,7 @@ const Edit: React.FC = () => {
                                             <div key={tag.tag_id} className="tag-item">
                                                 <span>{tag.tag_name}</span>
                                                 <button className="remove-btn" onClick={() => removeTag(tag)}>
-                                                    <FiX/>
+                                                    <FiX />
                                                 </button>
                                             </div>
                                         ))}
@@ -564,7 +569,7 @@ const Edit: React.FC = () => {
                                                 }
                                             }}
                                         >
-                                            <FiPlus/>
+                                            <FiPlus />
                                         </button>
                                     )}
                                 </div>
@@ -589,7 +594,7 @@ const Edit: React.FC = () => {
                         <div className="edit-section settings-section">
                             <div className="toggle-setting">
                                 <label htmlFor="isTop" className="toggle-label">
-                                    <FiArrowUp className="toggle-icon"/>
+                                    <FiArrowUp className="toggle-icon" />
                                     <span>是否置顶</span>
                                 </label>
                                 <div className="toggle-switch-container">
@@ -606,7 +611,7 @@ const Edit: React.FC = () => {
 
                             <div className="toggle-setting">
                                 <label htmlFor="isPublic" className="toggle-label">
-                                    <FiEye className="toggle-icon"/>
+                                    <FiEye className="toggle-icon" />
                                     <span>是否公开</span>
                                 </label>
                                 <div className="toggle-switch-container">
@@ -649,7 +654,7 @@ const Edit: React.FC = () => {
                                     <div
                                         className="preview-content"
                                         ref={previewRef}
-                                        dangerouslySetInnerHTML={{__html: parsedContent}}
+                                        dangerouslySetInnerHTML={{ __html: parsedContent }}
                                     ></div>
                                 </div>
                             </div>
