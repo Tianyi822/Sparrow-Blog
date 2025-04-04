@@ -68,7 +68,7 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
     };
 
     // 压缩图片
-    const compressImage = async (file: File): Promise<File | null> => {
+    const compressImage = useCallback(async (file: File): Promise<File | null> => {
         console.log(`开始压缩图片: ${file.name}`);
         
         try {
@@ -138,10 +138,10 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
 
             return null;
         }
-    };
+    }, []);
 
     // 上传图片到OSS
-    const uploadImageToOSS = async (file: File): Promise<{success: boolean, fileName: string} | null> => {
+    const uploadImageToOSS = useCallback(async (file: File): Promise<{success: boolean, fileName: string} | null> => {
         try {
             // 更新状态为上传中
             setUploadFile(prev => {
@@ -257,10 +257,10 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
 
             return null;
         }
-    };
+    }, []);
 
     // 添加图片到图库
-    const addImageToGallery = async (fileName: string) => {
+    const addImageToGallery = useCallback(async (fileName: string) => {
         try {
             // 将上传的图片信息提交到API
             console.log('添加图片到图库，数据:', fileName);
@@ -288,7 +288,7 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
             console.error('API调用失败:', error);
             alert('添加图片到图库失败: ' + (error instanceof Error ? error.message : String(error)));
         }
-    };
+    }, [loadImageGallery]);
 
     // 处理图片上传
     const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -333,7 +333,7 @@ const ImageGalleryModal: React.FC<ImageGalleryModalProps> = ({ isOpen, onClose, 
         }
         
         setIsUploading(false);
-    }, []);
+    }, [compressImage, uploadImageToOSS, addImageToGallery]);
 
     // 点击图片时处理
     const handleImageClick = useCallback((image: GalleryImage) => {
