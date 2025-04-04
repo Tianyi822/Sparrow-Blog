@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Define CSS variables matching the AdminLayout theme (adjust if needed)
 // 定义匹配 AdminLayout 主题的 CSS 变量（如果需要，请调整）
 :root {
@@ -74,7 +76,7 @@
     white-space: nowrap;
     
     &:hover {
-        background-color: darken(#4e9af1, 10%);
+        background-color: color.adjust(#4e9af1, $lightness: -10%);
         transform: translateY(-2px);
     }
     
