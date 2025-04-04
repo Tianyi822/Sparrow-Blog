@@ -52,20 +52,20 @@ function useDebounce<T extends (...args: unknown[]) => unknown>(
     delay: number
 ): (...args: Parameters<T>) => void {
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    
+
     const debouncedFn = useCallback(
         (...args: Parameters<T>) => {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
-            
+
             timeoutRef.current = setTimeout(() => {
                 fn(...args);
             }, delay);
         },
         [fn, delay]
     );
-    
+
     useEffect(() => {
         return () => {
             if (timeoutRef.current) {
@@ -73,7 +73,7 @@ function useDebounce<T extends (...args: unknown[]) => unknown>(
             }
         };
     }, []);
-    
+
     return debouncedFn;
 }
 
@@ -169,7 +169,7 @@ const Edit: React.FC = () => {
 
     // 防抖后的保存草稿函数
     const debouncedSaveDraft = useDebounce(saveDraftToCache, DEBOUNCE_DELAY);
-    
+
     // 当内容变化时标记数据已更改并使用防抖函数保存
     const markContentChanged = useCallback(() => {
         hasDataChangedRef.current = true;
@@ -319,31 +319,31 @@ const Edit: React.FC = () => {
         const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
         const imageUrl = `${businessServiceUrl}/img/get/${image.img_id}`;
         const markdownImage = `![${image.img_name}](${imageUrl})`;
-        
+
         // 复制到剪贴板
         navigator.clipboard.writeText(markdownImage)
             .then(() => {
                 // 显示复制成功提示
                 setCopiedImageId(image.img_id);
                 setTimeout(() => setCopiedImageId(null), 2000);
-                
+
                 // 插入到编辑器的光标位置
                 if (textareaRef.current) {
                     const textarea = textareaRef.current;
                     const start = textarea.selectionStart;
                     const end = textarea.selectionEnd;
-                    
+
                     // 在光标位置插入Markdown图片语法
                     const newContent = content.substring(0, start) + markdownImage + content.substring(end);
                     setContent(newContent);
-                    
+
                     // 更新光标位置到插入内容之后
                     setTimeout(() => {
                         textarea.focus();
                         const newPosition = start + markdownImage.length;
                         textarea.setSelectionRange(newPosition, newPosition);
                     }, 0);
-                    
+
                     // 标记内容已更改
                     markContentChanged();
                 }
@@ -361,13 +361,13 @@ const Edit: React.FC = () => {
         // TODO: 实现图片上传逻辑
         // 这里需要集成您的OSS上传功能
         console.log('上传图片:', file.name);
-        
+
         // 清空input值，允许再次选择同一文件
         e.target.value = '';
-        
+
         // 示例上传过程
         alert('图片上传功能即将实现，请检查控制台日志');
-        
+
         // 上传成功后应该重新加载图片库
         // loadImageGallery();
     }, []);
@@ -1126,22 +1126,22 @@ const Edit: React.FC = () => {
                         <div className="gallery-header">
                             <div className="gallery-title">
                                 <h3>图片库</h3>
-                                <button 
+                                <button
                                     className="gallery-upload-btn"
                                     title="上传图片"
                                     onClick={() => document.getElementById('image-upload-input')?.click()}
                                 >
                                     <FiPlus />
                                 </button>
-                                <input 
-                                    type="file" 
-                                    id="image-upload-input" 
+                                <input
+                                    type="file"
+                                    id="image-upload-input"
                                     style={{ display: 'none' }}
                                     accept="image/*"
                                     onChange={handleImageUpload}
                                 />
                             </div>
-                            <button 
+                            <button
                                 className="close-gallery-btn"
                                 onClick={() => setShowImageGallery(false)}
                             >
@@ -1161,14 +1161,14 @@ const Edit: React.FC = () => {
                             ) : (
                                 <ul className="gallery-list">
                                     {galleryImages.map(image => (
-                                        <li 
-                                            key={image.img_id} 
+                                        <li
+                                            key={image.img_id}
                                             className="gallery-item"
                                         >
                                             <div className="image-preview" onClick={() => handleImageInsert(image)}>
-                                                <img 
-                                                    src={`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${image.img_id}`} 
-                                                    alt={image.img_name} 
+                                                <img
+                                                    src={`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${image.img_id}`}
+                                                    alt={image.img_name}
                                                 />
                                             </div>
                                             <div className="image-info">
