@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
-import UserConfig from './UserSetting';
+import UserSetting from './UserSetting';
 import './Settings.scss';
 
 const Settings: React.FC = () => {
@@ -16,7 +16,7 @@ const Settings: React.FC = () => {
         <div className="edit-page settings-page">
             <div className="edit-container">
                 <div className="edit-header">
-                    <h1>系统配置</h1>
+                    <h1>系统设置</h1>
                     <div className="header-actions">
                         {/* 顶部不需要保存按钮 */}
                     </div>
@@ -30,7 +30,7 @@ const Settings: React.FC = () => {
 
                 <div className="edit-main">
                     <div className="edit-section">
-                        <UserConfig onSaveSuccess={handleSaveSuccess} />
+                        <UserSetting onSaveSuccess={handleSaveSuccess} />
                     </div>
                 </div>
             </div>

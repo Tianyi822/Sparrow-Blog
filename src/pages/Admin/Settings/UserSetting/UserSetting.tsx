@@ -1,21 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { FiUser, FiSave, FiAlertCircle } from 'react-icons/fi';
-import './UserConfig.scss';
+import './UserSetting.scss';
 
 interface UserConfigProps {
   onSaveSuccess?: () => void;
 }
 
-const UserConfig: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
+const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [smtp_account, setSmtpAccount] = useState('');
+  const [smtp_address, setSmtpAddress] = useState('');
+  const [smtp_port, setSmtpPort] = useState('');
+  const [smtp_auth_code, setSmtpAuthCode] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // 初始化时从localStorage检查倒计时状态
+  useEffect(() => {
+    const storedEndTime = localStorage.getItem('verificationCodeEndTime');
+    const storedEmail = localStorage.getItem('verificationCodeEmail');
+    
+    if (storedEndTime && storedEmail) {
+      const endTime = parseInt(storedEndTime, 10);
+      const now = new Date().getTime();
+      const remainingTime = Math.round((endTime - now) / 1000);
+      
+      if (remainingTime > 0) {
+        setCodeSent(true);
+        setCountdown(remainingTime);
+      } else {
+        // 倒计时已结束，清除localStorage
+        localStorage.removeItem('verificationCodeEndTime');
+        localStorage.removeItem('verificationCodeEmail');
+      }
+    }
+  }, []);
 
   // 处理倒计时
   useEffect(() => {
@@ -23,6 +46,12 @@ const UserConfig: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
 
     const timer = setTimeout(() => {
       setCountdown(countdown - 1);
+
+      // 当倒计时结束时，清除localStorage
+      if (countdown === 1) {
+        localStorage.removeItem('verificationCodeEndTime');
+        localStorage.removeItem('verificationCodeEmail');
+      }
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -49,8 +78,22 @@ const UserConfig: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
       newErrors.email = '邮箱格式不正确';
     }
 
-    if (password && password !== confirmPassword) {
-      newErrors.confirmPassword = '两次输入的密码不一致';
+    if (!smtp_account.trim()) {
+      newErrors.smtp_account = 'SMTP账号不能为空';
+    }
+
+    if (!smtp_address.trim()) {
+      newErrors.smtp_address = 'SMTP服务器不能为空';
+    }
+
+    if (!smtp_port.trim()) {
+      newErrors.smtp_port = 'SMTP端口不能为空';
+    } else if (!/^\d+$/.test(smtp_port)) {
+      newErrors.smtp_port = '端口必须为数字';
+    }
+
+    if (!smtp_auth_code.trim()) {
+      newErrors.smtp_auth_code = 'SMTP授权码不能为空';
     }
 
     if (codeSent && !verificationCode.trim()) {
@@ -71,18 +114,26 @@ const UserConfig: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     }
 
     // 这里会添加实际的保存逻辑，目前只是模拟
-    console.log('保存用户配置:', { username, email, password, verificationCode });
+    console.log('保存用户配置:', {
+      username,
+      email,
+      smtp_account,
+      smtp_address,
+      smtp_port,
+      smtp_auth_code,
+      verificationCode
+    });
 
-    // 清空密码字段和验证码字段
-    setPassword('');
-    setConfirmPassword('');
+    // 清空验证码字段和localStorage
     setVerificationCode('');
     setCodeSent(false);
+    localStorage.removeItem('verificationCodeEndTime');
+    localStorage.removeItem('verificationCodeEmail');
 
     // 显示保存成功提示
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 3000);
-    
+
     // 通知父组件保存成功
     if (onSaveSuccess) {
       onSaveSuccess();
@@ -108,6 +159,11 @@ const UserConfig: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     // 设置已发送状态和倒计时
     setCodeSent(true);
     setCountdown(60);
+    
+    // 在localStorage中保存结束时间和邮箱
+    const endTime = new Date().getTime() + 60 * 1000; // 60秒后的时间戳
+    localStorage.setItem('verificationCodeEndTime', endTime.toString());
+    localStorage.setItem('verificationCodeEmail', email);
   };
 
   return (
@@ -115,11 +171,11 @@ const UserConfig: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
       <div className="section-header">
         <h2 className="section-title">
           <FiUser className="section-icon" />
-          用户配置
+          用户设置
         </h2>
-        <button 
-          type="button" 
-          className="section-save-button" 
+        <button
+          type="button"
+          className="section-save-button"
           onClick={handleSubmit}
         >
           <FiSave className="button-icon" />
@@ -174,6 +230,86 @@ const UserConfig: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
           )}
         </div>
 
+        <div className="form-group">
+          <label htmlFor="smtp_account">
+            SMTP账号
+          </label>
+          <input
+            type="text"
+            id="smtp_account"
+            value={smtp_account}
+            onChange={(e) => {
+              setSmtpAccount(e.target.value);
+              clearError('smtp_account');
+            }}
+            placeholder="请输入SMTP账号"
+            className={errors.smtp_account ? 'has-error' : ''}
+          />
+          {errors.smtp_account && (
+            <div className="error-message">{errors.smtp_account}</div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="smtp_address">
+            SMTP服务器
+          </label>
+          <input
+            type="text"
+            id="smtp_address"
+            value={smtp_address}
+            onChange={(e) => {
+              setSmtpAddress(e.target.value);
+              clearError('smtp_address');
+            }}
+            placeholder="例如: smtp.gmail.com"
+            className={errors.smtp_address ? 'has-error' : ''}
+          />
+          {errors.smtp_address && (
+            <div className="error-message">{errors.smtp_address}</div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="smtp_port">
+            SMTP端口
+          </label>
+          <input
+            type="text"
+            id="smtp_port"
+            value={smtp_port}
+            onChange={(e) => {
+              setSmtpPort(e.target.value);
+              clearError('smtp_port');
+            }}
+            placeholder="例如: 465 或 587"
+            className={errors.smtp_port ? 'has-error' : ''}
+          />
+          {errors.smtp_port && (
+            <div className="error-message">{errors.smtp_port}</div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="smtp_auth_code">
+            SMTP授权码
+          </label>
+          <input
+            type="password"
+            id="smtp_auth_code"
+            value={smtp_auth_code}
+            onChange={(e) => {
+              setSmtpAuthCode(e.target.value);
+              clearError('smtp_auth_code');
+            }}
+            placeholder="请输入SMTP授权码"
+            className={errors.smtp_auth_code ? 'has-error' : ''}
+          />
+          {errors.smtp_auth_code && (
+            <div className="error-message">{errors.smtp_auth_code}</div>
+          )}
+        </div>
+
         <div className="form-group verification-code-group">
           <label htmlFor="verificationCode">
             验证码
@@ -203,45 +339,9 @@ const UserConfig: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             <div className="error-message">{errors.verificationCode}</div>
           )}
         </div>
-
-        <div className="form-group">
-          <label htmlFor="password">
-            密码
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              clearError('password');
-            }}
-            placeholder="请输入新密码（留空表示不修改）"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="confirmPassword">
-            确认密码
-          </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            value={confirmPassword}
-            onChange={(e) => {
-              setConfirmPassword(e.target.value);
-              clearError('confirmPassword');
-            }}
-            placeholder="请再次输入新密码"
-            className={errors.confirmPassword ? 'has-error' : ''}
-          />
-          {errors.confirmPassword && (
-            <div className="error-message">{errors.confirmPassword}</div>
-          )}
-        </div>
       </form>
     </div>
   );
 };
 
-export default UserConfig; 
+export default UserSetting;

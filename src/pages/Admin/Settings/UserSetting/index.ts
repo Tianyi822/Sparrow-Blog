@@ -1,3 +1,3 @@
-import UserConfig from './UserConfig';
+import UserSetting from './UserSetting.tsx';
 
-export default UserConfig; 
+export default UserSetting;
