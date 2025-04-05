@@ -5,7 +5,8 @@ import {
     getAllGalleryImages,
     renameGalleryImage,
     deleteGalleryImage,
-    RenameImageRequest
+    RenameImageRequest,
+    checkImageNameExistence
 } from '@/services/adminService';
 // 导入布局上下文
 import { createPortal } from 'react-dom';
@@ -478,6 +479,17 @@ const Gallery: React.FC = () => {
         }
 
         try {
+            // 首先检查名称是否已存在
+            const checkResult = await checkImageNameExistence(newName);
+            
+            // 如果checkResult.data为true，则表示名称已存在
+            if (checkResult.code === 200 && checkResult.data) {
+                console.error('重命名失败: 图片名称已存在');
+                setErrorMessage('图片名称已存在，请使用其他名称');
+                return;
+            }
+            
+            // 名称不存在，继续执行重命名操作
             // 准备请求数据
             const requestData: RenameImageRequest = {
                 img_id: imageId,
@@ -497,11 +509,11 @@ const Gallery: React.FC = () => {
                 console.log('图片重命名成功!');
             } else {
                 console.error('重命名失败:', response.msg);
-                // 可以添加错误提示
+                setErrorMessage(`重命名失败: ${response.msg}`);
             }
         } catch (error) {
             console.error('重命名请求出错:', error);
-            // 可以添加错误提示
+            setErrorMessage('重命名请求出错，请稍后重试');
         } finally {
             // 无论成功还是失败，退出重命名模式
             setRenamingImageId(null);

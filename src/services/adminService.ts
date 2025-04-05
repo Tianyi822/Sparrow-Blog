@@ -124,6 +124,13 @@ export interface GalleryImagesResponse {
     data: GalleryImage[];
 }
 
+// 检查图片名称是否存在响应接口
+export interface CheckImageNameResponse {
+    code: number;
+    msg: string;
+    data: boolean;
+}
+
 // 添加图片请求接口
 export interface AddImagesRequest {
     imgs: Array<{
@@ -370,6 +377,18 @@ export const addGalleryImages = async (data: AddImagesRequest): Promise<AddImage
     });
 };
 
+/**
+ * 检查图片名称是否已存在
+ * @param imageName 要检查的图片名称
+ * @returns 包含结果的响应（data为true表示名称已存在）
+ */
+export const checkImageNameExistence = async (imageName: string): Promise<CheckImageNameResponse> => {
+    return businessApiRequest<CheckImageNameResponse>({
+        method: 'GET',
+        url: `/admin/gallery/is-exist/${encodeURIComponent(imageName)}`
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -385,5 +404,6 @@ export default {
     renameGalleryImage,
     deleteGalleryImage,
     getPreSignUrl,
-    addGalleryImages
+    addGalleryImages,
+    checkImageNameExistence
 }; 
