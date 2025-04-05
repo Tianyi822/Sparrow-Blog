@@ -1,4 +1,4 @@
-import { saveInitiatedOSSConfig } from '@/services/InitiateConfigService.ts';
+import { saveInitiatedOSSConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import {

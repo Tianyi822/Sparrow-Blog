@@ -1,5 +1,5 @@
 import { request } from './api';
-import { ApiResponse } from '../types/apiTypes';
+import { ApiResponse } from './apiTypes.ts';
 import { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm';
 import { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm';
 import { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm';

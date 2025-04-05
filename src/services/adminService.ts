@@ -1,5 +1,5 @@
 import { businessApi, businessApiRequest } from './api';
-import { ApiResponse } from '../types/apiTypes';
+import { ApiResponse } from './api.ts';
 
 // 验证码请求数据接口
 export interface VerificationCodeRequest {

@@ -1,4 +1,4 @@
-import { saveInitiatedLoggerConfig } from '@/services/InitiateConfigService.ts';
+import { saveInitiatedLoggerConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FiArchive, FiCalendar, FiDatabase, FiFileText, FiFolder, FiZap } from 'react-icons/fi';

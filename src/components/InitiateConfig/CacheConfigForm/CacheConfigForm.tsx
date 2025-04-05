@@ -1,4 +1,4 @@
-import { saveInitiatedCacheConfig } from '@/services/InitiateConfigService.ts';
+import { saveInitiatedCacheConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FiDatabase, FiFolder, FiHardDrive, FiZap } from 'react-icons/fi';

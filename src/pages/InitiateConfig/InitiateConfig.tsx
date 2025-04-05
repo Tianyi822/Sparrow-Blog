@@ -6,7 +6,7 @@ import ServerBaseConfigForm, {
     ServerBaseConfigFormData
 } from '@/components/InitiateConfig/ServerBaseConfigForm';
 import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm';
-import { completeInitiatedConfig } from '@/services/InitiateConfigService';
+import { completeInitiatedConfig } from '@/services/initiateConfigService.ts';
 import { checkSystemStatus } from '@/services/webService';
 import React, { useEffect, useState } from 'react';
 import './InitiateConfig.scss';

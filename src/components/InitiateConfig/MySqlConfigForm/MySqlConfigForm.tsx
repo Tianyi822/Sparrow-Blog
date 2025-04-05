@@ -1,4 +1,4 @@
-import { saveInitiatedMySQLConfig } from '@/services/InitiateConfigService.ts';
+import { saveInitiatedMySQLConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FiClock, FiDatabase, FiLock, FiRefreshCw, FiServer, FiSettings, FiUser } from 'react-icons/fi';

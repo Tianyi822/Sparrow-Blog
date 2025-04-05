@@ -1,10 +1,11 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 // API response type
-export interface ApiResponse<T> {
+export interface ApiResponse<T = unknown> {
     code: number;
+    message?: string; // For backward compatibility
+    msg?: string;    // For backward compatibility
     data: T;
-    msg: string;
 }
 
 // 服务地址配置

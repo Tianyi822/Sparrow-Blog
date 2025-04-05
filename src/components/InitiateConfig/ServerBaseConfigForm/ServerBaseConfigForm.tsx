@@ -1,4 +1,4 @@
-import { saveInitiatedServerBaseConfig } from '@/services/InitiateConfigService.ts';
+import { saveInitiatedServerBaseConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FiClock, FiGlobe, FiKey, FiServer } from 'react-icons/fi';
