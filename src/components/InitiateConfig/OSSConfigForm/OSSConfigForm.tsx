@@ -9,9 +9,6 @@ import {
     FiImage,
     FiKey,
     FiLock,
-    FiMaximize,
-    FiPercent,
-    FiToggleRight
 } from 'react-icons/fi';
 import './OSSConfigForm.scss';
 
@@ -27,9 +24,6 @@ export interface OSSConfigFormData {
     bucketName: string;
     imagePath: string;
     blogPath: string;
-    webpEnabled: boolean;
-    webpQuality: string;
-    webpMaxSize: string;
 }
 
 // OSSConfigForm 组件的 props 接口
@@ -150,41 +144,6 @@ const FIELD_CONFIG: FieldConfigType = {
             }
             return '';
         }
-    },
-    webpEnabled: {
-        label: '启用WebP转换',
-        icon: <FiToggleRight/>,
-        name: 'webpEnabled',
-        type: 'checkbox',
-        validate: () => ''
-    },
-    webpQuality: {
-        label: 'WebP质量 (1-100)',
-        icon: <FiPercent/>,
-        name: 'webpQuality',
-        type: 'text',
-        placeholder: '75',
-        validate: (value: string) => {
-            const quality = parseFloat(value);
-            if (isNaN(quality) || quality < 1 || quality > 100) {
-                return 'WebP质量必须是1到100之间的数字';
-            }
-            return '';
-        }
-    },
-    webpMaxSize: {
-        label: '最大大小 (MB)',
-        icon: <FiMaximize/>,
-        name: 'webpMaxSize',
-        type: 'text',
-        placeholder: '1.5',
-        validate: (value: string) => {
-            const size = parseFloat(value);
-            if (isNaN(size) || size <= 0) {
-                return '最大大小必须为正数';
-            }
-            return '';
-        }
     }
 };
 
@@ -197,10 +156,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
         accessKeySecret: initialData?.accessKeySecret || '',
         bucketName: initialData?.bucketName || '',
         imagePath: initialData?.imagePath || 'images',
-        blogPath: initialData?.blogPath || 'blogs',
-        webpEnabled: initialData?.webpEnabled !== undefined ? initialData.webpEnabled : true,
-        webpQuality: initialData?.webpQuality || '75',
-        webpMaxSize: initialData?.webpMaxSize || '200'
+        blogPath: initialData?.blogPath || 'blogs'
     });
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [submitError, setSubmitError] = useState<string>('');
@@ -219,10 +175,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
                 accessKeySecret: initialData.accessKeySecret || prevFormData.accessKeySecret,
                 bucketName: initialData.bucketName || prevFormData.bucketName,
                 imagePath: initialData.imagePath || prevFormData.imagePath,
-                blogPath: initialData.blogPath || prevFormData.blogPath,
-                webpEnabled: initialData.webpEnabled !== undefined ? initialData.webpEnabled : prevFormData.webpEnabled,
-                webpQuality: initialData.webpQuality || prevFormData.webpQuality,
-                webpMaxSize: initialData.webpMaxSize || prevFormData.webpMaxSize
+                blogPath: initialData.blogPath || prevFormData.blogPath
             }));
         }
     }, [initialData]);
@@ -266,11 +219,6 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
     const validateField = (field: string): string => {
         const config = FIELD_CONFIG[field];
         if (!config || typeof config.validate !== 'function') return '';
-
-        // 对于布尔类型字段，直接返回空字符串
-        if (field === 'webpEnabled' && typeof formData[field as keyof OSSConfigFormData] === 'boolean') {
-            return '';
-        }
 
         // 对于其他字段，执行验证
         return config.validate(formData[field as keyof OSSConfigFormData] as string);
@@ -433,55 +381,6 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
                         </div>
                     );
                 })}
-
-                <div className="form-section-header">
-                    <h3>
-                        <span className="icon"><FiImage/></span>
-                        WebP配置
-                    </h3>
-                </div>
-
-                {/* WebP 启用选项 */}
-                <div className="form-group checkbox-group">
-                    <input
-                        type="checkbox"
-                        id="webpEnabled"
-                        name="webpEnabled"
-                        checked={formData.webpEnabled}
-                        onChange={handleChange}
-                    />
-                    <label htmlFor="webpEnabled">
-                        <span className="icon">{FIELD_CONFIG.webpEnabled.icon}</span>
-                        {FIELD_CONFIG.webpEnabled.label}
-                    </label>
-                </div>
-
-                {/* WebP 参数设置，仅在启用时显示 */}
-                {formData.webpEnabled && (
-                    <>
-                        {['webpQuality', 'webpMaxSize'].map(key => {
-                            const fieldKey = key as keyof OSSConfigFormData;
-                            const config = FIELD_CONFIG[fieldKey];
-                            return (
-                                <div className="form-group" key={fieldKey}>
-                                    <label htmlFor={fieldKey}>
-                                        <span className="icon">{config.icon}</span>
-                                        {config.label}
-                                    </label>
-                                    <input
-                                        type={config.type}
-                                        id={fieldKey}
-                                        name={fieldKey}
-                                        value={formData[fieldKey] as string}
-                                        onChange={handleChange}
-                                        placeholder={config.placeholder}
-                                    />
-                                    {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
-                                </div>
-                            );
-                        })}
-                    </>
-                )}
 
                 <div className="form-actions">
                     <button
