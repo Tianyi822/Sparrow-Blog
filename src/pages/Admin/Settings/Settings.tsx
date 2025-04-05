@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
-import UserConfig from './UserConfig';
+import UserConfig from './UserSetting';
 import './Settings.scss';
 
 const Settings: React.FC = () => {
