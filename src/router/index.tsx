@@ -10,6 +10,7 @@ import Login from "@/pages/Admin/Login";
 import NotFound from "@/pages/NotFound/NotFound";
 import Edit from "@/pages/Admin/Edit";
 import Gallery from "@/pages/Admin/Gallery";
+import Settings from "@/pages/Admin/Settings";
 
 // 检查系统状态的loader函数
 const checkApiConfig = async () => {
@@ -122,6 +123,10 @@ const routes: RouteObject[] = [
             {
                 path: "gallery",
                 element: <Gallery />
+            },
+            {
+                path: "settings",
+                element: <Settings />
             }
         ]
     },
