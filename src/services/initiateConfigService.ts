@@ -1,5 +1,5 @@
 import { request } from './api';
-import { ApiResponse } from './apiTypes.ts';
+import { ApiResponse } from './api.ts';
 import { LoggerFormData } from '@/components/InitiateConfig/LoggerConfigForm';
 import { MySQLFormData } from '@/components/InitiateConfig/MySqlConfigForm';
 import { OSSConfigFormData } from '@/components/InitiateConfig/OSSConfigForm';
@@ -50,7 +50,7 @@ export const saveInitiatedServerBaseConfig = async (data: ServerBaseConfig): Pro
     // 使用JSON格式提交数据
     return request<ApiResponse<ServerBaseConfig>>({
         method: 'POST',
-        url: '/config/base',
+        url: '/init/server',
         data: transformedData,
         headers: {
             'Content-Type': 'application/json'
@@ -90,7 +90,7 @@ export const saveInitiatedLoggerConfig = async (data: LoggerFormData): Promise<A
 
     return request<ApiResponse<LoggerFormData>>({
         method: 'POST',
-        url: '/config/logger',
+        url: '/init/logger',
         data: transformedData,
         headers: {
             'Content-Type': 'application/json'
@@ -132,7 +132,7 @@ export const saveInitiatedMySQLConfig = async (data: MySQLFormData): Promise<Api
 
     return request<ApiResponse<MySQLFormData>>({
         method: 'POST',
-        url: '/config/mysql',
+        url: '/init/mysql',
         data: transformedData,
         headers: {
             'Content-Type': 'application/json'
@@ -180,7 +180,7 @@ export const saveInitiatedOSSConfig = async (data: OSSConfigFormData): Promise<A
 
     return request<ApiResponse<OSSConfigFormData>>({
         method: 'POST',
-        url: '/config/oss',
+        url: '/init/oss',
         data: transformedData,
         headers: {
             'Content-Type': 'application/json'
@@ -216,7 +216,7 @@ export const saveInitiatedCacheConfig = async (data: CacheConfigFormData): Promi
 
     return request<ApiResponse<CacheConfigFormData>>({
         method: 'POST',
-        url: '/config/cache',
+        url: '/init/cache',
         data: transformedData,
         headers: {
             'Content-Type': 'application/json'
@@ -235,7 +235,7 @@ export interface UserConfigData {
 export const saveInitiatedUserConfig = async (data: UserConfigData): Promise<ApiResponse<null>> => {
     return request<ApiResponse<null>>({
         method: 'POST',
-        url: '/config/user',
+        url: '/init/user',
         data: data,
         headers: {
             'Content-Type': 'application/json'
@@ -257,7 +257,7 @@ export interface VerificationCodeData {
 export const sendInitiatedVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
     return request<ApiResponse<null>>({
         method: 'POST',
-        url: '/config/config-email-send-code',
+        url: '/init/config-email-send-code',
         data: data,
         headers: {
             'Content-Type': 'application/json'
@@ -271,7 +271,7 @@ export const sendInitiatedVerificationCode = async (data: VerificationCodeData):
 export const completeInitiatedConfig = async (): Promise<ApiResponse<null>> => {
     return request<ApiResponse<null>>({
         method: 'GET',
-        url: '/config/complete-config'
+        url: '/init/complete-config'
     });
 };
 
