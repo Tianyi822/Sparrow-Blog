@@ -11,10 +11,10 @@ interface UserConfigProps {
 const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [smtp_account, setSmtpAccount] = useState('');
-  const [smtp_address, setSmtpAddress] = useState('');
-  const [smtp_port, setSmtpPort] = useState('');
-  const [smtp_auth_code, setSmtpAuthCode] = useState('');
+  const [smtpAccount, setSmtpAccount] = useState('');
+  const [smtpAddress, setSmtpAddress] = useState('');
+  const [smtpPort, setSmtpPort] = useState('');
+  const [smtpAuthCode, setSmtpAuthCode] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -87,21 +87,21 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
       newErrors.email = '邮箱格式不正确';
     }
 
-    if (!smtp_account.trim()) {
+    if (!smtpAccount.trim()) {
       newErrors.smtp_account = 'SMTP账号不能为空';
     }
 
-    if (!smtp_address.trim()) {
+    if (!smtpAddress.trim()) {
       newErrors.smtp_address = 'SMTP服务器不能为空';
     }
 
-    if (!smtp_port.trim()) {
+    if (!smtpPort.trim()) {
       newErrors.smtp_port = 'SMTP端口不能为空';
-    } else if (!/^\d+$/.test(smtp_port)) {
+    } else if (!/^\d+$/.test(smtpPort)) {
       newErrors.smtp_port = '端口必须为数字';
     }
 
-    if (!smtp_auth_code.trim()) {
+    if (!smtpAuthCode.trim()) {
       newErrors.smtp_auth_code = 'SMTP授权码不能为空';
     }
 
@@ -126,10 +126,10 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     console.log('保存用户配置:', {
       username,
       email,
-      smtp_account,
-      smtp_address,
-      smtp_port,
-      smtp_auth_code,
+      smtp_account: smtpAccount,
+      smtp_address: smtpAddress,
+      smtp_port: smtpPort,
+      smtp_auth_code: smtpAuthCode,
       verificationCode
     });
 
@@ -313,7 +313,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             <input
               type="text"
               id="smtp_account"
-              value={smtp_account}
+              value={smtpAccount}
               onChange={(e) => {
                 setSmtpAccount(e.target.value);
                 clearError('smtp_account');
@@ -334,7 +334,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             <input
               type="text"
               id="smtp_address"
-              value={smtp_address}
+              value={smtpAddress}
               onChange={(e) => {
                 setSmtpAddress(e.target.value);
                 clearError('smtp_address');
@@ -355,7 +355,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             <input
               type="text"
               id="smtp_port"
-              value={smtp_port}
+              value={smtpPort}
               onChange={(e) => {
                 setSmtpPort(e.target.value);
                 clearError('smtp_port');
@@ -376,7 +376,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             <input
               type="password"
               id="smtp_auth_code"
-              value={smtp_auth_code}
+              value={smtpAuthCode}
               onChange={(e) => {
                 setSmtpAuthCode(e.target.value);
                 clearError('smtp_auth_code');
