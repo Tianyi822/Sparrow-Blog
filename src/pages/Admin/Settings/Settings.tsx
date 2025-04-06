@@ -5,13 +5,15 @@ import {
     FiDatabase,
     FiHardDrive,
     FiServer,
-    FiSettings,
     FiUser
 } from 'react-icons/fi';
 import LogSetting from './LogSetting';
 import ServiceSetting from './ServiceSetting';
 import './Settings.scss';
 import UserSetting from './UserSetting';
+import DatabaseSetting from './DatabaseSetting';
+import OssSetting from './OssSetting';
+import CacheSetting from './CacheSetting';
 
 type SettingTab = 'user' | 'service' | 'log' | 'database' | 'oss' | 'cache';
 
@@ -51,16 +53,11 @@ const Settings: React.FC = () => {
             case 'log':
                 return <LogSetting onSaveSuccess={handleSaveSuccess} />;
             case 'database':
+                return <DatabaseSetting onSaveSuccess={handleSaveSuccess} />;
             case 'oss':
+                return <OssSetting onSaveSuccess={handleSaveSuccess} />;
             case 'cache':
-                return (
-                    <div className="placeholder-content">
-                        <div className="placeholder-icon">
-                            <FiSettings />
-                        </div>
-                        <p>该功能正在开发中...</p>
-                    </div>
-                );
+                return <CacheSetting onSaveSuccess={handleSaveSuccess} />;
             default:
                 return null;
         }
