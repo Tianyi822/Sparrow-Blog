@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fi';
 import UserSetting from './UserSetting';
 import ServiceSetting from './ServiceSetting';
+import LogSetting from './LogSetting';
 import './Settings.scss';
 
 type SettingTab = 'user' | 'service' | 'log' | 'database' | 'oss' | 'cache';
@@ -58,6 +59,7 @@ const Settings: React.FC = () => {
             case 'service':
                 return <ServiceSetting onSaveSuccess={handleSaveSuccess}/>;
             case 'log':
+                return <LogSetting onSaveSuccess={handleSaveSuccess} />;
             case 'database':
             case 'oss':
             case 'cache':
