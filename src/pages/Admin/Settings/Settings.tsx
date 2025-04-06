@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import {
-    FiAlertCircle,
-    FiSettings,
-    FiUser,
-    FiServer,
+    FiChevronDown,
+    FiCpu,
     FiDatabase,
     FiHardDrive,
-    FiCpu,
-    FiChevronDown
+    FiServer,
+    FiSettings,
+    FiUser
 } from 'react-icons/fi';
-import UserSetting from './UserSetting';
-import ServiceSetting from './ServiceSetting';
 import LogSetting from './LogSetting';
+import ServiceSetting from './ServiceSetting';
 import './Settings.scss';
+import UserSetting from './UserSetting';
 
 type SettingTab = 'user' | 'service' | 'log' | 'database' | 'oss' | 'cache';
 
@@ -21,12 +20,12 @@ const Settings: React.FC = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const tabOptions = [
-        {id: 'user', label: '用户设置', icon: <FiUser/>},
-        {id: 'service', label: '服务设置', icon: <FiServer/>},
-        {id: 'log', label: '日志设置', icon: <FiCpu/>},
-        {id: 'database', label: '数据库设置', icon: <FiDatabase/>},
-        {id: 'oss', label: 'OSS设置', icon: <FiHardDrive/>},
-        {id: 'cache', label: '缓存设置', icon: <FiCpu/>},
+        { id: 'user', label: '用户设置', icon: <FiUser /> },
+        { id: 'service', label: '服务设置', icon: <FiServer /> },
+        { id: 'log', label: '日志设置', icon: <FiCpu /> },
+        { id: 'database', label: '数据库设置', icon: <FiDatabase /> },
+        { id: 'oss', label: 'OSS设置', icon: <FiHardDrive /> },
+        { id: 'cache', label: '缓存设置', icon: <FiCpu /> },
     ];
 
     const handleSaveSuccess = () => {
@@ -46,9 +45,9 @@ const Settings: React.FC = () => {
     const renderTabContent = () => {
         switch (activeTab) {
             case 'user':
-                return <UserSetting onSaveSuccess={handleSaveSuccess}/>;
+                return <UserSetting onSaveSuccess={handleSaveSuccess} />;
             case 'service':
-                return <ServiceSetting onSaveSuccess={handleSaveSuccess}/>;
+                return <ServiceSetting onSaveSuccess={handleSaveSuccess} />;
             case 'log':
                 return <LogSetting onSaveSuccess={handleSaveSuccess} />;
             case 'database':
@@ -57,7 +56,7 @@ const Settings: React.FC = () => {
                 return (
                     <div className="placeholder-content">
                         <div className="placeholder-icon">
-                            <FiSettings/>
+                            <FiSettings />
                         </div>
                         <p>该功能正在开发中...</p>
                     </div>
@@ -94,7 +93,7 @@ const Settings: React.FC = () => {
 
                     <div className="settings-dropdown">
                         <button className="dropdown-toggle" onClick={toggleDropdown}>
-                            {getActiveTabLabel()} <FiChevronDown className={isDropdownOpen ? 'rotate' : ''}/>
+                            {getActiveTabLabel()} <FiChevronDown className={isDropdownOpen ? 'rotate' : ''} />
                         </button>
                         {isDropdownOpen && (
                             <div className="dropdown-menu">
