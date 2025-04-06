@@ -7,7 +7,6 @@ import {
     FiDatabase,
     FiHardDrive,
     FiCpu,
-    FiSave,
     FiChevronDown
 } from 'react-icons/fi';
 import UserSetting from './UserSetting';
@@ -18,7 +17,6 @@ import './Settings.scss';
 type SettingTab = 'user' | 'service' | 'log' | 'database' | 'oss' | 'cache';
 
 const Settings: React.FC = () => {
-    const [saveSuccess, setSaveSuccess] = useState(false);
     const [activeTab, setActiveTab] = useState<SettingTab>('user');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -32,15 +30,8 @@ const Settings: React.FC = () => {
     ];
 
     const handleSaveSuccess = () => {
-        // 显示全局保存成功提示
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
-    };
-
-    const handleSaveClick = () => {
-        // 目前不做网络请求，直接显示保存成功
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
+        // 各组件内部处理保存成功提示
+        console.log('组件保存成功');
     };
 
     const handleTabChange = (tab: SettingTab) => {
@@ -119,19 +110,7 @@ const Settings: React.FC = () => {
                             </div>
                         )}
                     </div>
-
-                    <div className="header-actions">
-                        <button className="save-button" onClick={handleSaveClick}>
-                            <FiSave/> 保存设置
-                        </button>
-                    </div>
                 </div>
-
-                {saveSuccess && (
-                    <div className="auto-save-notification">
-                        <FiAlertCircle/> 设置已保存成功！
-                    </div>
-                )}
 
                 <div className="user-setting-wrapper">
                     {renderTabContent()}
