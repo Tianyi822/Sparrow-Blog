@@ -2,7 +2,7 @@
 
 .settings-page {
   height: 100vh;
-  max-height: 100vh;
+  max-height: calc(100vh - 60px);
   padding: 0;
   overflow-y: auto;
   display: flex;
@@ -222,12 +222,12 @@
   .user-setting-wrapper {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
     flex: 1;
     box-sizing: border-box;
     overflow-y: auto;
-    padding: 2rem 0;
+    padding: 0;
     max-height: calc(100vh - 60px);
   }
   
@@ -340,9 +340,10 @@
     }
     
     .user-setting-wrapper {
-      padding: 1rem 0;
+      padding: 0;
       width: 100%;
       max-height: calc(100vh - 120px);
+      align-items: center;
     }
     
     .placeholder-content {
@@ -380,6 +381,8 @@
     
     .user-setting-wrapper {
       max-height: calc(100vh - 160px);
+      align-items: center;
+      padding: 0;
     }
   }
 } 
