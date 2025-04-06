@@ -18,37 +18,38 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
     padding: 2rem;
+    max-height: 80vh;
+    overflow: hidden;
 
     &::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      right: 0;
+      bottom: 0;
       background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
       z-index: 1;
+      border-radius: inherit;
     }
 
     .user-info-overlay {
+      position: absolute;
       z-index: 2;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       color: white;
       max-width: 80%;
+      width: 80%;
       text-align: center;
-      align-self: center;
-      margin: 0 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%;
 
       .user-title {
         display: flex;
@@ -71,6 +72,7 @@
       }
 
       .user-description {
+        width: 100%;
         p {
           font-size: 1.1rem;
           margin-bottom: 1rem;
@@ -84,16 +86,18 @@
       }
     }
 
-    .upload-container {
-      position: relative;
+    .desktop-upload-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
       z-index: 2;
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 2rem;
-      margin-top: auto;
-      padding-bottom: 2rem;
+      padding-bottom: 3rem;
 
       .upload-items-row {
         display: flex;
@@ -342,6 +346,150 @@
           }
         }
       }
+
+      .submit-button {
+        margin-top: 1.5rem;
+        background-color: rgba(147, 118, 224, 0.3);
+        color: white;
+        border: 2px solid rgba(147, 118, 224, 0.5);
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 1.05rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        
+        svg {
+          font-size: 1.2rem;
+        }
+        
+        &:hover {
+          background-color: rgba(147, 118, 224, 0.5);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+
+    .mobile-upload-container {
+      display: none;
+      width: 100%;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      
+      .upload-items-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 3rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .upload-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+        .upload-circle {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background-color: rgba(255, 255, 255, 0.1);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border: 2px dashed rgba(255, 255, 255, 0.3);
+          
+          .selected-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+          }
+          
+          .avatar-icon, .logo-icon {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+          }
+          
+          .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(25, 25, 35, 0.7);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            
+            svg {
+              font-size: 1.3rem;
+              color: #9376E0;
+              margin-bottom: 0.3rem;
+            }
+            
+            .upload-label-inner {
+              font-size: 0.75rem;
+              color: white;
+            }
+          }
+          
+          &:hover {
+            .upload-overlay {
+              opacity: 0.9;
+            }
+          }
+        }
+      }
+      
+      .bg-upload-button {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 30px;
+        padding: 0.6rem 1rem;
+        color: white;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: calc(160px + 2rem);
+        margin: 0 auto;
+        
+        .upload-icon {
+          font-size: 1.1rem;
+        }
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+      }
     }
   }
 }
@@ -378,27 +526,50 @@
     max-width: calc(600px - 4rem);
     margin: 0 2rem;
     max-height: none;
+    border-radius: 16px;
+    overflow: hidden;
 
     .user-imgs-setting {
-      min-height: 160px;
+      min-height: 220px;
+      padding: 1.5rem;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      overflow: hidden;
 
+      &::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+        z-index: 1;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+      }
+      
       .user-info-overlay {
-        max-width: 100%;
+        max-width: 90%;
         width: 90%;
-
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        
         .user-title {
           margin-bottom: 1rem;
-
+          
           .user-icon {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
           }
-
+          
           h2 {
             font-size: 1.5rem;
           }
         }
-
+        
         .user-description {
           p {
             font-size: 0.9rem;
@@ -406,80 +577,90 @@
           }
         }
       }
-
-      .upload-container {
-        position: relative;
-        bottom: 0;
-        padding: 2rem 1rem;
-        gap: 1.5rem;
-
-        .upload-items-row {
-          gap: 2rem;
-        }
-
-        .bg-upload-button {
-          font-size: 0.85rem;
-          padding: 0.6rem 1rem;
-          width: calc(160px + 2rem); /* 两个圆形组件宽度(80px*2)加上它们之间的间距(2rem) */
-        }
-
-        .upload-item {
-          .upload-circle {
-            width: 80px;
-            height: 80px;
-
-            .avatar-icon {
-              font-size: 2rem;
-              margin-bottom: 3px;
-            }
-
-            .logo-icon {
-              font-size: 2rem;
-              margin-bottom: 3px;
-            }
-
-            .upload-label-inner {
-              font-size: 0.75rem;
-            }
-          }
-        }
+      
+      .desktop-upload-container {
+        display: none;
       }
     }
 
     .user-setting-form-wrapper {
       max-height: none;
       padding: 2rem;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+
+      .mobile-upload-container {
+        display: block;
+      }
     }
   }
 }
 
 @media (max-width: 576px) {
   .user-setting-card {
-    margin: 0 2rem;
-    width: calc(100% - 4rem);
-
+    margin: 0 1rem;
+    width: calc(100% - 2rem);
+    border-radius: 12px;
+    overflow: hidden;
+    
     .user-imgs-setting {
-      padding: 1.5rem;
+      min-height: 200px;
+      padding: 1rem;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      overflow: hidden;
 
-      .upload-container {
-        padding: 1rem 0.5rem;
-
-        .upload-items-row {
-          flex-direction: column;
-          align-items: center;
-          gap: 2rem;
+      &::before {
+        top: -15px;
+        left: -15px;
+        right: -15px;
+        bottom: -15px;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.7));
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+      }
+      
+      .user-info-overlay {
+        width: 90%;
+        
+        .user-title {
+          margin-bottom: 0.75rem;
+          
+          .user-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.4rem;
+          }
+          
+          h2 {
+            font-size: 1.4rem;
+          }
         }
-
-        .bg-upload-button {
-          width: 100%;
-          justify-content: center;
-          margin-top: 0.5rem;
+        
+        .user-description {
+          p {
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+          }
         }
       }
     }
 
     .user-setting-form-wrapper {
       padding: 1.5rem;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+
+      .mobile-upload-container {
+        .upload-items-row {
+          flex-direction: row;
+          gap: 1.5rem;
+        }
+
+        .bg-upload-button {
+          width: 100%;
+        }
+      }
 
       .user-setting-form {
         .form-group {

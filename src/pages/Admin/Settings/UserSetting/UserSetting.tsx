@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle, FiUpload, FiImage } from 'react-icons/fi';
+import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle, FiUpload, FiImage, FiSave } from 'react-icons/fi';
 import './UserSetting.scss';
 import ImageSelectorModal, { ImageUsageType } from './ImageSelectorModal/ImageSelectorModal';
 import { GalleryImage } from '@/services/adminService';
@@ -227,7 +227,8 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                     </div>
                 </div>
 
-                <div className="upload-container">
+                {/* 桌面版上传组件区域，在窄屏模式下隐藏 */}
+                <div className="upload-container desktop-upload-container">
                     <div className="upload-items-row">
                         <div className="upload-item">
                             <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
@@ -267,6 +268,45 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
             </div>
 
             <div className="user-setting-form-wrapper">
+                {/* 移动端上传组件区域，仅在窄屏模式下显示 */}
+                <div className="mobile-upload-container">
+                    <div className="upload-items-row">
+                        <div className="upload-item">
+                            <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
+                                {avatarImage ? (
+                                    <img src={avatarImage} alt="User Avatar" className="selected-image"/>
+                                ) : (
+                                    <FiUser className="avatar-icon"/>
+                                )}
+                                <div className="upload-overlay">
+                                    <FiUpload/>
+                                    <span className="upload-label-inner">上传头像</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="upload-item">
+                            <div className="upload-circle" onClick={() => openImageSelector('logo')}>
+                                {logoImage ? (
+                                    <img src={logoImage} alt="Website Logo" className="selected-image"/>
+                                ) : (
+                                    <FiImage className="logo-icon"/>
+                                )}
+                                <div className="upload-overlay">
+                                    <FiUpload/>
+                                    <span className="upload-label-inner">上传Logo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        className="bg-upload-button"
+                        onClick={() => openImageSelector('background')}
+                    >
+                        <FiUpload className="upload-icon"/>
+                        上传背景图片
+                    </button>
+                </div>
+
                 {saveSuccess && (
                     <div className="save-notification">
                         <FiAlertCircle/> 用户设置已保存成功！
@@ -430,6 +470,10 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                             <div className="error-message">{errors.verificationCode}</div>
                         )}
                     </div>
+                    
+                    <button type="submit" className="submit-button">
+                        <FiSave /> 保存配置
+                    </button>
                 </form>
             </div>
 
