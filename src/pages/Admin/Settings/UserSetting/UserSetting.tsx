@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle, FiUpload, FiImage } from 'react-icons/fi';
 import './UserSetting.scss';
+import ImageSelectorModal, { ImageUsageType } from './ImageSelectorModal/ImageSelectorModal';
+import { GalleryImage } from '@/services/adminService';
 
 interface UserConfigProps {
   onSaveSuccess?: () => void;
@@ -18,6 +20,13 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
   const [countdown, setCountdown] = useState(0);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [selectedImageType, setSelectedImageType] = useState<ImageUsageType>('avatar');
+  
+  // 添加状态来跟踪已选择的图片
+  const [avatarImage, setAvatarImage] = useState<string | null>(null);
+  const [logoImage, setLogoImage] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
   // 初始化时从localStorage检查倒计时状态
   useEffect(() => {
@@ -166,29 +175,83 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     localStorage.setItem('verificationCodeEmail', email);
   };
 
+  // 打开图片选择器
+  const openImageSelector = (type: ImageUsageType) => {
+    setSelectedImageType(type);
+    setModalOpen(true);
+  };
+  
+  // 关闭图片选择器
+  const closeImageSelector = () => {
+    setModalOpen(false);
+  };
+  
+  // 处理选择图片
+  const handleImageSelect = (image: GalleryImage, usageType: ImageUsageType) => {
+    // 获取图片URL
+    const imageUrl = `${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${image.img_id}`;
+    
+    // 根据不同的用途类型更新不同的图片
+    if (usageType === 'avatar') {
+      setAvatarImage(imageUrl);
+    } else if (usageType === 'logo') {
+      setLogoImage(imageUrl);
+    } else if (usageType === 'background') {
+      setBackgroundImage(imageUrl);
+    }
+    
+    console.log(`选择了图片 ${image.img_name} 用于 ${usageType}`);
+    
+    // 这里可以调用API更新图片设置
+    // 示例:
+    // if (usageType === 'avatar') updateUserAvatar(image.img_id);
+    // else if (usageType === 'logo') updateWebsiteLogo(image.img_id);
+    // else if (usageType === 'background') updateBackgroundImage(image.img_id);
+  };
+
   return (
     <div className="user-setting-card">
-      <div className="user-imgs-setting">
+      <div className="user-imgs-setting" style={backgroundImage ? {
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      } : {}}>
         <div className="upload-container">
-          <div className="upload-item">
-            <div className="upload-circle">
-              <FiUser className="avatar-icon" />
-              <div className="upload-label-inner">用户头像</div>
-              <div className="upload-overlay">
-                <FiUpload />
+          <div className="upload-items-row">
+            <div className="upload-item">
+              <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
+                {avatarImage ? (
+                  <img src={avatarImage} alt="User Avatar" className="selected-image" />
+                ) : (
+                  <FiUser className="avatar-icon" />
+                )}
+                <div className="upload-overlay">
+                  <FiUpload />
+                  <span className="upload-label-inner">上传头像</span>
+                </div>
+              </div>
+            </div>
+            <div className="upload-item">
+              <div className="upload-circle" onClick={() => openImageSelector('logo')}>
+                {logoImage ? (
+                  <img src={logoImage} alt="Website Logo" className="selected-image" />
+                ) : (
+                  <FiImage className="logo-icon" />
+                )}
+                <div className="upload-overlay">
+                  <FiUpload />
+                  <span className="upload-label-inner">上传Logo</span>
+                </div>
               </div>
             </div>
           </div>
-          
-          <div className="upload-item">
-            <div className="upload-circle">
-              <FiImage className="logo-icon" />
-              <div className="upload-label-inner">网站Logo</div>
-              <div className="upload-overlay">
-                <FiUpload />
-              </div>
-            </div>
-          </div>
+          <button 
+            className="bg-upload-button" 
+            onClick={() => openImageSelector('background')}
+          >
+            <FiUpload className="upload-icon" />
+            上传背景图片
+          </button>
         </div>
       </div>
 
@@ -358,6 +421,14 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
           </div>
         </form>
       </div>
+      
+      {/* 图片选择器弹窗 */}
+      <ImageSelectorModal 
+        isOpen={modalOpen}
+        onClose={closeImageSelector}
+        onImageSelect={handleImageSelect}
+        usageType={selectedImageType}
+      />
     </div>
   );
 };
