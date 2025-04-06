@@ -9,7 +9,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   margin: 0 2rem;
   max-height: 80vh;
-  
+
   .log-img-section {
     flex: 1;
     background-image: url('https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80');
@@ -21,7 +21,7 @@
     justify-content: center;
     align-items: center;
     padding: 2rem;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -32,26 +32,26 @@
       background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
       z-index: 1;
     }
-    
+
     .log-info-overlay {
       position: relative;
       z-index: 2;
       color: white;
       max-width: 80%;
       text-align: center;
-      
+
       .log-title {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-bottom: 2rem;
-        
+
         .log-icon {
           font-size: 4rem;
           margin-bottom: 1rem;
           color: #9376E0;
         }
-        
+
         h2 {
           font-size: 2rem;
           font-weight: 600;
@@ -59,14 +59,14 @@
           margin: 0;
         }
       }
-      
+
       .log-description {
         p {
           font-size: 1.1rem;
           margin-bottom: 1rem;
           line-height: 1.6;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-          
+
           &:last-child {
             margin-bottom: 0;
           }
@@ -74,7 +74,7 @@
       }
     }
   }
-  
+
   .log-setting-form-wrapper {
     flex: 1.3;
     @include glass-card-base;
@@ -83,7 +83,7 @@
     flex-direction: column;
     overflow-y: auto;
     max-height: 80vh;
-    
+
     .save-notification {
       margin-bottom: 1.5rem;
       background-color: rgba(46, 204, 113, 0.15);
@@ -97,19 +97,19 @@
       align-items: center;
       gap: 0.5rem;
     }
-    
+
     .log-setting-form {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
       overflow-y: auto;
-      
+
       .form-group {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-        
+
         label {
           display: flex;
           align-items: center;
@@ -117,13 +117,13 @@
           font-weight: 500;
           color: rgba(255, 255, 255, 0.9);
           font-size: 1.05rem;
-          
+
           .input-icon {
             color: rgba(255, 255, 255, 0.8);
             font-size: 1.1rem;
           }
         }
-        
+
         input, select {
           width: 100%;
           padding: 1rem 1.2rem;
@@ -133,22 +133,22 @@
           font-size: 1.05rem;
           color: rgba(255, 255, 255, 0.9);
           transition: all 0.2s ease;
-          
+
           &:focus {
             outline: none;
             border-color: #9376E0;
             box-shadow: 0 0 0 2px rgba(147, 118, 224, 0.3);
           }
-          
+
           &::placeholder {
             color: rgba(255, 255, 255, 0.5);
           }
-          
+
           &.has-error {
             border-color: #ff6b6b;
           }
         }
-        
+
         select {
           appearance: none;
           background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
@@ -157,21 +157,27 @@
           background-size: 1rem;
           padding-right: 2.5rem;
         }
-        
+
         .error-message {
           font-size: 0.9rem;
           color: #ff6b6b;
           margin-top: 0.3rem;
         }
-        
+
+        .help-text {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.6);
+          margin-top: 0.3rem;
+        }
+
         &.checkbox-group {
           margin-bottom: 0.5rem;
-          
+
           .checkbox-label {
             display: flex;
             align-items: center;
             cursor: pointer;
-            
+
             input[type="checkbox"] {
               width: 18px;
               height: 18px;
@@ -180,7 +186,7 @@
               cursor: pointer;
               padding: 0;
             }
-            
+
             .checkbox-text {
               display: flex;
               align-items: center;
@@ -189,7 +195,7 @@
           }
         }
       }
-      
+
       .submit-button {
         margin-top: 1rem;
         background-color: rgba(147, 118, 224, 0.3);
@@ -202,12 +208,12 @@
         cursor: pointer;
         transition: all 0.3s ease;
         text-align: center;
-        
+
         &:hover {
           background-color: rgba(147, 118, 224, 0.5);
           transform: translateY(-2px);
         }
-        
+
         &:active {
           transform: translateY(0);
         }
@@ -217,10 +223,22 @@
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(10px); }
-  15% { opacity: 1; transform: translateY(0); }
-  85% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 
 // Media queries for responsive design
@@ -236,27 +254,27 @@
     max-width: calc(600px - 4rem);
     margin: 0 2rem;
     max-height: none;
-    
+
     .log-img-section {
       min-height: 160px;
       padding: 1.5rem;
-      
+
       .log-info-overlay {
         max-width: 100%;
-        
+
         .log-title {
           margin-bottom: 1rem;
-          
+
           .log-icon {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
           }
-          
+
           h2 {
             font-size: 1.5rem;
           }
         }
-        
+
         .log-description {
           p {
             font-size: 0.9rem;
@@ -265,7 +283,7 @@
         }
       }
     }
-    
+
     .log-setting-form-wrapper {
       max-height: none;
       padding: 2rem;
@@ -277,20 +295,20 @@
   .log-setting-card {
     margin: 0 1rem;
     width: calc(100% - 2rem);
-    
+
     .log-img-section {
       padding: 1rem;
     }
-    
+
     .log-setting-form-wrapper {
       padding: 1.5rem;
-      
+
       .log-setting-form {
         .form-group {
           &.checkbox-group {
             .checkbox-label {
               flex-wrap: wrap;
-              
+
               input[type="checkbox"] {
                 margin-right: 0.5rem;
               }
