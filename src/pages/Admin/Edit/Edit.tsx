@@ -13,7 +13,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { FiArrowUp, FiEye, FiPlus, FiX, FiSave, FiAlertCircle, FiLoader, FiImage } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Edit.scss';
-import { ImageGalleryModal } from './';
+import ImageSelectorModal from '@/components/ImageSelectorModal';
 
 // 配置marked选项
 const options = {
@@ -1057,11 +1057,13 @@ const Edit: React.FC = () => {
                 )}
             </div>
 
-            {/* 使用新的ImageGalleryModal组件 */}
-            <ImageGalleryModal 
+            {/* 使用ImageSelectorModal组件 */}
+            <ImageSelectorModal 
                 isOpen={showImageGallery}
                 onClose={() => setShowImageGallery(false)}
                 onImageInsert={handleImageInsert}
+                mode="editor"
+                usageType="avatar" // 此字段在editor模式下不重要，但需要提供一个值
             />
         </div>
     );

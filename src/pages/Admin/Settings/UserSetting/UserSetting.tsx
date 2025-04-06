@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle, FiUpload, FiImage, FiSave } from 'react-icons/fi';
 import './UserSetting.scss';
-import ImageSelectorModal, { ImageUsageType } from './ImageSelectorModal/ImageSelectorModal';
+import ImageSelectorModal from '@/components/ImageSelectorModal';
+import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
 import { GalleryImage } from '@/services/adminService';
 
 interface UserConfigProps {
     onSaveSuccess?: () => void;
 }
 
-const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
+const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [smtpAccount, setSmtpAccount] = useState('');
@@ -68,7 +69,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
 
     const clearError = (field: string) => {
         if (errors[field]) {
-            const newErrors = {...errors};
+            const newErrors = { ...errors };
             delete newErrors[field];
             setErrors(newErrors);
         }
@@ -152,10 +153,10 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
     const handleSendCode = () => {
         // 验证邮箱格式
         if (!email.trim()) {
-            setErrors({...errors, email: '邮箱不能为空'});
+            setErrors({ ...errors, email: '邮箱不能为空' });
             return;
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setErrors({...errors, email: '邮箱格式不正确'});
+            setErrors({ ...errors, email: '邮箱格式不正确' });
             return;
         }
 
@@ -218,7 +219,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
             } : {}}>
                 <div className="user-info-overlay">
                     <div className="user-title">
-                        <FiUser className="user-icon"/>
+                        <FiUser className="user-icon" />
                         <h2>用户设置</h2>
                     </div>
                     <div className="user-description">
@@ -233,12 +234,12 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                         <div className="upload-item">
                             <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
                                 {avatarImage ? (
-                                    <img src={avatarImage} alt="User Avatar" className="selected-image"/>
+                                    <img src={avatarImage} alt="User Avatar" className="selected-image" />
                                 ) : (
-                                    <FiUser className="avatar-icon"/>
+                                    <FiUser className="avatar-icon" />
                                 )}
                                 <div className="upload-overlay">
-                                    <FiUpload/>
+                                    <FiUpload />
                                     <span className="upload-label-inner">上传头像</span>
                                 </div>
                             </div>
@@ -246,12 +247,12 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                         <div className="upload-item">
                             <div className="upload-circle" onClick={() => openImageSelector('logo')}>
                                 {logoImage ? (
-                                    <img src={logoImage} alt="Website Logo" className="selected-image"/>
+                                    <img src={logoImage} alt="Website Logo" className="selected-image" />
                                 ) : (
-                                    <FiImage className="logo-icon"/>
+                                    <FiImage className="logo-icon" />
                                 )}
                                 <div className="upload-overlay">
-                                    <FiUpload/>
+                                    <FiUpload />
                                     <span className="upload-label-inner">上传Logo</span>
                                 </div>
                             </div>
@@ -261,7 +262,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                         className="bg-upload-button"
                         onClick={() => openImageSelector('background')}
                     >
-                        <FiUpload className="upload-icon"/>
+                        <FiUpload className="upload-icon" />
                         上传背景图片
                     </button>
                 </div>
@@ -274,12 +275,12 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                         <div className="upload-item">
                             <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
                                 {avatarImage ? (
-                                    <img src={avatarImage} alt="User Avatar" className="selected-image"/>
+                                    <img src={avatarImage} alt="User Avatar" className="selected-image" />
                                 ) : (
-                                    <FiUser className="avatar-icon"/>
+                                    <FiUser className="avatar-icon" />
                                 )}
                                 <div className="upload-overlay">
-                                    <FiUpload/>
+                                    <FiUpload />
                                     <span className="upload-label-inner">上传头像</span>
                                 </div>
                             </div>
@@ -287,12 +288,12 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                         <div className="upload-item">
                             <div className="upload-circle" onClick={() => openImageSelector('logo')}>
                                 {logoImage ? (
-                                    <img src={logoImage} alt="Website Logo" className="selected-image"/>
+                                    <img src={logoImage} alt="Website Logo" className="selected-image" />
                                 ) : (
-                                    <FiImage className="logo-icon"/>
+                                    <FiImage className="logo-icon" />
                                 )}
                                 <div className="upload-overlay">
-                                    <FiUpload/>
+                                    <FiUpload />
                                     <span className="upload-label-inner">上传Logo</span>
                                 </div>
                             </div>
@@ -302,21 +303,21 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                         className="bg-upload-button"
                         onClick={() => openImageSelector('background')}
                     >
-                        <FiUpload className="upload-icon"/>
+                        <FiUpload className="upload-icon" />
                         上传背景图片
                     </button>
                 </div>
 
                 {saveSuccess && (
                     <div className="save-notification">
-                        <FiAlertCircle/> 用户设置已保存成功！
+                        <FiAlertCircle /> 用户设置已保存成功！
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="user-setting-form">
                     <div className="form-group">
                         <label htmlFor="username">
-                            <FiUser className="input-icon"/>
+                            <FiUser className="input-icon" />
                             <span>用户名</span>
                         </label>
                         <input
@@ -337,7 +338,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group">
                         <label htmlFor="email">
-                            <FiMail className="input-icon"/>
+                            <FiMail className="input-icon" />
                             <span>邮箱</span>
                         </label>
                         <input
@@ -358,7 +359,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group">
                         <label htmlFor="smtp_account">
-                            <FiServer className="input-icon"/>
+                            <FiServer className="input-icon" />
                             <span>SMTP账号</span>
                         </label>
                         <input
@@ -379,7 +380,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group">
                         <label htmlFor="smtp_address">
-                            <FiServer className="input-icon"/>
+                            <FiServer className="input-icon" />
                             <span>SMTP服务器</span>
                         </label>
                         <input
@@ -400,7 +401,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group">
                         <label htmlFor="smtp_port">
-                            <FiServer className="input-icon"/>
+                            <FiServer className="input-icon" />
                             <span>SMTP端口</span>
                         </label>
                         <input
@@ -421,7 +422,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group">
                         <label htmlFor="smtp_auth_code">
-                            <FiLock className="input-icon"/>
+                            <FiLock className="input-icon" />
                             <span>SMTP授权码</span>
                         </label>
                         <input
@@ -442,7 +443,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group verification-code-group">
                         <label htmlFor="verificationCode">
-                            <FiLock className="input-icon"/>
+                            <FiLock className="input-icon" />
                             <span>验证码</span>
                         </label>
                         <div className="verification-code-container">
@@ -470,7 +471,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                             <div className="error-message">{errors.verificationCode}</div>
                         )}
                     </div>
-                    
+
                     <button type="submit" className="submit-button">
                         <FiSave /> 保存配置
                     </button>
@@ -483,6 +484,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
                 onClose={closeImageSelector}
                 onImageSelect={handleImageSelect}
                 usageType={selectedImageType}
+                mode="userSetting"
             />
         </div>
     );
