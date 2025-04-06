@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
-import { FiAlertCircle, FiSettings, FiUser, FiServer, FiDatabase, FiHardDrive, FiCpu, FiSave, FiChevronDown } from 'react-icons/fi';
+import {
+    FiAlertCircle,
+    FiSettings,
+    FiUser,
+    FiServer,
+    FiDatabase,
+    FiHardDrive,
+    FiCpu,
+    FiSave,
+    FiChevronDown
+} from 'react-icons/fi';
 import UserSetting from './UserSetting';
+import ServiceSetting from './ServiceSetting';
 import './Settings.scss';
 
 type SettingTab = 'user' | 'service' | 'log' | 'database' | 'oss' | 'cache';
@@ -11,12 +22,12 @@ const Settings: React.FC = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const tabOptions = [
-        { id: 'user', label: '用户设置', icon: <FiUser /> },
-        { id: 'service', label: '服务设置', icon: <FiServer /> },
-        { id: 'log', label: '日志设置', icon: <FiCpu /> },
-        { id: 'database', label: '数据库设置', icon: <FiDatabase /> },
-        { id: 'oss', label: 'OSS设置', icon: <FiHardDrive /> },
-        { id: 'cache', label: '缓存设置', icon: <FiCpu /> },
+        {id: 'user', label: '用户设置', icon: <FiUser/>},
+        {id: 'service', label: '服务设置', icon: <FiServer/>},
+        {id: 'log', label: '日志设置', icon: <FiCpu/>},
+        {id: 'database', label: '数据库设置', icon: <FiDatabase/>},
+        {id: 'oss', label: 'OSS设置', icon: <FiHardDrive/>},
+        {id: 'cache', label: '缓存设置', icon: <FiCpu/>},
     ];
 
     const handleSaveSuccess = () => {
@@ -43,8 +54,9 @@ const Settings: React.FC = () => {
     const renderTabContent = () => {
         switch (activeTab) {
             case 'user':
-                return <UserSetting onSaveSuccess={handleSaveSuccess} />;
+                return <UserSetting onSaveSuccess={handleSaveSuccess}/>;
             case 'service':
+                return <ServiceSetting onSaveSuccess={handleSaveSuccess}/>;
             case 'log':
             case 'database':
             case 'oss':
@@ -52,7 +64,7 @@ const Settings: React.FC = () => {
                 return (
                     <div className="placeholder-content">
                         <div className="placeholder-icon">
-                            <FiSettings />
+                            <FiSettings/>
                         </div>
                         <p>该功能正在开发中...</p>
                     </div>
@@ -77,24 +89,24 @@ const Settings: React.FC = () => {
                 <div className="edit-header">
                     <div className="settings-tabs">
                         {tabOptions.map(option => (
-                            <button 
+                            <button
                                 key={option.id}
-                                className={`tab-item ${activeTab === option.id ? 'active' : ''}`} 
+                                className={`tab-item ${activeTab === option.id ? 'active' : ''}`}
                                 onClick={() => handleTabChange(option.id as SettingTab)}
                             >
                                 {option.icon} {option.label}
                             </button>
                         ))}
                     </div>
-                    
+
                     <div className="settings-dropdown">
                         <button className="dropdown-toggle" onClick={toggleDropdown}>
-                            {getActiveTabLabel()} <FiChevronDown className={isDropdownOpen ? 'rotate' : ''} />
+                            {getActiveTabLabel()} <FiChevronDown className={isDropdownOpen ? 'rotate' : ''}/>
                         </button>
                         {isDropdownOpen && (
                             <div className="dropdown-menu">
                                 {tabOptions.map(option => (
-                                    <button 
+                                    <button
                                         key={option.id}
                                         className={`dropdown-item ${activeTab === option.id ? 'active' : ''}`}
                                         onClick={() => handleTabChange(option.id as SettingTab)}
@@ -105,17 +117,17 @@ const Settings: React.FC = () => {
                             </div>
                         )}
                     </div>
-                    
+
                     <div className="header-actions">
                         <button className="save-button" onClick={handleSaveClick}>
-                            <FiSave /> 保存设置
+                            <FiSave/> 保存设置
                         </button>
                     </div>
                 </div>
 
                 {saveSuccess && (
                     <div className="auto-save-notification">
-                        <FiAlertCircle /> 设置已保存成功！
+                        <FiAlertCircle/> 设置已保存成功！
                     </div>
                 )}
 
