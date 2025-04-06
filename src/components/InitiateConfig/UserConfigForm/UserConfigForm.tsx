@@ -654,13 +654,6 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                     {errors.smtpPassword && <div className="error-message">{errors.smtpPassword}</div>}
                 </div>
 
-                <div className="form-section-header">
-                    <h3>
-                        <span className="icon"><FiLock/></span>
-                        验证
-                    </h3>
-                </div>
-
                 {/* 验证码 */}
                 <div className="form-group verify-code-group">
                     <label htmlFor="verifyCode">
