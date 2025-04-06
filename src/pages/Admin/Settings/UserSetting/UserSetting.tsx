@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser, FiSave, FiAlertCircle } from 'react-icons/fi';
+import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle } from 'react-icons/fi';
 import './UserSetting.scss';
 
 interface UserConfigProps {
@@ -167,179 +167,177 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
   };
 
   return (
-    <div className="user-config-module">
-      <div className="section-header">
-        <h2 className="section-title">
-          <FiUser className="section-icon" />
-          用户设置
-        </h2>
-        <button
-          type="button"
-          className="section-save-button"
-          onClick={handleSubmit}
-        >
-          <FiSave className="button-icon" />
-          保存设置
-        </button>
+    <div className="user-setting-card">
+      <div className="user-imgs-setting">
+        {/* 图片区域，不再包含logo */}
       </div>
 
-      {saveSuccess && (
-        <div className="save-notification">
-          <FiAlertCircle /> 用户设置已保存成功！
-        </div>
-      )}
+      <div className="user-setting-form-wrapper">
+        {saveSuccess && (
+          <div className="save-notification">
+            <FiAlertCircle /> 用户设置已保存成功！
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="username">
-            用户名
-          </label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              clearError('username');
-            }}
-            placeholder="请输入用户名"
-            className={errors.username ? 'has-error' : ''}
-          />
-          {errors.username && (
-            <div className="error-message">{errors.username}</div>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="email">
-            邮箱
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              clearError('email');
-            }}
-            placeholder="请输入邮箱"
-            className={errors.email ? 'has-error' : ''}
-          />
-          {errors.email && (
-            <div className="error-message">{errors.email}</div>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="smtp_account">
-            SMTP账号
-          </label>
-          <input
-            type="text"
-            id="smtp_account"
-            value={smtp_account}
-            onChange={(e) => {
-              setSmtpAccount(e.target.value);
-              clearError('smtp_account');
-            }}
-            placeholder="请输入SMTP账号"
-            className={errors.smtp_account ? 'has-error' : ''}
-          />
-          {errors.smtp_account && (
-            <div className="error-message">{errors.smtp_account}</div>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="smtp_address">
-            SMTP服务器
-          </label>
-          <input
-            type="text"
-            id="smtp_address"
-            value={smtp_address}
-            onChange={(e) => {
-              setSmtpAddress(e.target.value);
-              clearError('smtp_address');
-            }}
-            placeholder="例如: smtp.gmail.com"
-            className={errors.smtp_address ? 'has-error' : ''}
-          />
-          {errors.smtp_address && (
-            <div className="error-message">{errors.smtp_address}</div>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="smtp_port">
-            SMTP端口
-          </label>
-          <input
-            type="text"
-            id="smtp_port"
-            value={smtp_port}
-            onChange={(e) => {
-              setSmtpPort(e.target.value);
-              clearError('smtp_port');
-            }}
-            placeholder="例如: 465 或 587"
-            className={errors.smtp_port ? 'has-error' : ''}
-          />
-          {errors.smtp_port && (
-            <div className="error-message">{errors.smtp_port}</div>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="smtp_auth_code">
-            SMTP授权码
-          </label>
-          <input
-            type="password"
-            id="smtp_auth_code"
-            value={smtp_auth_code}
-            onChange={(e) => {
-              setSmtpAuthCode(e.target.value);
-              clearError('smtp_auth_code');
-            }}
-            placeholder="请输入SMTP授权码"
-            className={errors.smtp_auth_code ? 'has-error' : ''}
-          />
-          {errors.smtp_auth_code && (
-            <div className="error-message">{errors.smtp_auth_code}</div>
-          )}
-        </div>
-
-        <div className="form-group verification-code-group">
-          <label htmlFor="verificationCode">
-            验证码
-          </label>
-          <div className="verification-code-container">
+        <form onSubmit={handleSubmit} className="user-setting-form">
+          <div className="form-group">
+            <label htmlFor="username">
+              <FiUser className="input-icon" />
+              <span>用户名</span>
+            </label>
             <input
               type="text"
-              id="verificationCode"
-              value={verificationCode}
+              id="username"
+              value={username}
               onChange={(e) => {
-                setVerificationCode(e.target.value);
-                clearError('verificationCode');
+                setUsername(e.target.value);
+                clearError('username');
               }}
-              placeholder="请输入验证码"
-              className={errors.verificationCode ? 'has-error' : ''}
+              placeholder="请输入用户名"
+              className={errors.username ? 'has-error' : ''}
             />
-            <button
-              type="button"
-              className="send-code-button"
-              onClick={handleSendCode}
-              disabled={countdown > 0}
-            >
-              {countdown > 0 ? `重新发送(${countdown}s)` : '发送验证码'}
-            </button>
+            {errors.username && (
+              <div className="error-message">{errors.username}</div>
+            )}
           </div>
-          {errors.verificationCode && (
-            <div className="error-message">{errors.verificationCode}</div>
-          )}
-        </div>
-      </form>
+
+          <div className="form-group">
+            <label htmlFor="email">
+              <FiMail className="input-icon" />
+              <span>邮箱</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearError('email');
+              }}
+              placeholder="请输入邮箱"
+              className={errors.email ? 'has-error' : ''}
+            />
+            {errors.email && (
+              <div className="error-message">{errors.email}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="smtp_account">
+              <FiServer className="input-icon" />
+              <span>SMTP账号</span>
+            </label>
+            <input
+              type="text"
+              id="smtp_account"
+              value={smtp_account}
+              onChange={(e) => {
+                setSmtpAccount(e.target.value);
+                clearError('smtp_account');
+              }}
+              placeholder="请输入SMTP账号"
+              className={errors.smtp_account ? 'has-error' : ''}
+            />
+            {errors.smtp_account && (
+              <div className="error-message">{errors.smtp_account}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="smtp_address">
+              <FiServer className="input-icon" />
+              <span>SMTP服务器</span>
+            </label>
+            <input
+              type="text"
+              id="smtp_address"
+              value={smtp_address}
+              onChange={(e) => {
+                setSmtpAddress(e.target.value);
+                clearError('smtp_address');
+              }}
+              placeholder="例如: smtp.gmail.com"
+              className={errors.smtp_address ? 'has-error' : ''}
+            />
+            {errors.smtp_address && (
+              <div className="error-message">{errors.smtp_address}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="smtp_port">
+              <FiServer className="input-icon" />
+              <span>SMTP端口</span>
+            </label>
+            <input
+              type="text"
+              id="smtp_port"
+              value={smtp_port}
+              onChange={(e) => {
+                setSmtpPort(e.target.value);
+                clearError('smtp_port');
+              }}
+              placeholder="例如: 465 或 587"
+              className={errors.smtp_port ? 'has-error' : ''}
+            />
+            {errors.smtp_port && (
+              <div className="error-message">{errors.smtp_port}</div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="smtp_auth_code">
+              <FiLock className="input-icon" />
+              <span>SMTP授权码</span>
+            </label>
+            <input
+              type="password"
+              id="smtp_auth_code"
+              value={smtp_auth_code}
+              onChange={(e) => {
+                setSmtpAuthCode(e.target.value);
+                clearError('smtp_auth_code');
+              }}
+              placeholder="请输入SMTP授权码"
+              className={errors.smtp_auth_code ? 'has-error' : ''}
+            />
+            {errors.smtp_auth_code && (
+              <div className="error-message">{errors.smtp_auth_code}</div>
+            )}
+          </div>
+
+          <div className="form-group verification-code-group">
+            <label htmlFor="verificationCode">
+              <FiLock className="input-icon" />
+              <span>验证码</span>
+            </label>
+            <div className="verification-code-container">
+              <input
+                type="text"
+                id="verificationCode"
+                value={verificationCode}
+                onChange={(e) => {
+                  setVerificationCode(e.target.value);
+                  clearError('verificationCode');
+                }}
+                placeholder="请输入验证码"
+                className={errors.verificationCode ? 'has-error' : ''}
+              />
+              <button
+                type="button"
+                className="send-code-button"
+                onClick={handleSendCode}
+                disabled={countdown > 0}
+              >
+                {countdown > 0 ? `重新发送(${countdown}s)` : '获取邮箱验证码'}
+              </button>
+            </div>
+            {errors.verificationCode && (
+              <div className="error-message">{errors.verificationCode}</div>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
