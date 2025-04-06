@@ -22,12 +22,12 @@ const Settings: React.FC = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const tabOptions = [
-        { id: 'user', label: '用户设置', icon: <FiUser /> },
-        { id: 'service', label: '服务设置', icon: <FiServer /> },
-        { id: 'log', label: '日志设置', icon: <FiCpu /> },
-        { id: 'database', label: '数据库设置', icon: <FiDatabase /> },
-        { id: 'oss', label: 'OSS设置', icon: <FiHardDrive /> },
-        { id: 'cache', label: '缓存设置', icon: <FiCpu /> },
+        {id: 'user', label: '用户设置', icon: <FiUser/>},
+        {id: 'service', label: '服务设置', icon: <FiServer/>},
+        {id: 'log', label: '日志设置', icon: <FiCpu/>},
+        {id: 'database', label: '数据库设置', icon: <FiDatabase/>},
+        {id: 'oss', label: 'OSS设置', icon: <FiHardDrive/>},
+        {id: 'cache', label: '缓存设置', icon: <FiCpu/>},
     ];
 
     const handleSaveSuccess = () => {
@@ -47,17 +47,17 @@ const Settings: React.FC = () => {
     const renderTabContent = () => {
         switch (activeTab) {
             case 'user':
-                return <UserSetting onSaveSuccess={handleSaveSuccess} />;
+                return <UserSetting onSaveSuccess={handleSaveSuccess}/>;
             case 'service':
-                return <ServiceSetting onSaveSuccess={handleSaveSuccess} />;
+                return <ServiceSetting onSaveSuccess={handleSaveSuccess}/>;
             case 'log':
-                return <LogSetting onSaveSuccess={handleSaveSuccess} />;
+                return <LogSetting onSaveSuccess={handleSaveSuccess}/>;
             case 'database':
-                return <DatabaseSetting onSaveSuccess={handleSaveSuccess} />;
+                return <DatabaseSetting onSaveSuccess={handleSaveSuccess}/>;
             case 'oss':
-                return <OssSetting onSaveSuccess={handleSaveSuccess} />;
+                return <OssSetting onSaveSuccess={handleSaveSuccess}/>;
             case 'cache':
-                return <CacheSetting onSaveSuccess={handleSaveSuccess} />;
+                return <CacheSetting onSaveSuccess={handleSaveSuccess}/>;
             default:
                 return null;
         }
@@ -90,7 +90,7 @@ const Settings: React.FC = () => {
 
                     <div className="settings-dropdown">
                         <button className="dropdown-toggle" onClick={toggleDropdown}>
-                            {getActiveTabLabel()} <FiChevronDown className={isDropdownOpen ? 'rotate' : ''} />
+                            {getActiveTabLabel()} <FiChevronDown className={isDropdownOpen ? 'rotate' : ''}/>
                         </button>
                         {isDropdownOpen && (
                             <div className="dropdown-menu">
