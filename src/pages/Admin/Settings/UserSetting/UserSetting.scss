@@ -8,7 +8,7 @@
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   margin: 0 2rem;
-  min-height: 700px;
+  max-height: 80vh;
   
   .user-imgs-setting {
     flex: 1;
@@ -185,6 +185,8 @@
     padding: 3rem;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    max-height: 80vh;
     
     .save-notification {
       margin-bottom: 1.5rem;
@@ -205,6 +207,7 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      overflow-y: auto;
       
       .form-group {
         display: flex;
@@ -312,9 +315,10 @@
     flex-direction: column;
     max-width: calc(600px - 4rem);
     margin: 0 2rem;
+    max-height: none;
     
     .user-imgs-setting {
-      min-height: 200px;
+      min-height: 160px;
       
       .upload-container {
         position: relative;
@@ -353,6 +357,11 @@
           }
         }
       }
+    }
+    
+    .user-setting-form-wrapper {
+      max-height: none;
+      padding: 2rem;
     }
   }
 }
