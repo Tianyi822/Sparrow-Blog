@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiAlertCircle, FiSettings, FiUser, FiServer, FiDatabase, FiHardDrive, FiCpu, FiSave } from 'react-icons/fi';
+import { FiAlertCircle, FiSettings, FiUser, FiServer, FiDatabase, FiHardDrive, FiCpu, FiSave, FiChevronDown } from 'react-icons/fi';
 import UserSetting from './UserSetting';
 import './Settings.scss';
 
@@ -8,6 +8,16 @@ type SettingTab = 'user' | 'service' | 'log' | 'database' | 'oss' | 'cache';
 const Settings: React.FC = () => {
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [activeTab, setActiveTab] = useState<SettingTab>('user');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const tabOptions = [
+        { id: 'user', label: '用户设置', icon: <FiUser /> },
+        { id: 'service', label: '服务设置', icon: <FiServer /> },
+        { id: 'log', label: '日志设置', icon: <FiCpu /> },
+        { id: 'database', label: '数据库设置', icon: <FiDatabase /> },
+        { id: 'oss', label: 'OSS设置', icon: <FiHardDrive /> },
+        { id: 'cache', label: '缓存设置', icon: <FiCpu /> },
+    ];
 
     const handleSaveSuccess = () => {
         // 显示全局保存成功提示
@@ -19,6 +29,15 @@ const Settings: React.FC = () => {
         // 目前不做网络请求，直接显示保存成功
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
+    };
+
+    const handleTabChange = (tab: SettingTab) => {
+        setActiveTab(tab);
+        setIsDropdownOpen(false);
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
     };
 
     const renderTabContent = () => {
@@ -43,48 +62,50 @@ const Settings: React.FC = () => {
         }
     };
 
+    const getActiveTabLabel = () => {
+        const activeOption = tabOptions.find(option => option.id === activeTab);
+        return activeOption ? (
+            <>
+                {activeOption.icon} {activeOption.label}
+            </>
+        ) : null;
+    };
+
     return (
         <div className="settings-page">
             <div className="edit-container">
                 <div className="edit-header">
                     <div className="settings-tabs">
-                        <button 
-                            className={`tab-item ${activeTab === 'user' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('user')}
-                        >
-                            <FiUser /> 用户设置
-                        </button>
-                        <button 
-                            className={`tab-item ${activeTab === 'service' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('service')}
-                        >
-                            <FiServer /> 服务设置
-                        </button>
-                        <button 
-                            className={`tab-item ${activeTab === 'log' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('log')}
-                        >
-                            <FiCpu /> 日志设置
-                        </button>
-                        <button 
-                            className={`tab-item ${activeTab === 'database' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('database')}
-                        >
-                            <FiDatabase /> 数据库设置
-                        </button>
-                        <button 
-                            className={`tab-item ${activeTab === 'oss' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('oss')}
-                        >
-                            <FiHardDrive /> OSS设置
-                        </button>
-                        <button 
-                            className={`tab-item ${activeTab === 'cache' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('cache')}
-                        >
-                            <FiCpu /> 缓存设置
-                        </button>
+                        {tabOptions.map(option => (
+                            <button 
+                                key={option.id}
+                                className={`tab-item ${activeTab === option.id ? 'active' : ''}`} 
+                                onClick={() => handleTabChange(option.id as SettingTab)}
+                            >
+                                {option.icon} {option.label}
+                            </button>
+                        ))}
                     </div>
+                    
+                    <div className="settings-dropdown">
+                        <button className="dropdown-toggle" onClick={toggleDropdown}>
+                            {getActiveTabLabel()} <FiChevronDown className={isDropdownOpen ? 'rotate' : ''} />
+                        </button>
+                        {isDropdownOpen && (
+                            <div className="dropdown-menu">
+                                {tabOptions.map(option => (
+                                    <button 
+                                        key={option.id}
+                                        className={`dropdown-item ${activeTab === option.id ? 'active' : ''}`}
+                                        onClick={() => handleTabChange(option.id as SettingTab)}
+                                    >
+                                        {option.icon} {option.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    
                     <div className="header-actions">
                         <button className="save-button" onClick={handleSaveClick}>
                             <FiSave /> 保存设置

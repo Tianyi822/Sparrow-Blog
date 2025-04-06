@@ -87,6 +87,99 @@
       }
     }
     
+    .settings-dropdown {
+      display: none;
+      position: relative;
+      width: 100%;
+      z-index: 20;
+      
+      .dropdown-toggle {
+        @include glass-card-base;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: rgba(60, 60, 70, 0.5);
+        height: 38px;
+        
+        svg {
+          margin-right: 0.5rem;
+          font-size: 1.1rem;
+          
+          &.rotate {
+            transform: rotate(180deg);
+            transition: transform 0.3s ease;
+          }
+          
+          &:last-child {
+            margin-right: 0;
+            margin-left: 0.5rem;
+            transition: transform 0.3s ease;
+          }
+        }
+        
+        &:hover {
+          background-color: rgba(80, 80, 90, 0.5);
+        }
+      }
+      
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        width: 100%;
+        background-color: rgba(30, 30, 35, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 8px;
+        overflow: hidden;
+        z-index: 100;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        animation: dropdown-fade 0.3s ease-in-out;
+        
+        .dropdown-item {
+          width: 100%;
+          padding: 0.8rem 1.2rem;
+          text-align: left;
+          background: transparent;
+          border: none;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.95rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          transition: background-color 0.2s ease;
+          
+          svg {
+            margin-right: 0.8rem;
+            font-size: 1.1rem;
+          }
+          
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+          }
+          
+          &.active {
+            background-color: rgba(147, 118, 224, 0.2);
+            color: white;
+            
+            svg {
+              color: #9376E0;
+            }
+          }
+        }
+      }
+    }
+    
     .header-actions {
       display: flex;
       align-items: center;
@@ -106,6 +199,7 @@
         align-items: center;
         gap: 0.5rem;
         background-color: rgba(147, 118, 224, 0.4);
+        height: 38px;
         
         svg {
           font-size: 1.1rem;
@@ -132,6 +226,7 @@
     width: 100%;
     flex: 1;
     padding: 2rem 0;
+    box-sizing: border-box;
   }
   
   .placeholder-content {
@@ -194,29 +289,90 @@
     50% { opacity: 0.5; transform: scale(1.05); }
     100% { opacity: 0.3; transform: scale(0.95); }
   }
+  
+  @keyframes dropdown-fade {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .settings-page {
     .edit-header {
-      flex-direction: column;
-      align-items: flex-start;
+      flex-direction: row;
+      align-items: center;
       gap: 1rem;
       padding: 1rem;
+      flex-wrap: wrap;
       
       .settings-tabs {
-        width: 100%;
+        display: none;
+      }
+      
+      .settings-dropdown {
+        display: block;
+        flex: 1;
+        min-width: 200px;
+        max-width: 70%;
+        
+        .dropdown-toggle {
+          height: 38px;
+        }
       }
       
       .header-actions {
-        width: 100%;
+        width: auto;
         justify-content: flex-end;
+        
+        .save-button {
+          white-space: nowrap;
+          height: 38px;
+        }
       }
+    }
+    
+    .user-setting-wrapper {
+      padding: 1rem 0;
+      width: 100%;
     }
     
     .placeholder-content {
       width: 90%;
       padding: 2rem;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .settings-page {
+    .edit-header {
+      flex-direction: column;
+      align-items: stretch;
+      
+      .settings-dropdown {
+        max-width: 100%;
+        margin-bottom: 0.5rem;
+        
+        .dropdown-toggle {
+          height: 38px;
+        }
+      }
+      
+      .header-actions {
+        width: 100%;
+        
+        .save-button {
+          width: 100%;
+          justify-content: center;
+          height: 38px;
+        }
+      }
     }
   }
 } 
