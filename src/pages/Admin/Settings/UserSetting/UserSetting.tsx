@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle } from 'react-icons/fi';
+import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle, FiUpload, FiImage } from 'react-icons/fi';
 import './UserSetting.scss';
 
 interface UserConfigProps {
@@ -169,7 +169,27 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
   return (
     <div className="user-setting-card">
       <div className="user-imgs-setting">
-        {/* 图片区域，不再包含logo */}
+        <div className="upload-container">
+          <div className="upload-item">
+            <div className="upload-circle">
+              <FiUser className="avatar-icon" />
+              <div className="upload-label-inner">用户头像</div>
+              <div className="upload-overlay">
+                <FiUpload />
+              </div>
+            </div>
+          </div>
+          
+          <div className="upload-item">
+            <div className="upload-circle">
+              <FiImage className="logo-icon" />
+              <div className="upload-label-inner">网站Logo</div>
+              <div className="upload-overlay">
+                <FiUpload />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="user-setting-form-wrapper">

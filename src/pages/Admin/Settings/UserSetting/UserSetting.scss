@@ -1,7 +1,7 @@
 @use '@/style/mixins' as *;
 
 .user-setting-card {
-  width: 100%;
+  width: calc(100% - 4rem);
   max-width: 90%;
   display: flex;
   border-radius: 16px;
@@ -31,6 +31,93 @@
       height: 50%;
       background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
       z-index: 1;
+    }
+    
+    .upload-container {
+      position: absolute;
+      bottom: 3rem;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      z-index: 2;
+      padding: 0 2rem;
+      
+      .upload-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        
+        .upload-circle {
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
+          background-color: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(5px);
+          -webkit-backdrop-filter: blur(5px);
+          border: 2px dashed rgba(255, 255, 255, 0.4);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+          
+          &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+            
+            .upload-overlay {
+              opacity: 1;
+            }
+          }
+          
+          .avatar-icon {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+          }
+          
+          .logo-icon {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+          }
+          
+          .upload-label-inner {
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 2;
+          }
+          
+          .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            
+            svg {
+              font-size: 2rem;
+              color: white;
+            }
+          }
+        }
+      }
     }
   }
   
@@ -158,24 +245,65 @@
 // Media queries for responsive design
 @media (min-width: 1400px) {
   .user-setting-card {
-    max-width: 1400px;
+    max-width: calc(1400px - 4rem);
   }
 }
 
 @media (max-width: 992px) {
   .user-setting-card {
     flex-direction: column;
-    max-width: 600px;
+    max-width: calc(600px - 4rem);
+    margin: 0 2rem;
     
     .user-imgs-setting {
       min-height: 200px;
+      
+      .upload-container {
+        position: relative;
+        bottom: 0;
+        padding: 2rem 1rem;
+        gap: 2rem;
+        
+        .upload-item {
+          .upload-circle {
+            width: 100px;
+            height: 100px;
+            
+            .avatar-icon {
+              font-size: 2.5rem;
+              margin-bottom: 4px;
+            }
+            
+            .logo-icon {
+              font-size: 2.5rem;
+              margin-bottom: 4px;
+            }
+            
+            .upload-label-inner {
+              font-size: 0.75rem;
+            }
+          }
+        }
+      }
     }
   }
 }
 
 @media (max-width: 576px) {
   .user-setting-card {
-    margin: 0 1rem;
+    margin: 0 2rem;
+    width: calc(100% - 4rem);
+    
+    .user-imgs-setting {
+      padding: 1.5rem;
+      
+      .upload-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        padding: 1rem 0.5rem;
+      }
+    }
     
     .user-setting-form-wrapper {
       padding: 1.5rem;
