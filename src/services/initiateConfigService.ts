@@ -143,20 +143,15 @@ export const saveInitiatedMySQLConfig = async (data: MySQLFormData): Promise<Api
 /**
  * 转换OSS配置数据为后端格式
  */
-interface OSSBackendData {
-    'oss.endpoint': string;
-    'oss.region': string;
-    'oss.access_key_id': string;
-    'oss.access_key_secret': string;
-    'oss.bucket': string;
-    'oss.image_oss_path': string;
-    'oss.blog_oss_path': string;
-    'oss.webp.enable': string;
-    'oss.webp.quality': string;
-    'oss.webp.size': string;
-}
-
-export const transformOSSData = (data: OSSConfigFormData): OSSBackendData => {
+export const transformOSSData = (data: OSSConfigFormData): {
+    "oss.endpoint": string;
+    "oss.region": string;
+    "oss.access_key_id": string;
+    "oss.access_key_secret": string;
+    "oss.bucket": string;
+    "oss.image_oss_path": string;
+    "oss.blog_oss_path": string
+} => {
     return {
         'oss.endpoint': data.endpoint,
         'oss.region': data.region,
@@ -165,9 +160,6 @@ export const transformOSSData = (data: OSSConfigFormData): OSSBackendData => {
         'oss.bucket': data.bucketName,
         'oss.image_oss_path': data.imagePath,
         'oss.blog_oss_path': data.blogPath,
-        'oss.webp.enable': data.webpEnabled ? '1' : '0',
-        'oss.webp.quality': data.webpQuality,
-        'oss.webp.size': data.webpMaxSize
     };
 };
 
@@ -229,6 +221,11 @@ export const saveInitiatedCacheConfig = async (data: CacheConfigFormData): Promi
  */
 export interface UserConfigData {
     'user.username': string;
+    'user.user_email'?: string;
+    'user.smtp_account'?: string;
+    'user.smtp_address'?: string;
+    'user.smtp_port'?: string;
+    'user.smtp_auth_code'?: string;
     'user.verification_code': string;
 }
 

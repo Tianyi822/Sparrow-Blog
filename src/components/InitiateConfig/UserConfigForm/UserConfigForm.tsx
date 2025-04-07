@@ -445,6 +445,11 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
             // 准备用户配置数据（包含验证码）
             const userData: UserConfigData = {
                 'user.username': formData.username,
+                'user.user_email': formData.email,
+                'user.smtp_account': syncWithEmail ? formData.email : formData.smtpUsername,
+                'user.smtp_address': formData.smtpServer,
+                'user.smtp_port': formData.smtpPort,
+                'user.smtp_auth_code': formData.smtpPassword,
                 'user.verification_code': formData.verifyCode
             };
 
