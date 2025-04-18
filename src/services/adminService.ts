@@ -210,6 +210,54 @@ export interface LoggerConfigResponse {
     data: LoggerConfig;
 }
 
+// MySQL configuration interface
+export interface MySQLConfig {
+    database: string;
+    host: string;
+    max_idle: number;
+    max_open: number;
+    port: number;
+    user: string;
+    password?: string;
+}
+
+export interface MySQLConfigResponse {
+    code: number;
+    msg: string;
+    data: MySQLConfig;
+}
+
+// OSS configuration interface
+export interface OSSConfig {
+    endpoint: string;
+    region: string;
+    bucket: string;
+    image_oss_path: string;
+    blog_oss_path: string;
+    access_key_id?: string;
+    access_key_secret?: string;
+}
+
+export interface OSSConfigResponse {
+    code: number;
+    msg: string;
+    data: OSSConfig;
+}
+
+// Cache configuration interface
+export interface CacheConfig {
+    enable_aof: boolean;
+    aof_dir_path: string;
+    aof_mix_size: number;
+    aof_compress: boolean;
+}
+
+export interface CacheConfigResponse {
+    code: number;
+    msg: string;
+    data: CacheConfig;
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -613,6 +661,150 @@ export const updateLoggerConfig = async (
     });
 };
 
+/**
+ * 获取MySQL数据库配置信息
+ * @returns 数据库配置数据
+ */
+export const getMySQLConfig = async (): Promise<MySQLConfigResponse> => {
+    return businessApiRequest<MySQLConfigResponse>({
+        method: 'GET',
+        url: '/admin/setting/mysql/config'
+    });
+};
+
+/**
+ * 更新MySQL数据库配置信息
+ * @param user 数据库用户名
+ * @param password 数据库密码
+ * @param host 数据库主机地址
+ * @param port 数据库端口
+ * @param database 数据库名称
+ * @param maxOpen 最大打开连接数
+ * @param maxIdle 最大空闲连接数
+ * @returns 更新结果
+ */
+export const updateMySQLConfig = async (
+    user: string,
+    password: string,
+    host: string,
+    port: number,
+    database: string,
+    maxOpen: number,
+    maxIdle: number
+): Promise<ApiResponse<null>> => {
+    const requestData: Record<string, string | number> = {
+        'mysql.user': user,
+        'mysql.password': password,
+        'mysql.host': host,
+        'mysql.port': port,
+        'mysql.database': database,
+        'mysql.max_open': maxOpen,
+        'mysql.max_idle': maxIdle
+    };
+    
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/setting/mysql/config',
+        data: requestData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
+/**
+ * 获取OSS配置信息
+ * @returns OSS配置数据
+ */
+export const getOSSConfig = async (): Promise<OSSConfigResponse> => {
+    return businessApiRequest<OSSConfigResponse>({
+        method: 'GET',
+        url: '/admin/setting/oss/config'
+    });
+};
+
+/**
+ * 更新OSS配置信息
+ * @param endpoint OSS端点
+ * @param region OSS区域
+ * @param accessKeyId 访问密钥ID
+ * @param accessKeySecret 访问密钥密钥
+ * @param bucket 存储桶名称
+ * @param imageOssPath 图片路径
+ * @param blogOssPath 博客路径
+ * @returns 更新结果
+ */
+export const updateOSSConfig = async (
+    endpoint: string,
+    region: string,
+    accessKeyId: string,
+    accessKeySecret: string,
+    bucket: string,
+    imageOssPath: string,
+    blogOssPath: string
+): Promise<ApiResponse<null>> => {
+    const requestData: Record<string, string> = {
+        'oss.endpoint': endpoint,
+        'oss.region': region,
+        'oss.access_key_id': accessKeyId,
+        'oss.access_key_secret': accessKeySecret,
+        'oss.bucket': bucket,
+        'oss.image_oss_path': imageOssPath,
+        'oss.blog_oss_path': blogOssPath
+    };
+    
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/setting/oss/config',
+        data: requestData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
+/**
+ * 获取缓存配置信息
+ * @returns 缓存配置数据
+ */
+export const getCacheConfig = async (): Promise<CacheConfigResponse> => {
+    return businessApiRequest<CacheConfigResponse>({
+        method: 'GET',
+        url: '/admin/setting/cache/config'
+    });
+};
+
+/**
+ * 更新缓存配置信息
+ * @param enableAOF 是否启用AOF
+ * @param aofPath AOF文件路径
+ * @param aofMaxSize AOF文件最大大小(MB)
+ * @param aofCompress 是否压缩AOF文件
+ * @returns 更新结果
+ */
+export const updateCacheConfig = async (
+    enableAOF: boolean,
+    aofPath: string,
+    aofMaxSize: number,
+    aofCompress: boolean
+): Promise<ApiResponse<null>> => {
+    const requestData: Record<string, boolean | string | number> = {
+        'cache.aof.enable': enableAOF,
+        'cache.aof.path': aofPath,
+        'cache.aof.max_size': aofMaxSize.toString(),
+        'cache.aof.compress': aofCompress
+    };
+    
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/setting/cache/config',
+        data: requestData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -624,6 +816,12 @@ export default {
     updateServerConfig,
     getLoggerConfig,
     updateLoggerConfig,
+    getMySQLConfig,
+    updateMySQLConfig,
+    getOSSConfig,
+    updateOSSConfig,
+    getCacheConfig,
+    updateCacheConfig,
     getAllBlogs,
     changeBlogState,
     setBlogTop,
