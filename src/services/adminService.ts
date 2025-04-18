@@ -180,6 +180,20 @@ export interface UserConfigResponse {
     data: UserConfig;
 }
 
+// Server configuration interface
+export interface ServerConfig {
+    port: number;
+    token_expire_duration: number;
+    cors_origins: string[];
+    token_key?: string;
+}
+
+export interface ServerConfigResponse {
+    code: number;
+    msg: string;
+    data: ServerConfig;
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -432,7 +446,7 @@ export const updateUserConfig = async (
 ): Promise<ApiResponse<null>> => {
     // 构建使用点表示法的请求数据对象
     const requestData: Record<string, string> = {};
-    
+
     // 添加用户数据，使用点表示法
     if (userData.user_name) requestData['user.user_name'] = userData.user_name;
     if (userData.user_email) requestData['user.user_email'] = userData.user_email;
@@ -443,7 +457,7 @@ export const updateUserConfig = async (
     if (userData.avatar_image) requestData['user.avatar_image'] = userData.avatar_image;
     if (userData.web_logo) requestData['user.web_logo'] = userData.web_logo;
     if (userData.background_image) requestData['user.background_image'] = userData.background_image;
-    
+
     // 添加验证码
     if (verifiedCode || userData.verified_code) {
         requestData['user.verified_code'] = verifiedCode || userData.verified_code || '';
@@ -491,6 +505,50 @@ export const sendSmtpVerificationCode = async (
     });
 };
 
+/**
+ * 获取服务器配置信息
+ * @returns 服务器配置数据
+ */
+export const getServerConfig = async (): Promise<ServerConfigResponse> => {
+    return businessApiRequest<ServerConfigResponse>({
+        method: 'GET',
+        url: '/admin/setting/server/config'
+    });
+};
+
+/**
+ * 更新服务器配置信息
+ * @param corsOrigins 跨域来源数组
+ * @param tokenExpireDuration 令牌过期时间(小时)
+ * @param tokenKey 令牌密钥 (可选)
+ * @returns 更新结果
+ */
+export const updateServerConfig = async (
+    corsOrigins: string[],
+    tokenExpireDuration: number,
+    tokenKey?: string
+): Promise<ApiResponse<null>> => {
+    // 使用点表示法构建请求数据
+    const requestData: Record<string, any> = {
+        'server.token_expire_duration': tokenExpireDuration,
+        'server.cors_origins': corsOrigins
+    };
+    
+    // 如果提供了令牌密钥，则添加到请求数据
+    if (tokenKey) {
+        requestData['server.token_key'] = tokenKey;
+    }
+    
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/setting/server/config',
+        data: requestData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -498,6 +556,8 @@ export default {
     getUserConfig,
     updateUserConfig,
     sendSmtpVerificationCode,
+    getServerConfig,
+    updateServerConfig,
     getAllBlogs,
     changeBlogState,
     setBlogTop,
