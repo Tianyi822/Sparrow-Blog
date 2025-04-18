@@ -195,6 +195,51 @@
       }
     }
   }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: linear-gradient(135deg, #2a3b4c, #1a2a3c);
+    border-radius: 8px;
+    padding: 2rem;
+    color: #fff;
+    text-align: center;
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+
+  .submit-error {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: rgba(255, 76, 76, 0.1);
+    border: 1px solid #ff4c4c;
+    border-radius: 4px;
+    color: #ff4c4c;
+    display: flex;
+    align-items: center;
+    animation: fadeIn 0.3s ease-out;
+    
+    .error-icon {
+      margin-right: 0.5rem;
+      flex-shrink: 0;
+    }
+  }
 }
 
 @keyframes fadeInOut {
@@ -202,6 +247,23 @@
   15% { opacity: 1; transform: translateY(0); }
   85% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // Media queries for responsive design

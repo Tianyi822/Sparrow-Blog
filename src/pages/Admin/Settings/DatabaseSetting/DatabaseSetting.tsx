@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiDatabase, FiUser, FiLock, FiServer, FiSettings, FiRefreshCw, FiClock, FiAlertCircle } from 'react-icons/fi';
 import './DatabaseSetting.scss';
+import { getMySQLConfig, updateMySQLConfig } from '@/services/adminService';
 
 interface DatabaseFormData {
     username: string;
@@ -33,7 +34,47 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
 
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [submitError, setSubmitError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    // 加载数据库配置
+    useEffect(() => {
+        const fetchDatabaseConfig = async () => {
+            try {
+                setLoading(true);
+                setSubmitError(null);
+
+                const response = await getMySQLConfig();
+
+                if (response.code === 200 && response.data) {
+                    const { user, host, port, database, max_open, max_idle } = response.data;
+
+                    // 设置表单数据
+                    setFormData({
+                        username: user || '',
+                        password: '', // 密码通常不会从后端返回
+                        host: host || '127.0.0.1',
+                        port: port ? port.toString() : '3306',
+                        database: database || '',
+                        maxOpenConns: max_open ? max_open.toString() : '10',
+                        maxIdleConns: max_idle ? max_idle.toString() : '5'
+                    });
+                } else {
+                    // 显示后端返回的错误信息
+                    setSubmitError(`获取数据库配置失败: ${response.msg}`);
+                    console.error('获取数据库配置失败:', response.msg);
+                }
+            } catch (error) {
+                console.error('获取数据库配置时出错:', error);
+                setSubmitError('获取数据库配置时发生错误，请稍后再试');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDatabaseConfig();
+    }, []);
 
     const validateField = (name: string, value: string): string => {
         switch (name) {
@@ -133,27 +174,62 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
             return;
         }
 
+        setSubmitError(null);
         setIsSubmitting(true);
 
         try {
-            // 这里应该调用API保存数据库配置
-            // 模拟API调用
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // 准备数据
+            const user = formData.username;
+            const password = formData.password;
+            const host = formData.host;
+            const port = parseInt(formData.port);
+            const database = formData.database;
+            const maxOpen = parseInt(formData.maxOpenConns);
+            const maxIdle = parseInt(formData.maxIdleConns);
 
-            // 显示成功消息
-            setSaveSuccess(true);
+            // 调用API更新数据库配置
+            const response = await updateMySQLConfig(
+                user,
+                password,
+                host,
+                port,
+                database,
+                maxOpen,
+                maxIdle
+            );
 
-            // 如果有回调函数，调用它
-            if (onSaveSuccess) {
-                onSaveSuccess();
+            if (response.code === 200) {
+                // 显示成功消息
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
+
+                // 如果有回调函数，调用它
+                if (onSaveSuccess) {
+                    onSaveSuccess();
+                }
+            } else {
+                // 显示后端返回的错误信息
+                setSubmitError(`${response.msg}`);
+                console.error('保存失败:', response.msg);
             }
         } catch (error) {
-            console.error('保存数据库配置失败:', error);
-            // 如果需要，可以处理错误信息
+            console.error('保存数据库配置时出错:', error);
+            setSubmitError('保存配置时发生错误，请稍后再试');
         } finally {
             setIsSubmitting(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="database-setting-card">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>加载数据库配置中...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="database-setting-card">
@@ -302,6 +378,13 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
                     >
                         {isSubmitting ? '保存中...' : '保存配置'}
                     </button>
+
+                    {submitError && (
+                        <div className="submit-error">
+                            <FiAlertCircle className="error-icon" />
+                            {submitError}
+                        </div>
+                    )}
                 </form>
             </div>
         </div>
