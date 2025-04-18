@@ -126,6 +126,17 @@ export const businessApiRequest = async <T>(config: AxiosRequestConfig): Promise
         return handleApiResponse<T>(response);
     } catch (error) {
         console.error('业务服务请求失败:', error);
+        
+        // 检查是否是axios错误并且有响应
+        if (axios.isAxiosError(error) && error.response && error.response.data) {
+            // 如果响应数据符合ApiResponse格式，直接返回它
+            const errorResponse = error.response.data;
+            if (typeof errorResponse === 'object' && 'code' in errorResponse && 'msg' in errorResponse) {
+                return errorResponse as T;
+            }
+        }
+        
+        // 其他错误情况抛出异常
         throw error;
     }
 };
