@@ -114,7 +114,7 @@ const AdminLayout: React.FC = () => {
           
           <div className="sidebar-footer">
             <button className="logout-btn" onClick={handleLogout}>
-              <FiLogOut className="nav-icon" />
+              <FiLogOut className="nav-icon" style={{ display: 'block', minWidth: '1.2rem' }} />
               <span className="nav-text">退出登录</span>
             </button>
           </div>
