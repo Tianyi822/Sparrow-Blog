@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiDatabase, FiFolder, FiHardDrive, FiZap, FiAlertCircle } from 'react-icons/fi';
 import './CacheSetting.scss';
+import { getCacheConfig, updateCacheConfig } from '@/services/adminService';
 
 interface CacheFormData {
     aofEnabled: boolean;
@@ -28,14 +29,48 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+
+    // 加载缓存配置
+    useEffect(() => {
+        const fetchCacheConfig = async () => {
+            try {
+                setLoading(true);
+                setSubmitError(null);
+
+                const response = await getCacheConfig();
+
+                if (response.code === 200 && response.data) {
+                    const { enable_aof, aof_dir_path, aof_mix_size, aof_compress } = response.data;
+
+                    // 设置表单数据
+                    setFormData({
+                        aofEnabled: enable_aof,
+                        aofPath: aof_dir_path || '',
+                        aofMaxSize: aof_mix_size ? aof_mix_size.toString() : '1',
+                        compressEnabled: aof_compress
+                    });
+                } else {
+                    // 显示后端返回的错误信息
+                    setSubmitError(`获取缓存配置失败: ${response.msg}`);
+                    console.error('获取缓存配置失败:', response.msg);
+                }
+            } catch (error) {
+                console.error('获取缓存配置时出错:', error);
+                setSubmitError('获取缓存配置时发生错误，请稍后再试');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCacheConfig();
+    }, []);
 
     const validateField = (name: string, value: string): string => {
         switch (name) {
             case 'aofPath':
                 // AOF路径可以为空
-                if (value && !value.endsWith('.aof')) {
-                    return 'AOF文件路径必须以.aof结尾';
-                }
                 return '';
             case 'aofMaxSize': {
                 const size = parseFloat(value);
@@ -101,27 +136,56 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
             return;
         }
 
+        setSubmitError(null);
         setIsSubmitting(true);
 
         try {
-            // 这里应该调用API保存缓存配置
-            // 模拟API调用
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // 准备数据
+            const enableAOF = formData.aofEnabled;
+            const aofPath = formData.aofPath;
+            const aofMaxSize = parseFloat(formData.aofMaxSize);
+            const aofCompress = formData.compressEnabled;
 
-            // 显示成功消息
-            setSaveSuccess(true);
+            // 调用API更新缓存配置
+            const response = await updateCacheConfig(
+                enableAOF,
+                aofPath,
+                aofMaxSize,
+                aofCompress
+            );
 
-            // 如果有回调函数，调用它
-            if (onSaveSuccess) {
-                onSaveSuccess();
+            if (response.code === 200) {
+                // 显示成功消息
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
+
+                // 如果有回调函数，调用它
+                if (onSaveSuccess) {
+                    onSaveSuccess();
+                }
+            } else {
+                // 显示后端返回的错误信息
+                setSubmitError(`${response.msg}`);
+                console.error('保存失败:', response.msg);
             }
         } catch (error) {
-            console.error('保存缓存配置失败:', error);
-            // 如果需要，可以处理错误信息
+            console.error('保存缓存配置时出错:', error);
+            setSubmitError('保存配置时发生错误，请稍后再试');
         } finally {
             setIsSubmitting(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="cache-setting-card">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>加载缓存配置中...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="cache-setting-card">
@@ -233,6 +297,13 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
                     >
                         {isSubmitting ? '保存中...' : '保存配置'}
                     </button>
+
+                    {submitError && (
+                        <div className="submit-error">
+                            <FiAlertCircle className="error-icon" />
+                            {submitError}
+                        </div>
+                    )}
                 </form>
             </div>
         </div>
