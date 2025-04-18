@@ -529,7 +529,7 @@ export const updateServerConfig = async (
     tokenKey?: string
 ): Promise<ApiResponse<null>> => {
     // 使用点表示法构建请求数据
-    const requestData: Record<string, any> = {
+    const requestData: Record<string, string | number | string[]> = {
         'server.token_expire_duration': tokenExpireDuration,
         'server.cors_origins': corsOrigins
     };
