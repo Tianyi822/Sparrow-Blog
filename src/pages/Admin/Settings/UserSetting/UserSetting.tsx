@@ -3,13 +3,14 @@ import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle, FiUpload, FiImage, FiS
 import './UserSetting.scss';
 import ImageSelectorModal from '@/components/ImageSelectorModal';
 import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
-import { GalleryImage } from '@/services/adminService';
+import { GalleryImage, UserConfig } from '@/services/adminService';
+import { getUserConfig, updateUserConfig } from '@/services/adminService';
 
 interface UserConfigProps {
     onSaveSuccess?: () => void;
 }
 
-const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
+const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [smtpAccount, setSmtpAccount] = useState('');
@@ -23,11 +24,59 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [selectedImageType, setSelectedImageType] = useState<ImageUsageType>('avatar');
+    const [loading, setLoading] = useState<boolean>(true);
 
     // 添加状态来跟踪已选择的图片
     const [avatarImage, setAvatarImage] = useState<string | null>(null);
     const [logoImage, setLogoImage] = useState<string | null>(null);
     const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+
+    // 添加状态来追踪图片ID
+    const [avatarImageId, setAvatarImageId] = useState<string>('');
+    const [logoImageId, setLogoImageId] = useState<string>('');
+    const [backgroundImageId, setBackgroundImageId] = useState<string>('');
+
+    // 获取用户配置信息
+    useEffect(() => {
+        const fetchUserConfig = async () => {
+            try {
+                setLoading(true);
+                const response = await getUserConfig();
+                if (response.code === 200 && response.data) {
+                    const { user_name, user_email, smtp_account, smtp_address, smtp_port, avatar_image, web_logo, background_image } = response.data;
+
+                    // 填充表单字段
+                    setUsername(user_name || '');
+                    setEmail(user_email || '');
+                    setSmtpAccount(smtp_account || '');
+                    setSmtpAddress(smtp_address || '');
+                    setSmtpPort(smtp_port || '');
+
+                    // 设置图片ID
+                    setAvatarImageId(avatar_image || '');
+                    setLogoImageId(web_logo || '');
+                    setBackgroundImageId(background_image || '');
+
+                    // 设置图片URL
+                    if (avatar_image) {
+                        setAvatarImage(`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${avatar_image}`);
+                    }
+                    if (web_logo) {
+                        setLogoImage(`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${web_logo}`);
+                    }
+                    if (background_image) {
+                        setBackgroundImage(`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${background_image}`);
+                    }
+                }
+            } catch (error) {
+                console.error('获取用户配置失败:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserConfig();
+    }, []);
 
     // 初始化时从localStorage检查倒计时状态
     useEffect(() => {
@@ -69,7 +118,7 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
 
     const clearError = (field: string) => {
         if (errors[field]) {
-            const newErrors = {...errors};
+            const newErrors = { ...errors };
             delete newErrors[field];
             setErrors(newErrors);
         }
@@ -116,47 +165,68 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!validateForm()) {
             return;
         }
 
-        // 这里会添加实际的保存逻辑，目前只是模拟
-        console.log('保存用户配置:', {
-            username,
-            email,
-            smtp_account: smtpAccount,
-            smtp_address: smtpAddress,
-            smtp_port: smtpPort,
-            smtp_auth_code: smtpAuthCode,
-            verificationCode
-        });
+        try {
+            // 准备要更新的用户配置数据
+            const userData: Partial<UserConfig> = {
+                user_name: username,
+                user_email: email,
+                smtp_account: smtpAccount,
+                smtp_address: smtpAddress,
+                smtp_port: smtpPort,
+                smtp_auth_code: smtpAuthCode,
+                avatar_image: avatarImageId,
+                web_logo: logoImageId,
+                background_image: backgroundImageId
+            };
 
-        // 清空验证码字段和localStorage
-        setVerificationCode('');
-        setCodeSent(false);
-        localStorage.removeItem('verificationCodeEndTime');
-        localStorage.removeItem('verificationCodeEmail');
+            // 如果验证码已发送，则需要包含验证码
+            if (codeSent) {
+                userData.verified_code = verificationCode;
+            }
 
-        // 显示保存成功提示
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
+            // 调用API更新用户配置
+            const response = await updateUserConfig(userData);
 
-        // 通知父组件保存成功
-        if (onSaveSuccess) {
-            onSaveSuccess();
+            if (response.code === 200) {
+                // 清空验证码字段和localStorage
+                setVerificationCode('');
+                setCodeSent(false);
+                localStorage.removeItem('verificationCodeEndTime');
+                localStorage.removeItem('verificationCodeEmail');
+
+                // 显示保存成功提示
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
+
+                // 通知父组件保存成功
+                if (onSaveSuccess) {
+                    onSaveSuccess();
+                }
+            } else {
+                // 处理错误
+                console.error('保存失败:', response.msg);
+                // 可以在这里显示错误提示
+            }
+        } catch (error) {
+            console.error('保存用户配置时出错:', error);
+            // 可以在这里显示错误提示
         }
     };
 
     const handleSendCode = () => {
         // 验证邮箱格式
         if (!email.trim()) {
-            setErrors({...errors, email: '邮箱不能为空'});
+            setErrors({ ...errors, email: '邮箱不能为空' });
             return;
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setErrors({...errors, email: '邮箱格式不正确'});
+            setErrors({ ...errors, email: '邮箱格式不正确' });
             return;
         }
 
@@ -195,297 +265,303 @@ const UserSetting: React.FC<UserConfigProps> = ({onSaveSuccess}) => {
         // 根据不同的用途类型更新不同的图片
         if (usageType === 'avatar') {
             setAvatarImage(imageUrl);
+            setAvatarImageId(image.img_id);
         } else if (usageType === 'logo') {
             setLogoImage(imageUrl);
+            setLogoImageId(image.img_id);
         } else if (usageType === 'background') {
             setBackgroundImage(imageUrl);
+            setBackgroundImageId(image.img_id);
         }
 
-        console.log(`选择了图片 ${image.img_name} 用于 ${usageType}`);
-
-        // 这里可以调用API更新图片设置
-        // 示例:
-        // if (usageType === 'avatar') updateUserAvatar(image.img_id);
-        // else if (usageType === 'logo') updateWebsiteLogo(image.img_id);
-        // else if (usageType === 'background') updateBackgroundImage(image.img_id);
+        closeImageSelector();
     };
 
     return (
         <div className="user-setting-card">
-            <div className="user-imgs-setting" style={backgroundImage ? {
-                backgroundImage: `url(${backgroundImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-            } : {}}>
-                <div className="user-info-overlay">
-                    <div className="user-title">
-                        <FiUser className="user-icon"/>
-                        <h2>用户设置</h2>
-                    </div>
-                    <div className="user-description">
-                        <p>管理您的个人信息、账户安全及网站外观。</p>
-                        <p>上传头像、网站Logo和背景图片让您的网站更具个性化。</p>
-                    </div>
+            {loading ? (
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>加载用户配置中...</p>
                 </div>
-
-                {/* 桌面版上传组件区域，在窄屏模式下隐藏 */}
-                <div className="upload-container desktop-upload-container">
-                    <div className="upload-items-row">
-                        <div className="upload-item">
-                            <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
-                                {avatarImage ? (
-                                    <img src={avatarImage} alt="User Avatar" className="selected-image"/>
-                                ) : (
-                                    <FiUser className="avatar-icon"/>
-                                )}
-                                <div className="upload-overlay">
-                                    <FiUpload/>
-                                    <span className="upload-label-inner">上传头像</span>
-                                </div>
+            ) : (
+                <>
+                    <div className="user-imgs-setting" style={backgroundImage ? {
+                        backgroundImage: `url(${backgroundImage})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    } : {}}>
+                        <div className="user-info-overlay">
+                            <div className="user-title">
+                                <FiUser className="user-icon" />
+                                <h2>用户设置</h2>
+                            </div>
+                            <div className="user-description">
+                                <p>管理您的个人信息、账户安全及网站外观。</p>
+                                <p>上传头像、网站Logo和背景图片让您的网站更具个性化。</p>
                             </div>
                         </div>
-                        <div className="upload-item">
-                            <div className="upload-circle" onClick={() => openImageSelector('logo')}>
-                                {logoImage ? (
-                                    <img src={logoImage} alt="Website Logo" className="selected-image"/>
-                                ) : (
-                                    <FiImage className="logo-icon"/>
-                                )}
-                                <div className="upload-overlay">
-                                    <FiUpload/>
-                                    <span className="upload-label-inner">上传Logo</span>
+
+                        {/* 桌面版上传组件区域，在窄屏模式下隐藏 */}
+                        <div className="upload-container desktop-upload-container">
+                            <div className="upload-items-row">
+                                <div className="upload-item">
+                                    <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
+                                        {avatarImage ? (
+                                            <img src={avatarImage} alt="User Avatar" className="selected-image" />
+                                        ) : (
+                                            <FiUser className="avatar-icon" />
+                                        )}
+                                        <div className="upload-overlay">
+                                            <FiUpload />
+                                            <span className="upload-label-inner">上传头像</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="upload-item">
+                                    <div className="upload-circle" onClick={() => openImageSelector('logo')}>
+                                        {logoImage ? (
+                                            <img src={logoImage} alt="Website Logo" className="selected-image" />
+                                        ) : (
+                                            <FiImage className="logo-icon" />
+                                        )}
+                                        <div className="upload-overlay">
+                                            <FiUpload />
+                                            <span className="upload-label-inner">上传Logo</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <button
-                        className="bg-upload-button"
-                        onClick={() => openImageSelector('background')}
-                    >
-                        <FiUpload className="upload-icon"/>
-                        上传背景图片
-                    </button>
-                </div>
-            </div>
-
-            <div className="user-setting-form-wrapper">
-                {/* 移动端上传组件区域，仅在窄屏模式下显示 */}
-                <div className="mobile-upload-container">
-                    <div className="upload-items-row">
-                        <div className="upload-item">
-                            <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
-                                {avatarImage ? (
-                                    <img src={avatarImage} alt="User Avatar" className="selected-image"/>
-                                ) : (
-                                    <FiUser className="avatar-icon"/>
-                                )}
-                                <div className="upload-overlay">
-                                    <FiUpload/>
-                                    <span className="upload-label-inner">上传头像</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="upload-item">
-                            <div className="upload-circle" onClick={() => openImageSelector('logo')}>
-                                {logoImage ? (
-                                    <img src={logoImage} alt="Website Logo" className="selected-image"/>
-                                ) : (
-                                    <FiImage className="logo-icon"/>
-                                )}
-                                <div className="upload-overlay">
-                                    <FiUpload/>
-                                    <span className="upload-label-inner">上传Logo</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button
-                        className="bg-upload-button"
-                        onClick={() => openImageSelector('background')}
-                    >
-                        <FiUpload className="upload-icon"/>
-                        上传背景图片
-                    </button>
-                </div>
-
-                {saveSuccess && (
-                    <div className="save-notification">
-                        <FiAlertCircle/> 用户设置已保存成功！
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="user-setting-form">
-                    <div className="form-group">
-                        <label htmlFor="username">
-                            <FiUser className="input-icon"/>
-                            <span>用户名</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => {
-                                setUsername(e.target.value);
-                                clearError('username');
-                            }}
-                            placeholder="请输入用户名"
-                            className={errors.username ? 'has-error' : ''}
-                        />
-                        {errors.username && (
-                            <div className="error-message">{errors.username}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="email">
-                            <FiMail className="input-icon"/>
-                            <span>邮箱</span>
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => {
-                                setEmail(e.target.value);
-                                clearError('email');
-                            }}
-                            placeholder="请输入邮箱"
-                            className={errors.email ? 'has-error' : ''}
-                        />
-                        {errors.email && (
-                            <div className="error-message">{errors.email}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="smtp_account">
-                            <FiServer className="input-icon"/>
-                            <span>SMTP账号</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="smtp_account"
-                            value={smtpAccount}
-                            onChange={(e) => {
-                                setSmtpAccount(e.target.value);
-                                clearError('smtp_account');
-                            }}
-                            placeholder="请输入SMTP账号"
-                            className={errors.smtp_account ? 'has-error' : ''}
-                        />
-                        {errors.smtp_account && (
-                            <div className="error-message">{errors.smtp_account}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="smtp_address">
-                            <FiServer className="input-icon"/>
-                            <span>SMTP服务器</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="smtp_address"
-                            value={smtpAddress}
-                            onChange={(e) => {
-                                setSmtpAddress(e.target.value);
-                                clearError('smtp_address');
-                            }}
-                            placeholder="例如: smtp.gmail.com"
-                            className={errors.smtp_address ? 'has-error' : ''}
-                        />
-                        {errors.smtp_address && (
-                            <div className="error-message">{errors.smtp_address}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="smtp_port">
-                            <FiServer className="input-icon"/>
-                            <span>SMTP端口</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="smtp_port"
-                            value={smtpPort}
-                            onChange={(e) => {
-                                setSmtpPort(e.target.value);
-                                clearError('smtp_port');
-                            }}
-                            placeholder="例如: 465 或 587"
-                            className={errors.smtp_port ? 'has-error' : ''}
-                        />
-                        {errors.smtp_port && (
-                            <div className="error-message">{errors.smtp_port}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="smtp_auth_code">
-                            <FiLock className="input-icon"/>
-                            <span>SMTP授权码</span>
-                        </label>
-                        <input
-                            type="password"
-                            id="smtp_auth_code"
-                            value={smtpAuthCode}
-                            onChange={(e) => {
-                                setSmtpAuthCode(e.target.value);
-                                clearError('smtp_auth_code');
-                            }}
-                            placeholder="请输入SMTP授权码"
-                            className={errors.smtp_auth_code ? 'has-error' : ''}
-                        />
-                        {errors.smtp_auth_code && (
-                            <div className="error-message">{errors.smtp_auth_code}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group verification-code-group">
-                        <label htmlFor="verificationCode">
-                            <FiLock className="input-icon"/>
-                            <span>验证码</span>
-                        </label>
-                        <div className="verification-code-container">
-                            <input
-                                type="text"
-                                id="verificationCode"
-                                value={verificationCode}
-                                onChange={(e) => {
-                                    setVerificationCode(e.target.value);
-                                    clearError('verificationCode');
-                                }}
-                                placeholder="请输入验证码"
-                                className={errors.verificationCode ? 'has-error' : ''}
-                            />
                             <button
-                                type="button"
-                                className="send-code-button"
-                                onClick={handleSendCode}
-                                disabled={countdown > 0}
+                                className="bg-upload-button"
+                                onClick={() => openImageSelector('background')}
                             >
-                                {countdown > 0 ? `重新发送(${countdown}s)` : '获取邮箱验证码'}
+                                <FiUpload className="upload-icon" />
+                                上传背景图片
                             </button>
                         </div>
-                        {errors.verificationCode && (
-                            <div className="error-message">{errors.verificationCode}</div>
-                        )}
                     </div>
 
-                    <button type="submit" className="submit-button">
-                        <FiSave/> 保存配置
-                    </button>
-                </form>
-            </div>
+                    <div className="user-setting-form-wrapper">
+                        {/* 移动端上传组件区域，仅在窄屏模式下显示 */}
+                        <div className="mobile-upload-container">
+                            <div className="upload-items-row">
+                                <div className="upload-item">
+                                    <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
+                                        {avatarImage ? (
+                                            <img src={avatarImage} alt="User Avatar" className="selected-image" />
+                                        ) : (
+                                            <FiUser className="avatar-icon" />
+                                        )}
+                                        <div className="upload-overlay">
+                                            <FiUpload />
+                                            <span className="upload-label-inner">上传头像</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="upload-item">
+                                    <div className="upload-circle" onClick={() => openImageSelector('logo')}>
+                                        {logoImage ? (
+                                            <img src={logoImage} alt="Website Logo" className="selected-image" />
+                                        ) : (
+                                            <FiImage className="logo-icon" />
+                                        )}
+                                        <div className="upload-overlay">
+                                            <FiUpload />
+                                            <span className="upload-label-inner">上传Logo</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button
+                                className="bg-upload-button"
+                                onClick={() => openImageSelector('background')}
+                            >
+                                <FiUpload className="upload-icon" />
+                                上传背景图片
+                            </button>
+                        </div>
 
-            {/* 图片选择器弹窗 */}
-            <ImageSelectorModal
-                isOpen={modalOpen}
-                onClose={closeImageSelector}
-                onImageSelect={handleImageSelect}
-                usageType={selectedImageType}
-                mode="userSetting"
-            />
+                        {saveSuccess && (
+                            <div className="save-notification">
+                                <FiAlertCircle /> 用户设置已保存成功！
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="user-setting-form">
+                            <div className="form-group">
+                                <label htmlFor="username">
+                                    <FiUser className="input-icon" />
+                                    <span>用户名</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    value={username}
+                                    onChange={(e) => {
+                                        setUsername(e.target.value);
+                                        clearError('username');
+                                    }}
+                                    placeholder="请输入用户名"
+                                    className={errors.username ? 'has-error' : ''}
+                                />
+                                {errors.username && (
+                                    <div className="error-message">{errors.username}</div>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="email">
+                                    <FiMail className="input-icon" />
+                                    <span>邮箱</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={email}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        clearError('email');
+                                    }}
+                                    placeholder="请输入邮箱"
+                                    className={errors.email ? 'has-error' : ''}
+                                />
+                                {errors.email && (
+                                    <div className="error-message">{errors.email}</div>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="smtp_account">
+                                    <FiServer className="input-icon" />
+                                    <span>SMTP账号</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="smtp_account"
+                                    value={smtpAccount}
+                                    onChange={(e) => {
+                                        setSmtpAccount(e.target.value);
+                                        clearError('smtp_account');
+                                    }}
+                                    placeholder="请输入SMTP账号"
+                                    className={errors.smtp_account ? 'has-error' : ''}
+                                />
+                                {errors.smtp_account && (
+                                    <div className="error-message">{errors.smtp_account}</div>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="smtp_address">
+                                    <FiServer className="input-icon" />
+                                    <span>SMTP服务器</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="smtp_address"
+                                    value={smtpAddress}
+                                    onChange={(e) => {
+                                        setSmtpAddress(e.target.value);
+                                        clearError('smtp_address');
+                                    }}
+                                    placeholder="例如: smtp.gmail.com"
+                                    className={errors.smtp_address ? 'has-error' : ''}
+                                />
+                                {errors.smtp_address && (
+                                    <div className="error-message">{errors.smtp_address}</div>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="smtp_port">
+                                    <FiServer className="input-icon" />
+                                    <span>SMTP端口</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="smtp_port"
+                                    value={smtpPort}
+                                    onChange={(e) => {
+                                        setSmtpPort(e.target.value);
+                                        clearError('smtp_port');
+                                    }}
+                                    placeholder="例如: 465 或 587"
+                                    className={errors.smtp_port ? 'has-error' : ''}
+                                />
+                                {errors.smtp_port && (
+                                    <div className="error-message">{errors.smtp_port}</div>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="smtp_auth_code">
+                                    <FiLock className="input-icon" />
+                                    <span>SMTP授权码</span>
+                                </label>
+                                <input
+                                    type="password"
+                                    id="smtp_auth_code"
+                                    value={smtpAuthCode}
+                                    onChange={(e) => {
+                                        setSmtpAuthCode(e.target.value);
+                                        clearError('smtp_auth_code');
+                                    }}
+                                    placeholder="请输入SMTP授权码"
+                                    className={errors.smtp_auth_code ? 'has-error' : ''}
+                                />
+                                {errors.smtp_auth_code && (
+                                    <div className="error-message">{errors.smtp_auth_code}</div>
+                                )}
+                            </div>
+
+                            <div className="form-group verification-code-group">
+                                <label htmlFor="verificationCode">
+                                    <FiLock className="input-icon" />
+                                    <span>验证码</span>
+                                </label>
+                                <div className="verification-code-container">
+                                    <input
+                                        type="text"
+                                        id="verificationCode"
+                                        value={verificationCode}
+                                        onChange={(e) => {
+                                            setVerificationCode(e.target.value);
+                                            clearError('verificationCode');
+                                        }}
+                                        placeholder="请输入验证码"
+                                        className={errors.verificationCode ? 'has-error' : ''}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="send-code-button"
+                                        onClick={handleSendCode}
+                                        disabled={countdown > 0}
+                                    >
+                                        {countdown > 0 ? `重新发送(${countdown}s)` : '获取邮箱验证码'}
+                                    </button>
+                                </div>
+                                {errors.verificationCode && (
+                                    <div className="error-message">{errors.verificationCode}</div>
+                                )}
+                            </div>
+
+                            <button type="submit" className="submit-button">
+                                <FiSave /> 保存配置
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* 图片选择器弹窗 */}
+                    <ImageSelectorModal
+                        isOpen={modalOpen}
+                        onClose={closeImageSelector}
+                        onImageSelect={handleImageSelect}
+                        usageType={selectedImageType}
+                        mode="userSetting"
+                    />
+                </>
+            )}
         </div>
     );
 };
