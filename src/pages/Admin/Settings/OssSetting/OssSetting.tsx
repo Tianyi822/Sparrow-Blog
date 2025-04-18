@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     FiBox,
     FiCloud,
@@ -10,6 +10,7 @@ import {
     FiAlertCircle
 } from 'react-icons/fi';
 import './OssSetting.scss';
+import { getOSSConfig, updateOSSConfig } from '@/services/adminService';
 
 interface OssFormData {
     endpoint: string;
@@ -43,6 +44,46 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+
+    // 加载OSS配置
+    useEffect(() => {
+        const fetchOssConfig = async () => {
+            try {
+                setLoading(true);
+                setSubmitError(null);
+
+                const response = await getOSSConfig();
+
+                if (response.code === 200 && response.data) {
+                    const { endpoint, region, bucket, image_oss_path, blog_oss_path } = response.data;
+
+                    // 设置表单数据
+                    setFormData({
+                        endpoint: endpoint || '',
+                        region: region || '',
+                        accessKeyId: '', // 密钥通常不会从后端返回
+                        accessKeySecret: '', // 密钥通常不会从后端返回
+                        bucketName: bucket || '',
+                        imagePath: image_oss_path || 'images/',
+                        blogPath: blog_oss_path || 'blogs/'
+                    });
+                } else {
+                    // 显示后端返回的错误信息
+                    setSubmitError(`获取OSS配置失败: ${response.msg}`);
+                    console.error('获取OSS配置失败:', response.msg);
+                }
+            } catch (error) {
+                console.error('获取OSS配置时出错:', error);
+                setSubmitError('获取OSS配置时发生错误，请稍后再试');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchOssConfig();
+    }, []);
 
     const validateField = (name: string, value: string): string => {
         switch (name) {
@@ -112,33 +153,42 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
             return;
         }
 
+        setSubmitError(null);
         setIsSubmitting(true);
 
         try {
-            // 这里应该调用API保存OSS配置
             // 处理路径以斜杠结尾
-            const dataToSubmit = {
-                ...formData,
-                imagePath: formData.imagePath.endsWith('/') ? formData.imagePath : formData.imagePath + '/',
-                blogPath: formData.blogPath.endsWith('/') ? formData.blogPath : formData.blogPath + '/'
-            };
+            const imagePath = formData.imagePath.endsWith('/') ? formData.imagePath : formData.imagePath + '/';
+            const blogPath = formData.blogPath.endsWith('/') ? formData.blogPath : formData.blogPath + '/';
 
-            // 模拟API调用
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            // 实际生产环境会使用下面的代码调用API
-            // 例如：await saveOssConfig(dataToSubmit);
-            console.log('将提交的数据:', dataToSubmit);
+            // 调用API更新OSS配置
+            const response = await updateOSSConfig(
+                formData.endpoint,
+                formData.region,
+                formData.accessKeyId,
+                formData.accessKeySecret,
+                formData.bucketName,
+                imagePath,
+                blogPath
+            );
 
-            // 显示成功消息
-            setSaveSuccess(true);
+            if (response.code === 200) {
+                // 显示成功消息
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
 
-            // 如果有回调函数，调用它
-            if (onSaveSuccess) {
-                onSaveSuccess();
+                // 如果有回调函数，调用它
+                if (onSaveSuccess) {
+                    onSaveSuccess();
+                }
+            } else {
+                // 显示后端返回的错误信息
+                setSubmitError(`${response.msg}`);
+                console.error('保存失败:', response.msg);
             }
         } catch (error) {
-            console.error('保存OSS配置失败:', error);
-            // 如果需要，可以处理错误信息
+            console.error('保存OSS配置时出错:', error);
+            setSubmitError('保存配置时发生错误，请稍后再试');
         } finally {
             setIsSubmitting(false);
         }
@@ -227,6 +277,17 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
         'blogPath'
     ];
 
+    if (loading) {
+        return (
+            <div className="oss-setting-card">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>加载OSS配置中...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="oss-setting-card">
             <div className="oss-img-section">
@@ -280,6 +341,13 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
                     >
                         {isSubmitting ? '保存中...' : '保存配置'}
                     </button>
+
+                    {submitError && (
+                        <div className="submit-error">
+                            <FiAlertCircle className="error-icon" />
+                            {submitError}
+                        </div>
+                    )}
                 </form>
             </div>
         </div>
