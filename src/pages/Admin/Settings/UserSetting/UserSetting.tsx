@@ -327,6 +327,8 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                     } : {}}>
+                        {/* Add aria-label for the background image for screen readers */}
+                        {backgroundImage && <span className="visually-hidden" aria-label="网站背景图片"></span>}
                         <div className="user-info-overlay">
                             <div className="user-title">
                                 <FiUser className="user-icon" />
@@ -344,7 +346,24 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                 <div className="upload-item">
                                     <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
                                         {avatarImage ? (
-                                            <img src={avatarImage} alt="User Avatar" className="selected-image" />
+                                            <img 
+                                                src={avatarImage} 
+                                                alt="用户头像" 
+                                                className="selected-image"
+                                                aria-label="用户头像"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLElement;
+                                                    target.style.fontSize = '0.85rem';
+                                                    target.style.display = 'flex';
+                                                    target.style.alignItems = 'center';
+                                                    target.style.justifyContent = 'center';
+                                                    target.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                                                    target.style.color = 'white';
+                                                    target.style.padding = '5px';
+                                                    target.style.textAlign = 'center';
+                                                    target.innerText = '用户头像';
+                                                }}
+                                            />
                                         ) : (
                                             <FiUser className="avatar-icon" />
                                         )}
@@ -357,7 +376,24 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                 <div className="upload-item">
                                     <div className="upload-circle" onClick={() => openImageSelector('logo')}>
                                         {logoImage ? (
-                                            <img src={logoImage} alt="Website Logo" className="selected-image" />
+                                            <img 
+                                                src={logoImage} 
+                                                alt="网站Logo" 
+                                                className="selected-image"
+                                                aria-label="网站Logo"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLElement;
+                                                    target.style.fontSize = '0.85rem';
+                                                    target.style.display = 'flex';
+                                                    target.style.alignItems = 'center';
+                                                    target.style.justifyContent = 'center';
+                                                    target.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                                                    target.style.color = 'white';
+                                                    target.style.padding = '5px';
+                                                    target.style.textAlign = 'center';
+                                                    target.innerText = '网站Logo';
+                                                }}
+                                            />
                                         ) : (
                                             <FiImage className="logo-icon" />
                                         )}
@@ -385,7 +421,24 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                 <div className="upload-item">
                                     <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
                                         {avatarImage ? (
-                                            <img src={avatarImage} alt="User Avatar" className="selected-image" />
+                                            <img 
+                                                src={avatarImage} 
+                                                alt="用户头像" 
+                                                className="selected-image"
+                                                aria-label="用户头像"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLElement;
+                                                    target.style.fontSize = '0.85rem';
+                                                    target.style.display = 'flex';
+                                                    target.style.alignItems = 'center';
+                                                    target.style.justifyContent = 'center';
+                                                    target.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                                                    target.style.color = 'white';
+                                                    target.style.padding = '5px';
+                                                    target.style.textAlign = 'center';
+                                                    target.innerText = '用户头像';
+                                                }}
+                                            />
                                         ) : (
                                             <FiUser className="avatar-icon" />
                                         )}
@@ -398,7 +451,24 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                 <div className="upload-item">
                                     <div className="upload-circle" onClick={() => openImageSelector('logo')}>
                                         {logoImage ? (
-                                            <img src={logoImage} alt="Website Logo" className="selected-image" />
+                                            <img 
+                                                src={logoImage} 
+                                                alt="网站Logo" 
+                                                className="selected-image"
+                                                aria-label="网站Logo"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLElement;
+                                                    target.style.fontSize = '0.85rem';
+                                                    target.style.display = 'flex';
+                                                    target.style.alignItems = 'center';
+                                                    target.style.justifyContent = 'center';
+                                                    target.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                                                    target.style.color = 'white';
+                                                    target.style.padding = '5px';
+                                                    target.style.textAlign = 'center';
+                                                    target.innerText = '网站Logo';
+                                                }}
+                                            />
                                         ) : (
                                             <FiImage className="logo-icon" />
                                         )}

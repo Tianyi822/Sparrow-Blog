@@ -168,6 +168,7 @@
           cursor: pointer;
           transition: all 0.3s ease;
           box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+          text-align: center;
 
           .selected-image {
             width: 100%;
@@ -177,6 +178,35 @@
             position: absolute;
             top: 0;
             left: 0;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+          }
+
+          img.selected-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            &::before {
+              content: attr(alt);
+              position: absolute;
+              left: 0;
+              right: 0;
+              top: 0;
+              bottom: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: rgba(0, 0, 0, 0.5);
+              color: white;
+              font-size: 0.85rem;
+              padding: 5px;
+              text-align: center;
+            }
           }
 
           &:hover {
@@ -453,6 +483,7 @@
           cursor: pointer;
           transition: all 0.3s ease;
           border: 2px dashed rgba(255, 255, 255, 0.3);
+          text-align: center;
           
           .selected-image {
             width: 100%;
@@ -462,6 +493,35 @@
             position: absolute;
             top: 0;
             left: 0;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.75rem;
+          }
+          
+          img.selected-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            &::before {
+              content: attr(alt);
+              position: absolute;
+              left: 0;
+              right: 0;
+              top: 0;
+              bottom: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-color: rgba(0, 0, 0, 0.5);
+              color: white;
+              font-size: 0.75rem;
+              padding: 3px;
+              text-align: center;
+            }
           }
           
           .avatar-icon, .logo-icon {
@@ -715,4 +775,16 @@
       }
     }
   }
+}
+
+/* Accessibility helper class */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 } 
