@@ -160,6 +160,26 @@ export interface PreSignUrlResponse {
     };
 }
 
+// User configuration interface
+export interface UserConfig {
+    user_name: string;
+    user_email: string;
+    smtp_account: string;
+    smtp_address: string;
+    smtp_port: string;
+    smtp_auth_code?: string;
+    avatar_image: string;
+    web_logo: string;
+    background_image: string;
+    verified_code?: string;
+}
+
+export interface UserConfigResponse {
+    code: number;
+    msg: string;
+    data: UserConfig;
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -389,10 +409,39 @@ export const checkImageNameExistence = async (imageName: string): Promise<CheckI
     });
 };
 
+/**
+ * 获取用户配置信息
+ * @returns 用户配置数据
+ */
+export const getUserConfig = async (): Promise<UserConfigResponse> => {
+    return businessApiRequest<UserConfigResponse>({
+        method: 'GET',
+        url: '/admin/setting/user/config'
+    });
+};
+
+/**
+ * 更新用户配置信息
+ * @param data 用户配置数据
+ * @returns 更新结果
+ */
+export const updateUserConfig = async (data: Partial<UserConfig>): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'POST',
+        url: '/admin/setting/user/config',
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
     getUserBasicInfo,
+    getUserConfig,
+    updateUserConfig,
     getAllBlogs,
     changeBlogState,
     setBlogTop,
