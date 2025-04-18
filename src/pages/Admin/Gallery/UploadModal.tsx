@@ -223,7 +223,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             console.log(`获取预签名URL: ${uploadFileName}`);
             const preSignUrlResponse = await getPreSignUrl(uploadFileName, FileType.WEBP);
 
-            if (preSignUrlResponse.code !== 0) {
+            if (preSignUrlResponse.code !== 200) {
                 console.error(`获取预签名URL失败: ${preSignUrlResponse.msg}`);
                 return false;
             }
