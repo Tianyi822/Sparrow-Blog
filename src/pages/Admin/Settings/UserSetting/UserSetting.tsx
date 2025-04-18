@@ -4,7 +4,7 @@ import './UserSetting.scss';
 import ImageSelectorModal from '@/components/ImageSelectorModal';
 import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
 import { GalleryImage, UserConfig } from '@/services/adminService';
-import { getUserConfig, updateUserConfig } from '@/services/adminService';
+import { getUserConfig, updateUserConfig, sendSmtpVerificationCode } from '@/services/adminService';
 
 interface UserConfigProps {
     onSaveSuccess?: () => void;
@@ -157,8 +157,6 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
 
         if (codeSent && !verificationCode.trim()) {
             newErrors.verificationCode = '验证码不能为空';
-        } else if (codeSent && verificationCode.trim().length !== 6) {
-            newErrors.verificationCode = '验证码必须为6位';
         }
 
         setErrors(newErrors);
@@ -186,14 +184,12 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                 background_image: backgroundImageId
             };
 
-            // 如果验证码已发送，则需要包含验证码
-            if (codeSent) {
-                userData.verified_code = verificationCode;
-            }
-
-            // 调用API更新用户配置
-            const response = await updateUserConfig(userData);
-
+            // 调用API更新用户配置，如果验证码已发送则将其作为第二个参数传递
+            const response = await updateUserConfig(
+                userData, 
+                codeSent ? verificationCode : undefined
+            );
+            
             if (response.code === 200) {
                 // 清空验证码字段和localStorage
                 setVerificationCode('');
@@ -212,15 +208,16 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             } else {
                 // 处理错误
                 console.error('保存失败:', response.msg);
-                // 可以在这里显示错误提示
+                // 在这里可以添加错误提示，例如：
+                alert(`保存失败: ${response.msg}`);
             }
         } catch (error) {
             console.error('保存用户配置时出错:', error);
-            // 可以在这里显示错误提示
+            alert('保存配置时发生错误，请稍后再试');
         }
     };
 
-    const handleSendCode = () => {
+    const handleSendCode = async () => {
         // 验证邮箱格式
         if (!email.trim()) {
             setErrors({ ...errors, email: '邮箱不能为空' });
@@ -230,20 +227,59 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             return;
         }
 
+        // 验证SMTP字段
+        if (!smtpAccount.trim()) {
+            setErrors({ ...errors, smtp_account: 'SMTP账号不能为空' });
+            return;
+        }
+        if (!smtpAddress.trim()) {
+            setErrors({ ...errors, smtp_address: 'SMTP服务器不能为空' });
+            return;
+        }
+        if (!smtpPort.trim()) {
+            setErrors({ ...errors, smtp_port: 'SMTP端口不能为空' });
+            return;
+        }
+        if (!smtpAuthCode.trim()) {
+            setErrors({ ...errors, smtp_auth_code: 'SMTP授权码不能为空' });
+            return;
+        }
+
         // 清除邮箱相关错误
         clearError('email');
+        clearError('smtp_account');
+        clearError('smtp_address');
+        clearError('smtp_port');
+        clearError('smtp_auth_code');
 
-        // 在实际应用中，这里会调用API发送验证码
-        console.log('发送验证码到邮箱:', email);
+        try {
+            // 调用API发送验证码
+            const response = await sendSmtpVerificationCode(
+                smtpAccount,
+                smtpAddress,
+                smtpPort,
+                email,
+                smtpAuthCode
+            );
 
-        // 设置已发送状态和倒计时
-        setCodeSent(true);
-        setCountdown(60);
+            if (response.code === 200) {
+                // 设置已发送状态和倒计时
+                setCodeSent(true);
+                setCountdown(60);
 
-        // 在localStorage中保存结束时间和邮箱
-        const endTime = new Date().getTime() + 60 * 1000; // 60秒后的时间戳
-        localStorage.setItem('verificationCodeEndTime', endTime.toString());
-        localStorage.setItem('verificationCodeEmail', email);
+                // 在localStorage中保存结束时间和邮箱
+                const endTime = new Date().getTime() + 60 * 1000; // 60秒后的时间戳
+                localStorage.setItem('verificationCodeEndTime', endTime.toString());
+                localStorage.setItem('verificationCodeEmail', email);
+            } else {
+                // 处理发送失败
+                console.error('验证码发送失败:', response.msg);
+                // 可以在这里显示错误提示
+            }
+        } catch (error) {
+            console.error('发送验证码时出错:', error);
+            // 可以在这里显示错误提示
+        }
     };
 
     // 打开图片选择器
