@@ -194,6 +194,22 @@ export interface ServerConfigResponse {
     data: ServerConfig;
 }
 
+// Logger configuration interface
+export interface LoggerConfig {
+    level: string;
+    dir_path: string;
+    max_size: number;
+    max_backups: number;
+    max_age: number;
+    compress: boolean;
+}
+
+export interface LoggerConfigResponse {
+    code: number;
+    msg: string;
+    data: LoggerConfig;
+}
+
 /**
  * 发送验证码
  * @param data 包含用户邮箱的请求数据
@@ -549,6 +565,54 @@ export const updateServerConfig = async (
     });
 };
 
+/**
+ * 获取日志配置信息
+ * @returns 日志配置数据
+ */
+export const getLoggerConfig = async (): Promise<LoggerConfigResponse> => {
+    return businessApiRequest<LoggerConfigResponse>({
+        method: 'GET',
+        url: '/admin/setting/logger/config'
+    });
+};
+
+/**
+ * 更新日志配置信息
+ * @param level 日志级别
+ * @param dirPath 日志目录路径
+ * @param maxAge 日志最大保存天数
+ * @param maxSize 单个日志文件最大尺寸(MB)
+ * @param maxBackups 最大备份文件数
+ * @param compress 是否压缩
+ * @returns 更新结果
+ */
+export const updateLoggerConfig = async (
+    level: string,
+    dirPath: string,
+    maxAge: number,
+    maxSize: number,
+    maxBackups: number,
+    compress: boolean
+): Promise<ApiResponse<null>> => {
+    const requestData: Record<string, string | number | boolean> = {
+        'logger.level': level.toUpperCase(),
+        'logger.path': dirPath,
+        'logger.max_age': maxAge,
+        'logger.max_size': maxSize,
+        'logger.max_backups': maxBackups,
+        'logger.compress': compress
+    };
+    
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/setting/logger/config',
+        data: requestData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -558,6 +622,8 @@ export default {
     sendSmtpVerificationCode,
     getServerConfig,
     updateServerConfig,
+    getLoggerConfig,
+    updateLoggerConfig,
     getAllBlogs,
     changeBlogState,
     setBlogTop,

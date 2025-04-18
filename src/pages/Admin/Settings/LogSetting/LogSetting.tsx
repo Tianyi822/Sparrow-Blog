@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiFile, FiCpu, FiAlertCircle, FiType, FiLayers, FiClock, FiArchive } from 'react-icons/fi';
 import './LogSetting.scss';
+import { getLoggerConfig, updateLoggerConfig } from '@/services/adminService';
 
 interface LogConfigProps {
     onSaveSuccess?: () => void;
 }
 
-const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
+const LogSetting: React.FC<LogConfigProps> = ({ onSaveSuccess }) => {
     // 表单状态
     const [formData, setFormData] = useState({
         logLevel: 'info',
@@ -20,10 +21,49 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
     // 错误状态
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+
+    // 获取日志配置
+    useEffect(() => {
+        const fetchLoggerConfig = async () => {
+            try {
+                setLoading(true);
+                setSubmitError(null);
+
+                const response = await getLoggerConfig();
+
+                if (response.code === 200 && response.data) {
+                    const { level, dir_path, max_age, max_size, max_backups, compress } = response.data;
+
+                    // 设置表单数据
+                    setFormData({
+                        logLevel: level.toLowerCase(),
+                        logFileDir: dir_path || '',
+                        logMaxDays: max_age.toString(),
+                        logMaxSize: max_size.toString(),
+                        logMaxFiles: max_backups.toString(),
+                        logCompression: compress
+                    });
+                } else {
+                    // 显示后端返回的错误信息
+                    setSubmitError(`获取日志配置失败: ${response.msg}`);
+                    console.error('获取日志配置失败:', response.msg);
+                }
+            } catch (error) {
+                console.error('获取日志配置失败:', error);
+                setSubmitError('获取日志配置时发生错误，请稍后再试');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLoggerConfig();
+    }, []);
 
     // 处理输入变化
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const {name, value, type} = e.target as HTMLInputElement;
+        const { name, value, type } = e.target as HTMLInputElement;
 
         if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
@@ -82,30 +122,71 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
     };
 
     // 处理表单提交
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // 清空所有错误
+        setErrors({});
+        setSubmitError(null);
+
         if (validateForm()) {
-            // 这里添加API调用逻辑
-            console.log('提交日志配置:', formData);
+            try {
+                // 准备数据
+                const level = formData.logLevel;
+                const dirPath = formData.logFileDir;
+                const maxAge = parseInt(formData.logMaxDays);
+                const maxSize = parseInt(formData.logMaxSize);
+                const maxBackups = parseInt(formData.logMaxFiles);
+                const compress = formData.logCompression;
+                
+                // 调用API更新日志配置
+                const response = await updateLoggerConfig(
+                    level,
+                    dirPath,
+                    maxAge,
+                    maxSize,
+                    maxBackups,
+                    compress
+                );
+                
+                if (response.code === 200) {
+                    // 显示保存成功提示
+                    setSaveSuccess(true);
+                    setTimeout(() => setSaveSuccess(false), 3000);
 
-            // 显示保存成功提示
-            setSaveSuccess(true);
-            setTimeout(() => setSaveSuccess(false), 3000);
-
-            // 触发父组件的保存成功回调
-            if (onSaveSuccess) {
-                onSaveSuccess();
+                    // 触发父组件的保存成功回调
+                    if (onSaveSuccess) {
+                        onSaveSuccess();
+                    }
+                } else {
+                    // 显示后端返回的错误信息
+                    setSubmitError(`${response.msg}`);
+                    console.error('保存失败:', response.msg);
+                }
+            } catch (error) {
+                console.error('保存日志配置时出错:', error);
+                setSubmitError('保存配置时发生错误，请稍后再试');
             }
         }
     };
+
+    if (loading) {
+        return (
+            <div className="log-setting-card">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>加载日志配置中...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="log-setting-card">
             <div className="log-img-section">
                 <div className="log-info-overlay">
                     <div className="log-title">
-                        <FiCpu className="log-icon"/>
+                        <FiCpu className="log-icon" />
                         <h2>日志设置</h2>
                     </div>
                     <div className="log-description">
@@ -118,7 +199,7 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
             <div className="log-setting-form-wrapper">
                 {saveSuccess && (
                     <div className="save-notification">
-                        <FiAlertCircle/>
+                        <FiAlertCircle />
                         设置已保存成功！
                     </div>
                 )}
@@ -126,7 +207,7 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
                 <form className="log-setting-form" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>
-                            <FiType className="input-icon"/>
+                            <FiType className="input-icon" />
                             日志级别
                         </label>
                         <select
@@ -135,17 +216,17 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
                             onChange={handleInputChange}
                             className={errors.logLevel ? 'has-error' : ''}
                         >
-                            <option value="debug">Debug</option>
-                            <option value="info">Info</option>
-                            <option value="warn">Warn</option>
-                            <option value="error">Error</option>
+                            <option value="debug">DEBUG</option>
+                            <option value="info">INFO</option>
+                            <option value="warn">WARN</option>
+                            <option value="error">ERROR</option>
                         </select>
                         {errors.logLevel && <div className="error-message">{errors.logLevel}</div>}
                     </div>
 
                     <div className="form-group">
                         <label>
-                            <FiFile className="input-icon"/>
+                            <FiFile className="input-icon" />
                             日志目录
                         </label>
                         <input
@@ -162,7 +243,7 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group">
                         <label>
-                            <FiClock className="input-icon"/>
+                            <FiClock className="input-icon" />
                             最大保存时间(天)
                         </label>
                         <input
@@ -178,7 +259,7 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group">
                         <label>
-                            <FiLayers className="input-icon"/>
+                            <FiLayers className="input-icon" />
                             单文件最大容量(MB)
                         </label>
                         <input
@@ -194,7 +275,7 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
 
                     <div className="form-group">
                         <label>
-                            <FiLayers className="input-icon"/>
+                            <FiLayers className="input-icon" />
                             最大备份数量
                         </label>
                         <input
@@ -217,15 +298,22 @@ const LogSetting: React.FC<LogConfigProps> = ({onSaveSuccess}) => {
                                 onChange={handleInputChange}
                             />
                             <span className="checkbox-text">
-                <FiArchive className="input-icon"/>
-                启用日志压缩
-              </span>
+                                <FiArchive className="input-icon" />
+                                启用日志压缩
+                            </span>
                         </label>
                     </div>
 
                     <button type="submit" className="submit-button">
                         保存配置
                     </button>
+
+                    {submitError && (
+                        <div className="submit-error">
+                            <FiAlertCircle className="error-icon" />
+                            {submitError}
+                        </div>
+                    )}
                 </form>
             </div>
         </div>
