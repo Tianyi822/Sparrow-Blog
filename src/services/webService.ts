@@ -8,7 +8,17 @@ interface UserBasicInfo {
     // 其他用户基本信息字段
 }
 
+// 博客用户信息接口
+export interface BlogUserInfo {
+    avatar_image: string;
+    background_image: string;
+    user_email: string;
+    user_name: string;
+    web_logo: string;
+}
+
 type UserBasicInfoResponse = ApiResponse<UserBasicInfo>;
+type BlogUserInfoResponse = ApiResponse<BlogUserInfo>;
 
 /**
  * 获取用户基本信息以检查系统状态
@@ -19,7 +29,7 @@ export const checkSystemStatus = async (): Promise<{isRuntime: boolean, errorMes
     try {
         const response = await businessApiRequest<UserBasicInfoResponse>({
             method: 'GET',
-            url: '/config/user-basic-info'
+            url: '/web/user-basic-info'
         });
         
         return {
@@ -34,6 +44,38 @@ export const checkSystemStatus = async (): Promise<{isRuntime: boolean, errorMes
     }
 };
 
+/**
+ * 获取博客用户信息，包括用户名、头像、Logo和背景图片
+ */
+export const getBlogUserInfo = async (): Promise<BlogUserInfo | null> => {
+    try {
+        const response = await businessApiRequest<BlogUserInfoResponse>({
+            method: 'GET',
+            url: '/web/user-basic-info'
+        });
+        
+        if (response.code === 200 && response.data) {
+            return response.data;
+        }
+        return null;
+    } catch (error) {
+        console.error('获取博客用户信息失败:', error);
+        return null;
+    }
+};
+
+/**
+ * 获取图片完整URL
+ * @param imageId 图片ID
+ * @returns 完整的图片URL
+ */
+export const getImageUrl = (imageId: string): string => {
+    if (!imageId) return '';
+    return `${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${imageId}`;
+};
+
 export default {
-    checkSystemStatus
+    checkSystemStatus,
+    getBlogUserInfo,
+    getImageUrl
 };
