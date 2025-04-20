@@ -13,10 +13,11 @@ interface NavigatorProps {
     index: number;
     setIndex?: (index: number) => void;
     className?: string;
+    userName?: string;
 }
 
 const Navigator: React.FC<NavigatorProps> = (props) => {
-    const {index, setIndex, className} = props
+    const {index, setIndex, className, userName} = props
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrollDirection, setScrollDirection] = useState('none');
     const [isAtTop, setIsAtTop] = useState(true);
@@ -132,7 +133,7 @@ const handleClick = useCallback((idx: number, item: NavItem) => {
 
     return (
         <nav className={navClasses}>
-            <div className="nav-brand">Tianyi&#39;s Blog</div>
+            <div className="nav-brand">{userName}&#39;s Blog</div>
 
             <ul className={`nav-list ${isMenuOpen ? 'open' : ''}`}>
                 {navItems.map((item, idx) => (
