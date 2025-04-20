@@ -4,7 +4,7 @@ import './UserSetting.scss';
 import ImageSelectorModal from '@/components/ImageSelectorModal';
 import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
 import { GalleryImage, UserConfig } from '@/services/adminService';
-import { getUserConfig, updateUserConfig, sendSmtpVerificationCode } from '@/services/adminService';
+import { getUserConfig, updateUserConfig, sendSmtpVerificationCode, updateUserImages } from '@/services/adminService';
 
 interface UserConfigProps {
     onSaveSuccess?: () => void;
@@ -22,6 +22,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     const [countdown, setCountdown] = useState(0);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [saveImageError, setSaveImageError] = useState<string | null>(null);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [selectedImageType, setSelectedImageType] = useState<ImageUsageType>('avatar');
     const [loading, setLoading] = useState<boolean>(true);
@@ -171,17 +172,14 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
         }
 
         try {
-            // 准备要更新的用户配置数据
+            // 准备要更新的用户配置数据，但不包含图片ID
             const userData: Partial<UserConfig> = {
                 user_name: username,
                 user_email: email,
                 smtp_account: smtpAccount,
                 smtp_address: smtpAddress,
                 smtp_port: smtpPort,
-                smtp_auth_code: smtpAuthCode,
-                avatar_image: avatarImageId,
-                web_logo: logoImageId,
-                background_image: backgroundImageId
+                smtp_auth_code: smtpAuthCode
             };
 
             // 调用API更新用户配置，如果验证码已发送则将其作为第二个参数传递
@@ -313,6 +311,34 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
         closeImageSelector();
     };
 
+    // 处理所有图片一起保存
+    const handleSaveImages = async () => {
+        // 清除之前的错误信息
+        setSaveImageError(null);
+
+        try {
+            // 调用API更新图片配置
+            const response = await updateUserImages(
+                avatarImageId,
+                logoImageId,
+                backgroundImageId
+            );
+            
+            if (response.code === 200) {
+                // 显示保存成功提示
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 3000);
+            } else {
+                // 显示错误信息
+                console.error('保存图片失败:', response.msg);
+                setSaveImageError(response.msg || '保存图片失败');
+            }
+        } catch (error) {
+            console.error('保存图片时出错:', error);
+            setSaveImageError('保存图片时发生错误，请稍后再试');
+        }
+    };
+
     return (
         <div className="user-setting-card">
             {loading ? (
@@ -404,12 +430,21 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                     </div>
                                 </div>
                             </div>
+                            <div className="bg-upload-container">
+                                <button
+                                    className="bg-upload-button"
+                                    onClick={() => openImageSelector('background')}
+                                >
+                                    <FiUpload className="upload-icon" />
+                                    上传背景图片
+                                </button>
+                            </div>
                             <button
-                                className="bg-upload-button"
-                                onClick={() => openImageSelector('background')}
+                                className="save-images-button"
+                                onClick={handleSaveImages}
                             >
-                                <FiUpload className="upload-icon" />
-                                上传背景图片
+                                <FiSave className="save-icon" />
+                                保存图片
                             </button>
                         </div>
                     </div>
@@ -479,18 +514,33 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                     </div>
                                 </div>
                             </div>
+                            <div className="bg-upload-container">
+                                <button
+                                    className="bg-upload-button"
+                                    onClick={() => openImageSelector('background')}
+                                >
+                                    <FiUpload className="upload-icon" />
+                                    上传背景图片
+                                </button>
+                            </div>
                             <button
-                                className="bg-upload-button"
-                                onClick={() => openImageSelector('background')}
+                                className="save-images-button"
+                                onClick={handleSaveImages}
                             >
-                                <FiUpload className="upload-icon" />
-                                上传背景图片
+                                <FiSave className="save-icon" />
+                                保存图片
                             </button>
                         </div>
 
                         {saveSuccess && (
                             <div className="save-notification">
                                 <FiAlertCircle /> 用户设置已保存成功！
+                            </div>
+                        )}
+
+                        {saveImageError && (
+                            <div className="error-notification">
+                                <FiAlertCircle /> {saveImageError}
                             </div>
                         )}
 
