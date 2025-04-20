@@ -518,10 +518,7 @@ export const updateUserConfig = async (
     if (userData.smtp_address) requestData['user.smtp_address'] = userData.smtp_address;
     if (userData.smtp_port) requestData['user.smtp_port'] = userData.smtp_port;
     if (userData.smtp_auth_code) requestData['user.smtp_auth_code'] = userData.smtp_auth_code;
-    if (userData.avatar_image) requestData['user.avatar_image'] = userData.avatar_image;
-    if (userData.web_logo) requestData['user.web_logo'] = userData.web_logo;
-    if (userData.background_image) requestData['user.background_image'] = userData.background_image;
-
+    
     // 添加验证码
     if (verifiedCode || userData.verified_code) {
         requestData['user.verified_code'] = verifiedCode || userData.verified_code || '';
@@ -805,6 +802,37 @@ export const updateCacheConfig = async (
     });
 };
 
+/**
+ * 更新用户图片配置信息
+ * @param avatarImage 头像图片ID
+ * @param webLogo 网站Logo图片ID
+ * @param backgroundImage 背景图片ID
+ * @returns 更新结果
+ */
+export const updateUserImages = async (
+    avatarImage?: string,
+    webLogo?: string,
+    backgroundImage?: string
+): Promise<ApiResponse<null>> => {
+    // 构建使用点表示法的请求数据对象
+    const requestData: Record<string, string> = {};
+
+    // 添加图片数据，使用点表示法
+    if (avatarImage) requestData['user.avatar_image'] = avatarImage;
+    if (webLogo) requestData['user.web_logo'] = webLogo;
+    if (backgroundImage) requestData['user.background_image'] = backgroundImage;
+
+    // 使用完整路径并允许重定向
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/setting/user/visual',
+        data: requestData,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -834,5 +862,6 @@ export default {
     deleteGalleryImage,
     getPreSignUrl,
     addGalleryImages,
-    checkImageNameExistence
+    checkImageNameExistence,
+    updateUserImages
 }; 
