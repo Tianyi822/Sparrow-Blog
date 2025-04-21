@@ -124,7 +124,12 @@ const Home: React.FC = () => {
                         onPageChange={handlePageChange}
                     />
                 </div>
-                <WebContent className="home-web-content" />
+                <WebContent 
+                    className="home-web-content" 
+                    authorName={userInfo?.user_name}
+                    authorAvatar={avatarImageUrl}
+                    authorEmail={userInfo?.user_email}
+                />
             </section>
         </div>
     );

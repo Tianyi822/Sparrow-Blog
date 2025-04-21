@@ -8,12 +8,27 @@ import Tags from './Tags/Tags';
 
 interface WebContentProps {
     className?: string;
+    authorName?: string;
+    authorAvatar?: string;
+    authorEmail?: string;
 }
 
-const WebContent: React.FC<WebContentProps> = ({className}) => {
+const WebContent: React.FC<WebContentProps> = ({
+    className,
+    authorName,
+    authorAvatar,
+    authorEmail
+}) => {
     return (
         <div className={`web-content ${className || ''}`}>
-            <AuthorInfo />
+            <AuthorInfo 
+                name={authorName}
+                avatar={authorAvatar}
+                social={authorEmail ? { 
+                    github: 'https://github.com',
+                    email: `mailto:${authorEmail}`
+                } : undefined}
+            />
             <Announcement />
             <LatestArticles className="web-content-latest-articles"/>
             <LatestComments className="web-content-latest-comments"/>
