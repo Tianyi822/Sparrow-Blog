@@ -4,7 +4,7 @@ import Introduction from "@/components/Home/Introduction";
 import Pagination from '@/components/Home/Pagination';
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import WebContent from '@/components/WebContent/WebContent';
-import { useBlogLayoutContext } from '@/layouts/BlogLayout';
+import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { useCallback, useState } from "react";
 import "./Home.scss";
 

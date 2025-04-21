@@ -28,7 +28,8 @@ const Clock: React.FC<ClockProps> = ({className, profileImage, backgroundImage})
 
     // 获取格式化的时间数组
     function getTimeDigitsGrouped(): [number | string, string, string, string] {
-        let {h, m, s} = time;
+        let {h} = time;
+        const {m, s} = time;
         const ap = h > 11 ? "P" : "A";
         if (h === 0) h += 12;
         else if (h > 12) h -= 12;
