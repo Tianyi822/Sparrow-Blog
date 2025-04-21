@@ -89,7 +89,10 @@ const Home: React.FC = () => {
         <div className="home">
             <section className="landing-page">
                 <div className="landing-content">
-                    <Introduction className="home-introduction" />
+                    <Introduction
+                        className="home-introduction"
+                        userName={userInfo?.user_name}
+                    />
                     <Clock
                         className="home-clock"
                         profileImage={avatarImageUrl}

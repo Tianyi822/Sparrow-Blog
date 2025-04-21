@@ -5,12 +5,11 @@ import TypeWriter from '../TypeWriter/TypeWriter';
 
 interface IntroductionProps {
     className?: string;
+    userName?: string;
 }
 
-const Introduction: React.FC<IntroductionProps> = ({ className }) => {
+const Introduction: React.FC<IntroductionProps> = ({ className, userName = "TianYi" }) => {
     const introductionClassName = classNames("introduction", className);
-
-    const [name] = useState<string>("TianYi");
 
     const [typewriterTexts] = useState<string[]>([
         "昨日种种，皆成今我，切勿思量，更莫哀，从今往后，怎么收获怎么载",
@@ -24,7 +23,7 @@ const Introduction: React.FC<IntroductionProps> = ({ className }) => {
         <div className={introductionClassName}>
             <div className="greeting">
                 <span className="hello">(＾Ｕ＾)ノ~ 你好，我是</span>
-                <span className="name">{name}</span>
+                <span className="name">{userName}</span>
             </div>
             <div className="identity">一名二次元 + 程序员</div>
             <div className="tech-stack">
