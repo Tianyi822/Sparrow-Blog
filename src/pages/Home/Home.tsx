@@ -4,6 +4,7 @@ import Introduction from "@/components/Home/Introduction";
 import Pagination from '@/components/Home/Pagination';
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import WebContent from '@/components/WebContent/WebContent';
+import { useBlogLayoutContext } from '@/layouts/BlogLayout';
 import { useCallback, useState } from "react";
 import "./Home.scss";
 
@@ -60,6 +61,12 @@ const Home: React.FC = () => {
     const [blogData] = useState(INITIAL_BLOG_DATA);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages] = useState(20);
+    const { userInfo, getImageUrl } = useBlogLayoutContext();
+
+    // 获取用户头像URL
+    const avatarImageUrl = userInfo?.avatar_image
+        ? getImageUrl(userInfo.avatar_image)
+        : '';
 
     // 使用 useCallback 优化点击处理函数
     const handleScrollDown = useCallback(() => {
@@ -85,8 +92,8 @@ const Home: React.FC = () => {
                     <Introduction className="home-introduction" />
                     <Clock
                         className="home-clock"
-                        profileImage="https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
-                        backgroundImage="https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg"
+                        profileImage={avatarImageUrl}
+                        backgroundImage={avatarImageUrl}
                     />
                 </div>
                 <SvgIcon

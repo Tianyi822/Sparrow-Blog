@@ -65,7 +65,7 @@ const Clock: React.FC<ClockProps> = ({className, profileImage, backgroundImage})
     return (
         <div className={`clock ${className || ''}`} ref={clockRef}>
             <div
-                className="layer layer--img"
+                className={`layer layer--img ${!backgroundImage ? 'layer--img-fallback' : ''}`}
                 style={{
                     background: backgroundImage ? `url(${backgroundImage}) 0 0 / 100% 100%` : 'none'
                 }}
@@ -84,9 +84,15 @@ const Clock: React.FC<ClockProps> = ({className, profileImage, backgroundImage})
                 <div className="hand hand--sec"/>
                 <div className="ring"/>
             </div>
-            <div className="layer layer--profile">
-                <img src={profileImage} alt="" className="profile"/>
-            </div>
+            {profileImage ? (
+                <div className="layer layer--profile">
+                    <img src={profileImage} alt="Profile" className="profile"/>
+                </div>
+            ) : (
+                <div className="layer layer--profile">
+                    <div className="profile profile--empty"></div>
+                </div>
+            )}
         </div>
     );
 };

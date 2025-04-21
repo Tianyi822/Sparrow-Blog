@@ -28,6 +28,15 @@
   left: 2em;
   bottom: 2em;
   z-index: 2;
+  
+  &--empty {
+    background: linear-gradient(45deg, #3498db, #8e44ad);
+    display: block;
+    position: absolute;
+    left: 2em;
+    bottom: 2em;
+    z-index: 2;
+  }
 }
 
 /* 鼠标悬停时钟样式 */
@@ -134,6 +143,10 @@
 
 .layer--img {
   transform: translateZ(-3.75em);
+  
+  &-fallback {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  }
 }
 
 .layer--profile {
@@ -160,6 +173,13 @@
             height: 2.5em;
             left: 1.75em;
             bottom: 1.75em;
+            
+            &--empty {
+                width: 2.5em;
+                height: 2.5em;
+                left: 1.75em;
+                bottom: 1.75em;
+            }
         }
 
         .hand {
@@ -217,6 +237,13 @@
       height: 2em;
       left: 1.5em;
       bottom: 1.5em;
+      
+      &--empty {
+        width: 2em;
+        height: 2em;
+        left: 1.5em;
+        bottom: 1.5em;
+      }
     }
 
     .hand {
