@@ -1,4 +1,5 @@
 import { useCallback, useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./Navigator.scss"
 import SvgIcon, {
     Normal,
@@ -18,6 +19,7 @@ interface NavigatorProps {
 
 const Navigator: React.FC<NavigatorProps> = (props) => {
     const {index, setIndex, className, userName} = props
+    const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrollDirection, setScrollDirection] = useState('none');
     const [isAtTop, setIsAtTop] = useState(true);
@@ -108,8 +110,12 @@ const handleClick = useCallback((idx: number, item: NavItem) => {
             item.onClick();
             return;
         }
+        // 导航到指定的路径
+        if (item.path) {
+            navigate(item.path);
+        }
         setIsMenuOpen(false);  // 选中选项后关闭菜单
-    }, [setIndex]);
+    }, [setIndex, navigate]);
 
     const toggleMenu = useCallback(() => {
         console.log('Menu button clicked, toggling menu. Current state:', isMenuOpen);
