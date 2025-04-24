@@ -6,9 +6,9 @@ import {
     VerificationCodeData
 } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { KeyboardEvent, useEffect, useState } from 'react';
 import './UserConfigForm.scss';
-import { FiHash, FiKey, FiLock, FiMail, FiServer, FiUser } from 'react-icons/fi';
+import { FiHeart, FiLock, FiMail, FiType, FiUser, FiX } from 'react-icons/fi';
 
 interface ValidationErrors {
     [key: string]: string;
@@ -24,10 +24,9 @@ export interface UserEmailConfigFormProps {
 export interface UserEmailConfigFormData {
     username: string;
     email: string;
-    smtpUsername: string;
-    smtpServer: string;
-    smtpPort: string;
-    smtpPassword: string;
+    githubAddress?: string;
+    hobbies?: string[];
+    typeWriterContent?: string[];
 }
 
 // 字段映射配置
@@ -59,62 +58,34 @@ const FIELD_CONFIG = {
             return '';
         }
     },
-    smtpUsername: {
-        label: 'SMTP 邮箱账号',
-        icon: <FiMail/>,
-        name: 'smtpUsername',
-        type: 'email',
-        validate: (value: string) => {
-            if (!value.trim()) {
-                return 'SMTP 邮箱账号不能为空';
-            }
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                return '请输入有效的邮箱地址';
-            }
-            return '';
-        }
-    },
-    smtpServer: {
-        label: 'SMTP 服务器地址',
-        icon: <FiServer/>,
-        name: 'smtpServer',
+    githubAddress: {
+        label: 'GitHub 地址',
+        icon: <FiUser/>,
+        name: 'githubAddress',
         type: 'text',
-        placeholder: '例如: smtp.gmail.com',
+        placeholder: 'https://github.com/username',
         validate: (value: string) => {
-            if (!value.trim()) {
-                return 'SMTP 服务器地址不能为空';
+            if (value && !value.trim().startsWith('https://github.com/')) {
+                return 'GitHub 地址必须以 https://github.com/ 开头';
             }
             return '';
         }
     },
-    smtpPort: {
-        label: 'SMTP 端口',
-        icon: <FiHash/>,
-        name: 'smtpPort',
+    hobby: {
+        label: '爱好',
+        icon: <FiHeart/>,
+        name: 'hobby',
         type: 'text',
-        placeholder: '465',
-        validate: (value: string) => {
-            const port = parseInt(value);
-            if (isNaN(port) || !Number.isInteger(port)) {
-                return 'SMTP 端口必须为整数';
-            }
-            if (port < 0 || port > 65535) {
-                return 'SMTP 端口必须在0~65535之间';
-            }
-            return '';
-        }
+        placeholder: '输入爱好后按回车添加',
+        validate: () => '' // 爱好是可选的，不需要验证
     },
-    smtpPassword: {
-        label: 'SMTP 密码',
-        icon: <FiKey/>,
-        name: 'smtpPassword',
-        type: 'password',
-        validate: (value: string) => {
-            if (!value.trim()) {
-                return 'SMTP 密码不能为空';
-            }
-            return '';
-        }
+    typeWriterContent: {
+        label: '打字机内容',
+        icon: <FiType/>,
+        name: 'typeWriterContent',
+        type: 'text',
+        placeholder: '输入打字机内容后按回车添加',
+        validate: () => '' // 打字机内容是可选的，不需要验证
     },
     verifyCode: {
         label: '验证码',
@@ -136,16 +107,12 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
     const [formData, setFormData] = useState<UserEmailConfigFormData & { verifyCode?: string }>({
         username: initialData?.username || '',
         email: initialData?.email || '',
-        smtpUsername: initialData?.smtpUsername || '',
-        smtpServer: initialData?.smtpServer || '',
-        smtpPort: initialData?.smtpPort || '465',
-        smtpPassword: initialData?.smtpPassword || '',
-        verifyCode: ''
+        verifyCode: '',
+        githubAddress: initialData?.githubAddress || '',
+        hobbies: initialData?.hobbies || [],
+        typeWriterContent: initialData?.typeWriterContent || []
     });
     const [errors, setErrors] = useState<ValidationErrors>({});
-    const [syncWithEmail, setSyncWithEmail] = useState<boolean>(
-        !initialData?.smtpUsername || initialData.smtpUsername === initialData.email
-    );
     const [submitError, setSubmitError] = useState<string>('');
     const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -155,6 +122,10 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
     // 验证码相关状态
     const [countdown, setCountdown] = useState<number>(0);
     const [disableSendCode, setDisableSendCode] = useState<boolean>(false);
+
+    // 临时输入值状态
+    const [tempHobby, setTempHobby] = useState<string>('');
+    const [tempTypeWriterContent, setTempTypeWriterContent] = useState<string>('');
 
     // 初始化检查倒计时状态
     useEffect(() => {
@@ -184,14 +155,10 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                 ...prevData,
                 username: initialData.username || prevData.username,
                 email: initialData.email || prevData.email,
-                smtpUsername: initialData.smtpUsername || prevData.smtpUsername,
-                smtpServer: initialData.smtpServer || prevData.smtpServer,
-                smtpPort: initialData.smtpPort || prevData.smtpPort,
-                smtpPassword: initialData.smtpPassword || prevData.smtpPassword
+                githubAddress: initialData.githubAddress || prevData.githubAddress,
+                hobbies: initialData.hobbies || prevData.hobbies,
+                typeWriterContent: initialData.typeWriterContent || prevData.typeWriterContent
             }));
-
-            // 更新是否同步邮箱用户名的状态
-            setSyncWithEmail(!initialData.smtpUsername || initialData.smtpUsername === initialData.email);
         }
     }, [initialData]);
 
@@ -236,11 +203,6 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
 
         // 验证所有必填字段
         Object.keys(FIELD_CONFIG).forEach(field => {
-            // 如果启用了同步，跳过smtpUsername验证
-            if (field === 'smtpUsername' && syncWithEmail) {
-                return;
-            }
-
             const value = formData[field as keyof typeof formData] as string || '';
             const error = validateField(field, value);
 
@@ -269,16 +231,22 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
             return;
         }
 
+        // 处理特殊字段
+        if (name === 'hobby') {
+            setTempHobby(value);
+            return;
+        }
+
+        if (name === 'typeWriterContent') {
+            setTempTypeWriterContent(value);
+            return;
+        }
+
         setFormData(prev => {
             const updated = {
                 ...prev,
                 [name]: value
             };
-
-            // 如果email字段更新且启用了同步，更新SMTP用户名
-            if (name === 'email' && syncWithEmail) {
-                updated.smtpUsername = value;
-            }
 
             return updated;
         });
@@ -297,60 +265,68 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
         if (submitError) setSubmitError('');
     };
 
-    // 处理同步选项变更
-    const handleSyncToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setSyncWithEmail(isChecked);
+    // 处理列表项的键盘事件
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, type: 'hobby' | 'typeWriterContent') => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
 
-        if (isChecked) {
-            // 更新SMTP用户名为邮箱地址
-            setFormData(prev => ({
-                ...prev,
-                smtpUsername: prev.email
-            }));
+            const value = type === 'hobby' ? tempHobby.trim() : tempTypeWriterContent.trim();
 
-            // 清除SMTP用户名的错误
-            setErrors(prev => {
-                const newErrors = {...prev};
-                delete newErrors.smtpUsername;
-                return newErrors;
-            });
+            if (!value) return;
+
+            if (type === 'hobby') {
+                setFormData(prev => ({
+                    ...prev,
+                    hobbies: [...(prev.hobbies || []), value]
+                }));
+                setTempHobby('');
+            } else {
+                setFormData(prev => ({
+                    ...prev,
+                    typeWriterContent: [...(prev.typeWriterContent || []), value]
+                }));
+                setTempTypeWriterContent('');
+            }
         }
     };
 
-    // 格式化错误数据显示
-    const formatErrorData = (data: Record<string, unknown> | null): string => {
-        if (!data) return '';
-
-        try {
-            return JSON.stringify(data, null, 2);
-        } catch {
-            return String(data);
+    // 删除列表项
+    const handleRemoveItem = (index: number, type: 'hobby' | 'typeWriterContent') => {
+        if (type === 'hobby') {
+            setFormData(prev => ({
+                ...prev,
+                hobbies: prev.hobbies?.filter((_, i) => i !== index) || []
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                typeWriterContent: prev.typeWriterContent?.filter((_, i) => i !== index) || []
+            }));
         }
     };
 
     // 处理发送验证码
     const handleSendVerifyCode = async () => {
-        // 首先验证必填字段
-        if (!formData.email || !formData.smtpServer || !formData.smtpPort || !formData.smtpPassword) {
-            setSubmitError('发送验证码前，请完成邮箱和SMTP服务器设置');
+        // 先验证email字段
+        const emailError = validateField('email', formData.email);
+        if (emailError) {
+            setErrors(prev => ({
+                ...prev,
+                email: emailError
+            }));
             return;
         }
 
         try {
             setDisableSendCode(true);
 
-            // 准备请求数据，按照后端要求的格式
-            const verificationData: VerificationCodeData = {
-                "user.user_email": formData.email,
-                "user.smtp_account": syncWithEmail ? formData.email : formData.smtpUsername,
-                "user.smtp_address": formData.smtpServer,
-                "user.smtp_port": formData.smtpPort,
-                "user.smtp_auth_code": formData.smtpPassword
+            // 准备发送验证码的数据
+            const verifyData: VerificationCodeData = {
+                'user.user_email': formData.email
             };
 
-            // 使用configService发送验证码
-            const response = await sendInitiatedVerificationCode(verificationData);
+            // 发送验证码请求
+            const response = await sendInitiatedVerificationCode(verifyData);
 
             // 检查响应状态
             if (response && response.code === 200) {
@@ -417,14 +393,6 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
         setSubmitError('');
         setErrorData(null);
 
-        // 确保同步状态正确
-        if (syncWithEmail) {
-            setFormData(prev => ({
-                ...prev,
-                smtpUsername: prev.email
-            }));
-        }
-
         // 验证表单
         if (!validateForm()) {
             return;
@@ -446,10 +414,9 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
             const userData: UserConfigData = {
                 'user.username': formData.username,
                 'user.user_email': formData.email,
-                'user.smtp_account': syncWithEmail ? formData.email : formData.smtpUsername,
-                'user.smtp_address': formData.smtpServer,
-                'user.smtp_port': formData.smtpPort,
-                'user.smtp_auth_code': formData.smtpPassword,
+                'user.user_github_address': formData.githubAddress || '',
+                'user.user_hobbies': formData.hobbies || [],
+                'user.type_writer_content': formData.typeWriterContent || [],
                 'user.verification_code': formData.verifyCode
             };
 
@@ -474,10 +441,9 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                 onSubmit({
                     username: formData.username,
                     email: formData.email,
-                    smtpUsername: syncWithEmail ? formData.email : formData.smtpUsername,
-                    smtpServer: formData.smtpServer,
-                    smtpPort: formData.smtpPort,
-                    smtpPassword: formData.smtpPassword
+                    githubAddress: formData.githubAddress,
+                    hobbies: formData.hobbies,
+                    typeWriterContent: formData.typeWriterContent
                 });
             }
         } catch (error: unknown) {
@@ -529,6 +495,17 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
         }
     };
 
+    // 格式化错误数据显示
+    const formatErrorData = (data: Record<string, unknown> | null): string => {
+        if (!data) return '';
+
+        try {
+            return JSON.stringify(data, null, 2);
+        } catch {
+            return String(data);
+        }
+    };
+
     return (
         <div className="user-email-config-form-container">
             <h2>用户与邮箱配置</h2>
@@ -573,101 +550,105 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                     {errors.email && <div className="error-message">{errors.email}</div>}
                 </div>
 
+                {/* GitHub地址 */}
+                <div className="form-group">
+                    <label htmlFor="githubAddress">
+                        <span className="icon">{FIELD_CONFIG.githubAddress.icon}</span>
+                        {FIELD_CONFIG.githubAddress.label}
+                    </label>
+                    <input
+                        type={FIELD_CONFIG.githubAddress.type}
+                        id="githubAddress"
+                        name="githubAddress"
+                        placeholder={FIELD_CONFIG.githubAddress.placeholder}
+                        value={formData.githubAddress || ''}
+                        onChange={handleChange}
+                    />
+                    {errors.githubAddress && <div className="error-message">{errors.githubAddress}</div>}
+                </div>
+
+                {/* 爱好配置 */}
+                <div className="form-group">
+                    <label htmlFor="hobby">
+                        <span className="icon">{FIELD_CONFIG.hobby.icon}</span>
+                        {FIELD_CONFIG.hobby.label}
+                    </label>
+                    <input
+                        type={FIELD_CONFIG.hobby.type}
+                        id="hobby"
+                        name="hobby"
+                        placeholder={FIELD_CONFIG.hobby.placeholder}
+                        value={tempHobby}
+                        onChange={handleChange}
+                        onKeyDown={(e) => handleKeyDown(e, 'hobby')}
+                    />
+                    {formData.hobbies && formData.hobbies.length > 0 && (
+                        <div className="tag-list">
+                            {formData.hobbies.map((hobby, index) => (
+                                <div className="tag-item" key={index}>
+                                    <span>{hobby}</span>
+                                    <button
+                                        type="button"
+                                        className="delete-tag"
+                                        onClick={() => handleRemoveItem(index, 'hobby')}
+                                    >
+                                        <FiX/>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* 打字机内容配置 */}
+                <div className="form-group">
+                    <label htmlFor="typeWriterContent">
+                        <span className="icon">{FIELD_CONFIG.typeWriterContent.icon}</span>
+                        {FIELD_CONFIG.typeWriterContent.label}
+                    </label>
+                    <input
+                        type={FIELD_CONFIG.typeWriterContent.type}
+                        id="typeWriterContent"
+                        name="typeWriterContent"
+                        placeholder={FIELD_CONFIG.typeWriterContent.placeholder}
+                        value={tempTypeWriterContent}
+                        onChange={handleChange}
+                        onKeyDown={(e) => handleKeyDown(e, 'typeWriterContent')}
+                    />
+                    {formData.typeWriterContent && formData.typeWriterContent.length > 0 && (
+                        <div className="tag-list">
+                            {formData.typeWriterContent.map((content, index) => (
+                                <div className="tag-item" key={index}>
+                                    <span>{content}</span>
+                                    <button
+                                        type="button"
+                                        className="delete-tag"
+                                        onClick={() => handleRemoveItem(index, 'typeWriterContent')}
+                                    >
+                                        <FiX/>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
                 <div className="form-section-header">
                     <h3>
-                        <span className="icon"><FiServer/></span>
-                        SMTP 服务设置
+                        <span className="icon"><FiLock/></span>
+                        邮箱验证
                     </h3>
                 </div>
 
-                {/* 使用用户邮箱作为SMTP账号选项 */}
-                <div className="form-group checkbox-group">
-                    <input
-                        type="checkbox"
-                        id="syncWithEmail"
-                        checked={syncWithEmail}
-                        onChange={handleSyncToggle}
-                    />
-                    <label htmlFor="syncWithEmail">使用用户邮箱作为 SMTP 账号</label>
-                </div>
-
-                {/* SMTP账号 */}
-                {!syncWithEmail && (
-                    <div className="form-group">
-                        <label htmlFor="smtpUsername">
-                            <span className="icon">{FIELD_CONFIG.smtpUsername.icon}</span>
-                            {FIELD_CONFIG.smtpUsername.label}
-                        </label>
-                        <input
-                            type={FIELD_CONFIG.smtpUsername.type}
-                            id="smtpUsername"
-                            name="smtpUsername"
-                            value={formData.smtpUsername}
-                            onChange={handleChange}
-                        />
-                        {errors.smtpUsername && <div className="error-message">{errors.smtpUsername}</div>}
-                    </div>
-                )}
-
-                {/* SMTP服务器 */}
-                <div className="form-group">
-                    <label htmlFor="smtpServer">
-                        <span className="icon">{FIELD_CONFIG.smtpServer.icon}</span>
-                        {FIELD_CONFIG.smtpServer.label}
-                    </label>
-                    <input
-                        type={FIELD_CONFIG.smtpServer.type}
-                        id="smtpServer"
-                        name="smtpServer"
-                        value={formData.smtpServer}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.smtpServer.placeholder}
-                    />
-                    {errors.smtpServer && <div className="error-message">{errors.smtpServer}</div>}
-                </div>
-
-                {/* SMTP端口 */}
-                <div className="form-group">
-                    <label htmlFor="smtpPort">
-                        <span className="icon">{FIELD_CONFIG.smtpPort.icon}</span>
-                        {FIELD_CONFIG.smtpPort.label}
-                    </label>
-                    <input
-                        type={FIELD_CONFIG.smtpPort.type}
-                        id="smtpPort"
-                        name="smtpPort"
-                        value={formData.smtpPort}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.smtpPort.placeholder}
-                    />
-                    {errors.smtpPort && <div className="error-message">{errors.smtpPort}</div>}
-                </div>
-
-                {/* SMTP密码 */}
-                <div className="form-group">
-                    <label htmlFor="smtpPassword">
-                        <span className="icon">{FIELD_CONFIG.smtpPassword.icon}</span>
-                        {FIELD_CONFIG.smtpPassword.label}
-                    </label>
-                    <input
-                        type={FIELD_CONFIG.smtpPassword.type}
-                        id="smtpPassword"
-                        name="smtpPassword"
-                        value={formData.smtpPassword}
-                        onChange={handleChange}
-                    />
-                    {errors.smtpPassword && <div className="error-message">{errors.smtpPassword}</div>}
-                </div>
-
                 {/* 验证码 */}
-                <div className="form-group verify-code-group">
+                <div className="form-group">
                     <label htmlFor="verifyCode">
                         <span className="icon">{FIELD_CONFIG.verifyCode.icon}</span>
                         {FIELD_CONFIG.verifyCode.label}
                     </label>
-                    <div className="verify-code-container">
+                    <div className="verify-code-input-container">
                         <input
-                            type="text"
+                            type={FIELD_CONFIG.verifyCode.type}
                             id="verifyCode"
                             name="verifyCode"
                             value={formData.verifyCode || ''}
@@ -676,9 +657,9 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                         />
                         <button
                             type="button"
-                            className="verify-code-button"
+                            className="send-code-button"
                             onClick={handleSendVerifyCode}
-                            disabled={disableSendCode || loading}
+                            disabled={disableSendCode}
                         >
                             {countdown > 0 ? `${countdown}秒后重试` : '发送验证码'}
                         </button>
@@ -701,7 +682,7 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                             className="next-button"
                             onClick={onNext}
                         >
-                            完成配置并进入管理后台
+                            进行下一项配置
                         </button>
                     )}
                 </div>

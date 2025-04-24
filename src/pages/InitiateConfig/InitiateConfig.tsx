@@ -193,11 +193,11 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     // Form titles for reference
     const formTitles = [
         "服务基础配置",
+        "用户与邮箱配置",
         "日志配置",
         "数据库配置",
         "OSS 存储配置",
-        "缓存配置",
-        "用户与邮箱配置"
+        "缓存配置"
     ];
 
     // 处理各表单提交后的回调
@@ -279,10 +279,10 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
             let highestAllowedIndex = 0;
 
             if (submittedForms.serverSubmitted) highestAllowedIndex = 1;
-            if (submittedForms.loggerSubmitted) highestAllowedIndex = 2;
-            if (submittedForms.mysqlSubmitted) highestAllowedIndex = 3;
-            if (submittedForms.ossSubmitted) highestAllowedIndex = 4;
-            if (submittedForms.cacheSubmitted) highestAllowedIndex = 5;
+            if (submittedForms.userEmailSubmitted) highestAllowedIndex = 2;
+            if (submittedForms.loggerSubmitted) highestAllowedIndex = 3;
+            if (submittedForms.mysqlSubmitted) highestAllowedIndex = 4;
+            if (submittedForms.ossSubmitted) highestAllowedIndex = 5;
 
             // 如果目标表单已提交或在最高可操作表单索引范围内，则允许跳转
             return index <= highestAllowedIndex;
@@ -293,10 +293,10 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
             // 查找最后一个未提交的表单索引，作为需要完成的表单
             let lastIncompleteIndex = -1;
             if (!submittedForms.serverSubmitted) lastIncompleteIndex = 0;
-            else if (!submittedForms.loggerSubmitted) lastIncompleteIndex = 1;
-            else if (!submittedForms.mysqlSubmitted) lastIncompleteIndex = 2;
-            else if (!submittedForms.ossSubmitted) lastIncompleteIndex = 3;
-            else if (!submittedForms.cacheSubmitted) lastIncompleteIndex = 4;
+            else if (!submittedForms.userEmailSubmitted) lastIncompleteIndex = 1;
+            else if (!submittedForms.loggerSubmitted) lastIncompleteIndex = 2;
+            else if (!submittedForms.mysqlSubmitted) lastIncompleteIndex = 3;
+            else if (!submittedForms.ossSubmitted) lastIncompleteIndex = 4;
 
             alert(`请先完成 ${formTitles[lastIncompleteIndex]} 再进行后续配置`);
             return;
@@ -335,13 +335,13 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                     case 0:
                         return submittedForms.serverSubmitted;
                     case 1:
-                        return submittedForms.loggerSubmitted;
+                        return submittedForms.userEmailSubmitted;
                     case 2:
-                        return submittedForms.mysqlSubmitted;
+                        return submittedForms.loggerSubmitted;
                     case 3:
-                        return submittedForms.ossSubmitted;
+                        return submittedForms.mysqlSubmitted;
                     case 4:
-                        return submittedForms.cacheSubmitted;
+                        return submittedForms.ossSubmitted;
                     default:
                         return false;
                 }
@@ -369,6 +369,15 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                 );
             case 1:
                 return (
+                    <UserConfigForm
+                        onSubmit={handleUserEmailSubmit}
+                        initialData={userEmailData}
+                        isSubmitted={submittedForms.userEmailSubmitted}
+                        onNext={goToNextForm}
+                    />
+                );
+            case 2:
+                return (
                     <LoggerConfigForm
                         onSubmit={handleLoggerSubmit}
                         initialData={loggerData}
@@ -376,7 +385,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                         onNext={goToNextForm}
                     />
                 );
-            case 2:
+            case 3:
                 return (
                     <MySqlConfigForm
                         onSubmit={handleMySQLSubmit}
@@ -385,7 +394,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                         onNext={goToNextForm}
                     />
                 );
-            case 3:
+            case 4:
                 return (
                     <OSSConfigForm
                         onSubmit={handleOSSSubmit}
@@ -394,21 +403,12 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                         onNext={goToNextForm}
                     />
                 );
-            case 4:
+            case 5:
                 return (
                     <CacheConfigForm
                         onSubmit={handleCacheSubmit}
                         initialData={cacheData}
                         isSubmitted={submittedForms.cacheSubmitted}
-                        onNext={goToNextForm}
-                    />
-                );
-            case 5:
-                return (
-                    <UserConfigForm
-                        onSubmit={handleUserEmailSubmit}
-                        initialData={userEmailData}
-                        isSubmitted={submittedForms.userEmailSubmitted}
                         onNext={handleCompleteConfig}
                     />
                 );
@@ -453,10 +453,10 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                         // 检查表单是否可访问（前一个表单已提交）
                         let highestAllowedIndex = 0;
                         if (submittedForms.serverSubmitted) highestAllowedIndex = 1;
-                        if (submittedForms.loggerSubmitted) highestAllowedIndex = 2;
-                        if (submittedForms.mysqlSubmitted) highestAllowedIndex = 3;
-                        if (submittedForms.ossSubmitted) highestAllowedIndex = 4;
-                        if (submittedForms.cacheSubmitted) highestAllowedIndex = 5;
+                        if (submittedForms.userEmailSubmitted) highestAllowedIndex = 2;
+                        if (submittedForms.loggerSubmitted) highestAllowedIndex = 3;
+                        if (submittedForms.mysqlSubmitted) highestAllowedIndex = 4;
+                        if (submittedForms.ossSubmitted) highestAllowedIndex = 5;
 
                         return index <= highestAllowedIndex;
                     })();
@@ -467,15 +467,15 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                             case 0:
                                 return submittedForms.serverSubmitted;
                             case 1:
-                                return submittedForms.loggerSubmitted;
-                            case 2:
-                                return submittedForms.mysqlSubmitted;
-                            case 3:
-                                return submittedForms.ossSubmitted;
-                            case 4:
-                                return submittedForms.cacheSubmitted;
-                            case 5:
                                 return submittedForms.userEmailSubmitted;
+                            case 2:
+                                return submittedForms.loggerSubmitted;
+                            case 3:
+                                return submittedForms.mysqlSubmitted;
+                            case 4:
+                                return submittedForms.ossSubmitted;
+                            case 5:
+                                return submittedForms.cacheSubmitted;
                             default:
                                 return false;
                         }
@@ -508,13 +508,13 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                                 case 0:
                                     return submittedForms.serverSubmitted;
                                 case 1:
-                                    return submittedForms.loggerSubmitted;
+                                    return submittedForms.userEmailSubmitted;
                                 case 2:
-                                    return submittedForms.mysqlSubmitted;
+                                    return submittedForms.loggerSubmitted;
                                 case 3:
-                                    return submittedForms.ossSubmitted;
+                                    return submittedForms.mysqlSubmitted;
                                 case 4:
-                                    return submittedForms.cacheSubmitted;
+                                    return submittedForms.ossSubmitted;
                                 default:
                                     return false;
                             }
@@ -529,13 +529,13 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                             case 0:
                                 return !submittedForms.serverSubmitted;
                             case 1:
-                                return !submittedForms.loggerSubmitted;
+                                return !submittedForms.userEmailSubmitted;
                             case 2:
-                                return !submittedForms.mysqlSubmitted;
+                                return !submittedForms.loggerSubmitted;
                             case 3:
-                                return !submittedForms.ossSubmitted;
+                                return !submittedForms.mysqlSubmitted;
                             case 4:
-                                return !submittedForms.cacheSubmitted;
+                                return !submittedForms.ossSubmitted;
                             default:
                                 return true;
                         }

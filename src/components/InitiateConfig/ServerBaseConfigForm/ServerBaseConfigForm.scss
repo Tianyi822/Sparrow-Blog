@@ -62,6 +62,35 @@
     flex-direction: column;
     gap: 1.2rem;
 
+    // 表单分节标题样式
+    .form-section-header {
+      margin-bottom: 1rem;
+      margin-top: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 0.5rem;
+      
+      h3 {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        
+        .icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 0.5rem;
+          font-size: 1.25rem;
+          color: rgba(255, 255, 255, 0.9);
+        }
+      }
+      
+      &:first-of-type {
+        margin-top: 0;
+      }
+    }
+
     .form-group {
       display: flex;
       flex-direction: column;
