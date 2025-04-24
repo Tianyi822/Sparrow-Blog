@@ -183,7 +183,7 @@ const Login: React.FC = () => {
       // 调用登录接口
       const response = await loginWithVerificationCode({
         user_email: formData.email,
-        verified_code: formData.verifyCode
+        verification_code: formData.verifyCode
       });
 
       console.log('登录响应:', response);
