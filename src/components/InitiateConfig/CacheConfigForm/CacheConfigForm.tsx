@@ -351,7 +351,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
                             className="next-button"
                             onClick={onNext}
                         >
-                            进行下一项配置
+                            完成配置进入控制台
                         </button>
                     )}
                 </div>
