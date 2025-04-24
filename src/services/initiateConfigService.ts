@@ -12,6 +12,10 @@ export interface ServerBaseConfig {
     tokenKey: string;
     tokenExpireDuration: string;
     corsOrigins: string;
+    smtpAccount?: string;
+    smtpAddress?: string;
+    smtpPort?: string; 
+    smtpAuthCode?: string;
 }
 
 // Combined configuration type
@@ -32,6 +36,10 @@ interface ServerBaseBackendData {
     'server.token_key': string;
     'server.token_expire_duration': string;
     'server.cors.origins': string;
+    'server.smtp_account'?: string;
+    'server.smtp_address'?: string;
+    'server.smtp_port'?: string;
+    'server.smtp_auth_code'?: string;
 }
 
 export const transformServerBaseData = (data: ServerBaseConfig): ServerBaseBackendData => {
@@ -39,7 +47,11 @@ export const transformServerBaseData = (data: ServerBaseConfig): ServerBaseBacke
         'server.port': data.port,
         'server.token_key': data.tokenKey,
         'server.token_expire_duration': data.tokenExpireDuration,
-        'server.cors.origins': data.corsOrigins.trim()
+        'server.cors.origins': data.corsOrigins.trim(),
+        'server.smtp_account': data.smtpAccount,
+        'server.smtp_address': data.smtpAddress,
+        'server.smtp_port': data.smtpPort,
+        'server.smtp_auth_code': data.smtpAuthCode
     };
 };
 
@@ -221,11 +233,10 @@ export const saveInitiatedCacheConfig = async (data: CacheConfigFormData): Promi
  */
 export interface UserConfigData {
     'user.username': string;
-    'user.user_email'?: string;
-    'user.smtp_account'?: string;
-    'user.smtp_address'?: string;
-    'user.smtp_port'?: string;
-    'user.smtp_auth_code'?: string;
+    'user.user_email': string;
+    'user.user_github_address'?: string;
+    'user.user_hobbies'?: string[];
+    'user.type_writer_content'?: string[];
     'user.verification_code': string;
 }
 
@@ -245,16 +256,12 @@ export const saveInitiatedUserConfig = async (data: UserConfigData): Promise<Api
  */
 export interface VerificationCodeData {
     'user.user_email': string;
-    'user.smtp_account': string;
-    'user.smtp_address': string;
-    'user.smtp_port': string;
-    'user.smtp_auth_code': string;
 }
 
 export const sendInitiatedVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
     return request<ApiResponse<null>>({
         method: 'POST',
-        url: '/init/config-email-send-code',
+        url: '/init/send-code',
         data: data,
         headers: {
             'Content-Type': 'application/json'
