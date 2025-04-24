@@ -499,17 +499,28 @@ export const getUserConfig = async (): Promise<UserConfigResponse> => {
 /**
  * 更新用户配置信息
  * @param userData 用户配置数据
+ * @param verificationCode 验证码 (如果更改了邮箱)
+ * @param isEmailChanged 邮箱是否被修改
  * @returns 更新结果
  */
 export const updateUserConfig = async (
-    userData: Partial<UserConfig>
+    userData: Partial<UserConfig>,
+    verificationCode?: string,
+    isEmailChanged?: boolean
 ): Promise<ApiResponse<null>> => {
     // 构建使用点表示法的请求数据对象
     const requestData: Record<string, string | string[] | undefined> = {};
 
     // 添加用户数据，使用点表示法
     if (userData.user_name) requestData['user.user_name'] = userData.user_name;
-    if (userData.user_email) requestData['user.user_email'] = userData.user_email;
+    
+    // 如果邮箱已修改，则需要添加邮箱和验证码
+    if (isEmailChanged && userData.user_email) {
+        requestData['user.user_email'] = userData.user_email;
+        if (verificationCode) {
+            requestData['user.verification_code'] = verificationCode;
+        }
+    }
     
     // 添加新字段
     if (userData.user_github_address) requestData['user.user_github_address'] = userData.user_github_address;
@@ -520,6 +531,22 @@ export const updateUserConfig = async (
         method: 'PUT',
         url: '/admin/setting/user/config',
         data: requestData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
+/**
+ * 发送邮箱验证码
+ * @param email 邮箱地址
+ * @returns 验证码发送结果
+ */
+export const sendEmailVerificationCode = async (email: string): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'POST',
+        url: '/admin/setting/user/verify-new-email',
+        data: { 'user.user_email': email },
         headers: {
             'Content-Type': 'application/json'
         }
@@ -822,5 +849,6 @@ export default {
     getPreSignUrl,
     addGalleryImages,
     checkImageNameExistence,
-    updateUserImages
+    updateUserImages,
+    sendEmailVerificationCode
 }; 

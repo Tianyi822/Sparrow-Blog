@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser, FiMail, FiAlertCircle, FiUpload, FiImage, FiSave, FiGithub, FiCode, FiType, FiPlus } from 'react-icons/fi';
+import { FiUser, FiMail, FiAlertCircle, FiUpload, FiImage, FiSave, FiGithub, FiCode, FiType, FiPlus, FiLock, FiSend } from 'react-icons/fi';
 import './UserSetting.scss';
 import ImageSelectorModal from '@/components/ImageSelectorModal';
 import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
 import { GalleryImage, UserConfig } from '@/services/adminService';
-import { getUserConfig, updateUserConfig, updateUserImages } from '@/services/adminService';
+import { getUserConfig, updateUserConfig, updateUserImages, sendEmailVerificationCode } from '@/services/adminService';
 
 interface UserConfigProps {
     onSaveSuccess?: () => void;
@@ -13,6 +13,9 @@ interface UserConfigProps {
 const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [originalEmail, setOriginalEmail] = useState(''); // 保存原始邮箱
+    const [verificationCode, setVerificationCode] = useState('');
+    const [countdown, setCountdown] = useState(0);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [saveImageError, setSaveImageError] = useState<string | null>(null);
@@ -37,6 +40,9 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     const [newTypewriterContent, setNewTypewriterContent] = useState<string>('');
     const [newHobby, setNewHobby] = useState<string>('');
 
+    // 检查邮箱是否被修改
+    const isEmailChanged = email !== originalEmail && originalEmail !== '';
+
     // 获取用户配置信息
     useEffect(() => {
         const fetchUserConfig = async () => {
@@ -58,6 +64,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                     // 填充表单字段
                     setUsername(user_name || '');
                     setEmail(user_email || '');
+                    setOriginalEmail(user_email || ''); // 保存原始邮箱
                     setGithubAddress(user_github_address || '');
                     setUserHobbies(user_hobbies || []);
                     setTypewriterContent(type_writer_content || []);
@@ -88,6 +95,17 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
         fetchUserConfig();
     }, []);
 
+    // 处理倒计时
+    useEffect(() => {
+        if (countdown <= 0) return;
+
+        const timer = setTimeout(() => {
+            setCountdown(countdown - 1);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [countdown]);
+
     const clearError = (field: string) => {
         if (errors[field]) {
             const newErrors = { ...errors };
@@ -113,8 +131,38 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             newErrors.github = 'GitHub地址格式不正确';
         }
 
+        // 如果邮箱已修改，需要验证码
+        if (isEmailChanged && !verificationCode) {
+            newErrors.verificationCode = '修改邮箱需要验证码';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+    // 发送邮箱验证码
+    const handleSendVerificationCode = async () => {
+        if (!email.trim()) {
+            setErrors({ ...errors, email: '邮箱不能为空' });
+            return;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setErrors({ ...errors, email: '邮箱格式不正确' });
+            return;
+        }
+
+        try {
+            const response = await sendEmailVerificationCode(email);
+            if (response.code === 200) {
+                setCountdown(60); // 60秒倒计时
+                // 显示发送成功提示
+                alert('验证码发送成功，请查收邮件');
+            } else {
+                alert(`验证码发送失败: ${response.msg}`);
+            }
+        } catch (error) {
+            console.error('发送验证码时出错:', error);
+            alert('发送验证码失败，请稍后再试');
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -134,10 +182,19 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                 type_writer_content: typewriterContent
             };
 
-            // 调用API更新用户配置
-            const response = await updateUserConfig(userData);
+            // 调用API更新用户配置，如果邮箱修改需要传验证码
+            const response = await updateUserConfig(
+                userData,
+                isEmailChanged ? verificationCode : undefined,
+                isEmailChanged
+            );
             
             if (response.code === 200) {
+                // 更新原始邮箱
+                setOriginalEmail(email);
+                // 清空验证码
+                setVerificationCode('');
+                
                 // 显示保存成功提示
                 setSaveSuccess(true);
                 setTimeout(() => setSaveSuccess(false), 3000);
@@ -508,7 +565,51 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                 {errors.email && (
                                     <div className="error-message">{errors.email}</div>
                                 )}
+                                {isEmailChanged && (
+                                    <div className="email-change-notice">
+                                        <FiAlertCircle className="notice-icon" /> 
+                                        您修改了邮箱地址，需要验证
+                                    </div>
+                                )}
                             </div>
+
+                            {/* 验证码输入区域 - 仅当邮箱被修改时显示 */}
+                            {isEmailChanged && (
+                                <div className="form-group verification-code-group">
+                                    <label htmlFor="verificationCode">
+                                        <FiLock className="input-icon" />
+                                        <span>验证码</span>
+                                    </label>
+                                    <p className="input-description">
+                                        修改邮箱需要进行验证，请获取验证码
+                                    </p>
+                                    <div className="verification-code-container">
+                                        <input
+                                            type="text"
+                                            id="verificationCode"
+                                            value={verificationCode}
+                                            onChange={(e) => {
+                                                setVerificationCode(e.target.value);
+                                                clearError('verificationCode');
+                                            }}
+                                            placeholder="请输入验证码"
+                                            className={errors.verificationCode ? 'has-error' : ''}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="send-code-button"
+                                            onClick={handleSendVerificationCode}
+                                            disabled={countdown > 0}
+                                        >
+                                            <FiSend />
+                                            {countdown > 0 ? `重新发送(${countdown}s)` : '获取验证码'}
+                                        </button>
+                                    </div>
+                                    {errors.verificationCode && (
+                                        <div className="error-message">{errors.verificationCode}</div>
+                                    )}
+                                </div>
+                            )}
 
                             <div className="form-group">
                                 <label htmlFor="github">

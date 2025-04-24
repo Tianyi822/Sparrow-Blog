@@ -474,33 +474,63 @@
           line-height: 1.4;
         }
 
+        // 邮箱变更通知
+        .email-change-notice {
+          margin-top: 8px;
+          display: flex;
+          align-items: center;
+          font-size: 0.9rem;
+          color: #f39c12;
+          background-color: rgba(243, 156, 18, 0.1);
+          padding: 8px 12px;
+          border-radius: 6px;
+          border-left: 3px solid #f39c12;
+
+          .notice-icon {
+            margin-right: 8px;
+            flex-shrink: 0;
+          }
+        }
+
+        // 验证码组
         &.verification-code-group {
           .verification-code-container {
             display: flex;
-            gap: 0.75rem;
+            gap: 10px;
 
             input {
               flex: 1;
             }
 
             .send-code-button {
-              padding: 0 1.2rem;
-              color: #fff;
-              background-color: rgba(147, 118, 224, 0.4);
-              border: 1px solid rgba(147, 118, 224, 0.6);
+              background-color: rgba(147, 118, 224, 0.3);
+              color: white;
+              border: 1px solid rgba(147, 118, 224, 0.5);
               border-radius: 8px;
+              padding: 0 16px;
               font-size: 0.95rem;
               font-weight: 500;
               white-space: nowrap;
               cursor: pointer;
-              transition: all 0.2s ease;
+              transition: all 0.3s ease;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 6px;
+              min-width: 120px;
+
+              svg {
+                font-size: 1rem;
+              }
 
               &:hover:not(:disabled) {
-                background-color: rgba(147, 118, 224, 0.6);
+                background-color: rgba(147, 118, 224, 0.5);
+                transform: translateY(-2px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
               }
 
               &:disabled {
-                opacity: 0.7;
+                opacity: 0.6;
                 cursor: not-allowed;
               }
             }
