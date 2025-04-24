@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiServer, FiGlobe, FiClock, FiAlertCircle, FiPlus, FiX, FiKey, FiRefreshCw, FiMail, FiSend } from 'react-icons/fi';
 import './ServiceSetting.scss';
-import { getServerConfig, updateServerConfig, sendSMTPVerificationCode } from '@/services/adminService';
+import { getServerConfig, sendSMTPVerificationCode } from '@/services/adminService';
 import { businessApiRequest } from '@/services/api';
 import { ApiResponse } from '@/services/api.ts';
 
@@ -399,7 +399,7 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
                                 onChange={(e) => setNewCorsOrigin(e.target.value)}
                                 placeholder="输入新的跨域来源，例如: http://localhost:5173"
                                 className={errors.newCorsOrigin ? 'has-error' : ''}
-                                onKeyPress={(e) => {
+                                onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         e.preventDefault();
                                         handleAddCorsOrigin();
