@@ -9,7 +9,7 @@ export interface VerificationCodeRequest {
 // 登录请求数据接口
 export interface LoginRequest {
     user_email: string;
-    verified_code: string;
+    verification_code: string;
 }
 
 // 登录响应数据接口
