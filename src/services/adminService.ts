@@ -505,7 +505,7 @@ export const updateUserConfig = async (
     userData: Partial<UserConfig>
 ): Promise<ApiResponse<null>> => {
     // 构建使用点表示法的请求数据对象
-    const requestData: Record<string, any> = {};
+    const requestData: Record<string, string | string[] | undefined> = {};
 
     // 添加用户数据，使用点表示法
     if (userData.user_name) requestData['user.user_name'] = userData.user_name;
