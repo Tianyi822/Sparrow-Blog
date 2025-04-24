@@ -164,14 +164,12 @@ export interface PreSignUrlResponse {
 export interface UserConfig {
     user_name: string;
     user_email: string;
-    smtp_account: string;
-    smtp_address: string;
-    smtp_port: string;
-    smtp_auth_code?: string;
     avatar_image: string;
     web_logo: string;
     background_image: string;
-    verified_code?: string;
+    user_github_address?: string;
+    user_hobbies?: string[];
+    type_writer_content?: string[];
 }
 
 export interface UserConfigResponse {
@@ -316,7 +314,7 @@ export const loginWithVerificationCode = async (data: LoginRequest): Promise<Api
 export const getUserBasicInfo = async (): Promise<ApiResponse<{ user_name: string }>> => {
     return businessApiRequest<ApiResponse<{ user_name: string }>>({
         method: 'GET',
-        url: '/config/user-basic-info'
+        url: '/web/user-basic-info'
     });
 };
 
@@ -501,65 +499,27 @@ export const getUserConfig = async (): Promise<UserConfigResponse> => {
 /**
  * 更新用户配置信息
  * @param userData 用户配置数据
- * @param verifiedCode 验证码 (可选)
  * @returns 更新结果
  */
 export const updateUserConfig = async (
-    userData: Partial<UserConfig>,
-    verifiedCode?: string
+    userData: Partial<UserConfig>
 ): Promise<ApiResponse<null>> => {
     // 构建使用点表示法的请求数据对象
-    const requestData: Record<string, string> = {};
+    const requestData: Record<string, any> = {};
 
     // 添加用户数据，使用点表示法
     if (userData.user_name) requestData['user.user_name'] = userData.user_name;
     if (userData.user_email) requestData['user.user_email'] = userData.user_email;
-    if (userData.smtp_account) requestData['user.smtp_account'] = userData.smtp_account;
-    if (userData.smtp_address) requestData['user.smtp_address'] = userData.smtp_address;
-    if (userData.smtp_port) requestData['user.smtp_port'] = userData.smtp_port;
-    if (userData.smtp_auth_code) requestData['user.smtp_auth_code'] = userData.smtp_auth_code;
     
-    // 添加验证码
-    if (verifiedCode || userData.verified_code) {
-        requestData['user.verified_code'] = verifiedCode || userData.verified_code || '';
-    }
+    // 添加新字段
+    if (userData.user_github_address) requestData['user.user_github_address'] = userData.user_github_address;
+    if (userData.user_hobbies) requestData['user.user_hobbies'] = userData.user_hobbies;
+    if (userData.type_writer_content) requestData['user.type_writer_content'] = userData.type_writer_content;
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
         url: '/admin/setting/user/config',
         data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-};
-
-/**
- * 发送SMTP配置验证码
- * @param smtpAccount SMTP账号
- * @param smtpAddress SMTP服务器地址
- * @param smtpPort SMTP端口
- * @param userEmail 用户邮箱
- * @param smtpAuthCode SMTP授权码
- * @returns 发送结果
- */
-export const sendSmtpVerificationCode = async (
-    smtpAccount: string,
-    smtpAddress: string,
-    smtpPort: string,
-    userEmail: string,
-    smtpAuthCode: string
-): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'POST',
-        url: '/admin/setting/user/verify-new-smtp-config',
-        data: {
-            'user.smtp_account': smtpAccount,
-            'user.smtp_address': smtpAddress,
-            'user.smtp_port': smtpPort,
-            'user.user_email': userEmail,
-            'user.smtp_auth_code': smtpAuthCode
-        },
         headers: {
             'Content-Type': 'application/json'
         }
@@ -839,7 +799,6 @@ export default {
     getUserBasicInfo,
     getUserConfig,
     updateUserConfig,
-    sendSmtpVerificationCode,
     getServerConfig,
     updateServerConfig,
     getLoggerConfig,

@@ -466,6 +466,14 @@
           margin-top: 0.3rem;
         }
 
+        .input-description {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.7);
+          margin-top: 0;
+          margin-bottom: 8px;
+          line-height: 1.4;
+        }
+
         &.verification-code-group {
           .verification-code-container {
             display: flex;
@@ -964,4 +972,119 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+// Tag input container
+.tag-input-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  input {
+    flex: 1;
+  }
+
+  .add-tag-button {
+    background-color: rgba(147, 118, 224, 0.3);
+    color: white;
+    border: 1px solid rgba(147, 118, 224, 0.5);
+    border-radius: 8px;
+    padding: 0 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    gap: 6px;
+    height: 100%;
+
+    svg {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      background-color: rgba(147, 118, 224, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Tags container
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  min-height: 40px;
+  padding: 5px 0;
+  
+  .empty-tag-hint {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
+}
+
+// Individual tag
+.tag {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-weight: 500;
+  max-width: 100%;
+  word-break: break-word;
+
+  .remove-tag {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0 5px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #ff6b6b;
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .tag {
+    background-color: rgba(60, 60, 80, 0.5);
+    color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    .remove-tag {
+      color: rgba(255, 255, 255, 0.7);
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: #ff6b6b;
+      }
+    }
+  }
 } 

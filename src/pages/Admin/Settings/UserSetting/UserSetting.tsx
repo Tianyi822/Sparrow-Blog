@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FiUser, FiMail, FiServer, FiLock, FiAlertCircle, FiUpload, FiImage, FiSave } from 'react-icons/fi';
+import { FiUser, FiMail, FiAlertCircle, FiUpload, FiImage, FiSave, FiGithub, FiCode, FiType, FiPlus } from 'react-icons/fi';
 import './UserSetting.scss';
 import ImageSelectorModal from '@/components/ImageSelectorModal';
 import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
 import { GalleryImage, UserConfig } from '@/services/adminService';
-import { getUserConfig, updateUserConfig, sendSmtpVerificationCode, updateUserImages } from '@/services/adminService';
+import { getUserConfig, updateUserConfig, updateUserImages } from '@/services/adminService';
 
 interface UserConfigProps {
     onSaveSuccess?: () => void;
@@ -13,13 +13,6 @@ interface UserConfigProps {
 const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [smtpAccount, setSmtpAccount] = useState('');
-    const [smtpAddress, setSmtpAddress] = useState('');
-    const [smtpPort, setSmtpPort] = useState('');
-    const [smtpAuthCode, setSmtpAuthCode] = useState('');
-    const [verificationCode, setVerificationCode] = useState('');
-    const [codeSent, setCodeSent] = useState(false);
-    const [countdown, setCountdown] = useState(0);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [saveImageError, setSaveImageError] = useState<string | null>(null);
@@ -37,6 +30,13 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     const [logoImageId, setLogoImageId] = useState<string>('');
     const [backgroundImageId, setBackgroundImageId] = useState<string>('');
 
+    // 添加新字段的状态
+    const [typewriterContent, setTypewriterContent] = useState<string[]>([]);
+    const [githubAddress, setGithubAddress] = useState<string>('');
+    const [userHobbies, setUserHobbies] = useState<string[]>([]);
+    const [newTypewriterContent, setNewTypewriterContent] = useState<string>('');
+    const [newHobby, setNewHobby] = useState<string>('');
+
     // 获取用户配置信息
     useEffect(() => {
         const fetchUserConfig = async () => {
@@ -44,14 +44,23 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                 setLoading(true);
                 const response = await getUserConfig();
                 if (response.code === 200 && response.data) {
-                    const { user_name, user_email, smtp_account, smtp_address, smtp_port, avatar_image, web_logo, background_image } = response.data;
+                    const { 
+                        user_name, 
+                        user_email, 
+                        avatar_image, 
+                        web_logo, 
+                        background_image,
+                        user_github_address,
+                        user_hobbies,
+                        type_writer_content
+                    } = response.data;
 
                     // 填充表单字段
                     setUsername(user_name || '');
                     setEmail(user_email || '');
-                    setSmtpAccount(smtp_account || '');
-                    setSmtpAddress(smtp_address || '');
-                    setSmtpPort(smtp_port || '');
+                    setGithubAddress(user_github_address || '');
+                    setUserHobbies(user_hobbies || []);
+                    setTypewriterContent(type_writer_content || []);
 
                     // 设置图片ID
                     setAvatarImageId(avatar_image || '');
@@ -79,44 +88,6 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
         fetchUserConfig();
     }, []);
 
-    // 初始化时从localStorage检查倒计时状态
-    useEffect(() => {
-        const storedEndTime = localStorage.getItem('verificationCodeEndTime');
-        const storedEmail = localStorage.getItem('verificationCodeEmail');
-
-        if (storedEndTime && storedEmail) {
-            const endTime = parseInt(storedEndTime, 10);
-            const now = new Date().getTime();
-            const remainingTime = Math.round((endTime - now) / 1000);
-
-            if (remainingTime > 0) {
-                setCodeSent(true);
-                setCountdown(remainingTime);
-            } else {
-                // 倒计时已结束，清除localStorage
-                localStorage.removeItem('verificationCodeEndTime');
-                localStorage.removeItem('verificationCodeEmail');
-            }
-        }
-    }, []);
-
-    // 处理倒计时
-    useEffect(() => {
-        if (countdown === 0) return;
-
-        const timer = setTimeout(() => {
-            setCountdown(countdown - 1);
-
-            // 当倒计时结束时，清除localStorage
-            if (countdown === 1) {
-                localStorage.removeItem('verificationCodeEndTime');
-                localStorage.removeItem('verificationCodeEmail');
-            }
-        }, 1000);
-
-        return () => clearTimeout(timer);
-    }, [countdown]);
-
     const clearError = (field: string) => {
         if (errors[field]) {
             const newErrors = { ...errors };
@@ -138,26 +109,8 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             newErrors.email = '邮箱格式不正确';
         }
 
-        if (!smtpAccount.trim()) {
-            newErrors.smtp_account = 'SMTP账号不能为空';
-        }
-
-        if (!smtpAddress.trim()) {
-            newErrors.smtp_address = 'SMTP服务器不能为空';
-        }
-
-        if (!smtpPort.trim()) {
-            newErrors.smtp_port = 'SMTP端口不能为空';
-        } else if (!/^\d+$/.test(smtpPort)) {
-            newErrors.smtp_port = '端口必须为数字';
-        }
-
-        if (!smtpAuthCode.trim()) {
-            newErrors.smtp_auth_code = 'SMTP授权码不能为空';
-        }
-
-        if (codeSent && !verificationCode.trim()) {
-            newErrors.verificationCode = '验证码不能为空';
+        if (githubAddress && !githubAddress.trim().startsWith('https://github.com/')) {
+            newErrors.github = 'GitHub地址格式不正确';
         }
 
         setErrors(newErrors);
@@ -172,29 +125,19 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
         }
 
         try {
-            // 准备要更新的用户配置数据，但不包含图片ID
+            // 准备要更新的用户配置数据
             const userData: Partial<UserConfig> = {
                 user_name: username,
                 user_email: email,
-                smtp_account: smtpAccount,
-                smtp_address: smtpAddress,
-                smtp_port: smtpPort,
-                smtp_auth_code: smtpAuthCode
+                user_github_address: githubAddress,
+                user_hobbies: userHobbies,
+                type_writer_content: typewriterContent
             };
 
-            // 调用API更新用户配置，如果验证码已发送则将其作为第二个参数传递
-            const response = await updateUserConfig(
-                userData, 
-                codeSent ? verificationCode : undefined
-            );
+            // 调用API更新用户配置
+            const response = await updateUserConfig(userData);
             
             if (response.code === 200) {
-                // 清空验证码字段和localStorage
-                setVerificationCode('');
-                setCodeSent(false);
-                localStorage.removeItem('verificationCodeEndTime');
-                localStorage.removeItem('verificationCodeEmail');
-
                 // 显示保存成功提示
                 setSaveSuccess(true);
                 setTimeout(() => setSaveSuccess(false), 3000);
@@ -206,77 +149,11 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             } else {
                 // 处理错误
                 console.error('保存失败:', response.msg);
-                // 在这里可以添加错误提示，例如：
                 alert(`保存失败: ${response.msg}`);
             }
         } catch (error) {
             console.error('保存用户配置时出错:', error);
             alert('保存配置时发生错误，请稍后再试');
-        }
-    };
-
-    const handleSendCode = async () => {
-        // 验证邮箱格式
-        if (!email.trim()) {
-            setErrors({ ...errors, email: '邮箱不能为空' });
-            return;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setErrors({ ...errors, email: '邮箱格式不正确' });
-            return;
-        }
-
-        // 验证SMTP字段
-        if (!smtpAccount.trim()) {
-            setErrors({ ...errors, smtp_account: 'SMTP账号不能为空' });
-            return;
-        }
-        if (!smtpAddress.trim()) {
-            setErrors({ ...errors, smtp_address: 'SMTP服务器不能为空' });
-            return;
-        }
-        if (!smtpPort.trim()) {
-            setErrors({ ...errors, smtp_port: 'SMTP端口不能为空' });
-            return;
-        }
-        if (!smtpAuthCode.trim()) {
-            setErrors({ ...errors, smtp_auth_code: 'SMTP授权码不能为空' });
-            return;
-        }
-
-        // 清除邮箱相关错误
-        clearError('email');
-        clearError('smtp_account');
-        clearError('smtp_address');
-        clearError('smtp_port');
-        clearError('smtp_auth_code');
-
-        try {
-            // 调用API发送验证码
-            const response = await sendSmtpVerificationCode(
-                smtpAccount,
-                smtpAddress,
-                smtpPort,
-                email,
-                smtpAuthCode
-            );
-
-            if (response.code === 200) {
-                // 设置已发送状态和倒计时
-                setCodeSent(true);
-                setCountdown(60);
-
-                // 在localStorage中保存结束时间和邮箱
-                const endTime = new Date().getTime() + 60 * 1000; // 60秒后的时间戳
-                localStorage.setItem('verificationCodeEndTime', endTime.toString());
-                localStorage.setItem('verificationCodeEmail', email);
-            } else {
-                // 处理发送失败
-                console.error('验证码发送失败:', response.msg);
-                // 可以在这里显示错误提示
-            }
-        } catch (error) {
-            console.error('发送验证码时出错:', error);
-            // 可以在这里显示错误提示
         }
     };
 
@@ -339,6 +216,52 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
         }
     };
 
+    // 添加打字机内容
+    const handleAddTypewriterContent = () => {
+        if (newTypewriterContent.trim()) {
+            setTypewriterContent([...typewriterContent, newTypewriterContent.trim()]);
+            setNewTypewriterContent('');
+        }
+    };
+
+    // 处理打字机内容输入框按键事件
+    const handleTypewriterKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddTypewriterContent();
+        }
+    };
+
+    // 删除打字机内容
+    const handleRemoveTypewriterContent = (index: number) => {
+        const updatedContent = [...typewriterContent];
+        updatedContent.splice(index, 1);
+        setTypewriterContent(updatedContent);
+    };
+
+    // 添加爱好
+    const handleAddHobby = () => {
+        if (newHobby.trim() && !userHobbies.includes(newHobby.trim())) {
+            setUserHobbies([...userHobbies, newHobby.trim()]);
+            setNewHobby('');
+        }
+    };
+
+    // 处理爱好输入框按键事件
+    const handleHobbyKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddHobby();
+        }
+    };
+
+    // 删除爱好
+    const handleRemoveHobby = (index: number) => {
+        const updatedHobbies = [...userHobbies];
+        updatedHobbies.splice(index, 1);
+        setUserHobbies(updatedHobbies);
+    };
+
     return (
         <div className="user-setting-card">
             {loading ? (
@@ -361,7 +284,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                 <h2>用户设置</h2>
                             </div>
                             <div className="user-description">
-                                <p>管理您的个人信息、账户安全及网站外观。</p>
+                                <p>管理您的个人信息及网站外观。</p>
                                 <p>上传头像、网站Logo和背景图片让您的网站更具个性化。</p>
                             </div>
                         </div>
@@ -588,118 +511,116 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="smtp_account">
-                                    <FiServer className="input-icon" />
-                                    <span>SMTP账号</span>
+                                <label htmlFor="github">
+                                    <FiGithub className="input-icon" />
+                                    <span>GitHub 地址</span>
                                 </label>
                                 <input
                                     type="text"
-                                    id="smtp_account"
-                                    value={smtpAccount}
+                                    id="github"
+                                    value={githubAddress}
                                     onChange={(e) => {
-                                        setSmtpAccount(e.target.value);
-                                        clearError('smtp_account');
+                                        setGithubAddress(e.target.value);
+                                        clearError('github');
                                     }}
-                                    placeholder="请输入SMTP账号"
-                                    className={errors.smtp_account ? 'has-error' : ''}
+                                    placeholder="请输入 GitHub 地址"
+                                    className={errors.github ? 'has-error' : ''}
                                 />
-                                {errors.smtp_account && (
-                                    <div className="error-message">{errors.smtp_account}</div>
+                                {errors.github && (
+                                    <div className="error-message">{errors.github}</div>
                                 )}
                             </div>
 
+                            {/* 打字机内容 */}
                             <div className="form-group">
-                                <label htmlFor="smtp_address">
-                                    <FiServer className="input-icon" />
-                                    <span>SMTP服务器</span>
+                                <label htmlFor="typewriter">
+                                    <FiType className="input-icon" />
+                                    <span>打字机内容</span>
                                 </label>
-                                <input
-                                    type="text"
-                                    id="smtp_address"
-                                    value={smtpAddress}
-                                    onChange={(e) => {
-                                        setSmtpAddress(e.target.value);
-                                        clearError('smtp_address');
-                                    }}
-                                    placeholder="例如: smtp.gmail.com"
-                                    className={errors.smtp_address ? 'has-error' : ''}
-                                />
-                                {errors.smtp_address && (
-                                    <div className="error-message">{errors.smtp_address}</div>
-                                )}
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="smtp_port">
-                                    <FiServer className="input-icon" />
-                                    <span>SMTP端口</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    id="smtp_port"
-                                    value={smtpPort}
-                                    onChange={(e) => {
-                                        setSmtpPort(e.target.value);
-                                        clearError('smtp_port');
-                                    }}
-                                    placeholder="例如: 465 或 587"
-                                    className={errors.smtp_port ? 'has-error' : ''}
-                                />
-                                {errors.smtp_port && (
-                                    <div className="error-message">{errors.smtp_port}</div>
-                                )}
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="smtp_auth_code">
-                                    <FiLock className="input-icon" />
-                                    <span>SMTP授权码</span>
-                                </label>
-                                <input
-                                    type="password"
-                                    id="smtp_auth_code"
-                                    value={smtpAuthCode}
-                                    onChange={(e) => {
-                                        setSmtpAuthCode(e.target.value);
-                                        clearError('smtp_auth_code');
-                                    }}
-                                    placeholder="请输入SMTP授权码"
-                                    className={errors.smtp_auth_code ? 'has-error' : ''}
-                                />
-                                {errors.smtp_auth_code && (
-                                    <div className="error-message">{errors.smtp_auth_code}</div>
-                                )}
-                            </div>
-
-                            <div className="form-group verification-code-group">
-                                <label htmlFor="verificationCode">
-                                    <FiLock className="input-icon" />
-                                    <span>验证码</span>
-                                </label>
-                                <div className="verification-code-container">
+                                <p className="input-description">
+                                    添加显示在首页的打字效果文本，可添加多条，将随机展示。
+                                </p>
+                                <div className="tag-input-container">
                                     <input
                                         type="text"
-                                        id="verificationCode"
-                                        value={verificationCode}
-                                        onChange={(e) => {
-                                            setVerificationCode(e.target.value);
-                                            clearError('verificationCode');
-                                        }}
-                                        placeholder="请输入验证码"
-                                        className={errors.verificationCode ? 'has-error' : ''}
+                                        id="typewriter"
+                                        value={newTypewriterContent}
+                                        onChange={(e) => setNewTypewriterContent(e.target.value)}
+                                        onKeyDown={handleTypewriterKeyDown}
+                                        placeholder="请输入打字机内容，按回车添加"
                                     />
-                                    <button
-                                        type="button"
-                                        className="send-code-button"
-                                        onClick={handleSendCode}
-                                        disabled={countdown > 0}
+                                    <button 
+                                        type="button" 
+                                        className="add-tag-button"
+                                        onClick={handleAddTypewriterContent}
                                     >
-                                        {countdown > 0 ? `重新发送(${countdown}s)` : '获取邮箱验证码'}
+                                        <FiPlus /> 添加
                                     </button>
                                 </div>
-                                {errors.verificationCode && (
-                                    <div className="error-message">{errors.verificationCode}</div>
-                                )}
+                                <div className="tags-container">
+                                    {typewriterContent.length === 0 && (
+                                        <div className="empty-tag-hint">暂无内容，请添加</div>
+                                    )}
+                                    {typewriterContent.map((content, index) => (
+                                        <div key={index} className="tag">
+                                            {content}
+                                            <button 
+                                                type="button" 
+                                                className="remove-tag" 
+                                                onClick={() => handleRemoveTypewriterContent(index)}
+                                                aria-label="删除该内容"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* 用户爱好 */}
+                            <div className="form-group">
+                                <label htmlFor="hobbies">
+                                    <FiCode className="input-icon" />
+                                    <span>用户爱好</span>
+                                </label>
+                                <p className="input-description">
+                                    添加您的技术栈或个人爱好，将显示在个人简介中。
+                                </p>
+                                <div className="tag-input-container">
+                                    <input
+                                        type="text"
+                                        id="hobbies"
+                                        value={newHobby}
+                                        onChange={(e) => setNewHobby(e.target.value)}
+                                        onKeyDown={handleHobbyKeyDown}
+                                        placeholder="请输入用户爱好，按回车添加"
+                                    />
+                                    <button 
+                                        type="button" 
+                                        className="add-tag-button"
+                                        onClick={handleAddHobby}
+                                    >
+                                        <FiPlus /> 添加
+                                    </button>
+                                </div>
+                                <div className="tags-container">
+                                    {userHobbies.length === 0 && (
+                                        <div className="empty-tag-hint">暂无内容，请添加</div>
+                                    )}
+                                    {userHobbies.map((hobby, index) => (
+                                        <div key={index} className="tag">
+                                            {hobby}
+                                            <button 
+                                                type="button" 
+                                                className="remove-tag" 
+                                                onClick={() => handleRemoveHobby(index)}
+                                                aria-label="删除该爱好"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
                             <button type="submit" className="submit-button">
