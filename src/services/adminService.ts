@@ -184,6 +184,9 @@ export interface ServerConfig {
     token_expire_duration: number;
     cors_origins: string[];
     token_key?: string;
+    smtp_account?: string;
+    smtp_address?: string;
+    smtp_port?: number;
 }
 
 export interface ServerConfigResponse {
@@ -569,12 +572,18 @@ export const getServerConfig = async (): Promise<ServerConfigResponse> => {
  * @param corsOrigins 跨域来源数组
  * @param tokenExpireDuration 令牌过期时间(小时)
  * @param tokenKey 令牌密钥 (可选)
+ * @param smtpAccount SMTP账号 (可选)
+ * @param smtpAddress SMTP服务器地址 (可选)
+ * @param smtpPort SMTP端口 (可选)
  * @returns 更新结果
  */
 export const updateServerConfig = async (
     corsOrigins: string[],
     tokenExpireDuration: number,
-    tokenKey?: string
+    tokenKey?: string,
+    smtpAccount?: string,
+    smtpAddress?: string,
+    smtpPort?: number
 ): Promise<ApiResponse<null>> => {
     // 使用点表示法构建请求数据
     const requestData: Record<string, string | number | string[]> = {
@@ -585,6 +594,19 @@ export const updateServerConfig = async (
     // 如果提供了令牌密钥，则添加到请求数据
     if (tokenKey) {
         requestData['server.token_key'] = tokenKey;
+    }
+
+    // 添加SMTP相关配置
+    if (smtpAccount) {
+        requestData['server.smtp_account'] = smtpAccount;
+    }
+    
+    if (smtpAddress) {
+        requestData['server.smtp_address'] = smtpAddress;
+    }
+    
+    if (smtpPort) {
+        requestData['server.smtp_port'] = smtpPort;
     }
     
     return businessApiRequest<ApiResponse<null>>({
@@ -820,6 +842,35 @@ export const updateUserImages = async (
     });
 };
 
+/**
+ * 发送SMTP配置验证码
+ * @param smtpAccount SMTP账号
+ * @param smtpAddress SMTP服务器地址
+ * @param smtpPort SMTP端口
+ * @param smtpAuthCode SMTP授权码
+ * @returns 验证码发送结果
+ */
+export const sendSMTPVerificationCode = async (
+    smtpAccount: string,
+    smtpAddress: string, 
+    smtpPort: string,
+    smtpAuthCode: string
+): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'POST',
+        url: '/admin/setting/user/verify-new-smtp-config',
+        data: {
+            'server.smtp_account': smtpAccount,
+            'server.smtp_address': smtpAddress,
+            'server.smtp_port': smtpPort,
+            'server.smtp_auth_code': smtpAuthCode
+        },
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
@@ -850,5 +901,6 @@ export default {
     addGalleryImages,
     checkImageNameExistence,
     updateUserImages,
-    sendEmailVerificationCode
+    sendEmailVerificationCode,
+    sendSMTPVerificationCode
 }; 
