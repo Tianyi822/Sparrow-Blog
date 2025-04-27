@@ -15,6 +15,9 @@ export interface BlogUserInfo {
     user_email: string;
     user_name: string;
     web_logo: string;
+    type_writer_content?: string[];
+    user_hobbies?: string[];
+    user_github_address?: string;
 }
 
 type UserBasicInfoResponse = ApiResponse<UserBasicInfo>;

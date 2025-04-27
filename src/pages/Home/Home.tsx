@@ -92,6 +92,8 @@ const Home: React.FC = () => {
                     <Introduction
                         className="home-introduction"
                         userName={userInfo?.user_name}
+                        typeWriterContent={userInfo?.type_writer_content}
+                        userHobbies={userInfo?.user_hobbies}
                     />
                     <Clock
                         className="home-clock"
