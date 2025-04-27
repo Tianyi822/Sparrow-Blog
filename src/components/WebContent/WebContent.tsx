@@ -1,5 +1,4 @@
 import AuthorInfo from '@/components/WebContent/AuthorInfo/AuthorInfo';
-import Announcement from '@/components/WebContent/Announcement/Announcement';
 import LatestArticles from '@/components/WebContent/LatestArticles/LatestArticles';
 import LatestComments from '@/components/WebContent/LatestComments/LatestComments';
 import Categories from '@/components/WebContent/Categories/Categories';
@@ -31,7 +30,6 @@ const WebContent: React.FC<WebContentProps> = ({
                     email: authorEmail ? `mailto:${authorEmail}` : undefined
                 }}
             />
-            <Announcement />
             <LatestArticles className="web-content-latest-articles"/>
             <LatestComments className="web-content-latest-comments"/>
             <Categories className="web-content-categories"/>
