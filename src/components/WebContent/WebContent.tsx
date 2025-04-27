@@ -11,23 +11,25 @@ interface WebContentProps {
     authorName?: string;
     authorAvatar?: string;
     authorEmail?: string;
+    authorGithub?: string;
 }
 
 const WebContent: React.FC<WebContentProps> = ({
     className,
     authorName,
     authorAvatar,
-    authorEmail
+    authorEmail,
+    authorGithub
 }) => {
     return (
         <div className={`web-content ${className || ''}`}>
             <AuthorInfo 
                 name={authorName}
                 avatar={authorAvatar}
-                social={authorEmail ? { 
-                    github: 'https://github.com',
-                    email: `mailto:${authorEmail}`
-                } : undefined}
+                social={{ 
+                    github: authorGithub || 'https://github.com',
+                    email: authorEmail ? `mailto:${authorEmail}` : undefined
+                }}
             />
             <Announcement />
             <LatestArticles className="web-content-latest-articles"/>

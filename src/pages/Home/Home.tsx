@@ -131,6 +131,7 @@ const Home: React.FC = () => {
                     authorName={userInfo?.user_name}
                     authorAvatar={avatarImageUrl}
                     authorEmail={userInfo?.user_email}
+                    authorGithub={userInfo?.user_github_address}
                 />
             </section>
         </div>
