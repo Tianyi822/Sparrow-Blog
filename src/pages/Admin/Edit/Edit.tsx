@@ -226,6 +226,11 @@ const Edit: React.FC = () => {
         setTags(draftData.tags);
         setIsTop(draftData.isTop);
         setIsPublic(draftData.isPublic);
+        
+        // 恢复文章封面图
+        if (draftData.blogImage) {
+            setBlogImage(draftData.blogImage);
+        }
 
         // 更新最后保存时间
         const date = new Date(draftData.lastSaved);
