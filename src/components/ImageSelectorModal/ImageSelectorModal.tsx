@@ -25,7 +25,7 @@ interface UploadFileState {
 export type ImageUsageType = 'avatar' | 'logo' | 'background';
 
 // 模态框模式
-export type ModalMode = 'userSetting' | 'editor';
+export type ModalMode = 'userSetting' | 'editor' | 'article';
 
 interface ImageSelectorModalProps {
     isOpen: boolean;
@@ -58,6 +58,8 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
     const getUsageTypeTitle = (): string => {
         if (mode === 'editor') {
             return '图片库';
+        } else if (mode === 'article') {
+            return '文章封面图';
         } else {
             switch (usageType) {
                 case 'avatar': return '用户头像';
@@ -71,6 +73,8 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
     // 获取用途类型的图标
     const getUsageTypeIcon = () => {
         if (mode === 'editor') {
+            return <FiImage />;
+        } else if (mode === 'article') {
             return <FiImage />;
         } else {
             switch (usageType) {
@@ -385,6 +389,15 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             // 编辑器模式，直接调用onImageInsert
             onImageInsert(image);
             onClose();
+        } else if (mode === 'article' && onImageSelect) {
+            // 文章封面图模式，选择图片并显示选中状态
+            setSelectedImageId(image.img_id);
+
+            // 1秒后执行应用
+            setTimeout(() => {
+                onImageSelect(image, usageType);
+                onClose();
+            }, 300);
         } else if (mode === 'userSetting' && onImageSelect) {
             // 用户设置模式，选择图片并显示选中状态
             setSelectedImageId(image.img_id);
@@ -393,7 +406,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             setTimeout(() => {
                 onImageSelect(image, usageType);
                 onClose();
-            }, 1000);
+            }, 300);
         }
     }, [mode, onImageInsert, onImageSelect, usageType, onClose]);
 

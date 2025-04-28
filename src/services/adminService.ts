@@ -86,6 +86,7 @@ export interface UpdateOrAddBlogRequest {
     blog_words_num: number;
     blog_is_top: boolean;
     blog_content?: string;
+    blog_image_id?: string;
 }
 
 // 博客数据接口
@@ -105,6 +106,7 @@ export interface BlogDataResponse {
             update_time: string;
             blog_is_top?: boolean;
             blog_state?: boolean;
+            blog_image?: GalleryImage;
         };
         content_url: string;
     };

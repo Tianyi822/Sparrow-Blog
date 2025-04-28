@@ -37,6 +37,7 @@ interface BlogDraft {
     isTop: boolean;
     isPublic: boolean;
     lastSaved: number; // 时间戳
+    blogImage?: GalleryImage | null; // 文章封面图
 }
 
 // 缓存键常量
@@ -115,6 +116,8 @@ const Edit: React.FC = () => {
 
     // 图片库相关状态
     const [showImageGallery, setShowImageGallery] = useState<boolean>(false);
+    const [blogImage, setBlogImage] = useState<GalleryImage | null>(null);
+    const [showArticleImageSelector, setShowArticleImageSelector] = useState<boolean>(false);
 
     // 自动保存相关
     const [showAutoSaveNotification, setShowAutoSaveNotification] = useState<boolean>(false);
@@ -136,7 +139,8 @@ const Edit: React.FC = () => {
             tags,
             isTop,
             isPublic,
-            lastSaved: Date.now()
+            lastSaved: Date.now(),
+            blogImage
         };
 
         // 如果是编辑模式，添加blog_id
@@ -161,7 +165,7 @@ const Edit: React.FC = () => {
         } catch (error) {
             console.error('保存草稿到本地缓存失败:', error);
         }
-    }, [blogId, category, content, intro, isEditMode, isPublic, isTop, tags, title]);
+    }, [blogId, category, content, intro, isEditMode, isPublic, isTop, tags, title, blogImage]);
 
     // 防抖后的保存草稿函数
     const debouncedSaveDraft = useDebounce(saveDraftToCache, DEBOUNCE_DELAY);
@@ -282,47 +286,34 @@ const Edit: React.FC = () => {
     }, [clearCache]);
 
     // 处理图片库点击事件
-    const handleImageGalleryToggle = useCallback(() => {
-        console.log('Image gallery toggle clicked, current state:', showImageGallery);
-        setShowImageGallery(prev => !prev);
-        console.log('Image gallery new state:', !showImageGallery);
-    }, [showImageGallery]);
+    const handleImageGalleryToggle = () => {
+        setShowImageGallery(!showImageGallery);
+    };
 
     // 将图片插入到编辑器
-    const handleImageInsert = useCallback((image: GalleryImage) => {
-        // 构建图片的Markdown语法
-        const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
-        const imageUrl = `${businessServiceUrl}/img/get/${image.img_id}`;
-        const markdownImage = `![${image.img_name}](${imageUrl})`;
-
-        // 复制到剪贴板
-        navigator.clipboard.writeText(markdownImage)
-            .then(() => {
-                // 插入到编辑器的光标位置
-                if (textareaRef.current) {
-                    const textarea = textareaRef.current;
-                    const start = textarea.selectionStart;
-                    const end = textarea.selectionEnd;
-
-                    // 在光标位置插入Markdown图片语法
-                    const newContent = content.substring(0, start) + markdownImage + content.substring(end);
-                    setContent(newContent);
-
-                    // 更新光标位置到插入内容之后
-                    setTimeout(() => {
-                        textarea.focus();
-                        const newPosition = start + markdownImage.length;
-                        textarea.setSelectionRange(newPosition, newPosition);
-                    }, 0);
-
-                    // 标记内容已更改
-                    markContentChanged();
-                }
-            })
-            .catch(err => {
-                console.error('复制图片Markdown语法失败:', err);
-            });
-    }, [content, markContentChanged]);
+    const handleImageInsert = (image: GalleryImage) => {
+        // 在光标位置或文本末尾插入图片Markdown语法
+        const textarea = textareaRef.current;
+        if (textarea) {
+            const imageMarkdown = `![${image.img_name}](${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${image.img_id})\n`;
+            
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            
+            // 更新内容，在光标位置插入图片
+            const newContent = content.substring(0, start) + imageMarkdown + content.substring(end);
+            setContent(newContent);
+            
+            // 更新光标位置到插入内容之后
+            setTimeout(() => {
+                textarea.focus();
+                textarea.selectionStart = start + imageMarkdown.length;
+                textarea.selectionEnd = start + imageMarkdown.length;
+            }, 0);
+            
+            markContentChanged();
+        }
+    };
 
     // 设置自动保存定时器
     useEffect(() => {
@@ -437,6 +428,11 @@ const Edit: React.FC = () => {
                 }
                 if (blog_data.blog_state !== undefined) {
                     setIsPublic(blog_data.blog_state);
+                }
+                
+                // 设置文章封面图（如果有）
+                if (blog_data.blog_image) {
+                    setBlogImage(blog_data.blog_image);
                 }
 
                 // 获取文章内容
@@ -629,6 +625,11 @@ const Edit: React.FC = () => {
                 })
             };
 
+            // 添加封面图ID（如果有）
+            if (blogImage && blogImage.img_id) {
+                requestData.blog_image_id = blogImage.img_id;
+            }
+
             console.log('正在保存文章:', requestData);
             const response = await updateOrAddBlog(requestData);
 
@@ -757,6 +758,17 @@ const Edit: React.FC = () => {
         markContentChanged();
     };
 
+    // 处理文章封面图选择
+    const handleArticleImageSelect = (image: GalleryImage) => {
+        setBlogImage(image);
+        markContentChanged();
+    };
+
+    // 打开文章封面图选择器
+    const openArticleImageSelector = () => {
+        setShowArticleImageSelector(true);
+    };
+
     return (
         <div className="edit-page">
             <div className="edit-container">
@@ -831,18 +843,40 @@ const Edit: React.FC = () => {
 
                         {/* 文章简介编辑 */}
                         <div className="edit-section">
-                            <label htmlFor="intro" className="section-label">文章简介</label>
-                            <textarea
-                                id="intro"
-                                className="intro-input"
-                                value={intro}
-                                onChange={(e) => {
-                                    setIntro(e.target.value);
-                                    markContentChanged();
-                                }}
-                                placeholder="请输入文章简介"
-                                rows={3}
-                            ></textarea>
+                            <div className="intro-with-image">
+                                <div className="intro-input-container">
+                                    <label htmlFor="intro" className="section-label">文章简介</label>
+                                    <textarea
+                                        id="intro"
+                                        className="intro-input"
+                                        value={intro}
+                                        onChange={(e) => {
+                                            setIntro(e.target.value);
+                                            markContentChanged();
+                                        }}
+                                        placeholder="请输入文章简介"
+                                    ></textarea>
+                                </div>
+                                <div className="article-image-container">
+                                    <label className="section-label">文章封面图</label>
+                                    <div 
+                                        className="article-image-preview" 
+                                        onClick={openArticleImageSelector}
+                                    >
+                                        {blogImage ? (
+                                            <img
+                                                src={`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${blogImage.img_id}`}
+                                                alt="文章封面图"
+                                            />
+                                        ) : (
+                                            <div className="image-placeholder">
+                                                <FiImage />
+                                                <span>点击添加封面图</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {/* 分类编辑 */}
@@ -1064,6 +1098,15 @@ const Edit: React.FC = () => {
                 onImageInsert={handleImageInsert}
                 mode="editor"
                 usageType="avatar" // 此字段在editor模式下不重要，但需要提供一个值
+            />
+
+            {/* 文章封面图选择器 */}
+            <ImageSelectorModal 
+                isOpen={showArticleImageSelector}
+                onClose={() => setShowArticleImageSelector(false)}
+                onImageSelect={handleArticleImageSelect}
+                mode="article"
+                usageType="avatar" // 此字段在article模式下不重要，但需要提供一个值
             />
         </div>
     );
