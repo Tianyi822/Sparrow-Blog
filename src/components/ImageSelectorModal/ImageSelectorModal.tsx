@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { FiLoader, FiPlus, FiX, FiCheckCircle, FiUploadCloud, FiUser, FiImage, FiLayout } from 'react-icons/fi';
-import { GalleryImage, getAllGalleryImages, addGalleryImages, AddImagesRequest } from '@/services/adminService';
+import { GalleryImage, getAllGalleryImages, addGalleryImages, AddImagesRequest, getImageUrl } from '@/services/adminService';
 import { getPreSignUrl, uploadToOSS, FileType, ContentType } from '@/services/ossService';
 import imageCompression from 'browser-image-compression';
 import "./ImageSelectorModal.scss"
@@ -558,7 +558,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                                 >
                                     <div className="image-preview">
                                         <img
-                                            src={`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${image.img_id}`}
+                                            src={getImageUrl(image.img_id)}
                                             alt={image.img_name}
                                         />
                                         {selectedImageId === image.img_id && (

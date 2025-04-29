@@ -5,7 +5,8 @@ import {
     getAllTagsAndCategories,
     getBlogDataForEdit,
     updateOrAddBlog,
-    GalleryImage
+    GalleryImage,
+    getImageUrl
 } from '@/services/adminService';
 import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
 import { marked } from 'marked';
@@ -300,7 +301,7 @@ const Edit: React.FC = () => {
         // 在光标位置或文本末尾插入图片Markdown语法
         const textarea = textareaRef.current;
         if (textarea) {
-            const imageMarkdown = `![${image.img_name}](${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${image.img_id})\n`;
+            const imageMarkdown = `![${image.img_name}](${getImageUrl(image.img_id)})\n`;
             
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
@@ -870,7 +871,7 @@ const Edit: React.FC = () => {
                                     >
                                         {blogImage ? (
                                             <img
-                                                src={`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${blogImage.img_id}`}
+                                                src={getImageUrl(blogImage.img_id)}
                                                 alt="文章封面图"
                                             />
                                         ) : (

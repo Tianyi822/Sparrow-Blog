@@ -873,6 +873,16 @@ export const sendSMTPVerificationCode = async (
     });
 };
 
+/**
+ * 获取图片的完整URL
+ * @param imgId 图片ID
+ * @returns 图片的完整URL
+ */
+export const getImageUrl = (imgId: string): string => {
+    const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
+    return `${businessServiceUrl}/img/get/${imgId}`;
+};
+
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
