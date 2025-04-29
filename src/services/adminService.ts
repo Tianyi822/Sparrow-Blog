@@ -880,7 +880,7 @@ export const sendSMTPVerificationCode = async (
  */
 export const getImageUrl = (imgId: string): string => {
     const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
-    return `${businessServiceUrl}/img/get/${imgId}`;
+    return `${businessServiceUrl}/web/img/get/${imgId}`;
 };
 
 export default {

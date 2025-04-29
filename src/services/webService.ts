@@ -32,7 +32,7 @@ export const checkSystemStatus = async (): Promise<{isRuntime: boolean, errorMes
     try {
         const response = await businessApiRequest<UserBasicInfoResponse>({
             method: 'GET',
-            url: '/web/user-basic-info'
+            url: '/web/config/user-basic-info'
         });
         
         return {
@@ -54,7 +54,7 @@ export const getBlogUserInfo = async (): Promise<BlogUserInfo | null> => {
     try {
         const response = await businessApiRequest<BlogUserInfoResponse>({
             method: 'GET',
-            url: '/web/user-basic-info'
+            url: '/web/config/user-basic-info'
         });
         
         if (response.code === 200 && response.data) {
