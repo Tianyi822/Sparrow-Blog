@@ -3,7 +3,7 @@ import { FiUser, FiMail, FiAlertCircle, FiUpload, FiImage, FiSave, FiGithub, FiC
 import './UserSetting.scss';
 import ImageSelectorModal from '@/components/ImageSelectorModal';
 import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
-import { GalleryImage, UserConfig } from '@/services/adminService';
+import { GalleryImage, getImageUrl, UserConfig } from '@/services/adminService';
 import { getUserConfig, updateUserConfig, updateUserImages, sendEmailVerificationCode } from '@/services/adminService';
 
 interface UserConfigProps {
@@ -76,13 +76,13 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
 
                     // 设置图片URL
                     if (avatar_image) {
-                        setAvatarImage(`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${avatar_image}`);
+                        setAvatarImage(getImageUrl(avatar_image));
                     }
                     if (web_logo) {
-                        setLogoImage(`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${web_logo}`);
+                        setLogoImage(getImageUrl(web_logo));
                     }
                     if (background_image) {
-                        setBackgroundImage(`${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${background_image}`);
+                        setBackgroundImage(getImageUrl(background_image));
                     }
                 }
             } catch (error) {
