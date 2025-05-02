@@ -313,17 +313,6 @@ export const loginWithVerificationCode = async (data: LoginRequest): Promise<Api
 };
 
 /**
- * 获取用户基本信息
- * @returns 用户基本信息
- */
-export const getUserBasicInfo = async (): Promise<ApiResponse<{ user_name: string }>> => {
-    return businessApiRequest<ApiResponse<{ user_name: string }>>({
-        method: 'GET',
-        url: '/web/user-basic-info'
-    });
-};
-
-/**
  * 获取所有博客列表
  * @returns 博客列表数据
  */
@@ -886,7 +875,6 @@ export const getImageUrl = (imgId: string): string => {
 export default {
     sendVerificationCode,
     loginWithVerificationCode,
-    getUserBasicInfo,
     getUserConfig,
     updateUserConfig,
     getServerConfig,

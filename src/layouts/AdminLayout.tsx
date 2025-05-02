@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { FiFileText, FiEdit, FiSettings, FiMessageCircle, FiLogOut, FiImage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { getUserBasicInfo } from '@/services/adminService';
+import { getUserConfig } from '@/services/adminService';
 import { LayoutContext } from './LayoutContext';
 import './AdminLayout.scss';
 
@@ -21,7 +21,7 @@ const AdminLayout: React.FC = () => {
     
     const fetchUserData = async () => {
       try {
-        const response = await getUserBasicInfo();
+        const response = await getUserConfig();
         
         if (response.code === 200 && response.data?.user_name) {
           setUserName(response.data.user_name);
