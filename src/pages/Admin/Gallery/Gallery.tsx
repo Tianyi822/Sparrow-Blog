@@ -6,7 +6,8 @@ import {
     renameGalleryImage,
     deleteGalleryImage,
     RenameImageRequest,
-    checkImageNameExistence
+    checkImageNameExistence,
+    getImageUrl
 } from '@/services/adminService';
 // 导入布局上下文
 import { createPortal } from 'react-dom';
@@ -270,7 +271,7 @@ const Gallery: React.FC = () => {
                 // 将API数据转换为组件所需的格式
                 const formattedImages: ImageItem[] = response.data.map(img => ({
                     id: img.img_id,
-                    url: `${businessServiceUrl}/img/get/${img.img_id}`,
+                    url: getImageUrl(img.img_id),
                     name: img.img_name,
                     type: img.img_type,
                     date: new Date().toLocaleDateString('zh-CN') // 由于API没有返回日期，使用当前日期
