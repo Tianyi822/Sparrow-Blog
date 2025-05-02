@@ -324,10 +324,21 @@
 
         // 标签列
         &.tags-column {
-          width: 150px; // 宽屏宽度，足够放下5个标签
+          width: 150px; // 宽屏宽度
           max-width: 150px;
           padding: 0.7rem 1rem;
           position: relative; // 用于弹窗定位
+          
+          @media (max-width: 1900px) {
+            width: 130px;
+            max-width: 130px;
+          }
+          
+          @media (max-width: 1700px) {
+            width: 110px;
+            max-width: 110px;
+          }
+          
           @media (max-width: 1500px) {
             display: none;
           }
@@ -526,17 +537,32 @@
           margin-right: 0.3rem;
           margin-bottom: 0;
           white-space: nowrap;
-          max-width: 90px;
-          min-width: 40px;
-          height: 24px;
           overflow: hidden;
           text-overflow: ellipsis;
+          height: 24px;
+          
+          // 根据屏幕宽度调整最大宽度
+          @media (min-width: 1900px) {
+            max-width: 100px;
+            min-width: 40px;
+          }
+          
+          @media (max-width: 1899px) and (min-width: 1700px) {
+            max-width: 85px;
+            min-width: 40px;
+          }
+          
+          @media (max-width: 1699px) and (min-width: 1500px) {
+            max-width: 75px;
+            min-width: 40px;
+          }
           
           &.more-tags {
             background-color: rgba(100, 108, 255, 0.2);
             color: rgba(150, 160, 255, 0.9);
             cursor: pointer;
             min-width: 35px;
+            max-width: 40px; // 确保"更多"按钮大小固定
             
             &:hover {
               background-color: rgba(100, 108, 255, 0.3);

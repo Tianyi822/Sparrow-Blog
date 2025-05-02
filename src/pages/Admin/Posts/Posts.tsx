@@ -208,9 +208,11 @@ const Posts: React.FC = () => {
     // 监听窗口大小变化
     useEffect(() => {
         const handleResize = () => {
-            setIsNarrowScreen(window.innerWidth <= 1500);
-            setIsWideScreen(window.innerWidth > 1800);
-            // 强制重新渲染来更新标签显示
+            const currentWidth = window.innerWidth;
+            setIsNarrowScreen(currentWidth <= 1500);
+            setIsWideScreen(currentWidth > 1800);
+            
+            // 强制重新渲染帖子列表以更新标签显示
             setPosts(prevPosts => [...prevPosts]);
         };
 
@@ -220,18 +222,18 @@ const Posts: React.FC = () => {
 
     // 获取标签显示数量 - 用于判断是否需要显示"更多"按钮
     const getTagDisplayCount = () => {
-        if (isWideScreen) return 5; // 大屏幕显示最多5个标签
-        if (window.innerWidth > 1600) return 4; // 中等宽度显示最多4个标签
-        if (window.innerWidth > 1300) return 3; // 较小宽度显示最多3个标签
-        return 2; // 默认显示最多2个标签
+        if (window.innerWidth > 1900) return 4; // 超宽屏显示4个标签
+        if (window.innerWidth > 1700) return 3; // 大屏幕显示3个标签
+        if (window.innerWidth > 1500) return 2; // 中等宽度显示2个标签
+        return 1; // 小屏幕只显示1个标签
     };
 
     // 获取标签实际显示数量 - 限制直接显示的标签数，其余在"+n"中显示
     const getTagLimitCount = () => {
-        if (isWideScreen) return 4; // 大屏幕直接显示4个标签
-        if (window.innerWidth > 1600) return 3; // 中等宽度直接显示3个标签
-        if (window.innerWidth > 1300) return 2; // 较小宽度直接显示2个标签
-        return 1; // 默认直接显示1个标签
+        if (window.innerWidth > 1900) return 3; // 超宽屏直接显示3个标签
+        if (window.innerWidth > 1700) return 2; // 大屏幕直接显示2个标签
+        if (window.innerWidth > 1500) return 1; // 中等宽度直接显示1个标签
+        return 0; // 小屏幕不直接显示标签，全部用+n按钮
     };
 
     // 处理点击more-tags显示弹窗
@@ -470,18 +472,21 @@ const Posts: React.FC = () => {
                                 {!isNarrowScreen && (
                                     <td className="tags-column">
                                         <div className="tag-container">
-                                            {post.tags.length <= getTagDisplayCount() ? (
+                                            {post.tags.length === 0 ? (
+                                                <span className="no-tags">-</span>
+                                            ) : post.tags.length <= getTagDisplayCount() ? (
                                                 post.tags.map(tag => (
-                                                    <span key={tag.tag_id} className="tag-badge">{tag.tag_name}</span>
+                                                    <span key={tag.tag_id} className="tag-badge" title={tag.tag_name}>{tag.tag_name}</span>
                                                 ))
                                             ) : (
                                                 <>
-                                                    {post.tags.slice(0, getTagLimitCount()).map(tag => (
-                                                        <span key={tag.tag_id} className="tag-badge">{tag.tag_name}</span>
+                                                    {getTagLimitCount() > 0 && post.tags.slice(0, getTagLimitCount()).map(tag => (
+                                                        <span key={tag.tag_id} className="tag-badge" title={tag.tag_name}>{tag.tag_name}</span>
                                                     ))}
                                                     <span
                                                         className="tag-badge more-tags"
                                                         onClick={(e) => handleMoreTagsClick(post.blog_id, e)}
+                                                        title={`查看全部 ${post.tags.length} 个标签`}
                                                     >
                                                         +{post.tags.length - getTagLimitCount()}
                                                     </span>
