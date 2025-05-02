@@ -15,6 +15,7 @@ interface BlogCardProps {
 
 const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, tags, image, description, className }) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
+    const isTop = className?.includes('top');
 
     // 调试图片URL
     useEffect(() => {
@@ -25,6 +26,11 @@ const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, 
         <article className={`blog-card ${className || ''}`} ref={cardRef}>
             <div className="blog-card-glow" ref={glowRef}/>
             <div className="blog-card-border-glow" ref={borderGlowRef}/>
+            {isTop && (
+                <div className="blog-card-top-badge">
+                    <div className="blog-card-top-badge-triangle"></div>
+                </div>
+            )}
             <div
                 className="blog-card-img"
                 style={{
