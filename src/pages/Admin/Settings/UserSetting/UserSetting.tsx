@@ -228,7 +228,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     // 处理选择图片
     const handleImageSelect = (image: GalleryImage, usageType: ImageUsageType) => {
         // 获取图片URL
-        const imageUrl = `${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${image.img_id}`;
+        const imageUrl = getImageUrl(image.img_id);
 
         // 根据不同的用途类型更新不同的图片
         if (usageType === 'avatar') {
