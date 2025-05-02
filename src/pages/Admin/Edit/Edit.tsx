@@ -439,6 +439,17 @@ const Edit: React.FC = () => {
                 // 设置文章封面图（如果有）
                 if (blog_data.blog_image) {
                     setBlogImage(blog_data.blog_image);
+                } 
+                // 如果有 blog_image_id 但没有 blog_image 对象
+                else if (blog_data.blog_image_id) {
+                    // 创建一个临时的 GalleryImage 对象
+                    const imageData: GalleryImage = {
+                        img_id: blog_data.blog_image_id,
+                        img_name: '文章封面图',
+                        img_type: 'webp',
+                        create_time: ''
+                    };
+                    setBlogImage(imageData);
                 }
 
                 // 获取文章内容

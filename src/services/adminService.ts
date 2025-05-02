@@ -107,6 +107,7 @@ export interface BlogDataResponse {
             blog_is_top?: boolean;
             blog_state?: boolean;
             blog_image?: GalleryImage;
+            blog_image_id?: string;
         };
         content_url: string;
     };
