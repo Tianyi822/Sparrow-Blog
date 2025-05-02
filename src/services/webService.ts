@@ -1,13 +1,5 @@
 import { businessApiRequest, ApiResponse } from './api';
 
-// 用户基本信息接口
-interface UserBasicInfo {
-    username: string;
-    avatar: string;
-    role: string;
-    // 其他用户基本信息字段
-}
-
 // 博客用户信息接口
 export interface BlogUserInfo {
     avatar_image: string;
@@ -20,7 +12,6 @@ export interface BlogUserInfo {
     user_github_address?: string;
 }
 
-type UserBasicInfoResponse = ApiResponse<UserBasicInfo>;
 type BlogUserInfoResponse = ApiResponse<BlogUserInfo>;
 
 /**
@@ -30,9 +21,9 @@ type BlogUserInfoResponse = ApiResponse<BlogUserInfo>;
  */
 export const checkSystemStatus = async (): Promise<{isRuntime: boolean, errorMessage?: string}> => {
     try {
-        const response = await businessApiRequest<UserBasicInfoResponse>({
+        const response = await businessApiRequest<ApiResponse<null>>({
             method: 'GET',
-            url: '/web/config/user-basic-info'
+            url: '/web/sys/status'
         });
         
         return {
@@ -54,7 +45,7 @@ export const getBlogUserInfo = async (): Promise<BlogUserInfo | null> => {
     try {
         const response = await businessApiRequest<BlogUserInfoResponse>({
             method: 'GET',
-            url: '/web/config/user-basic-info'
+            url: '/web/config/user'
         });
         
         if (response.code === 200 && response.data) {
@@ -74,7 +65,7 @@ export const getBlogUserInfo = async (): Promise<BlogUserInfo | null> => {
  */
 export const getImageUrl = (imageId: string): string => {
     if (!imageId) return '';
-    return `${import.meta.env.VITE_BUSINESS_SERVICE_URL}/img/get/${imageId}`;
+    return `${import.meta.env.VITE_BUSINESS_SERVICE_URL}/web/img/get/${imageId}`;
 };
 
 export default {
