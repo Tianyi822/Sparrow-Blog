@@ -81,7 +81,7 @@ const Home: React.FC = () => {
                         tagIds: tagIds,
                         image: blog.blog_image_id ? getImageUrl(blog.blog_image_id) : '',
                         description: blog.blog_brief || '',
-                        isTop: !!blog.blog_is_top
+                        isTop: blog.blog_is_top
                     };
                 });
                 
