@@ -42,7 +42,6 @@ const Posts: React.FC = () => {
     const [isNarrowScreen, setIsNarrowScreen] = useState<boolean>(window.innerWidth <= 1500);
     const [activeTagPopup, setActiveTagPopup] = useState<string | null>(null);
     const [popupPosition, setPopupPosition] = useState<{ top: number, left: number } | null>(null);
-    const [isWideScreen, setIsWideScreen] = useState<boolean>(window.innerWidth > 1800);
     const [isClosing, setIsClosing] = useState<boolean>(false);
     const tagsRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
@@ -210,7 +209,6 @@ const Posts: React.FC = () => {
         const handleResize = () => {
             const currentWidth = window.innerWidth;
             setIsNarrowScreen(currentWidth <= 1500);
-            setIsWideScreen(currentWidth > 1800);
             
             // 强制重新渲染帖子列表以更新标签显示
             setPosts(prevPosts => [...prevPosts]);
