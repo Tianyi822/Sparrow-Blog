@@ -724,6 +724,7 @@ const Edit: React.FC = () => {
                 };
                 addTag(newTag);
             }
+            // 清空输入框
             setTagInput('');
             markContentChanged();
         }
