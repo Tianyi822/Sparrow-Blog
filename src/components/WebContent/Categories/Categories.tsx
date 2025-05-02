@@ -1,27 +1,32 @@
 import './Categories.scss';
 import use3DEffect from '@/hooks/use3DEffect';
+import { BlogCategory, BlogInfo } from '@/services/webService';
+import { useMemo } from 'react';
 
 interface CategoriesProps {
     className?: string;
+    categories: BlogCategory[];
+    blogCounts: BlogInfo[];
 }
 
-interface CategoryItem {
-    id: number;
-    name: string;
+interface CategoryWithCount extends BlogCategory {
     count: number;
 }
 
-const CATEGORIES: CategoryItem[] = [
-    {id: 1, name: "博客版本记录", count: 1},
-    {id: 2, name: "大数据", count: 10},
-    {id: 3, name: "奇技淫巧", count: 3},
-    {id: 4, name: "学习笔记", count: 23},
-    {id: 5, name: "小工具开发", count: 1},
-    {id: 6, name: "生活", count: 3}
-];
-
-const Categories: React.FC<CategoriesProps> = ({className}) => {
+const Categories: React.FC<CategoriesProps> = ({className, categories, blogCounts}) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
+
+    // 计算每个分类的文章数量
+    const categoriesWithCount = useMemo(() => {
+        return categories.map(category => {
+            // 计算该分类下的文章数量
+            const count = blogCounts.filter(blog => blog.category_id === category.category_id).length;
+            return {
+                ...category,
+                count
+            };
+        });
+    }, [categories, blogCounts]);
 
     return (
         <div className={`categories ${className || ''}`} ref={cardRef}>
@@ -32,9 +37,9 @@ const Categories: React.FC<CategoriesProps> = ({className}) => {
                 分类
             </h3>
             <div className="categories-list">
-                {CATEGORIES.map(category => (
-                    <div key={category.id} className="category-item">
-                        <span className="category-name">{category.name}</span>
+                {categoriesWithCount.map(category => (
+                    <div key={category.category_id} className="category-item">
+                        <span className="category-name">{category.category_name}</span>
                         <span className="category-count">{category.count}</span>
                     </div>
                 ))}

@@ -1,18 +1,38 @@
 import { businessApiRequest, ApiResponse } from './api';
+import { BlogCategory, BlogTag } from './adminService';
 
-// 博客用户信息接口
-export interface BlogUserInfo {
-    avatar_image: string;
-    background_image: string;
-    user_email: string;
-    user_name: string;
-    web_logo: string;
-    type_writer_content?: string[];
-    user_hobbies?: string[];
-    user_github_address?: string;
+// 博客文章信息接口
+export interface BlogInfo {
+    blog_id: string;
+    blog_title: string;
+    blog_image_id: string;
+    blog_brief: string;
+    category_id: string;
+    category: BlogCategory;
+    tags: BlogTag[];
+    blog_state: boolean;
+    blog_words_num: number;
+    blog_is_top: boolean;
+    create_time: string;
+    update_time: string;
 }
 
-type BlogUserInfoResponse = ApiResponse<BlogUserInfo>;
+// 主页数据接口
+export interface HomeData {
+    avatar_image: string;
+    background_image: string;
+    blogs: BlogInfo[];
+    categories: BlogCategory[];
+    tags: BlogTag[];
+    type_writer_content: string[];
+    user_email: string;
+    user_github_address: string;
+    user_hobbies: string[];
+    user_name: string;
+    web_logo: string;
+}
+
+type HomeDataResponse = ApiResponse<HomeData>;
 
 /**
  * 获取用户基本信息以检查系统状态
@@ -39,13 +59,13 @@ export const checkSystemStatus = async (): Promise<{isRuntime: boolean, errorMes
 };
 
 /**
- * 获取博客用户信息，包括用户名、头像、Logo和背景图片
+ * 获取主页数据，包括用户信息、博客列表、分类和标签
  */
-export const getBlogUserInfo = async (): Promise<BlogUserInfo | null> => {
+export const getHomeData = async (): Promise<HomeData | null> => {
     try {
-        const response = await businessApiRequest<BlogUserInfoResponse>({
+        const response = await businessApiRequest<HomeDataResponse>({
             method: 'GET',
-            url: '/web/config/user'
+            url: '/web/home'
         });
         
         if (response.code === 200 && response.data) {
@@ -53,7 +73,7 @@ export const getBlogUserInfo = async (): Promise<BlogUserInfo | null> => {
         }
         return null;
     } catch (error) {
-        console.error('获取博客用户信息失败:', error);
+        console.error('获取主页数据失败:', error);
         return null;
     }
 };
@@ -70,6 +90,6 @@ export const getImageUrl = (imageId: string): string => {
 
 export default {
     checkSystemStatus,
-    getBlogUserInfo,
+    getHomeData,
     getImageUrl
 };

@@ -1,5 +1,6 @@
 import './BlogCard.scss';
 import use3DEffect from '@/hooks/use3DEffect';
+import { useEffect } from 'react';
 
 interface BlogCardProps {
     title: string;
@@ -15,13 +16,22 @@ interface BlogCardProps {
 const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, tags, image, description, className }) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
 
+    // 调试图片URL
+    useEffect(() => {
+        console.log('Blog Image URL:', image);
+    }, [image]);
+
     return (
         <article className={`blog-card ${className || ''}`} ref={cardRef}>
             <div className="blog-card-glow" ref={glowRef}/>
             <div className="blog-card-border-glow" ref={borderGlowRef}/>
             <div
                 className="blog-card-img"
-                style={{backgroundImage: `url(${image})`}}
+                style={{
+                    backgroundImage: `url(${image})`,
+                    height: '250px', // 添加固定高度
+                    minHeight: '200px' // 添加最小高度
+                }}
             />
             <div className="blog-card-content">
                 <div className="blog-card-header">

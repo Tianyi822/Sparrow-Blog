@@ -1,9 +1,9 @@
 import { useOutletContext } from "react-router-dom";
-import { BlogUserInfo } from "@/services/webService";
+import { HomeData } from "@/services/webService";
 
 // Define the type for our context
 export type BlogLayoutContext = {
-  userInfo: BlogUserInfo | null;
+  homeData: HomeData | null;
   getImageUrl: (imageId: string) => string;
 };
 

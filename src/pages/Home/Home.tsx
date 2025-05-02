@@ -5,7 +5,7 @@ import Pagination from '@/components/Home/Pagination';
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import WebContent from '@/components/WebContent/WebContent';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import "./Home.scss";
 
 interface BlogData {
@@ -16,57 +16,69 @@ interface BlogData {
     tags: string[];
     image: string;
     description: string;
+    isTop: boolean;
 }
 
-const INITIAL_BLOG_DATA: BlogData[] = [
-    {
-        title: "MacBook M1平台使用 C++ 连接 MySQL",
-        date: "2021-12-27",
-        updateDate: "2021-12-27",
-        category: "教程",
-        tags: ["CPP", "MySQL", "教程库"],
-        image: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg",
-        description: "Photo by Igor Miske on Unsplash 原本以为上一篇博客就是今年最后一篇博客了，今天突然想想，想用C++操作下MySQL，然后就折腾了好久，一度想放弃，最后..."
-    },
-    {
-        title: "2021 回顾",
-        date: "2021-12-26",
-        updateDate: "2022-2-4",
-        category: "生活",
-        tags: ["生活", "年"],
-        image: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg",
-        description: "去年12月份，我重新搭建了新的博客，想以此为新在2021年的新起点。同时也告别2020这让我铭记的一年。同样的时间，不同的地点，一年中我又走过了很多地方..."
-    },
-    {
-        title: "C++的智能指针笔记",
-        date: "2021-12-26",
-        updateDate: "2021-12-26",
-        category: "智能指针",
-        tags: ["智能指针", "CPP"],
-        image: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg",
-        description: "Photo by Ryan Stone on Unsplash 在之前红黑树的中使用了了智能指针，所谓智能指针就是能够自己进行内存的释放，不需要像普通指针一样手动 delete，红黑树的代码中使用..."
-    },
-    {
-        title: "数据结构基础（C++语言实现）- 红黑树",
-        date: "2021-12-25",
-        updateDate: "2022-1-2",
-        category: "数据结构",
-        tags: ["智能指针", "CPP", "数据结构"],
-        image: "https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/ayaka.jpg",
-        description: "2-3树 基本性质 满足二分搜索树的基本性质：节点可以存放一个元素或者两个元素；在基础之上，红黑树其实可以看成是2-3数，只不过红黑树的节点只放了一个元素..."
-    }
-];
-
 const Home: React.FC = () => {
-    const [blogData] = useState(INITIAL_BLOG_DATA);
+    const [blogData, setBlogData] = useState<BlogData[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages] = useState(20);
-    const { userInfo, getImageUrl } = useBlogLayoutContext();
+    const [totalPages, setTotalPages] = useState(1);
+    const { homeData, getImageUrl } = useBlogLayoutContext();
+    const BLOGS_PER_PAGE = 8; // 每页显示8条博客
 
     // 获取用户头像URL
-    const avatarImageUrl = userInfo?.avatar_image
-        ? getImageUrl(userInfo.avatar_image)
+    const avatarImageUrl = homeData?.avatar_image
+        ? getImageUrl(homeData.avatar_image)
         : '';
+
+    // 处理博客数据
+    useEffect(() => {
+        if (homeData && homeData.blogs) {
+            // 过滤出 blog_state 为 true 的文章（表示需要显示的文章）
+            const displayBlogs = homeData.blogs.filter(blog => blog.blog_state);
+            
+            // 将API返回的博客数据转换为组件需要的格式
+            const formattedBlogs: BlogData[] = displayBlogs.map(blog => ({
+                title: blog.blog_title,
+                date: new Date(blog.create_time).toLocaleDateString(),
+                updateDate: blog.update_time && blog.update_time !== "0001-01-01T00:00:00Z" 
+                    ? new Date(blog.update_time).toLocaleDateString() 
+                    : new Date(blog.create_time).toLocaleDateString(),
+                category: blog.category.category_name,
+                tags: blog.tags.map(tag => tag.tag_name),
+                image: blog.blog_image_id ? getImageUrl(blog.blog_image_id) : '',
+                description: blog.blog_brief,
+                isTop: blog.blog_is_top || false
+            }));
+            
+            // 根据置顶状态和创建时间排序
+            formattedBlogs.sort((a, b) => {
+                // 首先按置顶状态排序
+                if (a.isTop && !b.isTop) return -1;
+                if (!a.isTop && b.isTop) return 1;
+                
+                // 如果置顶状态相同，则按创建时间排序（较新的排在前面）
+                const dateA = new Date(a.date).getTime();
+                const dateB = new Date(b.date).getTime();
+                return dateB - dateA;
+            });
+            
+            setBlogData(formattedBlogs);
+            
+            // 计算总页数 (每页10篇文章)
+            const pages = Math.ceil(formattedBlogs.length / BLOGS_PER_PAGE);
+            setTotalPages(pages > 0 ? pages : 1);
+        }
+    }, [homeData, getImageUrl]);
+
+    // 使用 useMemo 获取当前页的博客数据
+    const currentPageBlogs = useMemo(() => {
+        const startIndex = (currentPage - 1) * BLOGS_PER_PAGE;
+        const endIndex = startIndex + BLOGS_PER_PAGE;
+        const blogs = blogData.slice(startIndex, endIndex);
+        
+        return blogs;
+    }, [blogData, currentPage, BLOGS_PER_PAGE]);
 
     // 使用 useCallback 优化点击处理函数
     const handleScrollDown = useCallback(() => {
@@ -83,6 +95,15 @@ const Home: React.FC = () => {
     const handlePageChange = useCallback((page: number) => {
         console.log(`Page changed to: ${page}`);
         setCurrentPage(page);
+        // 滚动到内容顶部
+        const mainSection = document.querySelector('.main-content');
+        if (mainSection) {
+            const offsetTop = (mainSection as HTMLElement).offsetTop;
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
+            });
+        }
     }, []);
 
     return (
@@ -91,9 +112,9 @@ const Home: React.FC = () => {
                 <div className="landing-content">
                     <Introduction
                         className="home-introduction"
-                        userName={userInfo?.user_name}
-                        typeWriterContent={userInfo?.type_writer_content}
-                        userHobbies={userInfo?.user_hobbies}
+                        userName={homeData?.user_name}
+                        typeWriterContent={homeData?.type_writer_content}
+                        userHobbies={homeData?.user_hobbies}
                     />
                     <Clock
                         className="home-clock"
@@ -111,27 +132,29 @@ const Home: React.FC = () => {
             <section className="main-content" id="main-content">
                 <div className="blog-content">
                     <div className="blog-cards-container">
-                        {blogData.map((blog, index) => (
+                        {currentPageBlogs.map((blog, index) => (
                             <BlogCard
                                 key={index}
-                                className={index % 2 === 0 ? 'even' : 'odd'}
+                                className={`${index % 2 === 0 ? 'even' : 'odd'} ${blog.isTop ? 'top' : ''}`}
                                 {...blog}
                             />
                         ))}
                     </div>
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        className="blog-pagination"
-                        onPageChange={handlePageChange}
-                    />
+                    {totalPages > 1 && (
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            className="blog-pagination"
+                            onPageChange={handlePageChange}
+                        />
+                    )}
                 </div>
                 <WebContent 
                     className="home-web-content" 
-                    authorName={userInfo?.user_name}
+                    authorName={homeData?.user_name}
                     authorAvatar={avatarImageUrl}
-                    authorEmail={userInfo?.user_email}
-                    authorGithub={userInfo?.user_github_address}
+                    authorEmail={homeData?.user_email}
+                    authorGithub={homeData?.user_github_address}
                 />
             </section>
         </div>
