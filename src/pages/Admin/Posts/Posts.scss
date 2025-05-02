@@ -66,14 +66,14 @@
   &::after {
     content: '';
     position: absolute;
-    top: 10px;
-    left: -6px;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
     width: 12px;
     height: 12px;
     background-color: rgba(45, 45, 60, 0.98);
-    transform: rotate(45deg);
     border-left: 1px solid rgba(255, 255, 255, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
     z-index: -1;
   }
 }
@@ -505,10 +505,13 @@
       .tags-column {
         .tag-container {
           display: flex;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
           align-items: center;
           width: 100%;
-          position: relative; // 为弹窗定位
+          position: relative;
+          height: 24px;
+          overflow: hidden;
+          white-space: nowrap;
         }
         
         .tag-badge {
@@ -521,10 +524,10 @@
           border-radius: 4px;
           font-size: 0.8rem;
           margin-right: 0.3rem;
-          margin-bottom: 0.25rem;
+          margin-bottom: 0;
           white-space: nowrap;
-          max-width: 90px; // 默认宽屏下的标签宽度
-          min-width: 40px; // 设置最小宽度
+          max-width: 90px;
+          min-width: 40px;
           height: 24px;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -533,7 +536,7 @@
             background-color: rgba(100, 108, 255, 0.2);
             color: rgba(150, 160, 255, 0.9);
             cursor: pointer;
-            min-width: 35px; // 更小的最小宽度
+            min-width: 35px;
             
             &:hover {
               background-color: rgba(100, 108, 255, 0.3);

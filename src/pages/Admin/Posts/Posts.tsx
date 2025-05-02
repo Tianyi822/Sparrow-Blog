@@ -210,20 +210,28 @@ const Posts: React.FC = () => {
         const handleResize = () => {
             setIsNarrowScreen(window.innerWidth <= 1500);
             setIsWideScreen(window.innerWidth > 1800);
+            // 强制重新渲染来更新标签显示
+            setPosts(prevPosts => [...prevPosts]);
         };
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // 获取标签显示数量
+    // 获取标签显示数量 - 用于判断是否需要显示"更多"按钮
     const getTagDisplayCount = () => {
-        return isWideScreen ? 5 : 3;
+        if (isWideScreen) return 5; // 大屏幕显示最多5个标签
+        if (window.innerWidth > 1600) return 4; // 中等宽度显示最多4个标签
+        if (window.innerWidth > 1300) return 3; // 较小宽度显示最多3个标签
+        return 2; // 默认显示最多2个标签
     };
 
-    // 获取标签限制展示数量
+    // 获取标签实际显示数量 - 限制直接显示的标签数，其余在"+n"中显示
     const getTagLimitCount = () => {
-        return isWideScreen ? 4 : 2;
+        if (isWideScreen) return 4; // 大屏幕直接显示4个标签
+        if (window.innerWidth > 1600) return 3; // 中等宽度直接显示3个标签
+        if (window.innerWidth > 1300) return 2; // 较小宽度直接显示2个标签
+        return 1; // 默认直接显示1个标签
     };
 
     // 处理点击more-tags显示弹窗
@@ -236,9 +244,10 @@ const Posts: React.FC = () => {
             setIsClosing(false);
             const target = event.currentTarget as HTMLElement;
             const rect = target.getBoundingClientRect();
+            const buttonCenter = rect.left + (rect.width / 2);
             setPopupPosition({
-                top: rect.top,
-                left: rect.left + rect.width + 5
+                top: rect.bottom + 10, // 稍微增加间距，为箭头留出足够空间
+                left: buttonCenter - 350 // 弹窗宽度约为200px，居中显示
             });
             setActiveTagPopup(postId);
         }
