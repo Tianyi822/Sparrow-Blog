@@ -55,6 +55,16 @@
                 border-radius: 10px;
                 transition: all 0.3s ease;
             }
+
+            &.active {
+                background: var(--primary-color);
+                color: white;
+                
+                .category-count {
+                    background: rgba(255, 255, 255, 0.2);
+                    color: white;
+                }
+            }
         }
     }
 

@@ -89,6 +89,12 @@
                 transform: translateY(-4px);
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             }
+
+            &.active {
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
+            }
         }
     }
 

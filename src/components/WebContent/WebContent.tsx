@@ -5,6 +5,8 @@ import Categories from '@/components/WebContent/Categories/Categories';
 import './WebContent.scss';
 import Tags from './Tags/Tags';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
+import { BlogCategory, BlogTag } from '@/services/adminService';
+import { useMemo } from 'react';
 
 interface WebContentProps {
     className?: string;
@@ -12,6 +14,10 @@ interface WebContentProps {
     authorAvatar?: string;
     authorEmail?: string;
     authorGithub?: string;
+    onCategoryClick?: (category: BlogCategory) => void;
+    onTagClick?: (tag: BlogTag) => void;
+    activeCategoryId?: string | null;
+    activeTagId?: string | null;
 }
 
 const WebContent: React.FC<WebContentProps> = ({
@@ -19,16 +25,28 @@ const WebContent: React.FC<WebContentProps> = ({
     authorName,
     authorAvatar,
     authorEmail,
-    authorGithub
+    authorGithub,
+    onCategoryClick,
+    onTagClick,
+    activeCategoryId,
+    activeTagId
 }) => {
     const { homeData } = useBlogLayoutContext();
 
+    // 过滤出已发布的博客
+    const publishedBlogs = useMemo(() => {
+        return homeData?.blogs?.filter(blog => blog.blog_state) || [];
+    }, [homeData?.blogs]);
+
     // 计算文章、标签和分类的数量
     const stats = {
-        articles: homeData?.blogs?.length || 0,
+        articles: publishedBlogs.length,
         tags: homeData?.tags?.length || 0,
         categories: homeData?.categories?.length || 0
     };
+
+    console.log('WebContent received activeCategoryId:', activeCategoryId);
+    console.log('Published blogs count:', publishedBlogs.length);
 
     return (
         <div className={`web-content ${className || ''}`}>
@@ -46,11 +64,15 @@ const WebContent: React.FC<WebContentProps> = ({
             <Categories 
                 className="web-content-categories"
                 categories={homeData?.categories || []}
-                blogCounts={homeData?.blogs || []}
+                blogCounts={publishedBlogs}
+                onCategoryClick={onCategoryClick}
+                activeCategory={activeCategoryId}
             />
             <Tags 
                 className="web-content-tags"
                 tags={homeData?.tags || []}
+                onTagClick={onTagClick}
+                activeTag={activeTagId}
             />
         </div>
     );
