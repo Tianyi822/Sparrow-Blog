@@ -59,13 +59,13 @@ type HomeDataResponse = ApiResponse<HomeData>;
  * 如果成功获取用户信息，表示系统已配置完成并在运行状态
  * 如果请求失败，表示系统可能尚未配置或需要初始化
  */
-export const checkSystemStatus = async (): Promise<{isRuntime: boolean, errorMessage?: string}> => {
+export const checkSystemStatus = async (): Promise<{ isRuntime: boolean, errorMessage?: string }> => {
     try {
         const response = await businessApiRequest<ApiResponse<null>>({
             method: 'GET',
             url: '/web/sys/status'
         });
-        
+
         return {
             isRuntime: response.code === 200,
         };
@@ -87,7 +87,7 @@ export const getHomeData = async (): Promise<HomeData | null> => {
             method: 'GET',
             url: '/web/home'
         });
-        
+
         if (response.code === 200 && response.data) {
             return response.data;
         }
@@ -109,7 +109,7 @@ export const getBlogContent = async (blogId: string): Promise<BlogContentData | 
             method: 'GET',
             url: `/web/blog/${blogId}`
         });
-        
+
         if (response.code === 200 && response.data) {
             return response.data;
         }
@@ -129,13 +129,32 @@ export const fetchMarkdownContent = async (url: string): Promise<string> => {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Failed to fetch markdown content: ${response.status} ${response.statusText}`);
+            const errorMessage = `获取Markdown内容失败: 状态码 ${response.status} ${response.statusText}`;
+            console.error(errorMessage);
         }
         return await response.text();
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error fetching markdown';
-        console.error('获取Markdown内容失败:', errorMessage);
-        throw error;
+        // 实质性地增强错误，添加更多上下文信息
+        const enhancedError = new Error(`Markdown内容获取失败: ${error instanceof Error ? error.message : String(error)}`);
+        
+        // 保留原始错误堆栈信息
+        if (error instanceof Error && error.stack) {
+            enhancedError.stack = `${enhancedError.stack}\nCaused by: ${error.stack}`;
+            
+            // 可以保留原始错误的其他属性
+            Object.entries(error).forEach(([key, value]) => {
+                if (key !== 'message' && key !== 'stack') {
+                    // @ts-expect-error 自定义错误属性
+                    enhancedError[key] = value;
+                }
+            });
+        }
+        
+        // 记录增强后的错误
+        console.error('获取Markdown内容失败:', enhancedError);
+        
+        // 抛出增强后的错误
+        throw enhancedError;
     }
 };
 
