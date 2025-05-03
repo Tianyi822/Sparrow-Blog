@@ -129,11 +129,12 @@ export const fetchMarkdownContent = async (url: string): Promise<string> => {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Failed to fetch markdown content: ${response.statusText}`);
+            throw new Error(`Failed to fetch markdown content: ${response.status} ${response.statusText}`);
         }
         return await response.text();
     } catch (error) {
-        console.error('获取Markdown内容失败:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error fetching markdown';
+        console.error('获取Markdown内容失败:', errorMessage);
         throw error;
     }
 };

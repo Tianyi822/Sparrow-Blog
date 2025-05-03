@@ -214,7 +214,6 @@ const BlogContent: React.FC = () => {
                 components={{
                   // 自定义组件可以在这里添加
                 }}
-                // @ts-ignore
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
               />
             )}
