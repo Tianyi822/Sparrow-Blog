@@ -20,6 +20,7 @@ interface BlogData {
     image: string;
     description: string;
     isTop: boolean;
+    blogId: string; // Add blog_id to the interface
 }
 
 const Home: React.FC = () => {
@@ -81,7 +82,8 @@ const Home: React.FC = () => {
                         tagIds: tagIds,
                         image: blog.blog_image_id ? getImageUrl(blog.blog_image_id) : '',
                         description: blog.blog_brief || '',
-                        isTop: blog.blog_is_top
+                        isTop: blog.blog_is_top,
+                        blogId: blog.blog_id
                     };
                 });
                 
@@ -283,13 +285,18 @@ const Home: React.FC = () => {
                     )}
                     <div className="blog-cards-container">
                         {currentPageBlogs.length > 0 ? (
-                            currentPageBlogs.map((blog, index) => (
+                            currentPageBlogs.map((blog, index) => {
+                                // Omit blogId from spread to avoid duplicate props
+                                const { blogId, ...otherProps } = blog;
+                                return (
                                 <BlogCard
                                     key={index}
                                     className={`${index % 2 === 0 ? 'even' : 'odd'} ${blog.isTop ? 'top' : ''}`}
-                                    {...blog}
+                                        blogId={blogId}
+                                        {...otherProps}
                                 />
-                            ))
+                                );
+                            })
                         ) : (
                             <div className="no-blogs-message">
                                 没有找到相关文章

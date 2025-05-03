@@ -95,14 +95,14 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     ];
 
     interface NavItem {
-    name: string;
-    path: string;
-    label: string;
-    icon: string;
-    onClick?: () => void;
-}
+        name: string;
+        path: string;
+        label: string;
+        icon: string;
+        onClick?: () => void;
+    }
 
-const handleClick = useCallback((idx: number, item: NavItem) => {
+    const handleClick = useCallback((idx: number, item: NavItem) => {
         if (setIndex && idx !== 0) {
             setIndex(idx);
         }
@@ -116,6 +116,18 @@ const handleClick = useCallback((idx: number, item: NavItem) => {
         }
         setIsMenuOpen(false);  // 选中选项后关闭菜单
     }, [setIndex, navigate]);
+
+    // 处理品牌点击，导航到首页
+    const handleBrandClick = useCallback(() => {
+        // 导航到首页
+        navigate('/');
+        // 设置激活索引为首页(索引1)
+        if (setIndex) {
+            setIndex(1);
+        }
+        // 关闭菜单(如果打开)
+        setIsMenuOpen(false);
+    }, [navigate, setIndex]);
 
     const toggleMenu = useCallback(() => {
         console.log('Menu button clicked, toggling menu. Current state:', isMenuOpen);
@@ -139,7 +151,13 @@ const handleClick = useCallback((idx: number, item: NavItem) => {
 
     return (
         <nav className={navClasses}>
-            <div className="nav-brand">{userName}&#39;s Blog</div>
+            <div 
+                className="nav-brand" 
+                onClick={handleBrandClick}
+                style={{ cursor: 'pointer' }}
+            >
+                {userName}&#39;s Blog
+            </div>
 
             <ul className={`nav-list ${isMenuOpen ? 'open' : ''}`}>
                 {navItems.map((item, idx) => (

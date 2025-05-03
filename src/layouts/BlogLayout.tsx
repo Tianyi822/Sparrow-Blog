@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { FC, useEffect, useState } from "react";
 import Background from "@/components/Background/Background";
 import Navigator from "@/components/Navigator/Navigator";
@@ -12,6 +12,10 @@ const BlogLayout: FC = () => {
     const [userName, setUserName] = useState<string>("Blog");
     const [bgImage, setBgImage] = useState<string>("");
     const [homeData, setHomeData] = useState<HomeData | null>(null);
+    const location = useLocation();
+    
+    // 检查是否在博客内容页
+    const isBlogContentPage = location.pathname.startsWith('/blog/');
 
     useEffect(() => {
         // 获取主页数据
@@ -64,7 +68,12 @@ const BlogLayout: FC = () => {
     return (
         <div className="blog-layout">
             {bgImage && <Background backgroundImage={bgImage} />}
-            <Navigator className="blog-layout-navigator" index={navIndex} setIndex={setNavIndex} userName={userName} />
+            <Navigator 
+                className="blog-layout-navigator" 
+                index={isBlogContentPage ? -1 : navIndex} 
+                setIndex={setNavIndex} 
+                userName={userName} 
+            />
             <div className="blog-content">
                 <Outlet context={contextValue} /> {/* 传递上下文给子路由组件 */}
             </div>

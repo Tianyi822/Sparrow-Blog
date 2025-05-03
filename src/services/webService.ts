@@ -17,6 +17,26 @@ export interface BlogInfo {
     update_time: string;
 }
 
+// 博客内容数据接口
+export interface BlogContentData {
+    blog_data: {
+        blog_id: string;
+        blog_title: string;
+        blog_image_id: string;
+        blog_brief: string;
+        category: BlogCategory;
+        tags: BlogTag[];
+        blog_state: boolean;
+        blog_words_num: number;
+        blog_is_top: boolean;
+        create_time: string;
+        update_time: string;
+    };
+    pre_sign_url: string;
+}
+
+type BlogContentResponse = ApiResponse<BlogContentData>;
+
 // 主页数据接口
 export interface HomeData {
     avatar_image: string;
@@ -79,6 +99,46 @@ export const getHomeData = async (): Promise<HomeData | null> => {
 };
 
 /**
+ * 根据ID获取博客内容
+ * @param blogId 博客ID
+ * @returns 博客数据和Markdown内容URL
+ */
+export const getBlogContent = async (blogId: string): Promise<BlogContentData | null> => {
+    try {
+        const response = await businessApiRequest<BlogContentResponse>({
+            method: 'GET',
+            url: `/web/blog/${blogId}`
+        });
+        
+        if (response.code === 200 && response.data) {
+            return response.data;
+        }
+        return null;
+    } catch (error) {
+        console.error('获取博客内容失败:', error);
+        return null;
+    }
+};
+
+/**
+ * 获取Markdown内容
+ * @param url Markdown文件的预签名URL
+ * @returns Markdown内容
+ */
+export const fetchMarkdownContent = async (url: string): Promise<string> => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch markdown content: ${response.statusText}`);
+        }
+        return await response.text();
+    } catch (error) {
+        console.error('获取Markdown内容失败:', error);
+        throw error;
+    }
+};
+
+/**
  * 获取图片完整URL
  * @param imageId 图片ID
  * @returns 完整的图片URL
@@ -91,5 +151,7 @@ export const getImageUrl = (imageId: string): string => {
 export default {
     checkSystemStatus,
     getHomeData,
+    getBlogContent,
+    fetchMarkdownContent,
     getImageUrl
 };

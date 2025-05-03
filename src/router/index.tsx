@@ -2,6 +2,7 @@ import { createBrowserRouter, RouteObject } from "react-router-dom";
 import InitiateConfig from "@/pages/InitiateConfig";
 import Home from "@/pages/Home";
 import FriendLink from "@/pages/FriendLink";
+import BlogContent from "@/pages/BlogContent";
 import BlogLayout from "@/layouts/BlogLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import Posts from "@/pages/Admin/Posts";
@@ -51,6 +52,10 @@ const routes: RouteObject[] = [
             {
                 index: true,
                 element: <Home />
+            },
+            {
+                path: "blog/:blogId",
+                element: <BlogContent />
             },
             {
                 path: "friends",

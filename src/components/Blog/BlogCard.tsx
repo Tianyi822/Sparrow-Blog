@@ -11,9 +11,10 @@ interface BlogCardProps {
     image: string;
     description: string;
     className?: string;
+    blogId?: string;
 }
 
-const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, tags, image, description, className }) => {
+const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, tags, image, description, className, blogId }) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
     const isTop = className?.includes('top');
 
@@ -22,8 +23,24 @@ const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, 
         console.log('Blog Image URL:', image);
     }, [image]);
 
+    // 处理点击事件，导航到博客详情页
+    const handleCardClick = (e: React.MouseEvent) => {
+        // 阻止默认事件
+        e.preventDefault();
+        
+        if (blogId) {
+            // 使用 window.open 在新标签页打开链接
+            window.open(`/blog/${blogId}`, '_blank');
+        }
+    };
+
     return (
-        <article className={`blog-card ${className || ''}`} ref={cardRef}>
+        <article 
+            className={`blog-card ${className || ''}`} 
+            ref={cardRef}
+            onClick={handleCardClick}
+            style={{ cursor: blogId ? 'pointer' : 'default' }}
+        >
             <div className="blog-card-glow" ref={glowRef}/>
             <div className="blog-card-border-glow" ref={borderGlowRef}/>
             {isTop && (
