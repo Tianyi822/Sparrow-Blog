@@ -534,10 +534,28 @@ const Edit: React.FC = () => {
         };
     }, [content]);
 
-    // 切换预览模式
+    // 切换预览模式 - 更新为响应式行为
     const togglePreviewMode = () => {
-        setIsPreviewMode(!isPreviewMode);
+        // 只在移动视图下切换预览模式
+        if (window.innerWidth <= 1800) {
+            setIsPreviewMode(!isPreviewMode);
+        }
     };
+
+    // 检测窗口大小变化，处理响应式行为
+    useEffect(() => {
+        const handleResize = () => {
+            // 如果从小屏幕变为大屏幕，且在预览模式，切换回编辑模式
+            if (window.innerWidth > 1800 && isPreviewMode) {
+                setIsPreviewMode(false);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [isPreviewMode]);
 
     // 渲染Markdown内容
     useEffect(() => {
@@ -1061,9 +1079,9 @@ const Edit: React.FC = () => {
                                 )}
                             </div>
                             <div className="markdown-editor-container">
-                                <div className="markdown-editor" style={{ width: '100%' }}>
+                                <div className={`markdown-editor ${isPreviewMode ? 'hidden' : ''}`} style={{ width: '100%' }}>
                                     <div className="markdown-edit-header">
-                                        {isPreviewMode ? '预览' : '编辑'}
+                                        编辑
                                         <div className="editor-actions">
                                             <button
                                                 className="editor-img-btn"
@@ -1077,26 +1095,37 @@ const Edit: React.FC = () => {
                                                 onClick={togglePreviewMode}
                                             >
                                                 <FiEye className="toggle-icon" />
-                                                <span>{isPreviewMode ? '返回编辑' : '预览'}</span>
+                                                <span>预览</span>
                                             </button>
                                         </div>
                                     </div>
-                                    {isPreviewMode ? (
-                                        <div
-                                            className="preview-content"
-                                            ref={previewRef}
-                                            dangerouslySetInnerHTML={{ __html: parsedContent }}
-                                            style={{ minHeight: '85vh' }}
-                                        ></div>
-                                    ) : (
-                                        <textarea
-                                            className={`markdown-input ${errors.content ? 'error' : ''}`}
-                                            value={content}
-                                            onChange={handleContentChange}
-                                            ref={textareaRef}
-                                            placeholder="在此输入Markdown格式的文章内容..."
-                                        ></textarea>
-                                    )}
+                                    <textarea
+                                        className={`markdown-input ${errors.content ? 'error' : ''}`}
+                                        value={content}
+                                        onChange={handleContentChange}
+                                        ref={textareaRef}
+                                        placeholder="在此输入Markdown格式的文章内容..."
+                                    ></textarea>
+                                </div>
+
+                                <div className={`markdown-preview ${isPreviewMode ? 'visible' : ''}`}>
+                                    <div className="markdown-edit-header">
+                                        预览
+                                        <div className="editor-actions">
+                                            <button
+                                                className="preview-toggle-btn"
+                                                onClick={togglePreviewMode}
+                                            >
+                                                <span>返回编辑</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className="preview-content"
+                                        ref={previewRef}
+                                        dangerouslySetInnerHTML={{ __html: parsedContent }}
+                                        style={{ minHeight: '85vh' }}
+                                    ></div>
                                 </div>
                             </div>
                         </div>
