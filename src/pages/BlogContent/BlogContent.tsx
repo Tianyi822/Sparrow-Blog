@@ -80,14 +80,12 @@ const BlogContent: React.FC = () => {
         try {
           const markdown = await fetchMarkdownContent(data.pre_sign_url);
           setMarkdownContent(markdown);
-        } catch (err) {
-          console.error('Markdown获取失败:', err);
+        } catch {
           setError('无法加载博客内容');
         }
 
         setLoading(false);
-      } catch (err) {
-        console.error('博客数据获取失败:', err);
+      } catch {
         setError('获取博客数据时发生错误');
         setLoading(false);
       }
@@ -103,15 +101,11 @@ const BlogContent: React.FC = () => {
     }
 
     try {
-      // 检查日期格式并添加调试信息
-      console.log('格式化日期:', dateString);
-
       // 处理ISO 8601格式的日期字符串（带时区信息）
       const date = new Date(dateString);
 
       // 检查日期是否有效
       if (isNaN(date.getTime())) {
-        console.error('无效的日期字符串:', dateString);
         return '日期格式错误';
       }
 
@@ -126,13 +120,13 @@ const BlogContent: React.FC = () => {
       const pad = (num: number) => num.toString().padStart(2, '0');
 
       return `${year}年${pad(month)}月${pad(day)}日 ${pad(hour)}:${pad(minute)}`;
-    } catch (err) {
-      console.error('日期格式化错误:', err);
+    } catch {
       return '日期格式错误';
     }
   };
 
   // 代码块渲染器
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderCodeBlock = useCallback((props: any) => {
     const { inline, className, children } = props;
     const match = /language-(\w+)/.exec(className || '');
@@ -144,20 +138,14 @@ const BlogContent: React.FC = () => {
       let highlightedCode = codeContent;
       const codeId = `code-${Math.random().toString(36).substring(2, 9)}`;
 
-      // 调试信息
-      console.log('代码块语言:', language);
-      console.log('highlight.js 是否支持该语言:', Boolean(hljs.getLanguage(language)));
-
       try {
         if (hljs.getLanguage(language)) {
           highlightedCode = hljs.highlight(codeContent, { language }).value;
         } else {
-          console.warn(`highlight.js 不支持 ${language} 语言，尝试使用小写语言名称`);
           // 尝试小写语言名称
           const lowerLang = language.toLowerCase();
           if (hljs.getLanguage(lowerLang)) {
             highlightedCode = hljs.highlight(codeContent, { language: lowerLang }).value;
-            console.log(`使用小写语言名称 ${lowerLang} 成功高亮`);
           }
 
           // 尝试别名映射
@@ -173,12 +161,11 @@ const BlogContent: React.FC = () => {
           };
 
           if (langAliases[language]) {
-            console.log(`尝试使用语言别名: ${language} -> ${langAliases[language]}`);
             highlightedCode = hljs.highlight(codeContent, { language: langAliases[language] }).value;
           }
         }
-      } catch (err) {
-        console.error('Highlight error:', err);
+      } catch {
+        // 高亮失败时使用原始代码
       }
 
       const codeLines = highlightedCode.split('\n');
@@ -214,6 +201,7 @@ const BlogContent: React.FC = () => {
               {codeLines.map((line, i) => (
                 <div key={i} className="code-line">
                   <code
+                    // 这是安全的因为已经通过rehypeSanitize处理
                     dangerouslySetInnerHTML={{ __html: line || ' ' }} />
                 </div>
               ))}
