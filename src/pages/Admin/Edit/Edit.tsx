@@ -513,18 +513,13 @@ const Edit: React.FC = () => {
                 // 重置高度以便能够正确计算
                 textarea.style.height = 'auto';
 
-                // 获取当前可视窗口高度
-                const viewportHeight = window.innerHeight;
-                // 计算最大高度（屏幕高度的90%，但不小于300px）
-                const maxHeight = Math.max(300, viewportHeight * 0.85);
-
-                // 计算新高度（内容高度 + 边距）
-                const newHeight = Math.min(textarea.scrollHeight, maxHeight);
-                textarea.style.height = `${Math.max(300, newHeight)}px`; // 最小高度为300px
+                // 使用视口高度的85%
+                const viewportHeight = window.innerHeight * 0.85;
+                textarea.style.height = `${viewportHeight}px`;
 
                 // 同步预览区域滚动高度
                 if (previewRef.current) {
-                    previewRef.current.style.height = `${textarea.clientHeight}px`;
+                    previewRef.current.style.height = `${viewportHeight}px`;
                 }
             }
         };
@@ -1091,7 +1086,7 @@ const Edit: React.FC = () => {
                                             className="preview-content"
                                             ref={previewRef}
                                             dangerouslySetInnerHTML={{ __html: parsedContent }}
-                                            style={{ minHeight: '300px' }}
+                                            style={{ minHeight: '85vh' }}
                                         ></div>
                                     ) : (
                                         <textarea

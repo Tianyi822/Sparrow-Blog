@@ -657,7 +657,8 @@
     .markdown-editor-container {
       display: flex;
       gap: 1rem;
-      min-height: 300px;
+      min-height: 85vh;
+      height: 85vh;
       
       @media (max-width: 768px) {
         flex-direction: column;
@@ -673,7 +674,7 @@
         overflow: hidden;
         
         @media (max-width: 768px) {
-          min-height: 300px;
+          min-height: 85vh;
         }
       }
       
@@ -682,7 +683,7 @@
         padding: 1rem;
         border: none;
         resize: vertical;
-        min-height: 300px;
+        min-height: 85vh;
         max-height: 85vh;
         font-family: monospace;
         font-size: 0.95rem;
@@ -913,7 +914,7 @@
         flex: 1;
         padding: 1rem;
         overflow-y: auto;
-        min-height: 300px;
+        min-height: 85vh;
         max-height: 85vh;
         background: rgba(35, 35, 45, 0.5);
         
