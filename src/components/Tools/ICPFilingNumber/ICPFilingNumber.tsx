@@ -27,12 +27,7 @@ const ICPFilingNumber: React.FC<ICPFilingNumberProps> = ({ className, icpFilingN
         }
     }, [isExpanded]);
     
-    // 初始化时设置为居中
-    useEffect(() => {
-        if (iconRef.current) {
-            iconRef.current.classList.add('centered');
-        }
-    }, []);
+    // 不再需要初始化时设置居中类，因为已经在JSX中直接添加了
 
     // 如果没有 ICP 备案号或为空字符串，不显示组件
     if (!icpFilingNumber || icpFilingNumber.trim() === '') {
@@ -51,7 +46,7 @@ const ICPFilingNumber: React.FC<ICPFilingNumberProps> = ({ className, icpFilingN
             onMouseEnter={() => setIsExpanded(true)}
             onMouseLeave={() => setIsExpanded(false)}
         >
-            <div ref={iconRef} className="icon-container">
+            <div ref={iconRef} className="icon-container centered">
                 <SvgIcon
                     name={WebsiteRecordIcon}
                     size={Small}
