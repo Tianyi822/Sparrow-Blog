@@ -18,7 +18,7 @@ interface NavigatorProps {
 }
 
 const Navigator: React.FC<NavigatorProps> = (props) => {
-    const {index, setIndex, className, userName} = props
+    const { index, setIndex, className, userName } = props
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrollDirection, setScrollDirection] = useState('none');
@@ -33,10 +33,10 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            
+
             // 检查是否在顶部
             setIsAtTop(currentScrollY === 0);
-            
+
             // 确定滚动方向并设置状态
             if (currentScrollY > lastScrollY) {
                 // 向下滚动
@@ -45,7 +45,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
                 // 向上滚动
                 setScrollDirection('up');
             }
-            
+
             setLastScrollY(currentScrollY);
         };
 
@@ -62,9 +62,9 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             // 如果菜单是打开的，且点击的不是菜单按钮和菜单内容
-            if (isMenuOpen && 
-                event.target && 
-                !(event.target as Element).closest('.nav-menu-button') && 
+            if (isMenuOpen &&
+                event.target &&
+                !(event.target as Element).closest('.nav-menu-button') &&
                 !(event.target as Element).closest('.nav-list')) {
                 console.log('Clicked outside, closing menu');
                 setIsMenuOpen(false);
@@ -87,11 +87,17 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
         setIsMenuOpen(false);
     }, []);
 
+    const handleAdminClick = useCallback(() => {
+        // 在新标签页中打开后台管理页面
+        window.open('/admin/login', '_blank');
+        setIsMenuOpen(false);
+    }, []);
+
     const navItems = [
-        {name: '搜索', path: '', label: '搜索', icon: Search, onClick: handleSearch},
-        {name: '首页', path: '/', label: '首页', icon: Home},
-        {name: '友链', path: '/friends', label: '友链', icon: FriendLink},
-        {name: '后台管理', path: '/admin/login', label: '后台管理', icon: Category},
+        { name: '搜索', path: '', label: '搜索', icon: Search, onClick: handleSearch },
+        { name: '首页', path: '/', label: '首页', icon: Home },
+        { name: '友链', path: '/friends', label: '友链', icon: FriendLink },
+        { name: '后台管理', path: '', label: '后台管理', icon: Category, onClick: handleAdminClick },
     ];
 
     interface NavItem {
@@ -151,8 +157,8 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
 
     return (
         <nav className={navClasses}>
-            <div 
-                className="nav-brand" 
+            <div
+                className="nav-brand"
                 onClick={handleBrandClick}
                 style={{ cursor: 'pointer' }}
             >
@@ -166,8 +172,8 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
                         className={`nav-item ${!item.onClick && idx === index ? 'active' : ''}`}
                         onClick={() => handleClick(idx, item)}
                     >
-                        <SvgIcon 
-                            name={item.icon} 
+                        <SvgIcon
+                            name={item.icon}
                             size={Normal}
                             color={iconColor}
                         />
