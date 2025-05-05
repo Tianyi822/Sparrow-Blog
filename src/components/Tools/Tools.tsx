@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Tools.scss';
 import BackToTop from '@/components/Tools/BackToTop/BackToTop';
-import WebsiteRecord from '@/components/Tools/WebsiteRecord/WebsiteRecord';
+import ICPFilingNumber from '@/components/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
 import classNames from 'classnames';
 
 interface ToolsProps {
@@ -57,7 +57,7 @@ const Tools: React.FC<ToolsProps> = ({ className }) => {
                 className={backToTopClass}
                 onClick={handleBackToTop}
             />
-            <WebsiteRecord className="tools-website-record"/>
+            <ICPFilingNumber className="tools-website-record"/>
         </div>
     );
 };

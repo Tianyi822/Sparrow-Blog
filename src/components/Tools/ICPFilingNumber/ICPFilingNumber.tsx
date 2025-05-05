@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import './WebsiteRecord.scss';
+import './ICPFilingNumber.scss';
 import SvgIcon, { WebsiteRecord as WebsiteRecordIcon, Small } from '@/components/SvgIcon/SvgIcon';
 import classNames from 'classnames';
 
@@ -7,7 +7,7 @@ interface WebsiteRecordProps {
     className?: string;
 }
 
-const WebsiteRecord: React.FC<WebsiteRecordProps> = ({ className }) => {
+const ICPFilingNumber: React.FC<WebsiteRecordProps> = ({ className }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const iconRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -57,4 +57,4 @@ const WebsiteRecord: React.FC<WebsiteRecordProps> = ({ className }) => {
     );
 };
 
-export default WebsiteRecord;
+export default ICPFilingNumber;
