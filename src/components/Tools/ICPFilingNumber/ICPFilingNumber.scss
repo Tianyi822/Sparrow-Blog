@@ -65,7 +65,9 @@
     }
 
     &.expanded {
-        width: 220px;
+        width: auto;
+        min-width: 36px;
+        max-width: 400px;
         padding: 0;
         .record-text {
             opacity: 1;
@@ -91,6 +93,7 @@
         width: 36px;
     }
     100% {
-        width: 220px;
+        width: auto;
+        min-width: 36px;
     }
 }
