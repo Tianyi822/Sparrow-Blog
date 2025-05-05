@@ -173,6 +173,7 @@ export interface UserConfig {
     user_github_address?: string;
     user_hobbies?: string[];
     type_writer_content?: string[];
+    icp_filing_number?: string;
 }
 
 export interface UserConfigResponse {
@@ -521,6 +522,7 @@ export const updateUserConfig = async (
     if (userData.user_github_address) requestData['user.user_github_address'] = userData.user_github_address;
     if (userData.user_hobbies) requestData['user.user_hobbies'] = userData.user_hobbies;
     if (userData.type_writer_content) requestData['user.type_writer_content'] = userData.type_writer_content;
+    if (userData.icp_filing_number !== undefined) requestData['user.icp_filing_number'] = userData.icp_filing_number;
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
@@ -904,4 +906,4 @@ export default {
     updateUserImages,
     sendEmailVerificationCode,
     sendSMTPVerificationCode
-}; 
+};

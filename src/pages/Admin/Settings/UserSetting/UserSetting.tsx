@@ -36,6 +36,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
     // 添加新字段的状态
     const [typewriterContent, setTypewriterContent] = useState<string[]>([]);
     const [githubAddress, setGithubAddress] = useState<string>('');
+    const [icpFilingNumber, setIcpFilingNumber] = useState<string>('');
     const [userHobbies, setUserHobbies] = useState<string[]>([]);
     const [newTypewriterContent, setNewTypewriterContent] = useState<string>('');
     const [newHobby, setNewHobby] = useState<string>('');
@@ -58,7 +59,8 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                         background_image,
                         user_github_address,
                         user_hobbies,
-                        type_writer_content
+                        type_writer_content,
+                        icp_filing_number
                     } = response.data;
 
                     // 填充表单字段
@@ -66,6 +68,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                     setEmail(user_email || '');
                     setOriginalEmail(user_email || ''); // 保存原始邮箱
                     setGithubAddress(user_github_address || '');
+                    setIcpFilingNumber(icp_filing_number || '');
                     setUserHobbies(user_hobbies || []);
                     setTypewriterContent(type_writer_content || []);
 
@@ -178,6 +181,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                 user_name: username,
                 user_email: email,
                 user_github_address: githubAddress,
+                icp_filing_number: icpFilingNumber,
                 user_hobbies: userHobbies,
                 type_writer_content: typewriterContent
             };
@@ -630,6 +634,20 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                                 {errors.github && (
                                     <div className="error-message">{errors.github}</div>
                                 )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="icpFilingNumber">
+                                    <FiCode className="input-icon" />
+                                    <span>网站备案号</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="icpFilingNumber"
+                                    value={icpFilingNumber}
+                                    onChange={(e) => setIcpFilingNumber(e.target.value)}
+                                    placeholder="请输入网站备案号（选填）"
+                                />
                             </div>
 
                             {/* 打字机内容 */}
