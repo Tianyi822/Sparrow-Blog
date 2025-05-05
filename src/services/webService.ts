@@ -38,7 +38,7 @@ export interface BlogContentData {
 type BlogContentResponse = ApiResponse<BlogContentData>;
 
 // 主页数据接口
-export interface HomeData {
+export interface BasicData {
     avatar_image: string;
     background_image: string;
     blogs: BlogInfo[];
@@ -53,7 +53,7 @@ export interface HomeData {
     web_logo: string;
 }
 
-type HomeDataResponse = ApiResponse<HomeData>;
+type BasicDataResponse = ApiResponse<BasicData>;
 
 /**
  * 获取用户基本信息以检查系统状态
@@ -82,9 +82,9 @@ export const checkSystemStatus = async (): Promise<{ isRuntime: boolean, errorMe
 /**
  * 获取主页数据，包括用户信息、博客列表、分类和标签
  */
-export const getBasicData = async (): Promise<HomeData | null> => {
+export const getBasicData = async (): Promise<BasicData | null> => {
     try {
-        const response = await businessApiRequest<HomeDataResponse>({
+        const response = await businessApiRequest<BasicDataResponse>({
             method: 'GET',
             url: '/web/basic-data'
         });

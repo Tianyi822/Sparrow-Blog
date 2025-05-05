@@ -4,14 +4,14 @@ import Background from "@/components/Background/Background";
 import Navigator from "@/components/Navigator/Navigator";
 import Tools from "@/components/Tools/Tools";
 import ScrollBar from "@/components/ScrollBar/ScrollBar";
-import { HomeData, getBasicData, getImageUrl } from "@/services/webService";
+import { BasicData, getBasicData, getImageUrl } from "@/services/webService";
 import "./BlogLayout.scss";
 
 const BlogLayout: FC = () => {
     const [navIndex, setNavIndex] = useState<number>(1);
     const [userName, setUserName] = useState<string>("Blog");
     const [bgImage, setBgImage] = useState<string>("");
-    const [homeData, setHomeData] = useState<HomeData | null>(null);
+    const [homeData, setHomeData] = useState<BasicData | null>(null);
     const location = useLocation();
     
     // 检查是否在博客内容页

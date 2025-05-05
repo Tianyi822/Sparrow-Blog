@@ -3,11 +3,11 @@ import './Tools.scss';
 import BackToTop from '@/components/Tools/BackToTop/BackToTop';
 import ICPFilingNumber from '@/components/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
 import classNames from 'classnames';
-import { HomeData } from '@/services/webService';
+import { BasicData } from '@/services/webService';
 
 interface ToolsProps {
     className?: string;
-    homeData?: HomeData | null;
+    homeData?: BasicData | null;
 }
 
 const Tools: React.FC<ToolsProps> = ({ className, homeData }) => {
