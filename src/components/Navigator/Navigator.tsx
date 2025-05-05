@@ -6,7 +6,7 @@ import SvgIcon, {
     Search,
     Home,
     FriendLink,
-    About
+    Category
 } from "@/components/SvgIcon/SvgIcon";
 import classNames from "classnames";
 
@@ -91,7 +91,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
         {name: '搜索', path: '', label: '搜索', icon: Search, onClick: handleSearch},
         {name: '首页', path: '/', label: '首页', icon: Home},
         {name: '友链', path: '/friends', label: '友链', icon: FriendLink},
-        {name: '关于', path: '/about', label: '关于', icon: About},
+        {name: '后台管理', path: '/admin/login', label: '后台管理', icon: Category},
     ];
 
     interface NavItem {
