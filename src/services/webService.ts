@@ -43,6 +43,7 @@ export interface HomeData {
     background_image: string;
     blogs: BlogInfo[];
     categories: BlogCategory[];
+    icp_filing_number?: string;
     tags: BlogTag[];
     type_writer_content: string[];
     user_email: string;
@@ -81,11 +82,11 @@ export const checkSystemStatus = async (): Promise<{ isRuntime: boolean, errorMe
 /**
  * 获取主页数据，包括用户信息、博客列表、分类和标签
  */
-export const getHomeData = async (): Promise<HomeData | null> => {
+export const getBasicData = async (): Promise<HomeData | null> => {
     try {
         const response = await businessApiRequest<HomeDataResponse>({
             method: 'GET',
-            url: '/web/home'
+            url: '/web/basic-data'
         });
 
         if (response.code === 200 && response.data) {
@@ -170,7 +171,7 @@ export const getImageUrl = (imageId: string): string => {
 
 export default {
     checkSystemStatus,
-    getHomeData,
+    getHomeData: getBasicData,
     getBlogContent,
     fetchMarkdownContent,
     getImageUrl

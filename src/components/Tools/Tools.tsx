@@ -3,12 +3,14 @@ import './Tools.scss';
 import BackToTop from '@/components/Tools/BackToTop/BackToTop';
 import ICPFilingNumber from '@/components/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
 import classNames from 'classnames';
+import { HomeData } from '@/services/webService';
 
 interface ToolsProps {
     className?: string;
+    homeData?: HomeData | null;
 }
 
-const Tools: React.FC<ToolsProps> = ({ className }) => {
+const Tools: React.FC<ToolsProps> = ({ className, homeData }) => {
     const [isBackToTopVisible, setIsBackToTopVisible] = useState<boolean>(false);
     const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
@@ -57,7 +59,10 @@ const Tools: React.FC<ToolsProps> = ({ className }) => {
                 className={backToTopClass}
                 onClick={handleBackToTop}
             />
-            <ICPFilingNumber className="tools-website-record"/>
+            <ICPFilingNumber 
+                className="tools-website-record"
+                icpFilingNumber={homeData?.icp_filing_number}
+            />
         </div>
     );
 };

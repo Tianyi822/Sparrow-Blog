@@ -4,7 +4,7 @@ import Background from "@/components/Background/Background";
 import Navigator from "@/components/Navigator/Navigator";
 import Tools from "@/components/Tools/Tools";
 import ScrollBar from "@/components/ScrollBar/ScrollBar";
-import { HomeData, getHomeData, getImageUrl } from "@/services/webService";
+import { HomeData, getBasicData, getImageUrl } from "@/services/webService";
 import "./BlogLayout.scss";
 
 const BlogLayout: FC = () => {
@@ -19,9 +19,9 @@ const BlogLayout: FC = () => {
 
     useEffect(() => {
         // 获取主页数据
-        const fetchHomeData = async () => {
+        const fetchBasicData = async () => {
             try {
-                const data = await getHomeData();
+                const data = await getBasicData();
                 if (data) {
                     // 保存主页数据用于传递给子组件
                     setHomeData(data);
@@ -56,7 +56,7 @@ const BlogLayout: FC = () => {
             }
         };
 
-        fetchHomeData();
+        fetchBasicData();
     }, []);
 
     // Create the context value to be passed to children
@@ -77,7 +77,7 @@ const BlogLayout: FC = () => {
             <div className="blog-content">
                 <Outlet context={contextValue} /> {/* 传递上下文给子路由组件 */}
             </div>
-            <Tools className="app-tools" />
+            <Tools className="app-tools" homeData={homeData} />
             <ScrollBar className="app-scroll-bar" />
         </div>
     );

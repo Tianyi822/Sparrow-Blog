@@ -3,11 +3,12 @@ import './ICPFilingNumber.scss';
 import SvgIcon, { WebsiteRecord as WebsiteRecordIcon, Small } from '@/components/SvgIcon/SvgIcon';
 import classNames from 'classnames';
 
-interface WebsiteRecordProps {
+interface ICPFilingNumberProps {
     className?: string;
+    icpFilingNumber?: string;
 }
 
-const ICPFilingNumber: React.FC<WebsiteRecordProps> = ({ className }) => {
+const ICPFilingNumber: React.FC<ICPFilingNumberProps> = ({ className, icpFilingNumber }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const iconRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -33,6 +34,11 @@ const ICPFilingNumber: React.FC<WebsiteRecordProps> = ({ className }) => {
         }
     }, []);
 
+    // 如果没有 ICP 备案号或为空字符串，不显示组件
+    if (!icpFilingNumber || icpFilingNumber.trim() === '') {
+        return null;
+    }
+
     const websiteRecordStyle = classNames('website-record', className, {
         expanded: isExpanded
     });
@@ -52,7 +58,7 @@ const ICPFilingNumber: React.FC<WebsiteRecordProps> = ({ className }) => {
                     color="#126bae"
                 />
             </div>
-            <span className="record-text">黔ICP备18007069号-4</span>
+            <span className="record-text">{icpFilingNumber}</span>
         </div>
     );
 };
