@@ -181,7 +181,6 @@ const Posts: React.FC = () => {
 
     // 处理编辑文章
     const handleEditPost = (id: string) => {
-        console.log(`编辑文章: ${id}`);
         navigate(`/admin/edit?blog_id=${id}`);
     };
 

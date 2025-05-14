@@ -36,7 +36,7 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
 
     // 初始SMTP账号，用于跟踪是否修改过
     const [initialSmtpAccount, setInitialSmtpAccount] = useState('');
-    
+
     // 控制验证码界面显示
     const [smtpModified, setSmtpModified] = useState(false);
     const [smtpVerifying, setSmtpVerifying] = useState(false);
@@ -48,23 +48,23 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
             try {
                 setLoading(true);
                 setSubmitError(null); // 清除之前的错误
-                
+
                 const response = await getServerConfig();
-                
+
                 if (response.code === 200 && response.data) {
-                    const { 
-                        port, 
-                        token_expire_duration, 
-                        cors_origins, 
+                    const {
+                        port,
+                        token_expire_duration,
+                        cors_origins,
                         token_key,
                         smtp_account,
                         smtp_address,
                         smtp_port
                     } = response.data;
-                    
+
                     // 设置端口（只读）
                     setPort(port);
-                    
+
                     // 设置表单数据
                     setFormData({
                         tokenExpireDuration: token_expire_duration.toString(),
@@ -156,13 +156,13 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
         const length = 32;
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let result = '';
-        
+
         // 确保生成的字符串恰好是32个字符
         while (result.length < length) {
             const randomChar = chars.charAt(Math.floor(Math.random() * chars.length));
             result += randomChar;
         }
-        
+
         setFormData({
             ...formData,
             tokenKey: result,
@@ -182,7 +182,7 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
 
         try {
             setSmtpVerifying(true);
-            
+
             const response = await sendSMTPVerificationCode(
                 formData.smtpAccount,
                 formData.smtpAddress,
@@ -260,11 +260,10 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
             try {
                 // 将跨域来源转换为数组
                 const corsOriginsArray = corsOrigins.filter(item => item !== '');
-                
+
                 // 确保tokenKey为确切的32个字符
                 let tokenKeyToSend = formData.tokenKey;
                 if (tokenKeyToSend && tokenKeyToSend.length !== 32) {
-                    console.warn(`令牌密钥长度不是32个字符(${tokenKeyToSend.length})，正在修正...`);
                     // 如果长度不足32，则填充到32个字符
                     if (tokenKeyToSend.length < 32) {
                         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -277,8 +276,6 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
                         tokenKeyToSend = tokenKeyToSend.substring(0, 32);
                     }
                 }
-                
-                console.log(`发送到后端的令牌密钥长度: ${tokenKeyToSend ? tokenKeyToSend.length : 0}`);
 
                 // 构建请求数据
                 const requestData: Record<string, string | number | string[]> = {

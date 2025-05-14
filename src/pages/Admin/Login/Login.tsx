@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   sendVerificationCode, 
   loginWithVerificationCode, 
-  getUserConfig
+  getUserInfo
 } from '@/services/adminService';
 import './Login.scss';
 
@@ -41,7 +41,7 @@ const Login: React.FC = () => {
     const fetchUserData = async () => {
       try {
         setFetchingUserData(true);
-        const response = await getUserConfig();
+        const response = await getUserInfo();
         
         if (response.code === 200 && response.data?.user_name) {
           setUserName(response.data.user_name);
@@ -286,4 +286,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default Login;

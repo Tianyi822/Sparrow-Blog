@@ -36,7 +36,6 @@ const Settings: React.FC = () => {
 
     const handleSaveSuccess = () => {
         // 各组件内部处理保存成功提示
-        console.log('组件保存成功');
     };
 
     const handleTabChange = (tab: SettingTab) => {

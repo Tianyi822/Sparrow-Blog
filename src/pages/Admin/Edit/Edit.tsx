@@ -150,7 +150,6 @@ const Edit: React.FC = () => {
         }
 
         try {
-            console.log('保存草稿到缓存:', draftData.blog_id ? '编辑模式' : '新建模式');
             localStorage.setItem(CACHE_KEY, JSON.stringify(draftData));
 
             // 更新最后保存时间
@@ -162,7 +161,6 @@ const Edit: React.FC = () => {
 
             // 重置数据变更标志
             hasDataChangedRef.current = false;
-            console.log('草稿保存成功');
         } catch (error) {
             console.error('保存草稿到本地缓存失败:', error);
         }
@@ -182,7 +180,6 @@ const Edit: React.FC = () => {
         try {
             const cachedData = localStorage.getItem(CACHE_KEY);
             if (!cachedData) {
-                console.log('未找到缓存数据');
                 return null;
             }
 
@@ -192,12 +189,10 @@ const Edit: React.FC = () => {
             const now = Date.now();
             if (now - draftData.lastSaved > CACHE_EXPIRATION) {
                 // 缓存已过期，清除并返回null
-                console.log('缓存已过期，清除缓存');
                 localStorage.removeItem(CACHE_KEY);
                 return null;
             }
 
-            console.log('成功加载缓存数据:', draftData.blog_id ? `编辑模式(ID: ${draftData.blog_id})` : '新建模式');
             return draftData;
         } catch (error) {
             console.error('从本地缓存中加载草稿失败:', error);
@@ -208,11 +203,9 @@ const Edit: React.FC = () => {
     // 清除本地缓存
     const clearCache = useCallback(() => {
         try {
-            console.log('清除缓存');
             localStorage.removeItem(CACHE_KEY);
             setShowCachePrompt(false);
             setLastSavedTime('');
-            console.log('缓存已清除');
         } catch (error) {
             console.error('清除本地缓存失败:', error);
         }
@@ -236,28 +229,21 @@ const Edit: React.FC = () => {
         // 更新最后保存时间
         const date = new Date(draftData.lastSaved);
         setLastSavedTime(date.toLocaleString());
-
-        console.log('已加载缓存数据到表单');
     }, []);
 
     // 初始页面加载时检查缓存数据
     useEffect(() => {
         // 如果URL中已包含cache=true参数，表示已经是从缓存加载，不需要再处理
         if (fromCache) {
-            console.log('URL中包含cache=true参数，跳过缓存检查');
             return;
         }
 
         const cachedDraft = loadDraftFromCache();
         if (!cachedDraft) {
-            console.log('没有发现缓存数据');
             return;
         }
 
-        console.log('发现缓存数据:', cachedDraft);
-
         // 无论缓存是否包含blog_id，都显示恢复提示，不自动重定向
-        console.log('显示缓存恢复提示，等待用户确认');
         setShowCachePrompt(true);
 
         // 更新最后保存时间显示
@@ -272,7 +258,6 @@ const Edit: React.FC = () => {
 
         // 如果缓存中有blog_id，重定向到编辑页面
         if (cachedDraft.blog_id) {
-            console.log('缓存有blog_id，重定向到编辑页面:', cachedDraft.blog_id);
             // 重定向到带有cache=true参数的URL，表示需要从缓存加载数据
             navigate(`/admin/edit?blog_id=${cachedDraft.blog_id}&cache=true`, { replace: true });
             return;
@@ -281,14 +266,11 @@ const Edit: React.FC = () => {
         // 如果没有blog_id，直接加载缓存数据
         loadCacheDataToForm(cachedDraft);
         setShowCachePrompt(false);
-
-        console.log('已从缓存恢复数据');
     }, [loadDraftFromCache, loadCacheDataToForm, navigate]);
 
     // 丢弃缓存
     const discardCache = useCallback(() => {
         clearCache();
-        console.log('已丢弃缓存');
     }, [clearCache]);
 
     // 处理图片库点击事件
@@ -382,7 +364,6 @@ const Edit: React.FC = () => {
             try {
                 // 如果是从缓存加载的请求
                 if (fromCache) {
-                    console.log('从缓存加载数据');
                     const cachedDraft = loadDraftFromCache();
 
                     if (cachedDraft) {
@@ -392,10 +373,8 @@ const Edit: React.FC = () => {
                         // 如果是编辑模式并且cache=true，加载完成后清除缓存
                         if (isEditMode) {
                             clearCache();
-                            console.log('已从URL参数加载缓存数据，清除缓存');
                         }
                     } else {
-                        console.log('找不到缓存数据，尝试从服务器加载');
                         await loadDataFromServer();
                     }
                 }
@@ -414,7 +393,6 @@ const Edit: React.FC = () => {
         const loadDataFromServer = async () => {
             if (!blogId) return;
 
-            console.log('从服务器加载数据:', blogId);
             const response = await getBlogDataForEdit(blogId);
 
             if (response.code === 200) {

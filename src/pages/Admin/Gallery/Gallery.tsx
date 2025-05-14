@@ -261,12 +261,10 @@ const Gallery: React.FC = () => {
         try {
             setIsLoading(true);
             const response = await getAllGalleryImages();
-            console.log('图库API响应:', response);
             
             if (response.code === 200) {
                 // 获取环境变量中的业务服务URL
                 const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
-                console.log('业务服务URL:', businessServiceUrl);
                 
                 // 将API数据转换为组件所需的格式
                 const formattedImages: ImageItem[] = response.data.map(img => ({
@@ -276,7 +274,6 @@ const Gallery: React.FC = () => {
                     type: img.img_type,
                     date: new Date().toLocaleDateString('zh-CN') // 由于API没有返回日期，使用当前日期
                 }));
-                console.log('格式化后的图片数据:', formattedImages);
                 setAllImages(formattedImages);
                 setErrorMessage(null);
             } else {
@@ -430,7 +427,6 @@ const Gallery: React.FC = () => {
             if (response.code === 200) {
                 // 从 allImages 状态中过滤掉选定的图片
                 setAllImages(prevImages => prevImages.filter(img => img.id !== contextMenu.targetItem!.id));
-                console.log('图片删除成功!');
             } else {
                 console.error('删除失败:', response.msg);
                 // 可以添加错误提示
@@ -507,7 +503,6 @@ const Gallery: React.FC = () => {
                         img.id === imageId ? {...img, name: newName} : img
                     )
                 );
-                console.log('图片重命名成功!');
             } else {
                 console.error('重命名失败:', response.msg);
                 setErrorMessage(`重命名失败: ${response.msg}`);

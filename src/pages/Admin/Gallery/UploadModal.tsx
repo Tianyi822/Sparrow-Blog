@@ -76,14 +76,11 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
 
     // 压缩图片 - 接收索引而不是ID
     const compressImage = async (file: UploadFile, fileIndex: number) => {
-        console.log(`开始压缩图片: ${file.name}, 索引: ${fileIndex}`);
-
         try {
             // 更新压缩状态
             setUploadFiles(prev => {
                 // 再次检查索引是否有效
                 if (fileIndex >= prev.length) {
-                    console.error(`压缩时索引无效: ${fileIndex}, 当前文件数: ${prev.length}`);
                     return prev;
                 }
 
@@ -122,15 +119,12 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             };
 
             // 执行压缩
-            console.log(`执行压缩: ${file.name}`);
             const compressedFile = await imageCompression(file.file, options);
-            console.log(`压缩完成: ${file.name}, 从 ${file.originalSize} 减小到 ${compressedFile.size}`);
 
             // 更新完成状态
             setUploadFiles(prev => {
                 // 再次检查索引是否有效
                 if (fileIndex >= prev.length) {
-                    console.error(`完成压缩后索引无效: ${fileIndex}, 当前文件数: ${prev.length}`);
                     return prev;
                 }
 
@@ -187,7 +181,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
     const uploadImageToOSS = async (file: UploadFile, index: number): Promise<{ success: boolean, fileName: string } | false> => {
         try {
             if (!file.compressedFile) {
-                console.error(`文件 ${file.name} 没有压缩后的文件对象`);
                 return false;
             }
 
@@ -220,11 +213,9 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             const uploadFileName = `${nameParts.join('.')}_${timestamp}`;
 
             // 2. 获取预签名URL
-            console.log(`获取预签名URL: ${uploadFileName}`);
             const preSignUrlResponse = await getPreSignUrl(uploadFileName, FileType.WEBP);
 
             if (preSignUrlResponse.code !== 200) {
-                console.error(`获取预签名URL失败: ${preSignUrlResponse.msg}`);
                 return false;
             }
 
@@ -246,7 +237,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             });
 
             // 4. 上传到OSS
-            console.log(`上传文件到OSS: ${uploadFileName}`);
             const uploadSuccess = await uploadToOSS(
                 preSignUrl,
                 fileContent,
@@ -254,7 +244,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             );
 
             if (!uploadSuccess) {
-                console.error('上传到OSS失败');
                 return false;
             }
 
@@ -272,7 +261,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
                 return updated;
             });
 
-            console.log(`文件 ${uploadFileName} 上传成功`);
             return { 
                 success: true, 
                 fileName: uploadFileName 
@@ -301,12 +289,10 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
 
     // 处理多个文件的上传 - 完全重写
     const processFiles = async (files: FileList) => {
-        console.log(`处理 ${files.length} 个文件`);
         const fileArray = Array.from(files);
         const validFiles = fileArray.filter(validateFile);
 
         if (validFiles.length === 0) {
-            console.warn('没有有效的图片文件');
             return;
         }
 
@@ -337,14 +323,10 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             // 再次获取当前状态，确保索引有效
             setUploadFiles(prev => {
                 if (currentIndex >= prev.length) {
-                    console.error(`准备压缩时索引无效: ${currentIndex}, 当前文件数: ${prev.length}`);
                     return prev;
                 }
 
                 // 确保文件对象存在
-                console.log(`准备压缩文件: ${prev[currentIndex].name}, 索引: ${currentIndex}`);
-
-                // 启动压缩 - 使用setTimeout确保在状态更新后执行
                 setTimeout(() => {
                     compressImage(prev[currentIndex], currentIndex);
                 }, 50);
@@ -402,11 +384,9 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
         const compressedFiles = uploadFiles.filter(f => f.isCompressed && f.compressedFile);
 
         if (compressedFiles.length === 0) {
-            console.warn('没有压缩完成的文件可上传');
             return;
         }
 
-        console.log(`开始上传 ${compressedFiles.length} 张图片到OSS`);
         setIsUploading(true);
 
         const uploadedFiles: File[] = [];
@@ -418,7 +398,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             const fileIndex = uploadFiles.findIndex(f => f === file);
 
             if (fileIndex === -1) {
-                console.error(`找不到文件索引: ${file.name}`);
                 continue;
             }
 
@@ -441,8 +420,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
         if (uploadedImageInfo.length > 0) {
             try {
                 // 将上传的图片信息提交到API
-                console.log('添加图片到图库，数据:', uploadedImageInfo);
-                
                 const addRequest: AddImagesRequest = {
                     imgs: uploadedImageInfo
                 };
