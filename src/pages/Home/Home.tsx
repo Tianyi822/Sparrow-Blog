@@ -9,18 +9,37 @@ import { useCallback, useState, useEffect, useMemo } from "react";
 import "./Home.scss";
 import { BlogCategory, BlogTag } from '@/services/adminService';
 
+interface BlogInfo {
+    blog_id: string;
+    blog_title: string;
+    create_time: string;
+    update_time: string;
+    category?: {
+        category_id: string;
+        category_name: string;
+    };
+    tags?: {
+        tag_id: string;
+        tag_name: string;
+    }[];
+    blog_image_id?: string;
+    blog_brief?: string;
+    blog_is_top: boolean;
+    blog_state: boolean;
+}
+
 interface BlogData {
     title: string;
     date: string;
     updateDate: string;
     category: string;
-    categoryId: string; // Changed to string to match BlogInfo
+    categoryId: string;
     tags: string[];
-    tagIds: string[]; // Changed to string[] to match BlogTag.tag_id
+    tagIds: string[];
     image: string;
     description: string;
     isTop: boolean;
-    blogId: string; // Add blog_id to the interface
+    blogId: string;
 }
 
 const Home: React.FC = () => {
@@ -49,10 +68,10 @@ const Home: React.FC = () => {
                     homeData.blogs.length > 0 ? homeData.blogs[0].category : 'No category');
                 
                 // 过滤出 blog_state 为 true 的文章（表示需要显示的文章）
-                const displayBlogs = homeData.blogs.filter(blog => blog.blog_state);
+                const displayBlogs = homeData.blogs.filter((blog: BlogInfo) => blog.blog_state);
                 
                 // 将API返回的博客数据转换为组件需要的格式
-                const formattedBlogs: BlogData[] = displayBlogs.map(blog => {
+                const formattedBlogs: BlogData[] = displayBlogs.map((blog: BlogInfo) => {
                     // 安全地访问可能为空的属性
                     const categoryId = blog.category && blog.category.category_id 
                         ? blog.category.category_id.toString() 
@@ -63,11 +82,11 @@ const Home: React.FC = () => {
                     
                     // 安全地处理标签
                     const tags = blog.tags && Array.isArray(blog.tags) 
-                        ? blog.tags.map(tag => tag && tag.tag_name ? tag.tag_name : '')
+                        ? blog.tags.map((tag: { tag_name?: string }) => tag && tag.tag_name ? tag.tag_name : '')
                         : [];
                     
                     const tagIds = blog.tags && Array.isArray(blog.tags) 
-                        ? blog.tags.map(tag => tag && tag.tag_id ? tag.tag_id.toString() : '')
+                        ? blog.tags.map((tag: { tag_id?: string }) => tag && tag.tag_id ? tag.tag_id.toString() : '')
                         : [];
                     
                     return {
