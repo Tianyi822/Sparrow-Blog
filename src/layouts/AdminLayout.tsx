@@ -4,6 +4,8 @@ import { FiFileText, FiEdit, FiSettings, FiMessageCircle, FiLogOut, FiImage, FiC
 import { getUserConfig } from '@/services/adminService';
 import { LayoutContext } from './LayoutContext';
 import './AdminLayout.scss';
+import { businessApiRequest } from '@/services/api';
+import { ApiResponse } from '@/services/api';
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -34,11 +36,32 @@ const AdminLayout: React.FC = () => {
     fetchUserData();
   }, [isLoginPage]);
 
-  const handleLogout = () => {
-    // 清除登录状态
-    localStorage.removeItem('auth_token');
-    // 跳转到登录页
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    try {
+      // 发起退出登录请求
+      const response = await businessApiRequest<ApiResponse<null>>({
+        method: 'GET',
+        url: '/admin/logout',
+        // 请求会自动带上 token，因为 businessApiRequest 已经配置了 token
+      });
+      
+      if (response.code === 200) {
+        // 清除登录状态
+        localStorage.removeItem('auth_token');
+        // 跳转到根路由
+        navigate('/');
+      } else {
+        console.error('退出登录失败:', response.msg);
+        alert('退出登录失败: ' + response.msg);
+      }
+    } catch (error) {
+      console.error('退出登录请求失败:', error);
+      alert('退出登录请求失败，请稍后重试');
+      
+      // 即使请求失败，也清除本地 token 并重定向
+      localStorage.removeItem('auth_token');
+      navigate('/');
+    }
   };
 
   const toggleSidebar = () => {
