@@ -31,6 +31,11 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({className}) => {
             }));
     }, [homeData, getImageUrl]);
 
+    // 处理文章点击，导航到博客内容页
+    const handleArticleClick = (blogId: string) => {
+        window.open(`/blog/${blogId}`, '_blank');
+    };
+
     return (
         <div className={`latest-articles ${className || ''}`} ref={cardRef}>
             <div className="latest-articles-glow" ref={glowRef}/>
@@ -41,7 +46,12 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({className}) => {
             </h3>
             <div className="latest-articles-list">
                 {latestArticles.map(article => (
-                    <div key={article.id} className="article-item">
+                    <div 
+                        key={article.id} 
+                        className="article-item"
+                        onClick={() => handleArticleClick(article.id)}
+                        style={{ cursor: 'pointer' }}
+                    >
                         <img src={article.image} alt={article.title} className="article-image"/>
                         <div className="article-info">
                             <h4 className="article-title">{article.title}</h4>
