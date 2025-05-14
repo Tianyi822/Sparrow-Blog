@@ -44,7 +44,7 @@ const setupInterceptors = (api: typeof configApi | typeof businessApi) => {
             // If token exists, add to headers
             if (token) {
                 config.headers = config.headers || {};
-                config.headers.Authorization = `Bearer ${token}`;
+                config.headers.Authorization = token;
             }
 
             return config;
