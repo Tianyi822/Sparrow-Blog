@@ -14,8 +14,8 @@ import python from 'highlight.js/lib/languages/python';
 import rust from 'highlight.js/lib/languages/rust';
 import sql from 'highlight.js/lib/languages/sql';
 import typescript from 'highlight.js/lib/languages/typescript';
-import React, { useEffect, useState, useCallback } from 'react';
-import { FiCalendar, FiCheck, FiClock, FiCopy } from 'react-icons/fi';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { FiCalendar, FiCheck, FiClock, FiCopy, FiX } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import { useNavigate, useParams } from 'react-router-dom';
 import rehypeRaw from 'rehype-raw';
@@ -45,6 +45,28 @@ const BlogContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string>('');
   const [copyStates, setCopyStates] = useState<Record<string, boolean>>({});
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [isZooming, setIsZooming] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [imagePosition, setImagePosition] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  
+  const zoomOverlayRef = useRef<HTMLDivElement>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 清除关闭定时器
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // 获取博客数据
   useEffect(() => {
@@ -94,6 +116,16 @@ const BlogContent: React.FC = () => {
     fetchBlogData();
   }, [blogId, getImageUrl]);
 
+  // 设置可见性
+  useEffect(() => {
+    if (zoomedImage && !isClosing) {
+      // 使用 requestAnimationFrame 确保在下一个绘制帧设置可见性
+      requestAnimationFrame(() => {
+        setIsVisible(true);
+      });
+    }
+  }, [zoomedImage, isClosing]);
+
   // 格式化日期
   const formatDate = (dateString: string) => {
     if (!dateString || dateString === '0001-01-01T00:00:00Z') {
@@ -124,6 +156,67 @@ const BlogContent: React.FC = () => {
       return '日期格式错误';
     }
   };
+
+  // 处理图片点击事件
+  const handleImageClick = (event: React.MouseEvent<HTMLImageElement>, src: string) => {
+    const imgElement = event.currentTarget;
+    const rect = imgElement.getBoundingClientRect();
+    
+    // 保存原始图片的位置和尺寸
+    setImagePosition({
+      top: rect.top,
+      left: rect.left,
+      width: rect.width,
+      height: rect.height
+    });
+    
+    setZoomedImage(src);
+    setIsZooming(true);
+    setIsClosing(false);
+    
+    // 防止页面滚动
+    document.body.style.overflow = 'hidden';
+  };
+
+  // 关闭放大的图片
+  const closeZoomedImage = () => {
+    if (isClosing) return; // 防止重复关闭
+    
+    setIsClosing(true);
+    setIsVisible(false);
+    
+    // 清除之前的定时器
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    
+    // 添加关闭动画的时间 (确保比CSS动画时间稍长一点)
+    closeTimeoutRef.current = setTimeout(() => {
+      setZoomedImage(null);
+      setIsZooming(false);
+      setIsClosing(false);
+      setImagePosition(null);
+      
+      // 恢复页面滚动
+      document.body.style.overflow = '';
+    }, 350); // 稍微比CSS动画时间(300ms)长一点，确保动画完成
+  };
+
+  // 图片渲染器
+  const renderImage = useCallback((props: React.ComponentPropsWithoutRef<'img'>) => {
+    const { src, alt } = props;
+    if (!src) return null;
+
+    return (
+      <img 
+        src={src} 
+        alt={alt || ''} 
+        onClick={(e) => handleImageClick(e, src)}
+        style={{ cursor: 'zoom-in' }}
+        className="blog-content-image"
+      />
+    );
+  }, []);
 
   // 代码块渲染器
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -213,6 +306,19 @@ const BlogContent: React.FC = () => {
 
     return <code className={className}>{children}</code>;
   }, [copyStates]);
+
+  // 计算图片缩放动画的样式
+  const getZoomAnimationStyle = () => {
+    if (!imagePosition) return {};
+    
+    return {};
+  };
+  
+  const getZoomedImageStyle = () => {
+    if (!imagePosition) return {};
+    
+    return {};
+  };
 
   // 加载中状态
   if (loading) {
@@ -319,7 +425,8 @@ const BlogContent: React.FC = () => {
               <ReactMarkdown
                 children={markdownContent}
                 components={{
-                  code: renderCodeBlock
+                  code: renderCodeBlock,
+                  img: renderImage
                 }}
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
               />
@@ -327,6 +434,34 @@ const BlogContent: React.FC = () => {
           </div>
         </article>
       </div>
+
+      {/* 图片缩放层 */}
+      {zoomedImage && (
+        <div 
+          ref={zoomOverlayRef}
+          className={`image-zoom-overlay ${isVisible ? 'visible' : ''} ${isClosing ? 'closing' : ''}`}
+          onClick={closeZoomedImage}
+          style={getZoomAnimationStyle()}
+        >
+          <div 
+            className={`image-zoom-container ${isVisible ? 'visible' : ''} ${isClosing ? 'closing' : ''}`}
+            style={getZoomedImageStyle()}
+          >
+            <button className="image-zoom-close" onClick={(e) => {
+              e.stopPropagation();
+              closeZoomedImage();
+            }}>
+              <FiX />
+            </button>
+            <img 
+              src={zoomedImage} 
+              alt="Zoomed image" 
+              className={`image-zoom-content ${isVisible ? 'visible' : ''} ${isClosing ? 'closing' : ''}`}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };
