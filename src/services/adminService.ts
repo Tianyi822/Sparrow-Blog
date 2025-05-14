@@ -1,5 +1,9 @@
-import { businessApi, businessApiRequest } from './api';
+import { businessApiRequest } from './api';
 import { ApiResponse } from './api.ts';
+
+// ===============================================================
+// 认证相关接口和函数
+// ===============================================================
 
 // 验证码请求数据接口
 export interface VerificationCodeRequest {
@@ -15,15 +19,77 @@ export interface LoginRequest {
 // 登录响应数据接口
 export interface LoginResponse {
     token: string;
-    user_info: {
-        user_id: number;
+}
+
+// 用户信息响应接口
+export interface UserInfoResponse {
+    code: number;
+    msg: string;
+    data: {
         user_name: string;
-        user_email: string;
-        user_avatar?: string;
     };
 }
 
-// Blog相关接口
+/**
+ * 发送验证码
+ * @param data 包含用户邮箱的请求数据
+ * @returns 发送结果
+ */
+export const sendVerificationCode = async (data: VerificationCodeRequest): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'POST',
+        url: '/admin/login/verification-code',
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
+/**
+ * 验证码登录
+ * @param data 登录请求数据
+ * @returns 登录结果
+ */
+export const loginWithVerificationCode = async (data: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
+    try {
+        const response = await businessApiRequest<ApiResponse<LoginResponse>>({
+            method: 'POST',
+            url: '/admin/login',
+            data,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // 如果登录成功且返回了token，则存储到localStorage
+        if (response.code === 200 && response.data && response.data.token) {
+            localStorage.setItem('auth_token', response.data.token);
+            console.log('Token已保存到localStorage');
+        }
+
+        return response;
+    } catch (error) {
+        console.error('登录失败:', error);
+        throw error;
+    }
+};
+
+/**
+ * 获取登录页用户信息
+ * @returns 用户信息数据
+ */
+export const getUserInfo = async (): Promise<UserInfoResponse> => {
+    return businessApiRequest<UserInfoResponse>({
+        method: 'GET',
+        url: '/admin/login/user-info'
+    });
+};
+
+// ===============================================================
+// 博客相关接口和函数
+// ===============================================================
+
 export interface BlogTag {
     tag_id: string;
     tag_name: string;
@@ -113,207 +179,6 @@ export interface BlogDataResponse {
     };
 }
 
-// Gallery相关接口
-export interface GalleryImage {
-    img_id: string;
-    img_name: string;
-    img_type: string;
-    create_time: string;
-}
-
-export interface GalleryImagesResponse {
-    code: number;
-    msg: string;
-    data: GalleryImage[];
-}
-
-// 检查图片名称是否存在响应接口
-export interface CheckImageNameResponse {
-    code: number;
-    msg: string;
-    data: boolean;
-}
-
-// 添加图片请求接口
-export interface AddImagesRequest {
-    imgs: Array<{
-        img_name: string;
-        img_type: string;
-    }>;
-}
-
-// 添加图片响应接口
-export interface AddImagesResponse {
-    code: number;
-    msg: string;
-    data: null;
-}
-
-// 重命名图片请求接口
-export interface RenameImageRequest {
-    img_id: string;
-    img_name: string;
-}
-
-export interface PreSignUrlResponse {
-    code: number;
-    msg: string;
-    data: {
-        pre_sign_put_url: string;
-    };
-}
-
-// User configuration interface
-export interface UserConfig {
-    user_name: string;
-    user_email: string;
-    avatar_image: string;
-    web_logo: string;
-    background_image: string;
-    user_github_address?: string;
-    user_hobbies?: string[];
-    type_writer_content?: string[];
-    icp_filing_number?: string;
-}
-
-export interface UserConfigResponse {
-    code: number;
-    msg: string;
-    data: UserConfig;
-}
-
-// Server configuration interface
-export interface ServerConfig {
-    port: number;
-    token_expire_duration: number;
-    cors_origins: string[];
-    token_key?: string;
-    smtp_account?: string;
-    smtp_address?: string;
-    smtp_port?: number;
-}
-
-export interface ServerConfigResponse {
-    code: number;
-    msg: string;
-    data: ServerConfig;
-}
-
-// Logger configuration interface
-export interface LoggerConfig {
-    level: string;
-    dir_path: string;
-    max_size: number;
-    max_backups: number;
-    max_age: number;
-    compress: boolean;
-}
-
-export interface LoggerConfigResponse {
-    code: number;
-    msg: string;
-    data: LoggerConfig;
-}
-
-// MySQL configuration interface
-export interface MySQLConfig {
-    database: string;
-    host: string;
-    max_idle: number;
-    max_open: number;
-    port: number;
-    user: string;
-    password?: string;
-}
-
-export interface MySQLConfigResponse {
-    code: number;
-    msg: string;
-    data: MySQLConfig;
-}
-
-// OSS configuration interface
-export interface OSSConfig {
-    endpoint: string;
-    region: string;
-    bucket: string;
-    image_oss_path: string;
-    blog_oss_path: string;
-    access_key_id?: string;
-    access_key_secret?: string;
-}
-
-export interface OSSConfigResponse {
-    code: number;
-    msg: string;
-    data: OSSConfig;
-}
-
-// Cache configuration interface
-export interface CacheConfig {
-    enable_aof: boolean;
-    aof_dir_path: string;
-    aof_mix_size: number;
-    aof_compress: boolean;
-}
-
-export interface CacheConfigResponse {
-    code: number;
-    msg: string;
-    data: CacheConfig;
-}
-
-/**
- * 发送验证码
- * @param data 包含用户邮箱的请求数据
- * @returns 发送结果
- */
-export const sendVerificationCode = async (data: VerificationCodeRequest): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'POST',
-        url: '/admin/login/verification-code',
-        data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-};
-
-/**
- * 验证码登录
- * @param data 包含用户邮箱和验证码的请求数据
- * @returns 登录结果
- */
-export const loginWithVerificationCode = async (data: LoginRequest): Promise<ApiResponse<null>> => {
-    try {
-        const response = await businessApi.post<ApiResponse<null>>(
-            '/admin/login/login',
-            data,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-
-        // 检查响应头中是否有token
-        const authHeader = response.headers['authorization'] || response.headers['Authorization'];
-        if (authHeader) {
-            // 保存token到localStorage
-            const token = typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
-                ? authHeader.substring(7)
-                : authHeader;
-            localStorage.setItem('auth_token', token);
-            console.log('已保存token:', token);
-        }
-
-        return response.data;
-    } catch (error) {
-        console.error('登录失败:', error);
-        throw error;
-    }
-};
-
 /**
  * 获取所有博客列表
  * @returns 博客列表数据
@@ -400,6 +265,55 @@ export const getBlogDataForEdit = async (blogId: string): Promise<BlogDataRespon
     });
 };
 
+// ===============================================================
+// 图库相关接口和函数
+// ===============================================================
+
+export interface GalleryImage {
+    img_id: string;
+    img_name: string;
+    img_type: string;
+    create_time: string;
+}
+
+export interface GalleryImagesResponse {
+    code: number;
+    msg: string;
+    data: GalleryImage[];
+}
+
+export interface CheckImageNameResponse {
+    code: number;
+    msg: string;
+    data: boolean;
+}
+
+export interface AddImagesRequest {
+    imgs: Array<{
+        img_name: string;
+        img_type: string;
+    }>;
+}
+
+export interface AddImagesResponse {
+    code: number;
+    msg: string;
+    data: null;
+}
+
+export interface RenameImageRequest {
+    img_id: string;
+    img_name: string;
+}
+
+export interface PreSignUrlResponse {
+    code: number;
+    msg: string;
+    data: {
+        pre_sign_put_url: string;
+    };
+}
+
 /**
  * 获取所有图片
  * @returns 图片列表数据
@@ -482,6 +396,38 @@ export const checkImageNameExistence = async (imageName: string): Promise<CheckI
 };
 
 /**
+ * 获取图片的完整URL
+ * @param imgId 图片ID
+ * @returns 图片的完整URL
+ */
+export const getImageUrl = (imgId: string): string => {
+    const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
+    return `${businessServiceUrl}/web/img/get/${imgId}`;
+};
+
+// ===============================================================
+// 用户配置相关接口和函数
+// ===============================================================
+
+export interface UserConfig {
+    user_name: string;
+    user_email: string;
+    avatar_image: string;
+    web_logo: string;
+    background_image: string;
+    user_github_address?: string;
+    user_hobbies?: string[];
+    type_writer_content?: string[];
+    icp_filing_number?: string;
+}
+
+export interface UserConfigResponse {
+    code: number;
+    msg: string;
+    data: UserConfig;
+}
+
+/**
  * 获取用户配置信息
  * @returns 用户配置数据
  */
@@ -509,7 +455,7 @@ export const updateUserConfig = async (
 
     // 添加用户数据，使用点表示法
     if (userData.user_name) requestData['user.user_name'] = userData.user_name;
-    
+
     // 如果邮箱已修改，则需要添加邮箱和验证码
     if (isEmailChanged && userData.user_email) {
         requestData['user.user_email'] = userData.user_email;
@@ -517,7 +463,7 @@ export const updateUserConfig = async (
             requestData['user.verification_code'] = verificationCode;
         }
     }
-    
+
     // 添加新字段
     if (userData.user_github_address) requestData['user.user_github_address'] = userData.user_github_address;
     if (userData.user_hobbies) requestData['user.user_hobbies'] = userData.user_hobbies;
@@ -549,6 +495,57 @@ export const sendEmailVerificationCode = async (email: string): Promise<ApiRespo
         }
     });
 };
+
+/**
+ * 更新用户图片配置信息
+ * @param avatarImage 头像图片ID
+ * @param webLogo 网站Logo图片ID
+ * @param backgroundImage 背景图片ID
+ * @returns 更新结果
+ */
+export const updateUserImages = async (
+    avatarImage?: string,
+    webLogo?: string,
+    backgroundImage?: string
+): Promise<ApiResponse<null>> => {
+    // 构建使用点表示法的请求数据对象
+    const requestData: Record<string, string> = {};
+
+    // 添加图片数据，使用点表示法
+    if (avatarImage) requestData['user.avatar_image'] = avatarImage;
+    if (webLogo) requestData['user.web_logo'] = webLogo;
+    if (backgroundImage) requestData['user.background_image'] = backgroundImage;
+
+    // 使用完整路径并允许重定向
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/setting/user/visual',
+        data: requestData,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
+// ===============================================================
+// 服务器配置相关接口和函数
+// ===============================================================
+
+export interface ServerConfig {
+    port: number;
+    token_expire_duration: number;
+    cors_origins: string[];
+    token_key?: string;
+    smtp_account?: string;
+    smtp_address?: string;
+    smtp_port?: number;
+}
+
+export interface ServerConfigResponse {
+    code: number;
+    msg: string;
+    data: ServerConfig;
+}
 
 /**
  * 获取服务器配置信息
@@ -584,7 +581,7 @@ export const updateServerConfig = async (
         'server.token_expire_duration': tokenExpireDuration,
         'server.cors_origins': corsOrigins
     };
-    
+
     // 如果提供了令牌密钥，则添加到请求数据
     if (tokenKey) {
         requestData['server.token_key'] = tokenKey;
@@ -594,15 +591,15 @@ export const updateServerConfig = async (
     if (smtpAccount) {
         requestData['server.smtp_account'] = smtpAccount;
     }
-    
+
     if (smtpAddress) {
         requestData['server.smtp_address'] = smtpAddress;
     }
-    
+
     if (smtpPort) {
         requestData['server.smtp_port'] = smtpPort;
     }
-    
+
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
         url: '/admin/setting/server/config',
@@ -612,6 +609,54 @@ export const updateServerConfig = async (
         }
     });
 };
+
+/**
+ * 发送SMTP配置验证码
+ * @param smtpAccount SMTP账号
+ * @param smtpAddress SMTP服务器地址
+ * @param smtpPort SMTP端口
+ * @param smtpAuthCode SMTP授权码
+ * @returns 验证码发送结果
+ */
+export const sendSMTPVerificationCode = async (
+    smtpAccount: string,
+    smtpAddress: string,
+    smtpPort: string,
+    smtpAuthCode: string
+): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'POST',
+        url: '/admin/setting/user/verify-new-smtp-config',
+        data: {
+            'server.smtp_account': smtpAccount,
+            'server.smtp_address': smtpAddress,
+            'server.smtp_port': smtpPort,
+            'server.smtp_auth_code': smtpAuthCode
+        },
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
+// ===============================================================
+// 日志配置相关接口和函数
+// ===============================================================
+
+export interface LoggerConfig {
+    level: string;
+    dir_path: string;
+    max_size: number;
+    max_backups: number;
+    max_age: number;
+    compress: boolean;
+}
+
+export interface LoggerConfigResponse {
+    code: number;
+    msg: string;
+    data: LoggerConfig;
+}
 
 /**
  * 获取日志配置信息
@@ -650,7 +695,7 @@ export const updateLoggerConfig = async (
         'logger.max_backups': maxBackups,
         'logger.compress': compress
     };
-    
+
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
         url: '/admin/setting/logger/config',
@@ -660,6 +705,26 @@ export const updateLoggerConfig = async (
         }
     });
 };
+
+// ===============================================================
+// 数据库配置相关接口和函数
+// ===============================================================
+
+export interface MySQLConfig {
+    database: string;
+    host: string;
+    max_idle: number;
+    max_open: number;
+    port: number;
+    user: string;
+    password?: string;
+}
+
+export interface MySQLConfigResponse {
+    code: number;
+    msg: string;
+    data: MySQLConfig;
+}
 
 /**
  * 获取MySQL数据库配置信息
@@ -701,7 +766,7 @@ export const updateMySQLConfig = async (
         'mysql.max_open': maxOpen,
         'mysql.max_idle': maxIdle
     };
-    
+
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
         url: '/admin/setting/mysql/config',
@@ -711,6 +776,26 @@ export const updateMySQLConfig = async (
         }
     });
 };
+
+// ===============================================================
+// OSS配置相关接口和函数
+// ===============================================================
+
+export interface OSSConfig {
+    endpoint: string;
+    region: string;
+    bucket: string;
+    image_oss_path: string;
+    blog_oss_path: string;
+    access_key_id?: string;
+    access_key_secret?: string;
+}
+
+export interface OSSConfigResponse {
+    code: number;
+    msg: string;
+    data: OSSConfig;
+}
 
 /**
  * 获取OSS配置信息
@@ -752,7 +837,7 @@ export const updateOSSConfig = async (
         'oss.image_oss_path': imageOssPath,
         'oss.blog_oss_path': blogOssPath
     };
-    
+
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
         url: '/admin/setting/oss/config',
@@ -762,6 +847,23 @@ export const updateOSSConfig = async (
         }
     });
 };
+
+// ===============================================================
+// 缓存配置相关接口和函数
+// ===============================================================
+
+export interface CacheConfig {
+    enable_aof: boolean;
+    aof_dir_path: string;
+    aof_mix_size: number;
+    aof_compress: boolean;
+}
+
+export interface CacheConfigResponse {
+    code: number;
+    msg: string;
+    data: CacheConfig;
+}
 
 /**
  * 获取缓存配置信息
@@ -794,7 +896,7 @@ export const updateCacheConfig = async (
         'cache.aof.max_size': aofMaxSize.toString(),
         'cache.aof.compress': aofCompress
     };
-    
+
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
         url: '/admin/setting/cache/config',
@@ -805,79 +907,32 @@ export const updateCacheConfig = async (
     });
 };
 
-/**
- * 更新用户图片配置信息
- * @param avatarImage 头像图片ID
- * @param webLogo 网站Logo图片ID
- * @param backgroundImage 背景图片ID
- * @returns 更新结果
- */
-export const updateUserImages = async (
-    avatarImage?: string,
-    webLogo?: string,
-    backgroundImage?: string
-): Promise<ApiResponse<null>> => {
-    // 构建使用点表示法的请求数据对象
-    const requestData: Record<string, string> = {};
-
-    // 添加图片数据，使用点表示法
-    if (avatarImage) requestData['user.avatar_image'] = avatarImage;
-    if (webLogo) requestData['user.web_logo'] = webLogo;
-    if (backgroundImage) requestData['user.background_image'] = backgroundImage;
-
-    // 使用完整路径并允许重定向
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: '/admin/setting/user/visual',
-        data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    });
-};
-
-/**
- * 发送SMTP配置验证码
- * @param smtpAccount SMTP账号
- * @param smtpAddress SMTP服务器地址
- * @param smtpPort SMTP端口
- * @param smtpAuthCode SMTP授权码
- * @returns 验证码发送结果
- */
-export const sendSMTPVerificationCode = async (
-    smtpAccount: string,
-    smtpAddress: string, 
-    smtpPort: string,
-    smtpAuthCode: string
-): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'POST',
-        url: '/admin/setting/user/verify-new-smtp-config',
-        data: {
-            'server.smtp_account': smtpAccount,
-            'server.smtp_address': smtpAddress,
-            'server.smtp_port': smtpPort,
-            'server.smtp_auth_code': smtpAuthCode
-        },
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-};
-
-/**
- * 获取图片的完整URL
- * @param imgId 图片ID
- * @returns 图片的完整URL
- */
-export const getImageUrl = (imgId: string): string => {
-    const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
-    return `${businessServiceUrl}/web/img/get/${imgId}`;
-};
-
+// 导出所有API函数
 export default {
+    // 认证相关
     sendVerificationCode,
     loginWithVerificationCode,
+    getUserInfo,
+    
+    // 博客相关
+    getAllBlogs,
+    changeBlogState,
+    setBlogTop,
+    deleteBlog,
+    getAllTagsAndCategories,
+    updateOrAddBlog,
+    getBlogDataForEdit,
+    
+    // 图库相关
+    getAllGalleryImages,
+    renameGalleryImage,
+    deleteGalleryImage,
+    getPreSignUrl,
+    addGalleryImages,
+    checkImageNameExistence,
+    getImageUrl,
+    
+    // 配置相关
     getUserConfig,
     updateUserConfig,
     getServerConfig,
@@ -890,19 +945,6 @@ export default {
     updateOSSConfig,
     getCacheConfig,
     updateCacheConfig,
-    getAllBlogs,
-    changeBlogState,
-    setBlogTop,
-    deleteBlog,
-    getAllTagsAndCategories,
-    updateOrAddBlog,
-    getBlogDataForEdit,
-    getAllGalleryImages,
-    renameGalleryImage,
-    deleteGalleryImage,
-    getPreSignUrl,
-    addGalleryImages,
-    checkImageNameExistence,
     updateUserImages,
     sendEmailVerificationCode,
     sendSMTPVerificationCode
