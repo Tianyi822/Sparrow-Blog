@@ -41,6 +41,7 @@ const ScrollBar: React.FC<ScrollBarProps> = ({className, hideDelay = 1000}) => {
 
     /**
      * 更新滚动条滑块的位置和大小
+     * 根据页面滚动位置计算滑块高度和位置
      */
     const updateScrollThumb = useCallback((): void => {
         if (!thumbRef.current || !containerRef.current) return;
@@ -66,6 +67,7 @@ const ScrollBar: React.FC<ScrollBarProps> = ({className, hideDelay = 1000}) => {
 
     /**
      * 滚动事件处理函数
+     * 更新滚动条位置并控制滚动条显示隐藏
      */
     const handleScroll = useCallback((): void => {
         if (!isDragging) {
@@ -84,7 +86,7 @@ const ScrollBar: React.FC<ScrollBarProps> = ({className, hideDelay = 1000}) => {
             }, hideDelay);
         }
     }, [isDragging, hideDelay, updateScrollThumb]);
-    useCallback(() => {
+    useCallback((): void => {
         setIsScrolling(true);
 
         // 清除之前的超时
@@ -200,4 +202,4 @@ const ScrollBar: React.FC<ScrollBarProps> = ({className, hideDelay = 1000}) => {
     );
 };
 
-export default ScrollBar;
+export { ScrollBar as default, type ScrollBarProps };
