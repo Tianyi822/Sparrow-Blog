@@ -20,7 +20,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, 
 
     // 调试图片URL
     useEffect(() => {
-        console.log('Blog Image URL:', image);
+        console.log('BlogCard Image URL:', image);
     }, [image]);
 
     // 处理点击事件，导航到博客详情页

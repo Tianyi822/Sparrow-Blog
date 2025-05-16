@@ -9,7 +9,7 @@ import "./BlogLayout.scss";
 
 const BlogLayout: FC = () => {
     const [navIndex, setNavIndex] = useState<number>(1);
-    const [userName, setUserName] = useState<string>("Blog");
+    const [userName, setUserName] = useState<string>("BlogCard");
     const [bgImage, setBgImage] = useState<string>("");
     const [homeData, setHomeData] = useState<BasicData | null>(null);
     const location = useLocation();

@@ -1,4 +1,4 @@
-import BlogCard from '@/components/Blog/BlogCard';
+import BlogCard from '@/components/BlogCard/BlogCard';
 import Clock from '@/components/Home/Clock';
 import Introduction from "@/components/Home/Introduction";
 import Pagination from '@/components/Home/Pagination';

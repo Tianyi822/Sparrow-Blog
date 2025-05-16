@@ -6,7 +6,7 @@ const NotFound: FC = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    document.title = '404 - 页面未找到 | Tianyi\'s Blog';
+    document.title = '404 - 页面未找到 | Tianyi\'s BlogCard';
   }, []);
 
   const handleBackToHome = () => {
