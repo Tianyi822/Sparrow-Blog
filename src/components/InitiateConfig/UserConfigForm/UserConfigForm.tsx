@@ -6,34 +6,67 @@ import {
     VerificationCodeData
 } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { KeyboardEvent, useEffect, useState } from 'react';
+import React, { KeyboardEvent, useEffect, useState, useCallback, useMemo } from 'react';
 import './UserConfigForm.scss';
 import { FiHeart, FiLock, FiMail, FiType, FiUser, FiX } from 'react-icons/fi';
 
+/**
+ * 表单验证错误接口
+ */
 interface ValidationErrors {
     [key: string]: string;
 }
 
+/**
+ * 用户配置表单组件属性接口
+ */
 export interface UserEmailConfigFormProps {
+    /** 表单提交回调函数 */
     onSubmit?: (formData: UserEmailConfigFormData) => void;
+    /** 初始表单数据 */
     initialData?: UserEmailConfigFormData;
+    /** 是否已提交成功 */
     isSubmitted?: boolean;
+    /** 进入下一步回调函数 */
     onNext?: () => void;
 }
 
+/**
+ * 用户配置表单数据接口
+ */
 export interface UserEmailConfigFormData {
+    /** 用户名 */
     username: string;
+    /** 用户邮箱 */
     email: string;
+    /** GitHub地址，可选 */
     githubAddress?: string;
+    /** 用户爱好列表，可选 */
     hobbies?: string[];
+    /** 打字机内容列表，可选 */
     typeWriterContent?: string[];
 }
 
-// 字段映射配置
-const FIELD_CONFIG = {
+/**
+ * 字段配置项接口
+ */
+interface FieldConfig {
+    label: string;
+    icon: React.ReactNode;
+    name: string;
+    type: string;
+    placeholder?: string;
+    validate: (value: string) => string;
+}
+
+/**
+ * 字段配置对象
+ * 定义表单字段的标签、图标、验证规则等
+ */
+const FIELD_CONFIG: Record<string, FieldConfig> = {
     username: {
         label: '用户名',
-        icon: <FiUser/>,
+        icon: <FiUser />,
         name: 'username',
         type: 'text',
         validate: (value: string) => {
@@ -45,7 +78,7 @@ const FIELD_CONFIG = {
     },
     email: {
         label: '用户邮箱',
-        icon: <FiMail/>,
+        icon: <FiMail />,
         name: 'email',
         type: 'email',
         validate: (value: string) => {
@@ -60,7 +93,7 @@ const FIELD_CONFIG = {
     },
     githubAddress: {
         label: 'GitHub 地址',
-        icon: <FiUser/>,
+        icon: <FiUser />,
         name: 'githubAddress',
         type: 'text',
         placeholder: 'https://github.com/username',
@@ -73,7 +106,7 @@ const FIELD_CONFIG = {
     },
     hobby: {
         label: '爱好',
-        icon: <FiHeart/>,
+        icon: <FiHeart />,
         name: 'hobby',
         type: 'text',
         placeholder: '输入爱好后按回车添加',
@@ -81,7 +114,7 @@ const FIELD_CONFIG = {
     },
     typeWriterContent: {
         label: '打字机内容',
-        icon: <FiType/>,
+        icon: <FiType />,
         name: 'typeWriterContent',
         type: 'text',
         placeholder: '输入打字机内容后按回车添加',
@@ -89,7 +122,7 @@ const FIELD_CONFIG = {
     },
     verifyCode: {
         label: '验证码',
-        icon: <FiLock/>,
+        icon: <FiLock />,
         name: 'verifyCode',
         type: 'text',
         placeholder: '请输入验证码',
@@ -102,7 +135,11 @@ const FIELD_CONFIG = {
     }
 };
 
-const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialData, isSubmitted, onNext}) => {
+/**
+ * 用户配置表单组件
+ * 用于配置用户基本信息、爱好、打字机内容等，并进行邮箱验证
+ */
+const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialData, isSubmitted, onNext }) => {
     // 状态定义
     const [formData, setFormData] = useState<UserEmailConfigFormData & { verifyCode?: string }>({
         username: initialData?.username || '',
@@ -127,7 +164,9 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
     const [tempHobby, setTempHobby] = useState<string>('');
     const [tempTypeWriterContent, setTempTypeWriterContent] = useState<string>('');
 
-    // 初始化检查倒计时状态
+    /**
+     * 初始化检查倒计时状态
+     */
     useEffect(() => {
         // 从localStorage检查倒计时状态
         const storedCountdown = localStorage.getItem('verifyCodeCountdown');
@@ -148,7 +187,9 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
         }
     }, []);
 
-    // 当initialData变化时更新表单数据
+    /**
+     * 当initialData变化时更新表单数据
+     */
     useEffect(() => {
         if (initialData) {
             setFormData(prevData => ({
@@ -162,7 +203,9 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
         }
     }, [initialData]);
 
-    // 处理倒计时
+    /**
+     * 处理倒计时
+     */
     useEffect(() => {
         let timer: NodeJS.Timeout;
 
@@ -189,20 +232,55 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
         };
     }, [countdown]);
 
-    // 验证单个字段
-    const validateField = (field: string, value: string): string => {
+    /**
+     * 清除指定字段的错误
+     */
+    const clearFieldError = useCallback((fieldName: string) => {
+        if (errors[fieldName]) {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[fieldName];
+                return newErrors;
+            });
+        }
+    }, [errors]);
+
+    /**
+     * 清除全局消息
+     */
+    const clearMessages = useCallback(() => {
+        if (successMessage) setSuccessMessage('');
+        if (submitError) setSubmitError('');
+    }, [successMessage, submitError]);
+
+    /**
+     * 验证单个字段
+     * @param field 字段名
+     * @param value 字段值
+     * @returns 错误信息，无错误则返回空字符串
+     */
+    const validateField = useCallback((field: string, value: string): string => {
         const config = FIELD_CONFIG[field as keyof typeof FIELD_CONFIG];
         if (!config) return '';
         return config.validate(value);
-    };
+    }, []);
 
-    // 验证所有字段
-    const validateForm = (): boolean => {
+    /**
+     * 验证所有字段
+     * @returns 是否验证通过
+     */
+    const validateForm = useCallback((): boolean => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
 
         // 验证所有必填字段
         Object.keys(FIELD_CONFIG).forEach(field => {
+            // 跳过非必填字段的验证
+            if (field === 'hobby' || field === 'typeWriterContent') return;
+
+            // 只有需要提交验证码时才验证验证码
+            if (field === 'verifyCode' && !formData.verifyCode) return;
+
             const value = formData[field as keyof typeof formData] as string || '';
             const error = validateField(field, value);
 
@@ -214,13 +292,15 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
 
         setErrors(newErrors);
         return isValid;
-    };
+    }, [formData, validateField]);
 
-    // 处理输入变化
-    const handleChange = (
+    /**
+     * 处理输入变化
+     */
+    const handleChange = useCallback((
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
-        const {name, value, type} = e.target;
+        const { name, value, type } = e.target;
 
         if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
@@ -252,21 +332,16 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
         });
 
         // 清除该字段的错误
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErrors = {...prev};
-                delete newErrors[name];
-                return newErrors;
-            });
-        }
+        clearFieldError(name);
 
         // 清除成功和错误消息
-        if (successMessage) setSuccessMessage('');
-        if (submitError) setSubmitError('');
-    };
+        clearMessages();
+    }, [clearFieldError, clearMessages]);
 
-    // 处理列表项的键盘事件
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, type: 'hobby' | 'typeWriterContent') => {
+    /**
+     * 处理列表项的键盘事件
+     */
+    const handleKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>, type: 'hobby' | 'typeWriterContent') => {
         if (e.key === 'Enter') {
             e.preventDefault();
 
@@ -288,10 +363,12 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                 setTempTypeWriterContent('');
             }
         }
-    };
+    }, [tempHobby, tempTypeWriterContent]);
 
-    // 删除列表项
-    const handleRemoveItem = (index: number, type: 'hobby' | 'typeWriterContent') => {
+    /**
+     * 删除列表项
+     */
+    const handleRemoveItem = useCallback((index: number, type: 'hobby' | 'typeWriterContent') => {
         if (type === 'hobby') {
             setFormData(prev => ({
                 ...prev,
@@ -303,10 +380,25 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                 typeWriterContent: prev.typeWriterContent?.filter((_, i) => i !== index) || []
             }));
         }
-    };
+    }, []);
 
-    // 处理发送验证码
-    const handleSendVerifyCode = async () => {
+    /**
+     * 格式化错误数据显示
+     */
+    const formatErrorData = useCallback((data: Record<string, unknown> | null): string => {
+        if (!data) return '';
+
+        try {
+            return JSON.stringify(data, null, 2);
+        } catch {
+            return String(data);
+        }
+    }, []);
+
+    /**
+     * 处理发送验证码
+     */
+    const handleSendVerifyCode = useCallback(async () => {
         // 先验证email字段
         const emailError = validateField('email', formData.email);
         if (emailError) {
@@ -355,8 +447,6 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                 setDisableSendCode(false);
             }
         } catch (error: unknown) {
-            console.error('Failed to send verification code:', error);
-
             // 处理错误
             if (error && typeof error === 'object') {
                 if (error instanceof AxiosError && error.response) {
@@ -385,10 +475,12 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
             // 重置发送按钮状态
             setDisableSendCode(false);
         }
-    };
+    }, [formData.email, successMessage, validateField]);
 
-    // 处理表单提交
-    const handleSubmit = async (e: React.FormEvent) => {
+    /**
+     * 处理表单提交
+     */
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError('');
         setErrorData(null);
@@ -447,8 +539,6 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                 });
             }
         } catch (error: unknown) {
-            console.error('Failed to save user email config:', error);
-
             // 处理错误对象，提取详细信息
             if (error && typeof error === 'object') {
                 // 检查是否是Axios错误并包含响应数据
@@ -483,7 +573,7 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                     try {
                         setErrorData(error as Record<string, unknown>);
                     } catch (e) {
-                        console.error('Failed to format error data:', e);
+                        // 处理错误数据格式化失败
                     }
                 }
             } else {
@@ -493,18 +583,16 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
         } finally {
             setLoading(false);
         }
-    };
+    }, [formData, onSubmit, validateForm]);
 
-    // 格式化错误数据显示
-    const formatErrorData = (data: Record<string, unknown> | null): string => {
-        if (!data) return '';
-
-        try {
-            return JSON.stringify(data, null, 2);
-        } catch {
-            return String(data);
-        }
-    };
+    /**
+     * 用户信息部分表单字段
+     */
+    const userInfoFields = useMemo(() => [
+        { key: 'username', type: 'text' },
+        { key: 'email', type: 'text' },
+        { key: 'githubAddress', type: 'text' }
+    ], []);
 
     return (
         <div className="user-email-config-form-container">
@@ -513,59 +601,29 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
             <form onSubmit={handleSubmit}>
                 <div className="form-section-header">
                     <h3>
-                        <span className="icon"><FiUser/></span>
+                        <span className="icon"><FiUser /></span>
                         用户信息
                     </h3>
                 </div>
 
-                {/* 用户名 */}
-                <div className="form-group">
-                    <label htmlFor="username">
-                        <span className="icon">{FIELD_CONFIG.username.icon}</span>
-                        {FIELD_CONFIG.username.label}
-                    </label>
-                    <input
-                        type={FIELD_CONFIG.username.type}
-                        id="username"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                    />
-                    {errors.username && <div className="error-message">{errors.username}</div>}
-                </div>
-
-                {/* 用户邮箱 */}
-                <div className="form-group">
-                    <label htmlFor="email">
-                        <span className="icon">{FIELD_CONFIG.email.icon}</span>
-                        {FIELD_CONFIG.email.label}
-                    </label>
-                    <input
-                        type={FIELD_CONFIG.email.type}
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
-                    {errors.email && <div className="error-message">{errors.email}</div>}
-                </div>
-
-                {/* GitHub地址 */}
-                <div className="form-group">
-                    <label htmlFor="githubAddress">
-                        <span className="icon">{FIELD_CONFIG.githubAddress.icon}</span>
-                        {FIELD_CONFIG.githubAddress.label}
-                    </label>
-                    <input
-                        type={FIELD_CONFIG.githubAddress.type}
-                        id="githubAddress"
-                        name="githubAddress"
-                        placeholder={FIELD_CONFIG.githubAddress.placeholder}
-                        value={formData.githubAddress || ''}
-                        onChange={handleChange}
-                    />
-                    {errors.githubAddress && <div className="error-message">{errors.githubAddress}</div>}
-                </div>
+                {/* 基础用户信息字段 */}
+                {userInfoFields.map(field => (
+                    <div className="form-group" key={field.key}>
+                        <label htmlFor={field.key}>
+                            <span className="icon">{FIELD_CONFIG[field.key as keyof typeof FIELD_CONFIG].icon}</span>
+                            {FIELD_CONFIG[field.key as keyof typeof FIELD_CONFIG].label}
+                        </label>
+                        <input
+                            type={FIELD_CONFIG[field.key as keyof typeof FIELD_CONFIG].type}
+                            id={field.key}
+                            name={field.key}
+                            placeholder={FIELD_CONFIG[field.key as keyof typeof FIELD_CONFIG].placeholder || ''}
+                            value={formData[field.key as keyof typeof formData] as string || ''}
+                            onChange={handleChange}
+                        />
+                        {errors[field.key] && <div className="error-message">{errors[field.key]}</div>}
+                    </div>
+                ))}
 
                 {/* 爱好配置 */}
                 <div className="form-group">
@@ -592,7 +650,7 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                                         className="delete-tag"
                                         onClick={() => handleRemoveItem(index, 'hobby')}
                                     >
-                                        <FiX/>
+                                        <FiX />
                                     </button>
                                 </div>
                             ))}
@@ -625,7 +683,7 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
                                         className="delete-tag"
                                         onClick={() => handleRemoveItem(index, 'typeWriterContent')}
                                     >
-                                        <FiX/>
+                                        <FiX />
                                     </button>
                                 </div>
                             ))}
@@ -635,7 +693,7 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({onSubmit, initialDa
 
                 <div className="form-section-header">
                     <h3>
-                        <span className="icon"><FiLock/></span>
+                        <span className="icon"><FiLock /></span>
                         邮箱验证
                     </h3>
                 </div>
