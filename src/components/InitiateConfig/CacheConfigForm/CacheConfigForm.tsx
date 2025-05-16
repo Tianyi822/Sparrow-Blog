@@ -4,25 +4,37 @@ import React, { useEffect, useState } from 'react';
 import { FiDatabase, FiFolder, FiHardDrive, FiZap } from 'react-icons/fi';
 import './CacheConfigForm.scss';
 
+/**
+ * 表单验证错误接口
+ */
 interface ValidationErrors {
     [key: string]: string;
 }
 
+/**
+ * 缓存配置表单数据接口
+ */
 export interface CacheConfigFormData {
-    aofEnabled: boolean;
-    aofPath: string;
-    aofMaxSize: string;
-    compressEnabled: boolean;
+    aofEnabled: boolean;      // 是否启用AOF持久化
+    aofPath: string;          // AOF文件路径
+    aofMaxSize: string;       // AOF文件最大大小(MB)
+    compressEnabled: boolean; // 是否启用压缩
 }
 
+/**
+ * 缓存配置表单组件属性接口
+ */
 export interface CacheConfigFormProps {
-    initialData?: CacheConfigFormData;
-    onSubmit?: (data: CacheConfigFormData) => void;
-    isSubmitted?: boolean;
-    onNext?: () => void;
+    initialData?: CacheConfigFormData;  // 初始表单数据
+    onSubmit?: (data: CacheConfigFormData) => void; // 提交回调
+    isSubmitted?: boolean;              // 是否已提交
+    onNext?: () => void;                // 下一步回调
 }
 
-// 字段配置
+/**
+ * 字段配置对象
+ * 定义表单字段的标签、图标、验证规则等
+ */
 const FIELD_CONFIG = {
     aofEnabled: {
         label: '启用AOF持久化',
@@ -69,6 +81,10 @@ const FIELD_CONFIG = {
     }
 };
 
+/**
+ * 缓存配置表单组件
+ * 用于配置系统缓存持久化相关设置，包括AOF持久化和压缩选项
+ */
 const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
     // 状态定义
     const [formData, setFormData] = useState<CacheConfigFormData>({
@@ -77,14 +93,16 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
         aofMaxSize: initialData?.aofMaxSize || '1',
         compressEnabled: initialData?.compressEnabled !== undefined ? initialData.compressEnabled : true
     });
-    const [errors, setErrors] = useState<ValidationErrors>({});
-    const [submitError, setSubmitError] = useState<string>('');
-    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [successMessage, setSuccessMessage] = useState<string>('');
-    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+    const [errors, setErrors] = useState<ValidationErrors>({});           // 验证错误信息
+    const [submitError, setSubmitError] = useState<string>('');           // 提交错误信息
+    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null); // 详细错误数据
+    const [loading, setLoading] = useState<boolean>(false);               // 加载状态
+    const [successMessage, setSuccessMessage] = useState<string>('');     // 成功消息
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false); // 提交成功状态
 
-    // 当initialData变化时更新表单数据
+    /**
+     * 当initialData变化时更新表单数据
+     */
     useEffect(() => {
         if (initialData) {
             setFormData(prevFormData => ({
@@ -96,7 +114,10 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
         }
     }, [initialData]);
 
-    // 处理输入变化
+    /**
+     * 处理表单输入变化
+     * @param e 输入事件
+     */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value, type} = e.target;
 
@@ -135,7 +156,11 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
         }
     };
 
-    // 验证单个字段
+    /**
+     * 验证单个字段
+     * @param field 字段名
+     * @returns 验证错误信息，无错误返回空字符串
+     */
     const validateField = (field: keyof CacheConfigFormData): string => {
         const config = FIELD_CONFIG[field];
         if (!config || typeof config.validate !== 'function') return '';
@@ -149,7 +174,10 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
         return config.validate(formData[field] as string);
     };
 
-    // 验证所有字段
+    /**
+     * 验证整个表单
+     * @returns 表单是否有效
+     */
     const validateForm = (): boolean => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
@@ -171,7 +199,11 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
         return isValid;
     };
 
-    // 格式化错误数据显示
+    /**
+     * 格式化错误数据显示
+     * @param data 错误数据对象
+     * @returns 格式化后的错误信息字符串
+     */
     const formatErrorData = (data: Record<string, unknown> | null): string => {
         if (!data) return '';
 
@@ -182,7 +214,10 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
         }
     };
 
-    // 处理表单提交
+    /**
+     * 处理表单提交
+     * @param e 表单提交事件
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError('');
@@ -190,6 +225,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
         // 不清除成功消息
         // setSuccessMessage('');
 
+        // 表单验证
         if (!validateForm()) {
             return;
         }
@@ -287,6 +323,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
                 {/* AOF配置，仅在启用时显示 */}
                 {formData.aofEnabled && (
                     <>
+                        {/* AOF文件路径 */}
                         <div className="form-group">
                             <label htmlFor="aofPath">
                                 <span className="icon">{FIELD_CONFIG.aofPath.icon}</span>
@@ -304,6 +341,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
                             {errors.aofPath && <div className="error-message">{errors.aofPath}</div>}
                         </div>
 
+                        {/* AOF文件最大大小 */}
                         <div className="form-group">
                             <label htmlFor="aofMaxSize">
                                 <span className="icon">{FIELD_CONFIG.aofMaxSize.icon}</span>
@@ -320,6 +358,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
                             {errors.aofMaxSize && <div className="error-message">{errors.aofMaxSize}</div>}
                         </div>
 
+                        {/* 压缩选项 */}
                         <div className="form-group checkbox-group">
                             <input
                                 type="checkbox"
@@ -336,6 +375,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
                     </>
                 )}
 
+                {/* 操作按钮区域 */}
                 <div className="form-actions">
                     <button
                         type="submit"
@@ -345,6 +385,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
                         {loading ? '提交中...' : '保存配置'}
                     </button>
 
+                    {/* 提交成功时显示下一步按钮 */}
                     {submitSuccess && !submitError && onNext && (
                         <button
                             type="button"
@@ -370,6 +411,7 @@ const CacheConfigForm: React.FC<CacheConfigFormProps> = ({initialData, onSubmit,
                             <span className="error-title">错误：</span>
                             {submitError}
                         </div>
+                        {/* 显示详细错误数据 */}
                         {errorData && (
                             <div className="error-details">
                                 <div className="error-details-title">详细信息：</div>
