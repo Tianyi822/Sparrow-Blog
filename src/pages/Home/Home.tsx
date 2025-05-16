@@ -3,7 +3,7 @@ import Clock from '@/components/Home/Clock';
 import Introduction from "@/components/Home/Introduction";
 import Pagination from '@/components/Home/Pagination';
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
-import WebContent from '@/components/WebContent/WebContent';
+import WebInfo from '@/components/WebInfo/WebInfo.tsx';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { useCallback, useState, useEffect, useMemo } from "react";
 import "./Home.scss";
@@ -331,7 +331,7 @@ const Home: React.FC = () => {
                         />
                     )}
                 </div>
-                <WebContent 
+                <WebInfo
                     className="home-web-content" 
                     authorName={homeData?.user_name}
                     authorAvatar={avatarImageUrl}

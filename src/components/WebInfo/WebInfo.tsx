@@ -1,8 +1,8 @@
-import AuthorInfo from '@/components/WebContent/AuthorInfo/AuthorInfo';
-import LatestArticles from '@/components/WebContent/LatestArticles/LatestArticles';
-import LatestComments from '@/components/WebContent/LatestComments/LatestComments';
-import Categories from '@/components/WebContent/Categories/Categories';
-import './WebContent.scss';
+import AuthorInfo from '@/components/WebInfo/AuthorInfo/AuthorInfo';
+import LatestArticles from '@/components/WebInfo/LatestArticles/LatestArticles';
+import LatestComments from '@/components/WebInfo/LatestComments/LatestComments';
+import Categories from '@/components/WebInfo/Categories/Categories';
+import './WebInfo.scss';
 import Tags from './Tags/Tags';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { BlogCategory, BlogTag } from '@/services/adminService';
@@ -20,7 +20,7 @@ interface WebContentProps {
     activeTagId?: string | null;
 }
 
-const WebContent: React.FC<WebContentProps> = ({
+const WebInfo: React.FC<WebContentProps> = ({
     className,
     authorName,
     authorAvatar,
@@ -45,7 +45,7 @@ const WebContent: React.FC<WebContentProps> = ({
         categories: homeData?.categories?.length || 0
     };
 
-    console.log('WebContent received activeCategoryId:', activeCategoryId);
+    console.log('WebInfo received activeCategoryId:', activeCategoryId);
     console.log('Published blogs count:', publishedBlogs.length);
 
     return (
@@ -78,4 +78,4 @@ const WebContent: React.FC<WebContentProps> = ({
     );
 };
 
-export default WebContent;
+export default WebInfo;
