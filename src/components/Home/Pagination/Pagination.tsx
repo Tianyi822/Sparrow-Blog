@@ -1,62 +1,75 @@
-import { useState, useCallback, useEffect } from 'react';
+import classNames from 'classnames';
+import { useCallback, useEffect, useState } from 'react';
 import PagePopup from './PagePopup';
 import './Pagination.scss';
-import classNames from 'classnames';
 
+/**
+ * 分页组件属性接口
+ */
 interface PaginationProps {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (page: number) => void;
-    className?: string;
+    currentPage: number;                    // 当前页码
+    totalPages: number;                     // 总页数
+    onPageChange: (page: number) => void;   // 页码变更回调
+    className?: string;                     // 自定义样式类名
 }
 
+/**
+ * 弹出层信息接口
+ */
 interface PopupInfo {
-    pages: number[];
-    position: number;
-    index: number;
+    pages: number[];          // 弹出层显示的页码数组
+    position: number;         // 弹出层位置
+    index: number;            // 当前省略号索引
 }
 
-const Pagination: React.FC<PaginationProps> = ({ 
-    currentPage, 
-    totalPages, 
+/**
+ * 分页组件
+ * 提供灵活的分页导航，支持移动端和桌面端不同显示方式
+ */
+const Pagination: React.FC<PaginationProps> = ({
+    currentPage,
+    totalPages,
     onPageChange,
     className,
 }) => {
     const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
     const [isClosing, setIsClosing] = useState<boolean>(false);
     const [isMobile, setIsMobile] = useState<boolean>(false);
-    
-    // Detect mobile screen
+
+    // 检测是否为移动设备
     useEffect(() => {
         const checkMobile = () => {
             setIsMobile(window.matchMedia("(max-width: 768px)").matches);
         };
-        
-        // Check initially
+
+        // 初始检查
         checkMobile();
-        
-        // Set up listener for screen resize
+
+        // 设置窗口大小变化的监听器
         window.addEventListener('resize', checkMobile);
-        
-        // Clean up
+
+        // 清理函数
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    // 处理页码选择
     const handlePageSelect = useCallback((page: number) => {
         if (page !== currentPage) {
             onPageChange(page);
         }
-        
-        // Close the popup after page selection
+
+        // 选择页码后关闭弹出层
         if (popupInfo) {
             setPopupInfo(null);
         }
     }, [currentPage, onPageChange, popupInfo]);
 
+    // 处理省略号点击，显示页码弹出层
     const handleEllipsisClick = useCallback((pages: number[], position: number, index: number) => {
         setPopupInfo({ pages, position, index });
     }, []);
 
+    // 关闭弹出层的处理函数
     const handlePopupClose = useCallback(() => {
         setIsClosing(true);
         setTimeout(() => {
@@ -65,39 +78,44 @@ const Pagination: React.FC<PaginationProps> = ({
         }, 200);
     }, []);
 
-    // Handle navigation via arrows
+    // 处理上一页按钮点击
     const handlePrevPage = useCallback(() => {
         if (currentPage > 1) {
             onPageChange(currentPage - 1);
         }
     }, [currentPage, onPageChange]);
 
+    // 处理下一页按钮点击
     const handleNextPage = useCallback(() => {
         if (currentPage < totalPages) {
             onPageChange(currentPage + 1);
         }
     }, [currentPage, totalPages, onPageChange]);
 
+    /**
+     * 生成要显示的页码数字及省略号
+     * 根据当前页码、总页数和设备类型决定显示哪些页码
+     */
     const renderPageNumbers = () => {
         const pageNumbers: (number | string)[] = [];
-        
-        // Handle special case: few total pages
-        if (totalPages <= 5) { // Show all pages if there are 5 or fewer
+
+        // 特殊情况：总页数较少
+        if (totalPages <= 5) { // 总页数小于等于5时显示所有页码
             for (let i = 1; i <= totalPages; i++) {
                 pageNumbers.push(i);
             }
             return pageNumbers;
         }
-        
-        // Always show first page
+
+        // 始终显示第一页
         pageNumbers.push(1);
-        
+
         if (isMobile) {
-            // Mobile layout with minimum 3 visible page numbers
-            
-            // Case 1: Current page is near beginning
+            // 移动端布局：最少显示3个页码
+
+            // 情况1：当前页靠近开始
             if (currentPage <= 2) {
-                // Show pages 1, 2, 3
+                // 显示页码1, 2, 3
                 if (currentPage === 1) {
                     pageNumbers.push(2);
                     pageNumbers.push(3);
@@ -105,115 +123,120 @@ const Pagination: React.FC<PaginationProps> = ({
                     pageNumbers.push(2);
                     pageNumbers.push(3);
                 }
-                
-                // Add ellipsis if more pages exist
+
+                // 如果还有更多页码，添加右侧省略号
                 if (totalPages > 4) {
                     pageNumbers.push('right-ellipsis');
                 } else if (totalPages === 4) {
-                    // Special case: show 4 instead of ellipsis when totalPages is 4
+                    // 特殊情况：总页数为4时，直接显示第4页而不是省略号
                     pageNumbers.push(4);
                 }
             }
-            // Case 2: Current page is near end
+            // 情况2：当前页靠近结束
             else if (currentPage >= totalPages - 1) {
-                // Add ellipsis for earlier pages
+                // 添加左侧省略号
                 pageNumbers.push('left-ellipsis');
-                
-                // Show the three last pages continuously (totalPages-2, totalPages-1, totalPages)
-                // But don't duplicate page 1 if totalPages is small
+
+                // 显示最后三页 (totalPages-2, totalPages-1, totalPages)
+                // 但如果总页数较小，避免重复显示第1页
                 if (totalPages > 3) pageNumbers.push(totalPages - 2);
                 pageNumbers.push(totalPages - 1);
             }
-            // Case 3: Current page is in middle
+            // 情况3：当前页在中间
             else {
-                // Add left ellipsis if not close to start
+                // 如果不靠近开始，添加左侧省略号
                 if (currentPage > 3) {
                     pageNumbers.push('left-ellipsis');
                 } else {
-                    // If close to start, show page 2 instead of ellipsis
+                    // 如果靠近开始，显示第2页而不是省略号
                     pageNumbers.push(2);
                 }
-                
-                // Show current page
+
+                // 显示当前页
                 pageNumbers.push(currentPage);
-                
-                // Add right ellipsis if not close to end
+
+                // 如果不靠近结束，添加右侧省略号
                 if (currentPage < totalPages - 2) {
                     pageNumbers.push('right-ellipsis');
                 } else {
-                    // If close to end, show second-last page instead of ellipsis
+                    // 如果靠近结束，显示倒数第二页而不是省略号
                     pageNumbers.push(totalPages - 1);
                 }
             }
         } else {
-            // Desktop layout with more visible pages
-            
-            // Case 1: Current page is near the beginning
+            // 桌面端布局：显示更多页码
+
+            // 情况1：当前页靠近开始
             if (currentPage <= 3) {
-                // Show pages 2, 3, 4, 5 without gaps
+                // 连续显示页码2, 3, 4, 5
                 for (let i = 2; i <= Math.min(5, totalPages - 1); i++) {
                     pageNumbers.push(i);
                 }
-                
-                // Add right ellipsis if needed
+
+                // 如果需要，添加右侧省略号
                 if (totalPages > 6) {
                     pageNumbers.push('right-ellipsis');
                 } else if (totalPages === 6) {
-                    // Show last interior page if just one more
+                    // 如果总页数为6，直接显示第6页
                     pageNumbers.push(6);
                 }
             }
-            // Case 2: Current page is near the end
+            // 情况2：当前页靠近结束
             else if (currentPage >= totalPages - 2) {
-                // Add left ellipsis if not too close to beginning
+                // 如果不太靠近开始，添加左侧省略号
                 if (totalPages > 6) {
                     pageNumbers.push('left-ellipsis');
                 }
-                
-                // Show final interior pages continuously
+
+                // 连续显示结尾内部页码
                 const startInterior = Math.max(2, totalPages - 4);
                 for (let i = startInterior; i <= totalPages - 1; i++) {
                     pageNumbers.push(i);
                 }
             }
-            // Case 3: Current page is in the middle
+            // 情况3：当前页在中间
             else {
-                // Add left ellipsis
+                // 添加左侧省略号
                 pageNumbers.push('left-ellipsis');
-                
-                // Add pages around current page
+
+                // 显示当前页及其前后页
                 pageNumbers.push(currentPage - 1);
                 pageNumbers.push(currentPage);
                 pageNumbers.push(currentPage + 1);
-                
-                // Add right ellipsis
+
+                // 添加右侧省略号
                 pageNumbers.push('right-ellipsis');
             }
         }
-        
-        // Last page is always shown (if not already added)
+
+        // 始终显示最后一页（如果尚未添加）
         if (!pageNumbers.includes(totalPages)) {
             pageNumbers.push(totalPages);
         }
-        
+
         return pageNumbers;
     };
 
+    /**
+     * 获取省略号对应的页码
+     * @param type 省略号类型（左侧或右侧）
+     * @returns 省略号代表的页码数组
+     */
     const getEllipsisPages = (type: string): number[] => {
         const pages: number[] = [];
-        
+
         if (type === 'left-ellipsis') {
-            // Add all pages between 1 and current-1
+            // 添加第1页和当前页之间的所有页码
             for (let i = 2; i < currentPage; i++) {
                 pages.push(i);
             }
         } else {
-            // Add all pages between current+1 and totalPages
+            // 添加当前页和最后页之间的所有页码
             for (let i = currentPage + 1; i < totalPages; i++) {
                 pages.push(i);
             }
         }
-        
+
         return pages;
     };
 
@@ -221,22 +244,24 @@ const Pagination: React.FC<PaginationProps> = ({
 
     return (
         <div className={cls}>
-            {/* Left arrow button */}
+            {/* 左箭头按钮 */}
             <div className="pagination-arrow-area">
-                <button 
+                <button
                     className={`pagination-arrow ${currentPage === 1 ? 'disabled' : ''}`}
                     onClick={handlePrevPage}
                     disabled={currentPage === 1}
                 >
                     <svg width="16" height="16" viewBox="0 0 16 16">
-                        <path fill="currentColor" d="M10 3L5 8l5 5 1-1-4-4 4-4-1-1z"/>
+                        <path fill="currentColor" d="M10 3L5 8l5 5 1-1-4-4 4-4-1-1z" />
                     </svg>
                 </button>
             </div>
 
+            {/* 页码显示区域 */}
             <div className="pagination-numbers">
                 {renderPageNumbers().map((pageNum, index) => {
                     if (typeof pageNum === 'number') {
+                        // 渲染数字页码
                         return (
                             <button
                                 key={pageNum}
@@ -247,6 +272,7 @@ const Pagination: React.FC<PaginationProps> = ({
                             </button>
                         );
                     } else {
+                        // 渲染省略号
                         const pages = getEllipsisPages(pageNum as string);
                         return (
                             <button
@@ -259,20 +285,20 @@ const Pagination: React.FC<PaginationProps> = ({
                 })}
             </div>
 
-            {/* Right arrow button */}
+            {/* 右箭头按钮 */}
             <div className="pagination-arrow-area">
-                <button 
+                <button
                     className={`pagination-arrow ${currentPage === totalPages ? 'disabled' : ''}`}
                     onClick={handleNextPage}
                     disabled={currentPage === totalPages}
                 >
                     <svg width="16" height="16" viewBox="0 0 16 16">
-                        <path fill="currentColor" d="M6 3l5 5-5 5-1-1 4-4-4-4 1-1z"/>
+                        <path fill="currentColor" d="M6 3l5 5-5 5-1-1 4-4-4-4 1-1z" />
                     </svg>
                 </button>
             </div>
 
-            {/* Popup component */}
+            {/* 页码弹出层 */}
             {popupInfo && (
                 <PagePopup
                     pages={popupInfo.pages}
