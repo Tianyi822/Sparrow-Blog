@@ -1,30 +1,42 @@
 import { saveInitiatedLoggerConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { FiArchive, FiCalendar, FiDatabase, FiFileText, FiFolder, FiZap } from 'react-icons/fi';
 import './LoggerConfigForm.scss';
 
+/**
+ * 表单验证错误接口
+ */
 interface ValidationErrors {
     [key: string]: string;
 }
 
+/**
+ * 日志配置表单数据接口
+ */
 export interface LoggerFormData {
-    logLevel: string;
-    logPath: string;
-    maxSize: string;
-    maxBackups: string;
-    maxDays: string;
-    compress: boolean;
+    logLevel: string;      // 日志级别 (DEBUG, INFO, WARN, ERROR)
+    logPath: string;       // 日志文件保存路径
+    maxSize: string;       // 单个日志文件最大大小(MB)
+    maxBackups: string;    // 最大备份文件数量
+    maxDays: string;       // 日志文件保存天数
+    compress: boolean;     // 是否压缩日志文件
 }
 
+/**
+ * 日志配置表单组件属性接口
+ */
 interface LoggerConfigFormProps {
-    initialData?: LoggerFormData;
-    onSubmit?: (data: LoggerFormData) => void;
-    isSubmitted?: boolean;
-    onNext?: () => void;
+    initialData?: LoggerFormData;   // 初始表单数据
+    onSubmit?: (data: LoggerFormData) => void;  // 提交回调
+    isSubmitted?: boolean;          // 是否已提交
+    onNext?: () => void;            // 下一步回调
 }
 
-// 字段映射配置
+/**
+ * 字段映射配置对象
+ * 包含每个字段的标签、图标、验证规则等信息
+ */
 const FIELD_CONFIG = {
     logLevel: {
         label: '日志级别',
@@ -99,8 +111,12 @@ const FIELD_CONFIG = {
     }
 };
 
+/**
+ * 日志配置表单组件
+ * 用于配置系统日志相关设置，包括日志级别、路径、轮转策略等
+ */
 const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
-    // 状态定义
+    // 表单数据状态
     const [formData, setFormData] = useState<LoggerFormData>({
         logLevel: initialData?.logLevel || 'DEBUG',
         logPath: initialData?.logPath || '',
@@ -109,14 +125,19 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
         maxDays: initialData?.maxDays || '7',
         compress: initialData?.compress !== undefined ? initialData.compress : true
     });
-    const [errors, setErrors] = useState<ValidationErrors>({});
-    const [submitError, setSubmitError] = useState<string>('');
-    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [successMessage, setSuccessMessage] = useState<string>('');
-    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+    
+    // 其他状态定义
+    const [errors, setErrors] = useState<ValidationErrors>({});             // 验证错误信息
+    const [submitError, setSubmitError] = useState<string>('');             // 提交错误信息
+    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null); // 详细错误数据
+    const [loading, setLoading] = useState<boolean>(false);                 // 加载状态
+    const [successMessage, setSuccessMessage] = useState<string>('');       // 成功消息
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false); // 提交成功状态
 
-    // 添加 useEffect 以在 initialData 更改时更新状态
+    /**
+     * 初始数据变更时更新表单
+     * 当传入的initialData更改时同步更新表单状态
+     */
     useEffect(() => {
         if (initialData) {
             setFormData(prevFormData => ({
@@ -130,12 +151,39 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
         }
     }, [initialData]);
 
-    // 处理输入变化
-    const handleChange = (
+    /**
+     * 清除指定字段的错误信息
+     * @param fieldName 字段名称
+     */
+    const clearFieldError = useCallback((fieldName: string) => {
+        if (errors[fieldName]) {
+            setErrors(prev => {
+                const newErrors = {...prev};
+                delete newErrors[fieldName];
+                return newErrors;
+            });
+        }
+    }, [errors]);
+
+    /**
+     * 清除全局消息(错误和成功)
+     */
+    const clearMessages = useCallback(() => {
+        if (submitError) setSubmitError('');
+        if (successMessage) setSuccessMessage('');
+    }, [submitError, successMessage]);
+
+    /**
+     * 处理表单输入变化
+     * 支持文本输入、选择框和复选框
+     * @param e 输入事件
+     */
+    const handleChange = useCallback((
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const {name, value, type} = e.target;
 
+        // 处理复选框
         if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
             setFormData(prev => ({
@@ -144,8 +192,8 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
             }));
 
             // 清除成功和错误消息
-            if (submitError) setSubmitError('');
-            if (successMessage) setSuccessMessage('');
+            clearFieldError(name);
+            clearMessages();
             return;
         }
 
@@ -173,30 +221,30 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
         }));
 
         // 清除该字段的错误
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErrors = {...prev};
-                delete newErrors[name];
-                return newErrors;
-            });
-        }
-
+        clearFieldError(name);
+        
         // 清除成功和错误消息
-        if (submitError) setSubmitError('');
-        if (successMessage) setSuccessMessage('');
-    };
+        clearMessages();
+    }, [clearFieldError, clearMessages]);
 
-    // 验证单个字段
-    const validateField = (field: keyof LoggerFormData): string => {
+    /**
+     * 验证单个字段
+     * @param field 要验证的字段名
+     * @returns 验证错误信息，无错误则返回空字符串
+     */
+    const validateField = useCallback((field: keyof LoggerFormData): string => {
         const config = FIELD_CONFIG[field];
         if (typeof formData[field] === 'boolean') {
             return '';
         }
         return config.validate(formData[field] as string);
-    };
+    }, [formData]);
 
-    // 验证所有字段
-    const validateForm = (): boolean => {
+    /**
+     * 验证整个表单
+     * @returns 表单是否有效
+     */
+    const validateForm = useCallback((): boolean => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
 
@@ -212,10 +260,14 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
 
         setErrors(newErrors);
         return isValid;
-    };
+    }, [formData, validateField]);
 
-    // 格式化错误数据显示
-    const formatErrorData = (data: Record<string, unknown> | null): string => {
+    /**
+     * 格式化错误数据显示
+     * @param data 错误数据对象
+     * @returns 格式化后的JSON字符串
+     */
+    const formatErrorData = useCallback((data: Record<string, unknown> | null): string => {
         if (!data) return '';
 
         try {
@@ -223,9 +275,12 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
         } catch {
             return String(data);
         }
-    };
+    }, []);
 
-    // 处理表单提交
+    /**
+     * 处理表单提交
+     * @param e 表单提交事件
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError('');
@@ -233,6 +288,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
         // 不清除成功消息
         // setSuccessMessage('');
 
+        // 表单验证
         if (!validateForm()) {
             return;
         }
@@ -312,7 +368,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
             <h2>日志配置</h2>
 
             <form onSubmit={handleSubmit}>
-                {/* 日志级别 */}
+                {/* 日志级别选择 */}
                 <div className="form-group">
                     <label htmlFor="logLevel">
                         <span className="icon">{FIELD_CONFIG.logLevel.icon}</span>
@@ -333,7 +389,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
                     {errors.logLevel && <div className="error-message">{errors.logLevel}</div>}
                 </div>
 
-                {/* 日志路径 */}
+                {/* 日志文件路径 */}
                 <div className="form-group">
                     <label htmlFor="logPath">
                         <span className="icon">{FIELD_CONFIG.logPath.icon}</span>
@@ -350,7 +406,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
                     {errors.logPath && <div className="error-message">{errors.logPath}</div>}
                 </div>
 
-                {/* 日志文件最大大小 */}
+                {/* 日志文件最大大小设置 */}
                 <div className="form-group">
                     <label htmlFor="maxSize">
                         <span className="icon">{FIELD_CONFIG.maxSize.icon}</span>
@@ -399,7 +455,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
                     {errors.maxDays && <div className="error-message">{errors.maxDays}</div>}
                 </div>
 
-                {/* 压缩日志文件 */}
+                {/* 是否压缩日志文件 */}
                 <div className="form-group checkbox-group">
                     <input
                         type="checkbox"
@@ -414,6 +470,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
                     </label>
                 </div>
 
+                {/* 操作按钮区域 */}
                 <div className="form-actions">
                     <button
                         type="submit"
@@ -423,6 +480,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
                         {loading ? '提交中...' : '保存配置'}
                     </button>
 
+                    {/* 提交成功时显示下一步按钮 */}
                     {submitSuccess && !submitError && onNext && (
                         <button
                             type="button"
@@ -448,6 +506,7 @@ const LoggerConfigForm: React.FC<LoggerConfigFormProps> = ({initialData, onSubmi
                             <span className="error-title">错误：</span>
                             {submitError}
                         </div>
+                        {/* 显示详细错误数据 */}
                         {errorData && (
                             <div className="error-details">
                                 <div className="error-details-title">详细信息：</div>
