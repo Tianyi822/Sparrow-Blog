@@ -1,33 +1,56 @@
 import { saveInitiatedServerBaseConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { FiClock, FiGlobe, FiKey, FiServer, FiMail, FiHash } from 'react-icons/fi';
 import './ServerBaseConfigForm.scss';
 
-// 定义接口
+/**
+ * 服务器基础配置表单数据接口
+ */
 export interface ServerBaseFormData {
+    /** 服务器端口 */
     port: string;
+    /** 令牌密钥 */
     tokenKey: string;
+    /** 令牌过期时间（小时） */
     tokenExpireDuration: string;
+    /** 网站地址（跨域设置） */
     corsOrigins: string;
+    /** SMTP邮箱账号 */
     smtpAccount: string;
+    /** SMTP服务器地址 */
     smtpAddress: string;
+    /** SMTP端口 */
     smtpPort: string;
+    /** SMTP授权码 */
     smtpAuthCode: string;
 }
 
+/**
+ * 表单验证错误接口
+ */
 interface ValidationErrors {
     [key: string]: string;
 }
 
+/**
+ * 服务器基础配置表单组件属性接口
+ */
 interface ServerBaseConfigFormProps {
+    /** 初始表单数据 */
     initialData?: ServerBaseFormData;
+    /** 提交回调函数 */
     onSubmit?: (data: ServerBaseFormData) => void;
+    /** 是否已提交成功 */
     isSubmitted?: boolean;
+    /** 进入下一步回调函数 */
     onNext?: () => void;
 }
 
-// 字段映射配置
+/**
+ * 字段配置对象
+ * 定义表单字段的标签、图标、验证规则等
+ */
 const FIELD_CONFIG = {
     port: {
         label: '服务器端口',
@@ -148,6 +171,10 @@ const FIELD_CONFIG = {
     }
 };
 
+/**
+ * 服务器基础配置表单组件
+ * 用于配置服务器端口、令牌、SMTP等基础设置
+ */
 const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
     // 状态定义
     const [formData, setFormData] = useState<ServerBaseFormData>({
@@ -183,8 +210,31 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
         }
     }, [initialData]);
 
-    // 处理输入变化
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * 清除指定字段的错误
+     */
+    const clearFieldError = useCallback((fieldKey: string) => {
+        if (errors[fieldKey]) {
+            setErrors(prev => {
+                const newErrors = {...prev};
+                delete newErrors[fieldKey];
+                return newErrors;
+            });
+        }
+    }, [errors]);
+
+    /**
+     * 清除全局消息
+     */
+    const clearMessages = useCallback(() => {
+        if (submitError) setSubmitError('');
+        if (successMessage) setSuccessMessage('');
+    }, [submitError, successMessage]);
+
+    /**
+     * 处理输入变化
+     */
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         const fieldKey = Object.keys(FIELD_CONFIG).find(
             key => FIELD_CONFIG[key as keyof typeof FIELD_CONFIG].name === name
@@ -211,27 +261,24 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
         setFormData(prev => ({...prev, [fieldKey]: processedValue}));
 
         // 清除该字段的错误
-        if (errors[fieldKey]) {
-            setErrors(prev => {
-                const newErrors = {...prev};
-                delete newErrors[fieldKey];
-                return newErrors;
-            });
-        }
+        clearFieldError(fieldKey);
 
         // 清除错误消息和成功消息
-        if (submitError) setSubmitError('');
-        if (successMessage) setSuccessMessage('');
-    };
+        clearMessages();
+    }, [clearFieldError, clearMessages]);
 
-    // 验证单个字段
-    const validateField = (field: keyof ServerBaseFormData): string => {
+    /**
+     * 验证单个字段
+     */
+    const validateField = useCallback((field: keyof ServerBaseFormData): string => {
         const config = FIELD_CONFIG[field];
         return config.validate(formData[field]);
-    };
+    }, [formData]);
 
-    // 验证所有字段
-    const validateForm = (): boolean => {
+    /**
+     * 验证所有字段
+     */
+    const validateForm = useCallback((): boolean => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
 
@@ -248,10 +295,12 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
 
         setErrors(newErrors);
         return isValid;
-    };
+    }, [validateField]);
 
-    // 格式化错误数据显示
-    const formatErrorData = (data: Record<string, unknown> | null): string => {
+    /**
+     * 格式化错误数据显示
+     */
+    const formatErrorData = useCallback((data: Record<string, unknown> | null): string => {
         if (!data) return '';
 
         try {
@@ -259,9 +308,11 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
         } catch {
             return String(data);
         }
-    };
+    }, []);
 
-    // 处理表单提交
+    /**
+     * 处理表单提交
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError('');
@@ -304,8 +355,6 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
                 onSubmit(formData);
             }
         } catch (error: unknown) {
-            console.error('Failed to save server config:', error);
-
             // 处理错误对象，提取详细信息
             if (error && typeof error === 'object') {
                 // 检查是否是Axios错误并包含响应数据
@@ -340,7 +389,7 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
                     try {
                         setErrorData(error as Record<string, unknown>);
                     } catch (e) {
-                        console.error('Failed to format error data:', e);
+                        // 处理错误数据格式化失败
                     }
                 }
             } else {
@@ -352,160 +401,55 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
         }
     };
 
+    /**
+     * 构建表单字段列表
+     */
+    const formFields = useMemo(() => {
+        return [
+            // 基础设置
+            { section: '基础设置', icon: <FiServer/>, fields: ['port', 'tokenKey', 'tokenExpireDuration', 'corsOrigins'] },
+            // SMTP设置
+            { section: 'SMTP 邮箱设置', icon: <FiMail/>, fields: ['smtpAccount', 'smtpAddress', 'smtpPort', 'smtpAuthCode'] }
+        ];
+    }, []);
+
     return (
         <div className="server-base-form-container">
             <h2>服务器基础配置</h2>
 
             <form onSubmit={handleSubmit}>
-                <div className="form-section-header">
-                    <h3>
-                        <span className="icon"><FiServer/></span>
-                        基础设置
-                    </h3>
-                </div>
-                
-                {/* 服务器端口 */}
-                <div className="form-group">
-                    <label htmlFor={FIELD_CONFIG.port.name}>
-                        <span className="icon">{FIELD_CONFIG.port.icon}</span>
-                        {FIELD_CONFIG.port.label}
-                    </label>
-                    <input
-                        type="text"
-                        id={FIELD_CONFIG.port.name}
-                        name={FIELD_CONFIG.port.name}
-                        value={formData.port}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.port.placeholder}
-                    />
-                    {errors.port && <div className="error-message">{errors.port}</div>}
-                </div>
-                
-                {/* 令牌密钥 */}
-                <div className="form-group">
-                    <label htmlFor={FIELD_CONFIG.tokenKey.name}>
-                        <span className="icon">{FIELD_CONFIG.tokenKey.icon}</span>
-                        {FIELD_CONFIG.tokenKey.label}
-                    </label>
-                    <input
-                        type="text"
-                        id={FIELD_CONFIG.tokenKey.name}
-                        name={FIELD_CONFIG.tokenKey.name}
-                        value={formData.tokenKey}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.tokenKey.placeholder}
-                    />
-                    {errors.tokenKey && <div className="error-message">{errors.tokenKey}</div>}
-                </div>
-                
-                {/* 令牌过期时间 */}
-                <div className="form-group">
-                    <label htmlFor={FIELD_CONFIG.tokenExpireDuration.name}>
-                        <span className="icon">{FIELD_CONFIG.tokenExpireDuration.icon}</span>
-                        {FIELD_CONFIG.tokenExpireDuration.label}
-                    </label>
-                    <input
-                        type="text"
-                        id={FIELD_CONFIG.tokenExpireDuration.name}
-                        name={FIELD_CONFIG.tokenExpireDuration.name}
-                        value={formData.tokenExpireDuration}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.tokenExpireDuration.placeholder}
-                    />
-                    {errors.tokenExpireDuration && <div className="error-message">{errors.tokenExpireDuration}</div>}
-                </div>
-                
-                {/* 网站地址 */}
-                <div className="form-group">
-                    <label htmlFor={FIELD_CONFIG.corsOrigins.name}>
-                        <span className="icon">{FIELD_CONFIG.corsOrigins.icon}</span>
-                        {FIELD_CONFIG.corsOrigins.label}
-                    </label>
-                    <input
-                        type="text"
-                        id={FIELD_CONFIG.corsOrigins.name}
-                        name={FIELD_CONFIG.corsOrigins.name}
-                        value={formData.corsOrigins}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.corsOrigins.placeholder}
-                    />
-                    {errors.corsOrigins && <div className="error-message">{errors.corsOrigins}</div>}
-                </div>
-                
-                <div className="form-section-header">
-                    <h3>
-                        <span className="icon"><FiMail/></span>
-                        SMTP 邮箱设置
-                    </h3>
-                </div>
-                
-                {/* SMTP 账号 */}
-                <div className="form-group">
-                    <label htmlFor={FIELD_CONFIG.smtpAccount.name}>
-                        <span className="icon">{FIELD_CONFIG.smtpAccount.icon}</span>
-                        {FIELD_CONFIG.smtpAccount.label}
-                    </label>
-                    <input
-                        type="text"
-                        id={FIELD_CONFIG.smtpAccount.name}
-                        name={FIELD_CONFIG.smtpAccount.name}
-                        value={formData.smtpAccount}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.smtpAccount.placeholder}
-                    />
-                    {errors.smtpAccount && <div className="error-message">{errors.smtpAccount}</div>}
-                </div>
-                
-                {/* SMTP 服务器地址 */}
-                <div className="form-group">
-                    <label htmlFor={FIELD_CONFIG.smtpAddress.name}>
-                        <span className="icon">{FIELD_CONFIG.smtpAddress.icon}</span>
-                        {FIELD_CONFIG.smtpAddress.label}
-                    </label>
-                    <input
-                        type="text"
-                        id={FIELD_CONFIG.smtpAddress.name}
-                        name={FIELD_CONFIG.smtpAddress.name}
-                        value={formData.smtpAddress}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.smtpAddress.placeholder}
-                    />
-                    {errors.smtpAddress && <div className="error-message">{errors.smtpAddress}</div>}
-                </div>
-                
-                {/* SMTP 端口 */}
-                <div className="form-group">
-                    <label htmlFor={FIELD_CONFIG.smtpPort.name}>
-                        <span className="icon">{FIELD_CONFIG.smtpPort.icon}</span>
-                        {FIELD_CONFIG.smtpPort.label}
-                    </label>
-                    <input
-                        type="text"
-                        id={FIELD_CONFIG.smtpPort.name}
-                        name={FIELD_CONFIG.smtpPort.name}
-                        value={formData.smtpPort}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.smtpPort.placeholder}
-                    />
-                    {errors.smtpPort && <div className="error-message">{errors.smtpPort}</div>}
-                </div>
-                
-                {/* SMTP 授权码 */}
-                <div className="form-group">
-                    <label htmlFor={FIELD_CONFIG.smtpAuthCode.name}>
-                        <span className="icon">{FIELD_CONFIG.smtpAuthCode.icon}</span>
-                        {FIELD_CONFIG.smtpAuthCode.label}
-                    </label>
-                    <input
-                        type="password"
-                        id={FIELD_CONFIG.smtpAuthCode.name}
-                        name={FIELD_CONFIG.smtpAuthCode.name}
-                        value={formData.smtpAuthCode}
-                        onChange={handleChange}
-                        placeholder={FIELD_CONFIG.smtpAuthCode.placeholder}
-                    />
-                    {errors.smtpAuthCode && <div className="error-message">{errors.smtpAuthCode}</div>}
-                </div>
+                {formFields.map((section, sectionIndex) => (
+                    <React.Fragment key={`section-${sectionIndex}`}>
+                        <div className="form-section-header">
+                            <h3>
+                                <span className="icon">{section.icon}</span>
+                                {section.section}
+                            </h3>
+                        </div>
+                        
+                        {section.fields.map(fieldName => {
+                            const fieldKey = fieldName as keyof ServerBaseFormData;
+                            const field = FIELD_CONFIG[fieldKey];
+                            return (
+                                <div className="form-group" key={fieldKey}>
+                                    <label htmlFor={field.name}>
+                                        <span className="icon">{field.icon}</span>
+                                        {field.label}
+                                    </label>
+                                    <input
+                                        type={fieldKey === 'smtpAuthCode' ? 'password' : 'text'}
+                                        id={field.name}
+                                        name={field.name}
+                                        value={formData[fieldKey]}
+                                        onChange={handleChange}
+                                        placeholder={field.placeholder}
+                                    />
+                                    {errors[fieldKey] && <div className="error-message">{errors[fieldKey]}</div>}
+                                </div>
+                            );
+                        })}
+                    </React.Fragment>
+                ))}
 
                 <div className="form-actions">
                     <button
