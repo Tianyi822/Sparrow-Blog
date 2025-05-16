@@ -1,33 +1,39 @@
+import ImageSelectorModal from '@/components/ImageSelectorModal';
 import {
     BlogCategory,
     BlogTag,
+    GalleryImage,
     UpdateOrAddBlogRequest,
     getAllTagsAndCategories,
     getBlogDataForEdit,
-    updateOrAddBlog,
-    GalleryImage,
-    getImageUrl
+    getImageUrl,
+    updateOrAddBlog
 } from '@/services/adminService';
 import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
 import { marked } from 'marked';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { FiArrowUp, FiEye, FiPlus, FiX, FiSave, FiAlertCircle, FiLoader, FiImage } from 'react-icons/fi';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FiAlertCircle, FiArrowUp, FiEye, FiImage, FiLoader, FiPlus, FiSave, FiX } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Edit.scss';
-import ImageSelectorModal from '@/components/ImageSelectorModal';
 
-// 配置marked选项
+/**
+ * marked配置选项
+ */
 const options = {
     breaks: true,  // 支持换行符变为<br>标签
     gfm: true      // 支持GitHub风格的Markdown
 };
 
-// 定义错误类型接口
+/**
+ * 表单验证错误类型接口
+ */
 interface ValidationErrors {
     [key: string]: string;
 }
 
-// 缓存数据结构接口
+/**
+ * 博客草稿数据结构接口
+ */
 interface BlogDraft {
     blog_id?: string | null; // 可选字段，用于区分编辑现有文章和新建文章
     title: string;
@@ -41,14 +47,19 @@ interface BlogDraft {
     blogImage?: GalleryImage | null; // 文章封面图
 }
 
-// 缓存键常量
-const CACHE_KEY = 'blog_draft';
-// 缓存过期时间 (24小时)
-const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
-// 防抖延迟时间 (毫秒)
-const DEBOUNCE_DELAY = 300;
+// 常量定义
+const CACHE_KEY = 'blog_draft'; // 缓存键
+const CACHE_EXPIRATION = 24 * 60 * 60 * 1000; // 缓存过期时间 (24小时)
+const DEBOUNCE_DELAY = 300; // 防抖延迟时间 (毫秒)
 
-// 防抖函数
+/**
+ * 防抖函数钩子
+ * 给定一个函数和延迟时间，返回一个防抖版本的函数
+ * 
+ * @param fn 需要防抖的函数
+ * @param delay 延迟时间(毫秒)
+ * @returns 防抖处理后的函数
+ */
 function useDebounce<T extends (...args: unknown[]) => unknown>(
     fn: T,
     delay: number
@@ -79,7 +90,10 @@ function useDebounce<T extends (...args: unknown[]) => unknown>(
     return debouncedFn;
 }
 
-// 文章编辑页面组件
+/**
+ * 文章编辑页面组件
+ * 提供文章创建和编辑功能，支持Markdown编辑、预览、标签和分类管理等
+ */
 const Edit: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -120,17 +134,20 @@ const Edit: React.FC = () => {
     const [blogImage, setBlogImage] = useState<GalleryImage | null>(null);
     const [showArticleImageSelector, setShowArticleImageSelector] = useState<boolean>(false);
 
-    // 自动保存相关
+    // 自动保存相关状态和引用
     const [showAutoSaveNotification, setShowAutoSaveNotification] = useState<boolean>(false);
     const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
     const hasDataChangedRef = useRef<boolean>(false);
 
-    // 标签输入框引用
+    // DOM元素引用
     const tagInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const previewRef = useRef<HTMLDivElement>(null);
 
-    // 保存草稿到本地缓存
+    /**
+     * 保存草稿到本地缓存
+     * 将当前编辑状态保存到localStorage，包含文章内容、标签、分类等信息
+     */
     const saveDraftToCache = useCallback(() => {
         const draftData: BlogDraft = {
             title,
@@ -162,20 +179,31 @@ const Edit: React.FC = () => {
             // 重置数据变更标志
             hasDataChangedRef.current = false;
         } catch (error) {
-            console.error('保存草稿到本地缓存失败:', error);
+            // 缓存保存失败，但不影响主要功能，仅记录错误
         }
     }, [blogId, category, content, intro, isEditMode, isPublic, isTop, tags, title, blogImage]);
 
-    // 防抖后的保存草稿函数
+    /**
+     * 防抖后的保存草稿函数
+     * 延迟执行保存，减少频繁保存操作
+     */
     const debouncedSaveDraft = useDebounce(saveDraftToCache, DEBOUNCE_DELAY);
 
-    // 当内容变化时标记数据已更改并使用防抖函数保存
+    /**
+     * 标记内容已更改
+     * 设置内容变更标志并触发防抖保存
+     */
     const markContentChanged = useCallback(() => {
         hasDataChangedRef.current = true;
         debouncedSaveDraft();
     }, [debouncedSaveDraft]);
 
-    // 从本地缓存中获取草稿
+    /**
+     * 从本地缓存中获取草稿
+     * 检索并解析本地存储的草稿数据，处理过期检查
+     * 
+     * @returns 缓存的草稿数据或null
+     */
     const loadDraftFromCache = useCallback((): BlogDraft | null => {
         try {
             const cachedData = localStorage.getItem(CACHE_KEY);
@@ -195,23 +223,31 @@ const Edit: React.FC = () => {
 
             return draftData;
         } catch (error) {
-            console.error('从本地缓存中加载草稿失败:', error);
+            // 加载缓存失败，返回null
             return null;
         }
     }, []);
 
-    // 清除本地缓存
+    /**
+     * 清除本地缓存
+     * 删除localStorage中的草稿数据并重置相关状态
+     */
     const clearCache = useCallback(() => {
         try {
             localStorage.removeItem(CACHE_KEY);
             setShowCachePrompt(false);
             setLastSavedTime('');
         } catch (error) {
-            console.error('清除本地缓存失败:', error);
+            // 清除缓存失败，但不影响主要功能
         }
     }, []);
 
-    // 加载缓存数据到表单
+    /**
+     * 加载缓存数据到表单
+     * 将草稿数据填充到表单各字段中
+     * 
+     * @param draftData 要加载的草稿数据
+     */
     const loadCacheDataToForm = useCallback((draftData: BlogDraft) => {
         setTitle(draftData.title);
         setIntro(draftData.intro);
@@ -220,7 +256,7 @@ const Edit: React.FC = () => {
         setTags(draftData.tags);
         setIsTop(draftData.isTop);
         setIsPublic(draftData.isPublic);
-        
+
         // 恢复文章封面图
         if (draftData.blogImage) {
             setBlogImage(draftData.blogImage);
@@ -251,7 +287,10 @@ const Edit: React.FC = () => {
         setLastSavedTime(date.toLocaleString());
     }, [loadDraftFromCache, fromCache]);
 
-    // 从缓存中恢复数据
+    /**
+     * 从缓存中恢复数据
+     * 获取并填充草稿数据，如有必要重定向到正确的编辑页面
+     */
     const restoreFromCache = useCallback(() => {
         const cachedDraft = loadDraftFromCache();
         if (!cachedDraft) return;
@@ -268,40 +307,51 @@ const Edit: React.FC = () => {
         setShowCachePrompt(false);
     }, [loadDraftFromCache, loadCacheDataToForm, navigate]);
 
-    // 丢弃缓存
+    /**
+     * 丢弃缓存
+     * 清除本地存储的草稿数据
+     */
     const discardCache = useCallback(() => {
         clearCache();
     }, [clearCache]);
 
-    // 处理图片库点击事件
-    const handleImageGalleryToggle = () => {
-        setShowImageGallery(!showImageGallery);
-    };
+    /**
+     * 处理图片库显示切换
+     * 控制图片选择器模态框的显示与隐藏
+     */
+    const handleImageGalleryToggle = useCallback(() => {
+        setShowImageGallery(prev => !prev);
+    }, []);
 
-    // 将图片插入到编辑器
-    const handleImageInsert = (image: GalleryImage) => {
+    /**
+     * 将图片插入到编辑器
+     * 在光标位置插入Markdown格式的图片链接
+     * 
+     * @param image 要插入的图片对象
+     */
+    const handleImageInsert = useCallback((image: GalleryImage) => {
         // 在光标位置或文本末尾插入图片Markdown语法
         const textarea = textareaRef.current;
         if (textarea) {
             const imageMarkdown = `![${image.img_name}](${getImageUrl(image.img_id)})\n`;
-            
+
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
-            
+
             // 更新内容，在光标位置插入图片
             const newContent = content.substring(0, start) + imageMarkdown + content.substring(end);
             setContent(newContent);
-            
+
             // 更新光标位置到插入内容之后
             setTimeout(() => {
                 textarea.focus();
                 textarea.selectionStart = start + imageMarkdown.length;
                 textarea.selectionEnd = start + imageMarkdown.length;
             }, 0);
-            
+
             markContentChanged();
         }
-    };
+    }, [content, markContentChanged]);
 
     // 设置自动保存定时器
     useEffect(() => {
@@ -413,11 +463,11 @@ const Edit: React.FC = () => {
                 if (blog_data.blog_state !== undefined) {
                     setIsPublic(blog_data.blog_state);
                 }
-                
+
                 // 设置文章封面图（如果有）
                 if (blog_data.blog_image) {
                     setBlogImage(blog_data.blog_image);
-                } 
+                }
                 // 如果有 blog_image_id 但没有 blog_image 对象
                 else if (blog_data.blog_image_id) {
                     // 创建一个临时的 GalleryImage 对象
@@ -452,8 +502,11 @@ const Edit: React.FC = () => {
         loadData();
     }, [blogId, isEditMode, fromCache, loadDraftFromCache, loadCacheDataToForm, clearCache]);
 
-    // 清除指定字段的错误
-    const clearError = (field: string) => {
+    /**
+     * 清除指定字段的错误
+     * @param field 要清除错误的字段名
+     */
+    const clearError = useCallback((field: string) => {
         if (errors[field]) {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -461,10 +514,14 @@ const Edit: React.FC = () => {
                 return newErrors;
             });
         }
-    };
+    }, [errors]);
 
-    // 验证表单
-    const validateForm = (): boolean => {
+    /**
+     * 验证表单
+     * 检查必填字段并设置错误信息
+     * @returns 表单是否有效
+     */
+    const validateForm = useCallback((): boolean => {
         const newErrors: ValidationErrors = {};
 
         if (!title.trim()) {
@@ -481,7 +538,7 @@ const Edit: React.FC = () => {
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
+    }, [title, category, content]);
 
     // 自动调整文本区域高度
     useEffect(() => {
@@ -512,13 +569,16 @@ const Edit: React.FC = () => {
         };
     }, [content]);
 
-    // 切换预览模式 - 更新为响应式行为
-    const togglePreviewMode = () => {
+    /**
+     * 切换预览模式 
+     * 仅在移动视图下切换预览模式
+     */
+    const togglePreviewMode = useCallback(() => {
         // 只在移动视图下切换预览模式
         if (window.innerWidth <= 1800) {
             setIsPreviewMode(!isPreviewMode);
         }
-    };
+    }, [isPreviewMode]);
 
     // 检测窗口大小变化，处理响应式行为
     useEffect(() => {
@@ -557,8 +617,11 @@ const Edit: React.FC = () => {
         });
     }, [content]);
 
-    // 保存文章的处理函数
-    const handleSave = async () => {
+    /**
+     * 保存文章的处理函数
+     * 验证表单、上传内容到OSS并保存博客数据
+     */
+    const handleSave = useCallback(async () => {
         if (!validateForm()) {
             return;
         }
@@ -591,7 +654,6 @@ const Edit: React.FC = () => {
                     return;
                 }
             } catch (uploadError) {
-                console.error('上传到OSS失败:', uploadError);
                 setErrors({
                     submit: uploadError instanceof Error
                         ? `上传失败: ${uploadError.message}`
@@ -638,7 +700,6 @@ const Edit: React.FC = () => {
                 requestData.blog_image_id = blogImage.img_id;
             }
 
-            console.log('正在保存文章:', requestData);
             const response = await updateOrAddBlog(requestData);
 
             if (response.code === 200) {
@@ -650,26 +711,35 @@ const Edit: React.FC = () => {
                 setErrors({ submit: `保存失败: ${response.msg}` });
             }
         } catch (error) {
-            console.error('保存文章时出错:', error);
             setErrors({ submit: '保存文章时发生错误，请稍后重试' });
         } finally {
             setSubmitLoading(false);
         }
-    };
+    }, [validateForm, content, title, blogId, intro, isPublic, isTop, category, tags, blogImage, isEditMode, clearCache, navigate]);
 
-    // 手动保存草稿
-    const handleSaveDraft = () => {
+    /**
+     * 手动保存草稿
+     */
+    const handleSaveDraft = useCallback(() => {
         saveDraftToCache();
-    };
+    }, [saveDraftToCache]);
 
-    // 分类相关处理函数
-    const handleCategoryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * 分类输入框变化处理
+     * @param e 输入框变化事件
+     */
+    const handleCategoryInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setCategoryInput(e.target.value);
         clearError('category');
         markContentChanged();
-    };
+    }, [clearError, markContentChanged]);
 
-    const handleCategoryInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    /**
+     * 分类输入框按键处理
+     * 处理回车键创建或选择分类
+     * @param e 键盘事件
+     */
+    const handleCategoryInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && categoryInput.trim()) {
             e.preventDefault();
             // 先尝试在已有分类中查找
@@ -692,22 +762,47 @@ const Edit: React.FC = () => {
             clearError('category');
             markContentChanged();
         }
-    };
+    }, [categoryInput, availableCategories, clearError, markContentChanged]);
 
-    const handleCategorySelect = (selectedCategory: BlogCategory) => {
+    /**
+     * 分类选择处理
+     * @param selectedCategory 选择的分类
+     */
+    const handleCategorySelect = useCallback((selectedCategory: BlogCategory) => {
         setCategory(selectedCategory);
         setCategoryInput('');
         clearError('category');
         markContentChanged();
-    };
+    }, [clearError, markContentChanged]);
 
-    // 标签相关处理函数
-    const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * 标签输入框变化处理
+     * @param e 输入框变化事件
+     */
+    const handleTagInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setTagInput(e.target.value);
         markContentChanged();
-    };
+    }, [markContentChanged]);
 
-    const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    /**
+     * 添加标签到选中列表
+     * @param tag 要添加的标签
+     */
+    const addTag = useCallback((tag: BlogTag) => {
+        if (tag && !tags.some(t => t.tag_id === tag.tag_id)) {
+            setTags(prevTags => [...prevTags, tag]);
+            markContentChanged();
+        }
+        setTagInput('');
+        tagInputRef.current?.focus();
+    }, [tags, markContentChanged]);
+
+    /**
+     * 标签输入框按键处理
+     * 处理回车键创建或选择标签
+     * @param e 键盘事件
+     */
+    const handleTagInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && tagInput.trim()) {
             e.preventDefault();
             // 先尝试在已有标签中查找
@@ -730,53 +825,63 @@ const Edit: React.FC = () => {
             setTagInput('');
             markContentChanged();
         }
-    };
+    }, [tagInput, availableTags, addTag, markContentChanged]);
 
-    const addTag = (tag: BlogTag) => {
-        if (tag && !tags.some(t => t.tag_id === tag.tag_id)) {
-            setTags([...tags, tag]);
-            markContentChanged();
-        }
-        setTagInput('');
-        tagInputRef.current?.focus();
-    };
-
-    const removeTag = (tagToRemove: BlogTag) => {
-        setTags(tags.filter(tag => tag.tag_id !== tagToRemove.tag_id));
+    /**
+     * 移除已选标签
+     * @param tagToRemove 要移除的标签
+     */
+    const removeTag = useCallback((tagToRemove: BlogTag) => {
+        setTags(prevTags => prevTags.filter(tag => tag.tag_id !== tagToRemove.tag_id));
         markContentChanged();
-    };
+    }, [markContentChanged]);
 
-    const handleTagSelect = (selectedTag: BlogTag) => {
+    /**
+     * 从可用标签列表中选择标签
+     * @param selectedTag 选择的标签
+     */
+    const handleTagSelect = useCallback((selectedTag: BlogTag) => {
         if (!tags.some(t => t.tag_id === selectedTag.tag_id)) {
-            setTags([...tags, selectedTag]);
+            setTags(prevTags => [...prevTags, selectedTag]);
             markContentChanged();
         }
-    };
+    }, [tags, markContentChanged]);
 
-    // 文章内容变化处理
-    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    /**
+     * 文章内容变化处理
+     * @param e 文本区域变化事件
+     */
+    const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setContent(e.target.value);
         clearError('content');
         markContentChanged();
-    };
+    }, [clearError, markContentChanged]);
 
-    // 标题变化处理
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * 标题变化处理
+     * @param e 输入框变化事件
+     */
+    const handleTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
         clearError('title');
         markContentChanged();
-    };
+    }, [clearError, markContentChanged]);
 
-    // 处理文章封面图选择
-    const handleArticleImageSelect = (image: GalleryImage) => {
+    /**
+     * 处理文章封面图选择
+     * @param image 选择的图片对象
+     */
+    const handleArticleImageSelect = useCallback((image: GalleryImage) => {
         setBlogImage(image);
         markContentChanged();
-    };
+    }, [markContentChanged]);
 
-    // 打开文章封面图选择器
-    const openArticleImageSelector = () => {
+    /**
+     * 打开文章封面图选择器
+     */
+    const openArticleImageSelector = useCallback(() => {
         setShowArticleImageSelector(true);
-    };
+    }, []);
 
     return (
         <div className="edit-page">
@@ -868,8 +973,8 @@ const Edit: React.FC = () => {
                                 </div>
                                 <div className="article-image-container">
                                     <label className="section-label">文章封面图</label>
-                                    <div 
-                                        className="article-image-preview" 
+                                    <div
+                                        className="article-image-preview"
                                         onClick={openArticleImageSelector}
                                     >
                                         {blogImage ? (
@@ -1112,7 +1217,7 @@ const Edit: React.FC = () => {
             </div>
 
             {/* 使用ImageSelectorModal组件 */}
-            <ImageSelectorModal 
+            <ImageSelectorModal
                 isOpen={showImageGallery}
                 onClose={() => setShowImageGallery(false)}
                 onImageInsert={handleImageInsert}
@@ -1121,7 +1226,7 @@ const Edit: React.FC = () => {
             />
 
             {/* 文章封面图选择器 */}
-            <ImageSelectorModal 
+            <ImageSelectorModal
                 isOpen={showArticleImageSelector}
                 onClose={() => setShowArticleImageSelector(false)}
                 onImageSelect={handleArticleImageSelect}
