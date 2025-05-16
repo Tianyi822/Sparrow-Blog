@@ -1,6 +1,6 @@
 import { saveInitiatedOSSConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     FiBox,
     FiCloud,
@@ -12,41 +12,54 @@ import {
 } from 'react-icons/fi';
 import './OSSConfigForm.scss';
 
+/**
+ * 表单验证错误接口
+ */
 interface ValidationErrors {
     [key: string]: string;
 }
 
+/**
+ * OSS配置表单数据接口
+ */
 export interface OSSConfigFormData {
-    endpoint: string;
-    region: string;
-    accessKeyId: string;
-    accessKeySecret: string;
-    bucketName: string;
-    imagePath: string;
-    blogPath: string;
+    endpoint: string;        // OSS服务端点
+    region: string;          // 区域
+    accessKeyId: string;     // 访问密钥ID
+    accessKeySecret: string; // 访问密钥密码
+    bucketName: string;      // 存储桶名称
+    imagePath: string;       // 图片存储路径
+    blogPath: string;        // 博客存储路径
 }
 
-// OSSConfigForm 组件的 props 接口
+/**
+ * OSS配置表单组件属性接口
+ */
 interface OSSConfigFormProps {
-    initialData?: OSSConfigFormData;
-    onSubmit?: (data: OSSConfigFormData) => void;
-    isSubmitted?: boolean;
-    onNext?: () => void;
+    initialData?: OSSConfigFormData; // 初始表单数据
+    onSubmit?: (data: OSSConfigFormData) => void; // 提交回调
+    isSubmitted?: boolean;   // 是否已提交
+    onNext?: () => void;     // 下一步回调
 }
 
-// 定义字段配置接口，确保字段名与OSSConfigFormData匹配
+/**
+ * 字段配置接口，确保字段名与OSSConfigFormData匹配
+ */
 interface FieldConfigType {
     [key: string]: {
-        label: string;
-        icon: React.ReactNode;
-        name: string;
-        type: string;
-        placeholder?: string;
-        validate: (value: string) => string;
+        label: string;              // 字段标签
+        icon: React.ReactNode;      // 字段图标
+        name: string;               // 字段名称
+        type: string;               // 输入类型
+        placeholder?: string;       // 输入占位符
+        validate: (value: string) => string; // 验证函数
     };
 }
 
-// 字段映射配置
+/**
+ * 字段映射配置
+ * 定义表单字段的标签、图标、验证规则等
+ */
 const FIELD_CONFIG: FieldConfigType = {
     endpoint: {
         label: 'OSS Endpoint',
@@ -147,8 +160,12 @@ const FIELD_CONFIG: FieldConfigType = {
     }
 };
 
+/**
+ * OSS配置表单组件
+ * 用于配置阿里云OSS存储相关设置
+ */
 const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
-    // 状态定义
+    // 表单数据状态
     const [formData, setFormData] = useState<OSSConfigFormData>({
         endpoint: initialData?.endpoint || '',
         region: initialData?.region || '',
@@ -158,14 +175,18 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
         imagePath: initialData?.imagePath || 'images',
         blogPath: initialData?.blogPath || 'blogs'
     });
-    const [errors, setErrors] = useState<ValidationErrors>({});
-    const [submitError, setSubmitError] = useState<string>('');
-    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [successMessage, setSuccessMessage] = useState<string>('');
-    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+    
+    // 其他状态定义
+    const [errors, setErrors] = useState<ValidationErrors>({});             // 验证错误信息
+    const [submitError, setSubmitError] = useState<string>('');             // 提交错误信息
+    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null); // 详细错误数据
+    const [loading, setLoading] = useState<boolean>(false);                 // 加载状态
+    const [successMessage, setSuccessMessage] = useState<string>('');       // 成功消息
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false); // 提交成功状态
 
-    // 当initialData变化时更新表单数据
+    /**
+     * 当initialData变化时更新表单数据
+     */
     useEffect(() => {
         if (initialData) {
             setFormData(prevFormData => ({
@@ -180,8 +201,33 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
         }
     }, [initialData]);
 
-    // 处理输入变化
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    /**
+     * 清除指定字段的错误信息
+     * @param fieldKey 字段名称
+     */
+    const clearFieldError = useCallback((fieldKey: string) => {
+        if (errors[fieldKey]) {
+            setErrors(prev => {
+                const newErrors = {...prev};
+                delete newErrors[fieldKey];
+                return newErrors;
+            });
+        }
+    }, [errors]);
+
+    /**
+     * 清除全局消息(错误和成功)
+     */
+    const clearMessages = useCallback(() => {
+        if (submitError) setSubmitError('');
+        if (successMessage) setSuccessMessage('');
+    }, [submitError, successMessage]);
+
+    /**
+     * 处理表单输入变化
+     * @param e 输入事件
+     */
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const {name, value, type} = e.target;
 
         // 找出对应的字段
@@ -202,30 +248,30 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
         }
 
         // 清除该字段的错误
-        if (errors[fieldKey]) {
-            setErrors(prev => {
-                const newErrors = {...prev};
-                delete newErrors[fieldKey];
-                return newErrors;
-            });
-        }
+        clearFieldError(fieldKey);
 
         // 清除错误消息和成功消息
-        if (submitError) setSubmitError('');
-        if (successMessage) setSuccessMessage('');
-    };
+        clearMessages();
+    }, [clearFieldError, clearMessages]);
 
-    // 验证单个字段
-    const validateField = (field: string): string => {
+    /**
+     * 验证单个字段
+     * @param field 要验证的字段名
+     * @returns 验证错误信息，无错误则返回空字符串
+     */
+    const validateField = useCallback((field: string): string => {
         const config = FIELD_CONFIG[field];
         if (!config || typeof config.validate !== 'function') return '';
 
         // 对于其他字段，执行验证
         return config.validate(formData[field as keyof OSSConfigFormData] as string);
-    };
+    }, [formData]);
 
-    // 验证所有字段
-    const validateForm = (): { isValid: boolean; errorSummary: string } => {
+    /**
+     * 验证整个表单
+     * @returns 是否有效以及错误摘要
+     */
+    const validateForm = useCallback((): { isValid: boolean; errorSummary: string } => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
         let errorSummary = '';
@@ -242,10 +288,14 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
 
         setErrors(newErrors);
         return {isValid, errorSummary};
-    };
+    }, [formData, validateField]);
 
-    // 格式化错误数据显示
-    const formatErrorData = (data: Record<string, unknown> | null): string => {
+    /**
+     * 格式化错误数据显示
+     * @param data 错误数据对象
+     * @returns 格式化后的错误信息字符串
+     */
+    const formatErrorData = useCallback((data: Record<string, unknown> | null): string => {
         if (!data) return '';
 
         try {
@@ -253,9 +303,12 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
         } catch {
             return String(data);
         }
-    };
+    }, []);
 
-    // 处理表单提交
+    /**
+     * 处理表单提交
+     * @param e 表单提交事件
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -268,6 +321,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
         setSubmitError('');
         setErrorData(null);
 
+        // 表单验证
         const {isValid, errorSummary} = validateForm();
         if (!isValid) {
             // 设置提交错误，显示验证失败信息
@@ -359,7 +413,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
             <h2>OSS存储配置</h2>
 
             <form onSubmit={handleSubmit}>
-                {/* 基本配置字段 */}
+                {/* 动态生成表单字段 */}
                 {['endpoint', 'region', 'accessKeyId', 'accessKeySecret', 'bucketName', 'imagePath', 'blogPath'].map(key => {
                     const fieldKey = key as keyof OSSConfigFormData;
                     const config = FIELD_CONFIG[fieldKey];
@@ -382,6 +436,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
                     );
                 })}
 
+                {/* 操作按钮区域 */}
                 <div className="form-actions">
                     <button
                         type="submit"
@@ -391,6 +446,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
                         {loading ? '提交中...' : '保存配置'}
                     </button>
 
+                    {/* 提交成功时显示下一步按钮 */}
                     {submitSuccess && !submitError && onNext && (
                         <button
                             type="button"
@@ -416,6 +472,7 @@ const OSSConfigForm: React.FC<OSSConfigFormProps> = ({initialData, onSubmit, isS
                             <span className="error-title">错误：</span>
                             {submitError}
                         </div>
+                        {/* 显示详细错误数据 */}
                         {errorData && (
                             <div className="error-details">
                                 <div className="error-details-title">详细信息：</div>
