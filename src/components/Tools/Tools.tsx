@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import './Tools.scss';
 import BackToTop from '@/components/Tools/BackToTop/BackToTop';
 import ICPFilingNumber from '@/components/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
@@ -18,14 +18,22 @@ interface ToolsProps {
 /**
  * 工具组件
  * 包含返回顶部按钮和备案号显示等功能
+ * 
+ * @param className - 自定义类名
+ * @param homeData - 网站基础数据，包含备案号等信息
  */
 const Tools: React.FC<ToolsProps> = ({ className, homeData }) => {
     // 状态定义
     const [isBackToTopVisible, setIsBackToTopVisible] = useState<boolean>(false); // 控制返回顶部按钮可见性
     const [isAnimating, setIsAnimating] = useState<boolean>(false); // 控制当前是否处于滚动动画中
+    
+    // 引用定时器，便于清除
+    const scrollCheckIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     /**
      * 处理滚动事件，控制返回顶部按钮的显示隐藏
+     * 只在非动画滚动状态时更新按钮显示状态
      */
     const handleScroll = useCallback(() => {
         if (!isAnimating) {
@@ -37,13 +45,25 @@ const Tools: React.FC<ToolsProps> = ({ className, homeData }) => {
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
         handleScroll(); // 初始化时检查滚动位置
-        return () => window.removeEventListener('scroll', handleScroll);
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, [handleScroll]);
 
     /**
      * 处理返回顶部点击事件
+     * 平滑滚动到页面顶部并处理动画状态变化
      */
     const handleBackToTop = useCallback(() => {
+        // 清除可能存在的之前的定时器
+        if (scrollCheckIntervalRef.current) {
+            clearInterval(scrollCheckIntervalRef.current);
+        }
+        if (scrollTimeoutRef.current) {
+            clearTimeout(scrollTimeoutRef.current);
+        }
+        
         setIsAnimating(true);
         window.scrollTo({
             top: 0,
@@ -51,33 +71,59 @@ const Tools: React.FC<ToolsProps> = ({ className, homeData }) => {
         });
         
         // 检查滚动是否完成的定时器
-        const checkIfScrollComplete = setInterval(() => {
+        scrollCheckIntervalRef.current = setInterval(() => {
             if (window.scrollY === 0) {
-                clearInterval(checkIfScrollComplete);
-                setTimeout(() => {
+                if (scrollCheckIntervalRef.current) {
+                    clearInterval(scrollCheckIntervalRef.current);
+                    scrollCheckIntervalRef.current = null;
+                }
+                
+                scrollTimeoutRef.current = setTimeout(() => {
                     setIsAnimating(false);
                     setIsBackToTopVisible(false);
+                    scrollTimeoutRef.current = null;
                 }, 300);
             }
         }, 100);
 
         // 添加安全时间限制，防止定时器永久运行
-        setTimeout(() => {
-            clearInterval(checkIfScrollComplete);
+        scrollTimeoutRef.current = setTimeout(() => {
+            if (scrollCheckIntervalRef.current) {
+                clearInterval(scrollCheckIntervalRef.current);
+                scrollCheckIntervalRef.current = null;
+            }
             setIsAnimating(false); // 确保动画状态最终会被重置
         }, 5000);
     }, []);
 
+    // 组件卸载时清除所有定时器
+    useEffect(() => {
+        return () => {
+            if (scrollCheckIntervalRef.current) {
+                clearInterval(scrollCheckIntervalRef.current);
+            }
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current);
+            }
+        };
+    }, []);
+
     /**
      * 计算返回顶部按钮的类名
+     * 根据按钮可见性和动画状态生成对应的CSS类名
      */
     const backToTopClass = useMemo(() => classNames('tools-back-to-top', {
         'visible': isBackToTopVisible && !isAnimating,
         'animating': isAnimating
     }), [isBackToTopVisible, isAnimating]);
 
+    /**
+     * 计算工具栏容器的类名
+     */
+    const toolsContainerClass = useMemo(() => classNames('tools', className), [className]);
+
     return (
-        <div className={classNames('tools', className)}>
+        <div className={toolsContainerClass}>
             <BackToTop 
                 className={backToTopClass}
                 onClick={handleBackToTop}
