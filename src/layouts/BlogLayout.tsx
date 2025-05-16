@@ -59,7 +59,7 @@ const BlogLayout: FC = () => {
         fetchBasicData();
     }, []);
 
-    // Create the context value to be passed to children
+    // 准备传递给子组件的上下文数据
     const contextValue = {
         homeData,
         getImageUrl
@@ -75,7 +75,7 @@ const BlogLayout: FC = () => {
                 userName={userName} 
             />
             <div className="blog-content">
-                <Outlet context={contextValue} /> {/* 传递上下文给子路由组件 */}
+                <Outlet context={contextValue} />
             </div>
             <Tools className="app-tools" homeData={homeData} />
             <ScrollBar className="app-scroll-bar" />
