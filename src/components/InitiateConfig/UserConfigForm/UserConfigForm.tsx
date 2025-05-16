@@ -322,14 +322,10 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
             return;
         }
 
-        setFormData(prev => {
-            const updated = {
-                ...prev,
-                [name]: value
-            };
-
-            return updated;
-        });
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
 
         // 清除该字段的错误
         clearFieldError(name);
@@ -572,7 +568,7 @@ const UserConfigForm: React.FC<UserEmailConfigFormProps> = ({ onSubmit, initialD
                     setSubmitError('提交过程中发生未知错误');
                     try {
                         setErrorData(error as Record<string, unknown>);
-                    } catch (e) {
+                    } catch (_) {
                         // 处理错误数据格式化失败
                     }
                 }
