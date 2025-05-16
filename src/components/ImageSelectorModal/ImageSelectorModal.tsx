@@ -5,37 +5,51 @@ import { getPreSignUrl, uploadToOSS, FileType, ContentType } from '@/services/os
 import imageCompression from 'browser-image-compression';
 import "./ImageSelectorModal.scss"
 
-// 上传文件状态接口
+/**
+ * 上传文件状态接口
+ * 跟踪文件上传和压缩的整个过程状态
+ */
 interface UploadFileState {
-    file: File;
-    name: string;
-    isCompressing: boolean;
-    isCompressed: boolean;
-    originalSize: number;
-    compressedSize?: number;
-    compressedFile?: File;
-    compressionProgress: number;
-    isUploading: boolean;
-    isUploaded: boolean;
-    uploadProgress: number;
-    uploadError?: string;
+    file: File;                     // 原始文件
+    name: string;                   // 文件名
+    isCompressing: boolean;         // 是否正在压缩
+    isCompressed: boolean;          // 是否已压缩
+    originalSize: number;           // 原始大小(字节)
+    compressedSize?: number;        // 压缩后大小(字节)
+    compressedFile?: File;          // 压缩后的文件
+    compressionProgress: number;    // 压缩进度(0-100)
+    isUploading: boolean;           // 是否正在上传
+    isUploaded: boolean;            // 是否已上传
+    uploadProgress: number;         // 上传进度(0-100)
+    uploadError?: string;           // 上传错误信息
 }
 
-// 图片使用类型
+/**
+ * 图片使用类型
+ */
 export type ImageUsageType = 'avatar' | 'logo' | 'background';
 
-// 模态框模式
+/**
+ * 模态框模式
+ */
 export type ModalMode = 'userSetting' | 'editor' | 'article';
 
+/**
+ * 图片选择器模态框属性接口
+ */
 interface ImageSelectorModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onImageSelect?: (image: GalleryImage, usageType: ImageUsageType) => void;
-    onImageInsert?: (image: GalleryImage) => void;
-    usageType: ImageUsageType;
-    mode: ModalMode;
+    isOpen: boolean;                                                          // 模态框是否打开
+    onClose: () => void;                                                      // 关闭模态框的回调
+    onImageSelect?: (image: GalleryImage, usageType: ImageUsageType) => void; // 选择图片的回调(用户设置/文章)
+    onImageInsert?: (image: GalleryImage) => void;                           // 插入图片的回调(编辑器)
+    usageType: ImageUsageType;                                               // 图片使用类型
+    mode: ModalMode;                                                         // 模态框模式
 }
 
+/**
+ * 图片选择器模态框组件
+ * 支持图片库浏览、图片上传、压缩和使用
+ */
 const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
     isOpen,
     onClose,
@@ -54,7 +68,9 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
     const [uploadFile, setUploadFile] = useState<UploadFileState | null>(null);
     const [isUploading, setIsUploading] = useState<boolean>(false);
 
-    // 获取正在使用的用途类型标题
+    /**
+     * 获取正在使用的用途类型标题
+     */
     const getUsageTypeTitle = (): string => {
         if (mode === 'editor') {
             return '图片库';
@@ -70,7 +86,9 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     };
 
-    // 获取用途类型的图标
+    /**
+     * 获取用途类型的图标
+     */
     const getUsageTypeIcon = () => {
         if (mode === 'editor') {
             return <FiImage />;
@@ -86,7 +104,9 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     };
 
-    // 加载图片库数据
+    /**
+     * 加载图片库数据
+     */
     const loadImageGallery = useCallback(async () => {
         setGalleryLoading(true);
         try {
@@ -109,16 +129,22 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     }, []);
 
-    // 验证文件类型
+    /**
+     * 验证文件类型
+     * @param file 要验证的文件
+     * @returns 是否为有效图片类型
+     */
     const validateFile = (file: File) => {
         const validTypes = ['image/webp', 'image/jpeg', 'image/jpg', 'image/png'];
         return validTypes.includes(file.type);
     };
 
-    // 压缩图片
+    /**
+     * 压缩图片
+     * @param file 要压缩的文件
+     * @returns 压缩后的文件或null(如果压缩失败)
+     */
     const compressImage = useCallback(async (file: File): Promise<File | null> => {
-        console.log(`开始压缩图片: ${file.name}`);
-
         try {
             // 更新压缩状态
             setUploadFile(prev => {
@@ -152,9 +178,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             };
 
             // 执行压缩
-            console.log(`执行压缩: ${file.name}`);
             const compressedFile = await imageCompression(file, options);
-            console.log(`压缩完成: ${file.name}, 从 ${file.size} 减小到 ${compressedFile.size}`);
 
             // 更新完成状态
             setUploadFile(prev => {
@@ -188,7 +212,11 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     }, []);
 
-    // 上传图片到OSS
+    /**
+     * 上传图片到OSS
+     * @param file 要上传的文件
+     * @returns 上传结果
+     */
     const uploadImageToOSS = useCallback(async (file: File): Promise<{ success: boolean, fileName: string } | null> => {
         try {
             // 更新状态为上传中
@@ -217,7 +245,6 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             const uploadFileName = `${nameParts.join('.')}_${timestamp}`;
 
             // 2. 获取预签名URL
-            console.log(`获取预签名URL: ${uploadFileName}`);
             const preSignUrlResponse = await getPreSignUrl(uploadFileName, FileType.WEBP);
 
             if (preSignUrlResponse.code !== 200) {
@@ -250,7 +277,6 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             });
 
             // 4. 上传到OSS
-            console.log(`上传文件到OSS: ${uploadFileName}`);
             const uploadSuccess = await uploadToOSS(
                 preSignUrl,
                 fileContent,
@@ -283,7 +309,6 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                 };
             });
 
-            console.log(`文件 ${uploadFileName} 上传成功`);
             return {
                 success: true,
                 fileName: uploadFileName
@@ -307,12 +332,13 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     }, []);
 
-    // 添加图片到图库
+    /**
+     * 添加图片到图库
+     * @param fileName 文件名
+     */
     const addImageToGallery = useCallback(async (fileName: string) => {
         try {
             // 将上传的图片信息提交到API
-            console.log('添加图片到图库，数据:', fileName);
-
             const addRequest: AddImagesRequest = {
                 imgs: [{
                     img_name: fileName,
@@ -323,7 +349,6 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             const response = await addGalleryImages(addRequest);
 
             if (response.code === 200) {
-                console.log('添加图片到图库成功');
                 // 重新加载图片库数据
                 await loadImageGallery();
                 // 清空上传状态
@@ -338,7 +363,10 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     }, [loadImageGallery]);
 
-    // 处理图片上传
+    /**
+     * 处理图片上传
+     * @param e 文件输入事件
+     */
     const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -383,7 +411,10 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         setIsUploading(false);
     }, [compressImage, uploadImageToOSS, addImageToGallery]);
 
-    // 处理图片选择
+    /**
+     * 处理图片选择
+     * @param image 选择的图片对象
+     */
     const handleImageSelect = useCallback((image: GalleryImage) => {
         if (mode === 'editor' && onImageInsert) {
             // 编辑器模式，直接调用onImageInsert
@@ -393,7 +424,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             // 文章封面图模式，选择图片并显示选中状态
             setSelectedImageId(image.img_id);
 
-            // 1秒后执行应用
+            // 0.3秒后执行应用
             setTimeout(() => {
                 onImageSelect(image, usageType);
                 onClose();
@@ -402,7 +433,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             // 用户设置模式，选择图片并显示选中状态
             setSelectedImageId(image.img_id);
 
-            // 3秒后执行应用
+            // 0.3秒后执行应用
             setTimeout(() => {
                 onImageSelect(image, usageType);
                 onClose();
@@ -410,7 +441,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     }, [mode, onImageInsert, onImageSelect, usageType, onClose]);
 
-    // 处理点击外部关闭图片库
+    // 点击外部区域关闭图片库
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (isOpen && galleryRef.current && !galleryRef.current.contains(event.target as Node)) {
@@ -432,14 +463,23 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     }, [isOpen, loadImageGallery]);
 
-    // 格式化文件大小显示
+    /**
+     * 格式化文件大小显示
+     * @param bytes 字节数
+     * @returns 格式化后的大小字符串
+     */
     const formatFileSize = (bytes: number): string => {
         if (bytes < 1024) return bytes + ' B';
         else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
         else return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
     };
 
-    // 计算压缩率
+    /**
+     * 计算压缩率
+     * @param original 原始大小
+     * @param compressed 压缩后大小
+     * @returns 压缩率百分比
+     */
     const getCompressionRate = (original: number, compressed: number): string => {
         const rate = ((original - compressed) / original * 100).toFixed(0);
         return rate + '%';
@@ -450,6 +490,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
     return (
         <div className="image-selector-modal-overlay">
             <div className="image-selector-modal" ref={galleryRef}>
+                {/* 模态框头部 */}
                 <div className="selector-header">
                     <div className="selector-title">
                         <div className="title-with-icon">
@@ -482,6 +523,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                     </button>
                 </div>
 
+                {/* 上传预览区域 */}
                 {uploadFile && (
                     <div className="upload-preview">
                         <div className="upload-file-info">
@@ -498,6 +540,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                             )}
                         </div>
 
+                        {/* 压缩进度 */}
                         {uploadFile.isCompressing && (
                             <div className="upload-progress-container">
                                 <FiLoader className="spin-icon" />
@@ -511,6 +554,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                             </div>
                         )}
 
+                        {/* 上传进度 */}
                         {uploadFile.isUploading && (
                             <div className="upload-progress-container">
                                 <FiUploadCloud className="upload-icon" />
@@ -524,6 +568,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                             </div>
                         )}
 
+                        {/* 上传错误 */}
                         {uploadFile.uploadError && (
                             <div className="upload-error">
                                 <p>上传失败: {uploadFile.uploadError}</p>
@@ -538,6 +583,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                     </div>
                 )}
 
+                {/* 图片列表区域 */}
                 <div className="selector-content">
                     {galleryLoading ? (
                         <div className="selector-loading">
@@ -576,6 +622,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                     )}
                 </div>
 
+                {/* 模态框底部 */}
                 <div className="selector-footer">
                     <button
                         className="cancel-button"
