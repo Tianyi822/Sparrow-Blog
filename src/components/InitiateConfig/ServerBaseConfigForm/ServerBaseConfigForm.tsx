@@ -388,7 +388,7 @@ const ServerBaseConfigForm: React.FC<ServerBaseConfigFormProps> = ({initialData,
                     setSubmitError('提交过程中发生未知错误');
                     try {
                         setErrorData(error as Record<string, unknown>);
-                    } catch (e) {
+                    } catch {
                         // 处理错误数据格式化失败
                     }
                 }
