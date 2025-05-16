@@ -26,7 +26,7 @@ interface DragStart {
  * 自定义滚动条组件
  * 提供一个可自定义的页面滚动条，支持拖动、自动隐藏和边界弹性效果
  */
-const ScrollBar: React.FC<ScrollBarProps> = ({ className, hideDelay = 1000 }) => {
+const ScrollBar: React.FC<ScrollBarProps> = ({className, hideDelay = 1000}) => {
     // 状态定义
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [isScrolling, setIsScrolling] = useState<boolean>(false);
@@ -45,7 +45,7 @@ const ScrollBar: React.FC<ScrollBarProps> = ({ className, hideDelay = 1000 }) =>
     const updateScrollThumb = useCallback((): void => {
         if (!thumbRef.current || !containerRef.current) return;
 
-        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        const {scrollTop, scrollHeight, clientHeight} = document.documentElement;
         const scrollPercent = scrollTop / (scrollHeight - clientHeight);
         const thumbHeight = Math.max(50, (clientHeight / scrollHeight) * clientHeight);
 
@@ -84,11 +84,7 @@ const ScrollBar: React.FC<ScrollBarProps> = ({ className, hideDelay = 1000 }) =>
             }, hideDelay);
         }
     }, [isDragging, hideDelay, updateScrollThumb]);
-
-    /**
-     * 强制显示滚动条（供外部调用）
-     */
-    const showScrollBar = useCallback(() => {
+    useCallback(() => {
         setIsScrolling(true);
 
         // 清除之前的超时
@@ -142,7 +138,7 @@ const ScrollBar: React.FC<ScrollBarProps> = ({ className, hideDelay = 1000 }) =>
         const handleMouseMove = (e: MouseEvent): void => {
             if (!dragStartRef.current) return;
 
-            const { scrollHeight, clientHeight } = document.documentElement;
+            const {scrollHeight, clientHeight} = document.documentElement;
             const deltaY = e.clientY - dragStartRef.current.mouseY;
             const deltaPercent = deltaY / clientHeight;
             const newScrollTop = Math.max(0, Math.min(
