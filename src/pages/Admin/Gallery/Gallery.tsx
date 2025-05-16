@@ -261,11 +261,8 @@ const Gallery: React.FC = () => {
         try {
             setIsLoading(true);
             const response = await getAllGalleryImages();
-            
+
             if (response.code === 200) {
-                // 获取环境变量中的业务服务URL
-                const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
-                
                 // 将API数据转换为组件所需的格式
                 const formattedImages: ImageItem[] = response.data.map(img => ({
                     id: img.img_id,
@@ -478,14 +475,14 @@ const Gallery: React.FC = () => {
         try {
             // 首先检查名称是否已存在
             const checkResult = await checkImageNameExistence(newName);
-            
+
             // 如果checkResult.data为true，则表示名称已存在
             if (checkResult.code === 200 && checkResult.data) {
                 console.error('重命名失败: 图片名称已存在');
                 setErrorMessage('图片名称已存在，请使用其他名称');
                 return;
             }
-            
+
             // 名称不存在，继续执行重命名操作
             // 准备请求数据
             const requestData: RenameImageRequest = {
@@ -567,8 +564,8 @@ const Gallery: React.FC = () => {
             {errorMessage && (
                 <div className="error-message">
                     {errorMessage}
-                    <button 
-                        className="close-error-btn" 
+                    <button
+                        className="close-error-btn"
                         onClick={() => setErrorMessage(null)}
                     >
                         &times;
