@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FiLoader, FiCheckCircle, FiUploadCloud } from 'react-icons/fi';
-import { createPortal } from 'react-dom';
-import imageCompression from 'browser-image-compression';
-import './Gallery.scss';
-import { getPreSignUrl, uploadToOSS, FileType, ContentType } from '@/services/ossService';
 import { addGalleryImages, AddImagesRequest } from '@/services/adminService';
+import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
+import imageCompression from 'browser-image-compression';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { FiCheckCircle, FiLoader, FiUploadCloud } from 'react-icons/fi';
+import './Gallery.scss';
 
-// 添加上传文件接口
+// 上传文件接口定义
 interface UploadFile {
     file: File;
     preview: string;
@@ -23,21 +23,22 @@ interface UploadFile {
     uploadError?: string; // 上传错误信息
 }
 
-// --- 文件上传模态框组件 ---
+// --- 文件上传模态框组件接口 ---
 interface UploadModalProps {
     visible: boolean;
     onClose: () => void;
     onImagesUploaded?: (images: File[]) => void;
 }
 
-const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUploaded }) => {
+const UploadModal: React.FC<UploadModalProps> = React.memo(({ visible, onClose, onImagesUploaded }) => {
     const [uploadFiles, setUploadFiles] = useState<UploadFile[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [areAllFilesCompressed, setAreAllFilesCompressed] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // 清理预览URL
+    // 清理预览URL，防止内存泄漏
     useEffect(() => {
         return () => {
             uploadFiles.forEach(file => URL.revokeObjectURL(file.preview));
@@ -51,31 +52,34 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
         setAreAllFilesCompressed(allCompressed);
     }, [uploadFiles]);
 
-    // 处理拖拽事件
-    const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    // 处理拖拽进入事件
+    const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(true);
-    };
+    }, []);
 
-    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    // 处理拖拽离开事件
+    const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
-    };
+    }, []);
 
-    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    // 处理拖拽悬停事件
+    const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
-    };
+    }, []);
 
-    const validateFile = (file: File) => {
+    // 验证文件类型是否合法
+    const validateFile = useCallback((file: File) => {
         const validTypes = ['image/webp', 'image/jpeg', 'image/jpg', 'image/png'];
         return validTypes.includes(file.type);
-    };
+    }, []);
 
     // 压缩图片 - 接收索引而不是ID
-    const compressImage = async (file: UploadFile, fileIndex: number) => {
+    const compressImage = useCallback(async (file: UploadFile, fileIndex: number) => {
         try {
             // 更新压缩状态
             setUploadFiles(prev => {
@@ -157,7 +161,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
 
             return true;
         } catch (error) {
-            console.error(`压缩失败 ${file.name}:`, error);
+            setErrorMessage(`压缩失败 ${file.name}: ${error instanceof Error ? error.message : String(error)}`);
 
             // 更新错误状态
             setUploadFiles(prev => {
@@ -175,10 +179,10 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
 
             return false;
         }
-    };
+    }, []);
 
     // 上传图片到OSS
-    const uploadImageToOSS = async (file: UploadFile, index: number): Promise<{ success: boolean, fileName: string } | false> => {
+    const uploadImageToOSS = useCallback(async (file: UploadFile, index: number): Promise<{ success: boolean, fileName: string } | false> => {
         try {
             if (!file.compressedFile) {
                 return false;
@@ -261,13 +265,13 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
                 return updated;
             });
 
-            return { 
-                success: true, 
-                fileName: uploadFileName 
+            return {
+                success: true,
+                fileName: uploadFileName
             };
 
         } catch (error) {
-            console.error(`上传文件 ${file.name} 失败:`, error);
+            setErrorMessage(`上传文件 ${file.name} 失败: ${error instanceof Error ? error.message : String(error)}`);
 
             // 更新错误状态
             setUploadFiles(prev => {
@@ -285,10 +289,10 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
 
             return false;
         }
-    };
+    }, []);
 
     // 处理多个文件的上传 - 完全重写
-    const processFiles = async (files: FileList) => {
+    const processFiles = useCallback(async (files: FileList) => {
         const fileArray = Array.from(files);
         const validFiles = fileArray.filter(validateFile);
 
@@ -337,9 +341,10 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             // 为下一个文件添加延迟，避免同时启动多个压缩任务
             await new Promise(resolve => setTimeout(resolve, 200));
         }
-    };
+    }, [uploadFiles.length, validateFile, compressImage]);
 
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    // 处理拖放事件
+    const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
@@ -347,16 +352,17 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             processFiles(e.dataTransfer.files);
         }
-    };
+    }, [processFiles]);
 
-    const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 处理文件输入变化
+    const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             processFiles(e.target.files);
         }
-    };
+    }, [processFiles]);
 
     // 移除文件 - 使用索引
-    const handleRemoveFile = (index: number) => {
+    const handleRemoveFile = useCallback((index: number) => {
         setUploadFiles(prev => {
             // 释放URL对象
             URL.revokeObjectURL(prev[index].preview);
@@ -364,23 +370,23 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
             // 过滤掉指定索引的文件
             return prev.filter((_, i) => i !== index);
         });
-    };
+    }, []);
 
     // 格式化文件大小显示
-    const formatFileSize = (bytes: number): string => {
+    const formatFileSize = useCallback((bytes: number): string => {
         if (bytes < 1024) return bytes + ' B';
         else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
         else return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-    };
+    }, []);
 
     // 计算压缩率
-    const getCompressionRate = (original: number, compressed: number): string => {
+    const getCompressionRate = useCallback((original: number, compressed: number): string => {
         const rate = ((original - compressed) / original * 100).toFixed(0);
         return rate + '%';
-    };
+    }, []);
 
     // 处理上传按钮点击
-    const handleUpload = async () => {
+    const handleUpload = useCallback(async () => {
         const compressedFiles = uploadFiles.filter(f => f.isCompressed && f.compressedFile);
 
         if (compressedFiles.length === 0) {
@@ -405,7 +411,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
                 const result = await uploadImageToOSS(file, fileIndex);
                 if (result && result.success && file.compressedFile) {
                     uploadedFiles.push(file.compressedFile);
-                    
+
                     // 收集上传成功的图片信息
                     uploadedImageInfo.push({
                         img_name: result.fileName,
@@ -413,7 +419,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
                     });
                 }
             } catch (error) {
-                console.error(`上传文件 ${file.name} 失败:`, error);
+                setErrorMessage(`上传文件 ${file.name} 失败: ${error instanceof Error ? error.message : String(error)}`);
             }
         }
 
@@ -423,36 +429,32 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
                 const addRequest: AddImagesRequest = {
                     imgs: uploadedImageInfo
                 };
-                
+
                 const response = await addGalleryImages(addRequest);
-                
+
                 if (response.code === 200) {
-                    console.log('添加图片到图库成功');
+                    // 添加图片到图库成功
                 } else {
-                    console.error('添加图片到图库失败:', response.msg);
-                    alert(`添加图片到图库失败: ${response.msg}`);
+                    setErrorMessage(`添加图片到图库失败: ${response.msg}`);
                 }
             } catch (error) {
-                console.error('API调用失败:', error);
-                alert('添加图片到图库失败: ' + (error instanceof Error ? error.message : String(error)));
+                setErrorMessage('添加图片到图库失败: ' + (error instanceof Error ? error.message : String(error)));
             }
         }
 
         setIsUploading(false);
 
-        console.log(`上传完成，成功上传 ${uploadedFiles.length}/${compressedFiles.length} 张图片`);
-
         // 如果提供了回调函数，则调用它
         if (onImagesUploaded && uploadedFiles.length > 0) {
             onImagesUploaded(uploadedFiles);
         }
-        
+
         // 清空上传列表
         setUploadFiles([]);
 
         // 关闭模态框
         onClose();
-    };
+    }, [uploadFiles, uploadImageToOSS, onImagesUploaded, onClose]);
 
     if (!visible) return null;
 
@@ -464,6 +466,17 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
                     <button className="close-button" onClick={onClose}>&times;</button>
                 </div>
                 <div className="upload-modal-body">
+                    {errorMessage && (
+                        <div className="error-message">
+                            {errorMessage}
+                            <button
+                                className="close-error-btn"
+                                onClick={() => setErrorMessage(null)}
+                            >
+                                &times;
+                            </button>
+                        </div>
+                    )}
                     <div
                         className={`drop-zone ${isDragging ? 'dragging' : ''}`}
                         onDragEnter={handleDragEnter}
@@ -582,6 +595,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ visible, onClose, onImagesUpl
         </div>,
         document.body
     );
-};
+});
 
 export default UploadModal; 

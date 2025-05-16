@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react';
-import { FiSearch, FiTrash2, FiCode, FiFileText, FiEdit, FiPlus } from 'react-icons/fi';
-import './Gallery.scss';
 import {
-    getAllGalleryImages,
-    renameGalleryImage,
-    deleteGalleryImage,
-    RenameImageRequest,
     checkImageNameExistence,
-    getImageUrl
+    deleteGalleryImage,
+    getAllGalleryImages,
+    getImageUrl,
+    renameGalleryImage,
+    RenameImageRequest
 } from '@/services/adminService';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FiCode, FiEdit, FiFileText, FiPlus, FiSearch, FiTrash2 } from 'react-icons/fi';
+import './Gallery.scss';
 // 导入布局上下文
-import { createPortal } from 'react-dom';
 import { LayoutContext } from "@/layouts/LayoutContext.tsx";
+import { createPortal } from 'react-dom';
 // 导入上传模态框组件
 import UploadModal from './UploadModal';
 
@@ -39,7 +39,7 @@ interface GalleryItemProps {
     onRenameComplete: (newName: string) => void;
 }
 
-const GalleryItem: React.FC<GalleryItemProps> = ({item, onContextMenu, isRenaming, onRenameComplete}) => {
+const GalleryItem: React.FC<GalleryItemProps> = React.memo(({ item, onContextMenu, isRenaming, onRenameComplete }) => {
     // 添加图片加载状态跟踪
     const [imageLoaded, setImageLoaded] = useState(false);
     const [newName, setNewName] = useState(item.name);
@@ -137,7 +137,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({item, onContextMenu, isRenamin
             </div>
         </div>
     );
-};
+});
 
 // --- 右键菜单组件 ---
 interface ContextMenuProps {
@@ -152,16 +152,16 @@ interface ContextMenuProps {
     onCopyMarkdown: () => void;
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = ({
-                                                     visible,
-                                                     x,
-                                                     y,
-                                                     isMenuClosing,
-                                                     onRename,
-                                                     onDelete,
-                                                     onCopyHTML,
-                                                     onCopyMarkdown,
-                                                 }) => {
+const ContextMenu: React.FC<ContextMenuProps> = React.memo(({
+    visible,
+    x,
+    y,
+    isMenuClosing,
+    onRename,
+    onDelete,
+    onCopyHTML,
+    onCopyMarkdown,
+}) => {
     const menuRef = useRef<HTMLDivElement>(null);
 
     // 每当菜单显示状态改变时调整位置
@@ -220,15 +220,15 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
             className="context-menu"
         >
             <ul>
-                <li onClick={onRename}><FiEdit className="menu-icon"/> 重命名</li>
-                <li onClick={onDelete}><FiTrash2 className="menu-icon"/> 删除</li>
-                <li onClick={onCopyHTML}><FiCode className="menu-icon"/> 复制 HTML 代码</li>
-                <li onClick={onCopyMarkdown}><FiFileText className="menu-icon"/> 复制 Markdown 代码</li>
+                <li onClick={onRename}><FiEdit className="menu-icon" /> 重命名</li>
+                <li onClick={onDelete}><FiTrash2 className="menu-icon" /> 删除</li>
+                <li onClick={onCopyHTML}><FiCode className="menu-icon" /> 复制 HTML 代码</li>
+                <li onClick={onCopyMarkdown}><FiFileText className="menu-icon" /> 复制 Markdown 代码</li>
             </ul>
         </div>,
         document.body
     );
-};
+});
 
 // --- 主图库组件 ---
 const Gallery: React.FC = () => {
@@ -245,14 +245,14 @@ const Gallery: React.FC = () => {
     const [renamingImageId, setRenamingImageId] = useState<string | null>(null);
     const menuCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const galleryContainerRef = useRef<HTMLDivElement>(null);
-    // 添加是否正在调整窗口大小的状态
+    // 是否正在调整窗口大小的状态
     const [isResizing, setIsResizing] = useState(false);
     const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
-    // 添加错误消息状态
+    // 错误消息状态
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     // 使用布局上下文
-    const {collapsed, isLayoutTransitioning} = useContext(LayoutContext);
+    const { collapsed, isLayoutTransitioning } = useContext(LayoutContext);
     // 跟踪上一次的collapsed状态，以便检测变化
     const prevCollapsedRef = useRef(collapsed);
 
@@ -274,11 +274,9 @@ const Gallery: React.FC = () => {
                 setAllImages(formattedImages);
                 setErrorMessage(null);
             } else {
-                console.error('API返回错误码:', response.code, response.msg);
                 setErrorMessage(`获取图片失败: ${response.msg}`);
             }
         } catch (error) {
-            console.error('加载图片失败:', error);
             setErrorMessage(error instanceof Error ? error.message : '加载图片失败');
         } finally {
             setIsLoading(false);
@@ -290,15 +288,14 @@ const Gallery: React.FC = () => {
         refreshGallery();
     }, [refreshGallery]);
 
-    // 处理窗口大小调整的防抖效果
+    // 处理窗口大小调整的优化
     useEffect(() => {
-        // 直接监听resize事件，不使用防抖
+        // 直接监听resize事件
         const handleResize = () => {
-            // 只在调整大小期间临时应用样式变化，然后立即移除
+            // 标记为调整大小状态
             setIsResizing(true);
 
-            // 立即恢复正常状态，不再使用延迟
-            // 使用requestAnimationFrame来保证在下一帧渲染前执行
+            // 使用requestAnimationFrame确保在下一帧渲染前执行
             requestAnimationFrame(() => {
                 setIsResizing(false);
             });
@@ -343,7 +340,7 @@ const Gallery: React.FC = () => {
         );
     }, [searchTerm, allImages]);
 
-    // 定义closeContextMenu在依赖它的useEffect之前
+    // 关闭右键菜单
     const closeContextMenu = useCallback(() => {
         // 设置关闭动画标志
         setIsMenuClosing(true);
@@ -355,12 +352,12 @@ const Gallery: React.FC = () => {
 
         // 延迟隐藏元素，以便动画可以完成
         menuCloseTimeoutRef.current = setTimeout(() => {
-            setContextMenu(prev => ({...prev, visible: false, targetItem: null}));
+            setContextMenu(prev => ({ ...prev, visible: false, targetItem: null }));
             setIsMenuClosing(false);
         }, 120); // 动画持续时间
     }, []);
 
-    // 使用useCallback缓存事件处理函数
+    // 打开右键菜单
     const openContextMenu = useCallback((event: React.MouseEvent, item: ImageItem) => {
         event.preventDefault(); // 阻止默认的浏览器右键菜单
 
@@ -414,6 +411,7 @@ const Gallery: React.FC = () => {
         };
     }, [contextMenu.visible, closeContextMenu]);
 
+    // 处理删除图片
     const handleDelete = useCallback(async () => {
         if (!contextMenu.targetItem) return;
 
@@ -425,32 +423,30 @@ const Gallery: React.FC = () => {
                 // 从 allImages 状态中过滤掉选定的图片
                 setAllImages(prevImages => prevImages.filter(img => img.id !== contextMenu.targetItem!.id));
             } else {
-                console.error('删除失败:', response.msg);
-                // 可以添加错误提示
+                setErrorMessage(`删除失败: ${response.msg}`);
             }
         } catch (error) {
-            console.error('删除请求出错:', error);
-            // 可以添加错误提示
+            setErrorMessage('删除请求出错');
         } finally {
             closeContextMenu();
         }
     }, [contextMenu.targetItem, closeContextMenu]);
 
+    // 复制HTML代码
     const handleCopyHTML = useCallback(() => {
         if (!contextMenu.targetItem) return;
         const htmlCode = `<img src="${contextMenu.targetItem.url}" alt="${contextMenu.targetItem.name}">`;
         navigator.clipboard.writeText(htmlCode)
-            .then(() => console.log('HTML 已复制!')) // 可以添加用户反馈 (例如，toast 通知)
-            .catch(err => console.error('复制 HTML 失败: ', err));
+            .catch(err => setErrorMessage('复制HTML失败:' + err));
         closeContextMenu();
     }, [contextMenu.targetItem, closeContextMenu]);
 
+    // 复制Markdown代码
     const handleCopyMarkdown = useCallback(() => {
         if (!contextMenu.targetItem) return;
         const markdownCode = `![${contextMenu.targetItem.name}](${contextMenu.targetItem.url})`;
         navigator.clipboard.writeText(markdownCode)
-            .then(() => console.log('Markdown 已复制!')) // 可以添加用户反馈
-            .catch(err => console.error('复制 Markdown 失败: ', err));
+            .catch(err => setErrorMessage('复制Markdown失败: ' + err));
         closeContextMenu();
     }, [contextMenu.targetItem, closeContextMenu]);
 
@@ -478,7 +474,6 @@ const Gallery: React.FC = () => {
 
             // 如果checkResult.data为true，则表示名称已存在
             if (checkResult.code === 200 && checkResult.data) {
-                console.error('重命名失败: 图片名称已存在');
                 setErrorMessage('图片名称已存在，请使用其他名称');
                 return;
             }
@@ -497,15 +492,13 @@ const Gallery: React.FC = () => {
                 // 更新本地状态
                 setAllImages(prevImages =>
                     prevImages.map(img =>
-                        img.id === imageId ? {...img, name: newName} : img
+                        img.id === imageId ? { ...img, name: newName } : img
                     )
                 );
             } else {
-                console.error('重命名失败:', response.msg);
                 setErrorMessage(`重命名失败: ${response.msg}`);
             }
         } catch (error) {
-            console.error('重命名请求出错:', error);
             setErrorMessage('重命名请求出错，请稍后重试');
         } finally {
             // 无论成功还是失败，退出重命名模式
@@ -539,7 +532,6 @@ const Gallery: React.FC = () => {
             // 这里只需要刷新图库
             await refreshGallery();
         } catch (error) {
-            console.error('处理上传图片失败:', error);
             setErrorMessage(error instanceof Error ? error.message : '处理上传图片失败');
         }
     }, [refreshGallery]);
@@ -547,7 +539,7 @@ const Gallery: React.FC = () => {
     return (
         <div className="gallery-container" ref={galleryContainerRef}>
             <div className="search-box">
-                <FiSearch className="search-icon"/>
+                <FiSearch className="search-icon" />
                 <input
                     type="text"
                     className="search-input"
@@ -556,7 +548,7 @@ const Gallery: React.FC = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <button className="add-image-btn" onClick={openUploadModal}>
-                    <FiPlus className="add-icon"/>
+                    <FiPlus className="add-icon" />
                     添加图片
                 </button>
             </div>
@@ -606,7 +598,7 @@ const Gallery: React.FC = () => {
                 onCopyMarkdown={handleCopyMarkdown}
             />
 
-            {/* 使用新的上传模态框组件 */}
+            {/* 上传模态框组件 */}
             <UploadModal
                 visible={isUploadModalVisible}
                 onClose={closeUploadModal}
