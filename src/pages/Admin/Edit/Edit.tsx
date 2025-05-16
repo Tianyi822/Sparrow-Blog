@@ -180,6 +180,7 @@ const Edit: React.FC = () => {
             hasDataChangedRef.current = false;
         } catch (error) {
             // 缓存保存失败，但不影响主要功能，仅记录错误
+            setErrors({ submit: '缓存保存失败，请稍后重试: ' + error });
         }
     }, [blogId, category, content, intro, isEditMode, isPublic, isTop, tags, title, blogImage]);
 
@@ -224,6 +225,7 @@ const Edit: React.FC = () => {
             return draftData;
         } catch (error) {
             // 加载缓存失败，返回null
+            setErrors({ submit: '加载缓存失败，请稍后重试: ' + error });
             return null;
         }
     }, []);
@@ -239,6 +241,7 @@ const Edit: React.FC = () => {
             setLastSavedTime('');
         } catch (error) {
             // 清除缓存失败，但不影响主要功能
+            setErrors({ submit: '清除缓存失败，请稍后重试: ' + error });
         }
     }, []);
 
@@ -711,7 +714,7 @@ const Edit: React.FC = () => {
                 setErrors({ submit: `保存失败: ${response.msg}` });
             }
         } catch (error) {
-            setErrors({ submit: '保存文章时发生错误，请稍后重试' });
+            setErrors({ submit: '保存文章时发生错误，请稍后重试: ' + error });
         } finally {
             setSubmitLoading(false);
         }
