@@ -1,31 +1,43 @@
 import { saveInitiatedMySQLConfig } from '@/services/initiateConfigService.ts';
 import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { FiClock, FiDatabase, FiLock, FiRefreshCw, FiServer, FiSettings, FiUser } from 'react-icons/fi';
 import './MySqlConfigForm.scss';
 
+/**
+ * 表单验证错误接口
+ */
 interface ValidationErrors {
     [key: string]: string;
 }
 
+/**
+ * MySQL数据库配置表单数据接口
+ */
 export interface MySQLFormData {
-    username: string;
-    password: string;
-    host: string;
-    port: string;
-    database: string;
-    maxOpenConns: string;
-    maxIdleConns: string;
+    username: string;      // 数据库用户名
+    password: string;      // 数据库密码
+    host: string;          // 数据库主机地址
+    port: string;          // 数据库端口号
+    database: string;      // 数据库名称
+    maxOpenConns: string;  // 最大数据库连接数
+    maxIdleConns: string;  // 最大空闲连接数
 }
 
+/**
+ * MySQL配置表单组件属性接口
+ */
 export interface MySqlConfigFormProps {
-    initialData?: MySQLFormData;
-    onSubmit?: (data: MySQLFormData) => void;
-    isSubmitted?: boolean;
-    onNext?: () => void;
+    initialData?: MySQLFormData;  // 初始表单数据
+    onSubmit?: (data: MySQLFormData) => void;  // 提交回调
+    isSubmitted?: boolean;        // 是否已提交
+    onNext?: () => void;          // 下一步回调
 }
 
-// 字段映射配置
+/**
+ * 字段映射配置对象
+ * 定义表单字段的标签、图标、验证规则等
+ */
 const FIELD_CONFIG = {
     username: {
         label: '数据库用户名',
@@ -131,8 +143,12 @@ const FIELD_CONFIG = {
     }
 };
 
+/**
+ * MySQL数据库配置表单组件
+ * 用于配置系统MySQL数据库连接相关设置
+ */
 const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit, isSubmitted, onNext}) => {
-    // 状态定义
+    // 表单数据状态
     const [formData, setFormData] = useState<MySQLFormData>({
         username: initialData?.username || '',
         password: initialData?.password || '',
@@ -142,14 +158,18 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
         maxOpenConns: initialData?.maxOpenConns || '10',
         maxIdleConns: initialData?.maxIdleConns || '5'
     });
-    const [errors, setErrors] = useState<ValidationErrors>({});
-    const [submitError, setSubmitError] = useState<string>('');
-    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [successMessage, setSuccessMessage] = useState<string>('');
-    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false);
+    
+    // 其他状态定义
+    const [errors, setErrors] = useState<ValidationErrors>({});             // 验证错误信息
+    const [submitError, setSubmitError] = useState<string>('');             // 提交错误信息
+    const [errorData, setErrorData] = useState<Record<string, unknown> | null>(null); // 详细错误数据
+    const [loading, setLoading] = useState<boolean>(false);                 // 加载状态
+    const [successMessage, setSuccessMessage] = useState<string>('');       // 成功消息
+    const [submitSuccess, setSubmitSuccess] = useState<boolean>(isSubmitted || false); // 提交成功状态
 
-    // 当initialData变化时更新表单数据
+    /**
+     * 当initialData变化时更新表单数据
+     */
     useEffect(() => {
         if (initialData) {
             setFormData(prevFormData => ({
@@ -164,8 +184,33 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
         }
     }, [initialData]);
 
-    // 处理输入变化
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * 清除指定字段的错误信息
+     * @param fieldKey 字段名称
+     */
+    const clearFieldError = useCallback((fieldKey: string) => {
+        if (errors[fieldKey]) {
+            setErrors(prev => {
+                const newErrors = {...prev};
+                delete newErrors[fieldKey];
+                return newErrors;
+            });
+        }
+    }, [errors]);
+
+    /**
+     * 清除全局消息(错误和成功)
+     */
+    const clearMessages = useCallback(() => {
+        if (submitError) setSubmitError('');
+        if (successMessage) setSuccessMessage('');
+    }, [submitError, successMessage]);
+
+    /**
+     * 处理表单输入变化
+     * @param e 输入事件
+     */
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
 
         // 找出对应的字段
@@ -185,30 +230,30 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
         setFormData(prev => ({...prev, [fieldKey]: processedValue}));
 
         // 清除该字段的错误
-        if (errors[fieldKey]) {
-            setErrors(prev => {
-                const newErrors = {...prev};
-                delete newErrors[fieldKey];
-                return newErrors;
-            });
-        }
+        clearFieldError(fieldKey);
 
         // 清除错误消息和成功消息
-        if (submitError) setSubmitError('');
-        if (successMessage) setSuccessMessage('');
-    };
+        clearMessages();
+    }, [clearFieldError, clearMessages]);
 
-    // 验证单个字段
-    const validateField = (field: keyof MySQLFormData): string => {
+    /**
+     * 验证单个字段
+     * @param field 要验证的字段名
+     * @returns 验证错误信息，无错误则返回空字符串
+     */
+    const validateField = useCallback((field: keyof MySQLFormData): string => {
         const config = FIELD_CONFIG[field];
         // 部分字段的验证需要整个formData作为上下文
         return typeof config.validate === 'function'
             ? config.validate(formData[field], formData)
             : '';
-    };
+    }, [formData]);
 
-    // 验证所有字段
-    const validateForm = (): boolean => {
+    /**
+     * 验证整个表单
+     * @returns 表单是否有效
+     */
+    const validateForm = useCallback((): boolean => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
 
@@ -225,10 +270,14 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
 
         setErrors(newErrors);
         return isValid;
-    };
+    }, [validateField]);
 
-    // 格式化错误数据显示
-    const formatErrorData = (data: Record<string, unknown> | null): string => {
+    /**
+     * 格式化错误数据显示
+     * @param data 错误数据对象
+     * @returns 格式化后的错误信息字符串
+     */
+    const formatErrorData = useCallback((data: Record<string, unknown> | null): string => {
         if (!data) return '';
 
         try {
@@ -236,9 +285,12 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
         } catch {
             return String(data);
         }
-    };
+    }, []);
 
-    // 处理表单提交
+    /**
+     * 处理表单提交
+     * @param e 表单提交事件
+     */
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError('');
@@ -246,6 +298,7 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
         // 不清除成功消息
         // setSuccessMessage('');
 
+        // 表单验证
         if (!validateForm()) {
             return;
         }
@@ -347,6 +400,7 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
                     );
                 })}
 
+                {/* 操作按钮区域 */}
                 <div className="form-actions">
                     <button
                         type="submit"
@@ -356,6 +410,7 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
                         {loading ? '提交中...' : '保存配置'}
                     </button>
 
+                    {/* 提交成功时显示下一步按钮 */}
                     {submitSuccess && !submitError && onNext && (
                         <button
                             type="button"
@@ -381,6 +436,7 @@ const MySqlConfigForm: React.FC<MySqlConfigFormProps> = ({initialData, onSubmit,
                             <span className="error-title">错误：</span>
                             {submitError}
                         </div>
+                        {/* 显示详细错误数据 */}
                         {errorData && (
                             <div className="error-details">
                                 <div className="error-details-title">详细信息：</div>
