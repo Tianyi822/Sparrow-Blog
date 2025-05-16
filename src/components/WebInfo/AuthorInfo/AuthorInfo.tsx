@@ -1,37 +1,79 @@
 import './AuthorInfo.scss';
 import use3DEffect from '@/hooks/use3DEffect';
+import { memo } from 'react';
 
+/**
+ * 统计数据接口
+ */
+interface AuthorStats {
+  /** 文章数量 */
+  articles?: number;
+  /** 标签数量 */
+  tags?: number;
+  /** 分类数量 */
+  categories?: number;
+}
+
+/**
+ * 社交媒体链接接口
+ */
+interface SocialLinks {
+  /** GitHub链接 */
+  github?: string;
+  /** 邮箱链接 */
+  email?: string;
+}
+
+/**
+ * 作者信息组件属性接口
+ */
 interface AuthorInfoProps {
+  /** 作者名称 */
   name?: string;
+  /** 作者简介 */
   bio?: string;
+  /** 作者头像URL */
   avatar?: string;
-  stats?: {
-    articles?: number;
-    tags?: number;
-    categories?: number;
-  };
-  social?: {
-    github?: string;
-    email?: string;
-  };
+  /** 博客统计数据 */
+  stats?: AuthorStats;
+  /** 社交媒体链接 */
+  social?: SocialLinks;
+  /** 自定义类名 */
   className?: string;
 }
 
-const AuthorInfo: React.FC<AuthorInfoProps> = ({ name, bio, avatar, stats = { articles: 0, tags: 0, categories: 0 }, social, className }) => {
+/**
+ * 作者信息组件
+ * 
+ * 显示博客作者信息，包括头像、名称、简介、统计数据和社交媒体链接
+ * 支持3D悬浮效果
+ */
+const AuthorInfo: React.FC<AuthorInfoProps> = memo(({ 
+  name, 
+  bio, 
+  avatar, 
+  stats = { articles: 0, tags: 0, categories: 0 }, 
+  social, 
+  className 
+}) => {
   // 使用3D效果hook
   const { cardRef, glowRef, borderGlowRef } = use3DEffect();
 
   return (
     <div className={`author-info-container ${className || ''}`} ref={cardRef}>
-      {/* 添加光晕效果元素 */}
+      {/* 光晕效果元素 */}
       <div className="author-info-glow" ref={glowRef}></div>
       <div className="author-info-border-glow" ref={borderGlowRef}></div>
 
+      {/* 作者头像 */}
       {avatar && <img src={avatar} alt={name} className="author-info-avatar" />}
+      
       <div className="author-info-details">
+        {/* 作者名称和简介 */}
         {name && <h2 className="author-info-name">{name}</h2>}
         {bio && <p className="author-info-bio">{bio}</p>}
 
+        {/* 统计数据 */}
         {stats && (
           <div className="author-info-stats">
             <div className="stat-item">
@@ -49,6 +91,7 @@ const AuthorInfo: React.FC<AuthorInfoProps> = ({ name, bio, avatar, stats = { ar
           </div>
         )}
 
+        {/* 社交媒体链接 */}
         {social && (
           <div className="author-info-social">
             {social.github && (
@@ -74,6 +117,8 @@ const AuthorInfo: React.FC<AuthorInfoProps> = ({ name, bio, avatar, stats = { ar
       </div>
     </div>
   );
-};
+});
+
+AuthorInfo.displayName = 'AuthorInfo';
 
 export default AuthorInfo;
