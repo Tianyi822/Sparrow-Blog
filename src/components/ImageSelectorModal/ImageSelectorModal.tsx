@@ -10,7 +10,7 @@ import "./ImageSelectorModal.scss"
  * 跟踪文件上传和压缩的整个过程状态
  */
 interface UploadFileState {
-    file: File;                     // 原始文件
+    file: File;                      // 原始文件
     name: string;                   // 文件名
     isCompressing: boolean;         // 是否正在压缩
     isCompressed: boolean;          // 是否已压缩
