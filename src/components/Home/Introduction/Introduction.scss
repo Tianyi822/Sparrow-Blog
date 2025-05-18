@@ -1,10 +1,12 @@
+@use '@/style/variables' as *;
+
 // 定义变量
-$primary-color: #87CEEB;
+$primary-color: $primary-300;
 $secondary-color: #baccd9;
-$text-color: rgba(255, 255, 255, 0.9);
+$text-color: rgba($white, 0.9);
 
 // 定义断点
-$mobile-breakpoint: 768px;
+$mobile-breakpoint: $breakpoint-md;
 
 .introduction {
   color: $text-color;
@@ -16,37 +18,37 @@ $mobile-breakpoint: 768px;
   max-width: 800px;
 
   .greeting {
-    margin-bottom: 1rem;
+    margin-bottom: $spacing-md;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: $spacing-sm;
     
     .hello {
       font-size: 3.75rem;
-      font-weight: 500;
+      font-weight: $font-weight-medium;
     }
 
     .name {
       font-size: 5.25rem;
-      font-weight: 700;
+      font-weight: $font-weight-bold;
       color: $primary-color;
     }
   }
 
   .identity {
     font-size: 3rem;
-    margin-bottom: 1rem;
-    font-weight: 500;
+    margin-bottom: $spacing-md;
+    font-weight: $font-weight-medium;
   }
 
   .tech-stack {
     font-size: 2.25rem;
-    margin-bottom: 1rem;
+    margin-bottom: $spacing-md;
     
     .tech {
       color: $primary-color;
-      font-weight: 600;
-      margin: 0 0.3rem;
+      font-weight: $font-weight-semibold;
+      margin: 0 $spacing-xs + 0.05rem;
     }
   }
 }
@@ -55,7 +57,7 @@ $mobile-breakpoint: 768px;
   width: 100%;
   font-size: 2rem;
   color: $secondary-color;
-  margin-top: 0.5rem;
+  margin-top: $spacing-sm;
 }
 
 @media (max-width: $mobile-breakpoint) {

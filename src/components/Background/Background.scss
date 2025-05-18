@@ -1,3 +1,5 @@
+@use '../../style/variables' as *;
+
 .background-container {
     position: fixed;
     top: 0;
@@ -23,7 +25,8 @@
         position: absolute;
         top: 0;
         left: 0;
-        background-color: rgba(0, 0, 0, 0.75);
-        transition: backdrop-filter 0.3s ease, background-color 0.3s ease;
+        background-color: rgba($black, 0.75);
+        border: 1px solid rgba($white, 0.05);
+        transition: $transition-base;
     }
 } 

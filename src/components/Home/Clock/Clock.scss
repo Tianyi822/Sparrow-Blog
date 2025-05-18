@@ -1,9 +1,11 @@
+@use '@/style/variables' as *;
+
 /* 时钟容器样式 */
 .clock {
   --hrAngle: 0;
   --minAngle: 0;
   --secAngle: 0;
-  border-radius: 50%;
+  border-radius: $border-radius-circle;
   margin: auto;
   outline: transparent;
   position: relative;
@@ -18,7 +20,7 @@
 .profile {
   background-color: hsl(223, 10%, 50%);
   border: 0;
-  border-radius: 50%;
+  border-radius: $border-radius-circle;
   box-shadow: 0 0 0 0.25em hsla(223, 90%, 10%, 0.6);
   display: block;
   width: 3em;
@@ -30,7 +32,7 @@
   z-index: 2;
   
   &--empty {
-    background: linear-gradient(45deg, #3498db, #8e44ad);
+    background: linear-gradient(45deg, $primary-300, #8e44ad);
     display: block;
     position: absolute;
     left: 2em;
@@ -50,12 +52,12 @@
   display: flex;
   justify-content: center;
   align-items: end;
-  line-height: 1;
+  line-height: $line-height-tight;
   margin-top: 2.25em;
   user-select: none;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba($white, 0.9);
   font-size: 1.2em;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 0 2px rgba($black, 0.3);
 }
 
 /* 时钟数字组样式 */
@@ -109,7 +111,7 @@
 }
 
 .hand:before {
-  background-color: hsl(0, 0%, 100%);
+  background-color: $white;
   content: "";
   display: block;
   width: 100%;
@@ -132,7 +134,7 @@
 
 .layer,
 .ring {
-  border-radius: 50%;
+  border-radius: $border-radius-circle;
   inset: 0;
 }
 
@@ -145,7 +147,7 @@
   transform: translateZ(-3.75em);
   
   &-fallback {
-    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    background: linear-gradient(135deg, $primary-200, #764ba2) !important;
   }
 }
 
@@ -159,11 +161,11 @@
 }
 
 .ring {
-  box-shadow: 0 0 0 0.625em hsl(0, 0%, 100%) inset;
+  box-shadow: 0 0 0 0.625em $white inset;
 }
 
 // 中等屏幕尺寸 (768px - 1200px)
-@media (min-width: 769px) and (max-width: 1200px) {
+@media (min-width: #{$breakpoint-md + 1}) and (max-width: $breakpoint-xl) {
     .clock {
         width: 20em;
         height: 20em;
@@ -221,13 +223,13 @@
         }
 
         .ring {
-            box-shadow: 0 0 0 0.5em hsl(0, 0%, 100%) inset;
+            box-shadow: 0 0 0 0.5em $white inset;
         }
     }
 }
 
 // 小屏幕尺寸 (<=768px) 保持原有样式
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .clock {
     width: 16em;
     height: 16em;
@@ -285,7 +287,7 @@
     }
 
     .ring {
-      box-shadow: 0 0 0 0.4em hsl(0, 0%, 100%) inset;
+      box-shadow: 0 0 0 0.4em $white inset;
     }
   }
 }

@@ -1,10 +1,11 @@
 @use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
 .pagination {
     display: flex;
     justify-content: center; // 确保水平居中
     align-items: center;
-    gap: 0.5rem; // 统一设置基础间距
+    gap: $spacing-sm; // 统一设置基础间距
     width: fit-content; // 修改为适应内容的宽度
     margin: 0 auto; // 添加这行以确保居中
     position: relative;  // 添加这行，作为定位上下文
@@ -18,10 +19,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgba(255, 255, 255, 0.9);
-        border-radius: 8px;
+        color: rgba($white, 0.9);
+        border-radius: $border-radius-md;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: $transition-base;
         @include glass-card;
 
         &:hover {
@@ -52,7 +53,7 @@
     // 数字按钮区域
     .pagination-numbers {
         display: flex;
-        gap: 0.5rem; // 与外层间距保持一致
+        gap: $spacing-sm; // 与外层间距保持一致
         justify-content: center;  // 确保数字始终居中
     }
 
@@ -61,12 +62,12 @@
         @extend %button-base;
 
         &.active {
-            background: rgba(135, 206, 235, 0.4);
+            background: rgba($primary-300, 0.4);
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
-            color: rgba(255, 255, 255, 0.98);
+            color: rgba($white, 0.98);
             cursor: default;
-            box-shadow: 0 4px 8px rgba(135, 206, 235, 0.25);
+            box-shadow: 0 4px 8px rgba($primary-300, 0.25);
         }
 
         &.ellipsis {
@@ -80,12 +81,12 @@
                 top: 45%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                transition: all 0.3s ease;
-                font-size: 1rem; // 恢复字体大小
+                transition: $transition-base;
+                font-size: $font-size-base; // 恢复字体大小
             }
 
             &:hover {
-                background-color: rgba(255, 255, 255, 0.8);
+                background-color: rgba($white, 0.8);
                 
                 &::after {
                     content: '•••';
@@ -95,11 +96,11 @@
         }
     }
 
-    @media (max-width: 768px) {
-        gap: 0.5rem;
+    @media (max-width: $breakpoint-md) {
+        gap: $spacing-sm;
         
         .pagination-numbers {
-            gap: 0.5rem;
+            gap: $spacing-sm;
             // Don't hide any rendered page numbers now that we control exactly which ones to show
         }
     }

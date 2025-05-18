@@ -1,9 +1,10 @@
 @use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
 // 定义变量
-$mobile-breakpoint: 768px;
-$card-padding: 1.2rem;
-$mobile-padding: 1rem;
+$mobile-breakpoint: $breakpoint-md;
+$card-padding: $spacing-md + 0.2rem;
+$mobile-padding: $spacing-md;
 
 .blog-card {
   @include card-style;
@@ -12,11 +13,11 @@ $mobile-padding: 1rem;
   & {
     transform-style: preserve-3d;
     transform: perspective(1000px);
-    transition: transform 0.3s ease;
+    transition: $transition-base;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 20px;
+    gap: $spacing-xs * 3;
+    padding: $spacing-lg;
     cursor: pointer;
   }
   
@@ -26,22 +27,22 @@ $mobile-padding: 1rem;
   }
   
   .blog-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 8px;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    margin-bottom: $spacing-sm;
   }
   
   .blog-description {
-    font-size: 0.9rem;
+    font-size: $font-size-sm;
     color: var(--text-secondary);
-    margin-bottom: 12px;
+    margin-bottom: $spacing-xs * 3;
   }
   
   .blog-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.8rem;
+    font-size: $font-size-xs;
     color: var(--text-tertiary);
   }
 
@@ -49,10 +50,10 @@ $mobile-padding: 1rem;
   .blog-card-border-glow {
     position: absolute;
     inset: 0;
-    border-radius: 12px;
+    border-radius: $border-radius-md;
     pointer-events: none;
     z-index: 2;
-    transition: background 0.3s ease;
+    transition: background $transition-base;
   }
 
   &:hover {
@@ -74,7 +75,7 @@ $mobile-padding: 1rem;
       .blog-card-category,
       .blog-card-tag {
         opacity: 1;
-        color: rgba(255, 255, 255, 0.95);
+        color: rgba($white, 0.95);
       }
     }
   }
@@ -92,7 +93,7 @@ $mobile-padding: 1rem;
     background-size: cover;
     background-position: center;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: $border-radius-md;
   }
 
   // 内容区域基础样式
@@ -101,31 +102,31 @@ $mobile-padding: 1rem;
     padding: $card-padding;
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: $spacing-sm + 0.3rem;
   }
 
   // 标题和元数据样式
   .blog-card-header {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: $spacing-xs * 2 + 0.2rem;
   }
 
   .blog-card-title {
     font-size: 1.3em;
     margin: 0;
-    color: rgba(255, 255, 255, 0.85);
-    font-weight: 600;
-    transition: color 0.3s ease;
+    color: rgba($white, 0.85);
+    font-weight: $font-weight-semibold;
+    transition: color $transition-base;
   }
 
   .blog-card-meta {
     display: flex;
-    gap: 12px;
-    color: rgba(255, 255, 255, 0.65);
-    font-size: 0.85em;
-    font-weight: 500;
-    transition: color 0.3s ease;
+    gap: $spacing-xs * 3;
+    color: rgba($white, 0.65);
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    transition: color $transition-base;
 
     .blog-card-time {
       display: flex;
@@ -136,7 +137,7 @@ $mobile-padding: 1rem;
   // 标签样式
   .blog-card-tags {
     display: flex;
-    gap: 8px;
+    gap: $spacing-sm;
     flex-wrap: wrap;
 
     .blog-card-category,
@@ -144,40 +145,40 @@ $mobile-padding: 1rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.8em;
+      padding: $spacing-xs $spacing-xs * 2.5;
+      border-radius: $border-radius-sm;
+      font-size: $font-size-xs;
       backdrop-filter: blur(8px) saturate(160%);
       -webkit-backdrop-filter: blur(8px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: $border-width-thin solid rgba($white, 0.2);
       opacity: 0.8;
-      transition: opacity 0.3s ease;
+      transition: opacity $transition-base;
     }
 
     .blog-card-category {
       background-color: rgba(155, 89, 182, 0.75);
-      color: white;
+      color: $white;
     }
 
     .blog-card-tag {
       background-color: rgba(52, 152, 219, 0.75);
-      color: white;
+      color: $white;
     }
   }
 
   // 简介文本样式
   .blog-card-brief {
-    color: rgba(255, 255, 255, 0.75);
-    font-size: 0.9em;
-    line-height: 1.5;
-    font-weight: 500;
+    color: rgba($white, 0.75);
+    font-size: $font-size-sm;
+    line-height: $line-height-base;
+    font-weight: $font-weight-medium;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     line-clamp: 3;
     overflow: hidden;
-    padding-right: 2.5rem;
-    transition: color 0.3s ease;
+    padding-right: $spacing-lg + 0.5rem;
+    transition: color $transition-base;
   }
 
   // 桌面端布局
@@ -191,7 +192,7 @@ $mobile-padding: 1rem;
       flex-direction: row-reverse;
       
       .blog-card-img {
-        border-radius: 12px;
+        border-radius: $border-radius-md;
       }
     }
   }
@@ -207,7 +208,7 @@ $mobile-padding: 1rem;
 
     .blog-card-img {
       height: 180px;
-      border-radius: 12px;
+      border-radius: $border-radius-md;
     }
   }
 
@@ -215,8 +216,8 @@ $mobile-padding: 1rem;
   &.preview-card {
     transform: none !important;
     box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.05),
-      0 8px 16px rgba(0, 0, 0, 0.05);
+      $shadow-sm,
+      $shadow-md;
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
