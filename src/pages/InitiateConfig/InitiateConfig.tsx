@@ -8,7 +8,7 @@ import ServerBaseConfigForm, {
 import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm';
 import { completeInitiatedConfig } from '@/services/initiateConfigService.ts';
 import { checkSystemStatus } from '@/services/webService';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './InitiateConfig.scss';
 
@@ -54,18 +54,19 @@ const getSavedState = (): SavedState | null => {
         }
     } catch (error) {
         // 无法从localStorage获取状态
+        console.error("无法从 localStorage 获取状态: " + error)
     }
     return null;
 };
 
 const InitiateConfig: React.FC<InitiateConfigProps> = memo(({
-    initialServerData,
-    initialLoggerData,
-    initialMySQLData,
-    initialOSSData,
-    initialCacheData,
-    initialUserEmailData
-}) => {
+                                                                initialServerData,
+                                                                initialLoggerData,
+                                                                initialMySQLData,
+                                                                initialOSSData,
+                                                                initialCacheData,
+                                                                initialUserEmailData
+                                                            }) => {
     // 获取保存的状态
     const savedState = getSavedState();
 
@@ -137,6 +138,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = memo(({
             localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
         } catch (error) {
             // 无法保存状态到localStorage
+            console.error('无法保存状态到 localStorage: ' + error);
         }
     }, [currentFormIndex, serverData, loggerData, mysqlData, ossData, cacheData, userEmailData, submittedForms]);
 
@@ -155,7 +157,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = memo(({
         let timerId: number;
         const checkSystemReady = async () => {
             try {
-                const { isRuntime, errorMessage } = await checkSystemStatus();
+                const {isRuntime, errorMessage} = await checkSystemStatus();
 
                 // 如果系统状态检查成功，表示服务已经启动完成
                 if (isRuntime) {
@@ -174,6 +176,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = memo(({
                 }
             } catch (error) {
                 // 请求出错，继续轮询
+                console.error('检查服务状态失败:', error);
                 setPollingCount(prevCount => prevCount + 1);
                 setStatusMessage(`等待服务启动中... (尝试 ${pollingCount + 1}次)`);
                 timerId = window.setTimeout(checkSystemReady, 3000);
@@ -189,45 +192,45 @@ const InitiateConfig: React.FC<InitiateConfigProps> = memo(({
         };
     }, [isWaiting, pollingCount, navigate]);
 
-    // 表单标题参考
-    const formTitles = [
+    // 表单标题参考 - 使用useMemo包装，避免每次渲染都创建新数组
+    const formTitles = useMemo(() => [
         "服务基础配置",
         "用户与邮箱配置",
         "日志配置",
         "数据库配置",
         "OSS 存储配置",
         "缓存配置"
-    ];
+    ], []);
 
     // 处理各表单提交后的回调
     const handleServerSubmit = useCallback((data: ServerBaseConfigFormData) => {
         setServerData(data);
-        setSubmittedForms(prev => ({ ...prev, serverSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, serverSubmitted: true}));
     }, []);
 
     const handleLoggerSubmit = useCallback((data: LoggerFormData) => {
         setLoggerData(data);
-        setSubmittedForms(prev => ({ ...prev, loggerSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, loggerSubmitted: true}));
     }, []);
 
     const handleMySQLSubmit = useCallback((data: MySQLFormData) => {
         setMySQLData(data);
-        setSubmittedForms(prev => ({ ...prev, mysqlSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, mysqlSubmitted: true}));
     }, []);
 
     const handleOSSSubmit = useCallback((data: OSSConfigFormData) => {
         setOSSData(data);
-        setSubmittedForms(prev => ({ ...prev, ossSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, ossSubmitted: true}));
     }, []);
 
     const handleCacheSubmit = useCallback((data: CacheConfigFormData) => {
         setCacheData(data);
-        setSubmittedForms(prev => ({ ...prev, cacheSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, cacheSubmitted: true}));
     }, []);
 
     const handleUserEmailSubmit = useCallback((data: UserEmailConfigFormData) => {
         setUserEmailData(data);
-        setSubmittedForms(prev => ({ ...prev, userEmailSubmitted: true }));
+        setSubmittedForms(prev => ({...prev, userEmailSubmitted: true}));
         // 最后一个表单可以不跳转
     }, []);
 
@@ -253,6 +256,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = memo(({
 
         } catch (error) {
             alert('完成配置请求失败，请检查网络连接或联系管理员');
+            console.error("完成配置请求失败: " + error)
             setIsWaiting(false);
         }
     }, []);
@@ -554,7 +558,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = memo(({
                 <div
                     className={`current-form-container ${isAnimating ? 'animating' : ''} ${animationDirection > 0 ? 'slide-up-out' :
                         animationDirection < 0 ? 'slide-down-out' : ''
-                        }`}
+                    }`}
                 >
                     {renderCurrentForm()}
                 </div>
