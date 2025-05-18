@@ -8,9 +8,9 @@ import ServerBaseConfigForm, {
 import UserConfigForm, { UserEmailConfigFormData } from '@/components/InitiateConfig/UserConfigForm';
 import { completeInitiatedConfig } from '@/services/initiateConfigService.ts';
 import { checkSystemStatus } from '@/services/webService';
-import React, { useEffect, useState } from 'react';
-import './InitiateConfig.scss';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './InitiateConfig.scss';
 
 interface InitiateConfigProps {
     initialServerData?: ServerBaseConfigFormData;
@@ -32,7 +32,7 @@ interface SavedState {
         cacheData?: CacheConfigFormData;
         userEmailData?: UserEmailConfigFormData;
     }
-    // Add submitted forms tracking
+    // 添加已提交表单的追踪
     submittedForms: {
         serverSubmitted: boolean;
         loggerSubmitted: boolean;
@@ -53,12 +53,12 @@ const getSavedState = (): SavedState | null => {
             return JSON.parse(savedState) as SavedState;
         }
     } catch (error) {
-        console.error('Failed to retrieve state from localStorage:', error);
+        // 无法从localStorage获取状态
     }
     return null;
 };
 
-const InitiateConfig: React.FC<InitiateConfigProps> = ({
+const InitiateConfig: React.FC<InitiateConfigProps> = memo(({
     initialServerData,
     initialLoggerData,
     initialMySQLData,
@@ -89,7 +89,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         savedState?.formData?.userEmailData || initialUserEmailData
     );
 
-    // Track which forms have been submitted successfully
+    // 追踪已成功提交的表单
     const [submittedForms, setSubmittedForms] = useState({
         serverSubmitted: savedState?.submittedForms?.serverSubmitted || false,
         loggerSubmitted: savedState?.submittedForms?.loggerSubmitted || false,
@@ -99,11 +99,11 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         userEmailSubmitted: savedState?.submittedForms?.userEmailSubmitted || false,
     });
 
-    // State to track the current form index
+    // 当前表单索引的状态
     const [currentFormIndex, setCurrentFormIndex] = useState(savedState?.currentFormIndex || 0);
-    // State to track animation direction (1: down, -1: up)
+    // 动画方向的状态 (1: 向下, -1: 向上)
     const [animationDirection, setAnimationDirection] = useState(0);
-    // State to track if animation is in progress
+    // 动画进行中的状态
     const [isAnimating, setIsAnimating] = useState(false);
     // 等待状态
     const [isWaiting, setIsWaiting] = useState(false);
@@ -136,14 +136,14 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
 
             localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
         } catch (error) {
-            console.error('Failed to save state to localStorage:', error);
+            // 无法保存状态到localStorage
         }
     }, [currentFormIndex, serverData, loggerData, mysqlData, ossData, cacheData, userEmailData, submittedForms]);
 
-    // Effect to handle animation reset
+    // 处理动画重置的效果
     useEffect(() => {
         if (!isAnimating) {
-            // Reset animation direction after animation completes
+            // 动画完成后重置动画方向
             setAnimationDirection(0);
         }
     }, [isAnimating]);
@@ -168,14 +168,13 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                     navigate('/admin/login');
                 } else {
                     // 系统状态检查失败，继续轮询
-                    setPollingCount(prev => prev + 1);
+                    setPollingCount(prevCount => prevCount + 1);
                     setStatusMessage(`正在检查服务状态... (尝试 ${pollingCount + 1}次) ${errorMessage ? `- ${errorMessage}` : ''}`);
                     timerId = window.setTimeout(checkSystemReady, 3000);
                 }
             } catch (error) {
                 // 请求出错，继续轮询
-                console.error('检查服务状态失败:', error);
-                setPollingCount(prev => prev + 1);
+                setPollingCount(prevCount => prevCount + 1);
                 setStatusMessage(`等待服务启动中... (尝试 ${pollingCount + 1}次)`);
                 timerId = window.setTimeout(checkSystemReady, 3000);
             }
@@ -190,7 +189,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         };
     }, [isWaiting, pollingCount, navigate]);
 
-    // Form titles for reference
+    // 表单标题参考
     const formTitles = [
         "服务基础配置",
         "用户与邮箱配置",
@@ -201,50 +200,39 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
     ];
 
     // 处理各表单提交后的回调
-    const handleServerSubmit = (data: ServerBaseConfigFormData) => {
-        console.log('Server config submitted:', data);
+    const handleServerSubmit = useCallback((data: ServerBaseConfigFormData) => {
         setServerData(data);
         setSubmittedForms(prev => ({ ...prev, serverSubmitted: true }));
-        // Removed automatic navigation
-    };
+    }, []);
 
-    const handleLoggerSubmit = (data: LoggerFormData) => {
-        console.log('Logger config submitted:', data);
+    const handleLoggerSubmit = useCallback((data: LoggerFormData) => {
         setLoggerData(data);
         setSubmittedForms(prev => ({ ...prev, loggerSubmitted: true }));
-        // Removed automatic navigation
-    };
+    }, []);
 
-    const handleMySQLSubmit = (data: MySQLFormData) => {
-        console.log('MySQL config submitted:', data);
+    const handleMySQLSubmit = useCallback((data: MySQLFormData) => {
         setMySQLData(data);
         setSubmittedForms(prev => ({ ...prev, mysqlSubmitted: true }));
-        // Removed automatic navigation
-    };
+    }, []);
 
-    const handleOSSSubmit = (data: OSSConfigFormData) => {
-        console.log('OSS config submitted:', data);
+    const handleOSSSubmit = useCallback((data: OSSConfigFormData) => {
         setOSSData(data);
         setSubmittedForms(prev => ({ ...prev, ossSubmitted: true }));
-        // Removed automatic navigation
-    };
+    }, []);
 
-    const handleCacheSubmit = (data: CacheConfigFormData) => {
-        console.log('Cache config submitted:', data);
+    const handleCacheSubmit = useCallback((data: CacheConfigFormData) => {
         setCacheData(data);
         setSubmittedForms(prev => ({ ...prev, cacheSubmitted: true }));
-        // Removed automatic navigation
-    };
+    }, []);
 
-    const handleUserEmailSubmit = (data: UserEmailConfigFormData) => {
-        console.log('User & Email config submitted:', data);
+    const handleUserEmailSubmit = useCallback((data: UserEmailConfigFormData) => {
         setUserEmailData(data);
         setSubmittedForms(prev => ({ ...prev, userEmailSubmitted: true }));
         // 最后一个表单可以不跳转
-    };
+    }, []);
 
     // 处理完成配置并进入登录页面
-    const handleCompleteConfig = async () => {
+    const handleCompleteConfig = useCallback(async () => {
         try {
             setIsWaiting(true);
             setStatusMessage('正在完成配置...');
@@ -254,7 +242,6 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
             // 检查响应状态
             if (response && response.code !== 200) {
                 // 不使用throw，直接显示错误并返回
-                console.error('Failed to complete configuration:', response.msg);
                 alert(response.msg || '配置完成请求失败');
                 setIsWaiting(false);
                 return;
@@ -265,13 +252,13 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
             setPollingCount(0);
 
         } catch (error) {
-            console.error('Failed to complete configuration:', error);
             alert('完成配置请求失败，请检查网络连接或联系管理员');
             setIsWaiting(false);
         }
-    };
+    }, []);
 
-    const goToForm = (index: number) => {
+    // 跳转到指定表单
+    const goToForm = useCallback((index: number) => {
         // 验证是否可以跳转到目标表单
         // 只能跳转到已提交的表单或序号比当前可操作表单小或相等的表单
         const canNavigateTo = () => {
@@ -303,31 +290,31 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
         }
 
         if (index >= 0 && index <= 5 && index !== currentFormIndex) {
-            // Always set animation direction to -1 for exit (up direction)
-            // This ensures all forms exit with the same animation (up direction)
+            // 始终将动画方向设置为-1用于退出(向上方向)
+            // 这确保所有表单都以相同的动画(向上方向)退出
             setAnimationDirection(-1);
             setIsAnimating(true);
 
-            // Delay the actual form change to allow exit animation
+            // 延迟实际的表单更改以允许退出动画
             setTimeout(() => {
                 setCurrentFormIndex(index);
-                // Reset animation state after a short delay
+                // 短暂延迟后重置动画状态
                 setTimeout(() => {
                     setIsAnimating(false);
                 }, 50);
-            }, 300); // Match this with animation duration
+            }, 300); // 与动画持续时间匹配
         }
-    };
+    }, [currentFormIndex, submittedForms, formTitles]);
 
-    // New functions for navigating to previous/next form
-    const goToPrevForm = () => {
+    // 导航到上一个/下一个表单的新函数
+    const goToPrevForm = useCallback(() => {
         if (currentFormIndex > 0) {
             // 上一个表单总是已经可访问的，直接跳转
             goToForm(currentFormIndex - 1);
         }
-    };
+    }, [currentFormIndex, goToForm]);
 
-    const goToNextForm = () => {
+    const goToNextForm = useCallback(() => {
         // 只有当前表单已提交成功，才能前进到下一个表单
         if (currentFormIndex < 5) {
             const canProceed = (() => {
@@ -353,10 +340,10 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                 alert(`请先完成 ${formTitles[currentFormIndex]} 再进行下一步配置`);
             }
         }
-    };
+    }, [currentFormIndex, submittedForms, formTitles, goToForm]);
 
-    // Render the current form based on index
-    const renderCurrentForm = () => {
+    // 根据索引渲染当前表单
+    const renderCurrentForm = useCallback(() => {
         switch (currentFormIndex) {
             case 0:
                 return (
@@ -415,7 +402,24 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
             default:
                 return null;
         }
-    };
+    }, [
+        currentFormIndex,
+        serverData,
+        userEmailData,
+        loggerData,
+        mysqlData,
+        ossData,
+        cacheData,
+        submittedForms,
+        handleServerSubmit,
+        handleUserEmailSubmit,
+        handleLoggerSubmit,
+        handleMySQLSubmit,
+        handleOSSSubmit,
+        handleCacheSubmit,
+        goToNextForm,
+        handleCompleteConfig
+    ]);
 
     return (
         <div className="initiate-config-container">
@@ -430,9 +434,9 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                 </div>
             )}
 
-            {/* Navigation dots moved to left side with up/down arrows */}
+            {/* 导航点移到左侧，带有上下箭头 */}
             <div className="form-navigation-dots">
-                {/* Up arrow for navigating to previous form */}
+                {/* 上箭头用于导航到上一个表单 */}
                 <button
                     className="nav-arrow nav-arrow-up"
                     onClick={goToPrevForm}
@@ -443,7 +447,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                     <span>&#10094;</span>
                 </button>
 
-                {/* Navigation dots */}
+                {/* 导航点 */}
                 {formTitles.map((title, index) => {
                     // 检查此表单是否可访问
                     const canAccess = (() => {
@@ -493,7 +497,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                     );
                 })}
 
-                {/* Down arrow for navigating to next form */}
+                {/* 下箭头用于导航到下一个表单 */}
                 <button
                     className="nav-arrow nav-arrow-down"
                     onClick={goToNextForm}
@@ -545,7 +549,7 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
                 </button>
             </div>
 
-            {/* The current form centered in the page */}
+            {/* 页面中央的当前表单 */}
             <div className="config-form-content">
                 <div
                     className={`current-form-container ${isAnimating ? 'animating' : ''} ${animationDirection > 0 ? 'slide-up-out' :
@@ -557,6 +561,6 @@ const InitiateConfig: React.FC<InitiateConfigProps> = ({
             </div>
         </div>
     );
-};
+});
 
 export default InitiateConfig;
