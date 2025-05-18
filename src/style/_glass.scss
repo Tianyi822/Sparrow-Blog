@@ -1,0 +1,140 @@
+/* 
+ * 毛玻璃效果样式
+ * 提供不同级别和类型的毛玻璃效果
+ */
+
+@use 'variables' as *;
+
+// 轻度毛玻璃效果
+.glass-light {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+// 标准毛玻璃效果
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+}
+
+// 深色毛玻璃效果
+.glass-dark {
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+// 增强毛玻璃效果
+.glass-strong {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+// 带3D效果的毛玻璃
+.glass-3d {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  isolation: isolate;
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+  will-change: transform;
+  transition: transform 0.2s ease-out;
+}
+
+// 毛玻璃悬停效果
+.glass:hover,
+.glass-light:hover,
+.glass-dark:hover,
+.glass-strong:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+// 3D毛玻璃悬停效果
+.glass-3d:hover {
+  transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+// 毛玻璃内部内容样式
+.glass, 
+.glass-light, 
+.glass-dark, 
+.glass-strong, 
+.glass-3d {
+  .title, h3, h4, p {
+    color: rgba(255, 255, 255, 0.95);
+  }
+  
+  .subtitle, .meta, .date, .count {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+// 毛玻璃容器通用圆角
+.glass, 
+.glass-light, 
+.glass-dark, 
+.glass-strong, 
+.glass-3d {
+  border-radius: $border-radius-md;
+}
+
+// 毛玻璃发光效果
+.glass-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  transition: all 0.2s ease-out;
+  border-radius: inherit;
+}
+
+.glass-border-glow {
+  position: absolute;
+  inset: -2px;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  transition: all 0.2s ease-out;
+  mix-blend-mode: overlay;
+  opacity: 1;
+}
+
+// 鼠标悬停时的发光效果
+.glass:hover,
+.glass-3d:hover {
+  .glass-glow {
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.8),
+      transparent 80%
+    );
+  }
+
+  .glass-border-glow {
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0.8),
+      transparent 40%
+    );
+    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.1);
+  }
+} 

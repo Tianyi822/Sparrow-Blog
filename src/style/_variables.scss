@@ -1,0 +1,117 @@
+/* 
+ * 全局变量文件
+ * 包含项目通用的颜色、字体、间距等变量
+ */
+
+// 品牌颜色
+$primary-100: #e3f2fd;
+$primary-200: #90caf9;
+$primary-300: #3498db;
+$primary-400: #1976d2;
+$primary-500: #1565c0;
+
+// 中性色
+$white: #fff;
+$black: #000;
+
+// 灰度色
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+// 功能色
+$info: #17a2b8;
+$success: #4baa1c;
+$warning: #fadb14;
+$danger: #dc3545;
+
+// 背景色
+$background-color-primary: $primary-100;
+$background-color-primary-200: $primary-200;
+$background-color-primary-300: $primary-300;
+$background-color-primary-400: $primary-400;
+$background-color-primary-500: $primary-500;
+$background-color-active: $primary-200;
+$background-color-hover: $primary-200;
+
+// 字体家族
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+  "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", 
+  "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-base: $font-family-sans-serif;
+
+// 字体颜色
+$font-color-base: $gray-900;
+$font-color-light: $gray-600;
+$font-color-active: $gray-700;
+$font-color-inverse: $white;
+
+// 字体大小
+$font-size-base: 1rem;
+$font-size-xs: $font-size-base * 0.75;
+$font-size-sm: $font-size-base * 0.875;
+$font-size-md: $font-size-base;
+$font-size-lg: $font-size-base * 1.25;
+$font-size-xl: $font-size-base * 1.5;
+$font-size-xxl: $font-size-base * 2;
+$font-size-xxxl: $font-size-base * 3;
+
+// 字重
+$font-weight-lighter: lighter;
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-bolder: 800;
+$font-weight-base: $font-weight-normal;
+
+// 行高
+$line-height-tight: 1.25;
+$line-height-base: 1.5;
+$line-height-loose: 1.75;
+
+// 间距
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 3rem;
+
+// 边框
+$border-width-thin: 1px;
+$border-width-medium: 2px;
+$border-width-thick: 3px;
+$border-color: $gray-300;
+$border-radius-sm: 0.25rem;
+$border-radius-md: 0.5rem;
+$border-radius-lg: 0.75rem;
+$border-radius-xl: 1rem;
+$border-radius-pill: 50rem;
+$border-radius-circle: 50%;
+
+// 阴影
+$shadow-sm: 0 1px 3px rgba($black, 0.12), 0 1px 2px rgba($black, 0.24);
+$shadow-md: 0 4px 6px rgba($black, 0.1), 0 1px 3px rgba($black, 0.08);
+$shadow-lg: 0 10px 20px rgba($black, 0.15), 0 3px 6px rgba($black, 0.1);
+$shadow-inset: inset 0 1px 2px rgba($black, 0.1);
+
+// 过渡
+$transition-short: all 0.15s ease;
+$transition-base: all 0.3s ease;
+$transition-long: all 0.5s ease;
+
+// 断点
+$breakpoint-xs: 0;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1400px; 

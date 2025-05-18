@@ -1,0 +1,97 @@
+/* 
+ * 基础样式文件
+ * 包含全局通用样式设置
+ */
+
+// 全局边距和盒模型设置
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+// 基础HTML元素样式
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  
+  // 隐藏滚动条
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari 和 Opera */
+  }
+  -ms-overflow-style: none; /* IE 和 Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+// 基础链接样式
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+// 基础列表样式
+ul, ol {
+  list-style: none;
+}
+
+// 全局滚动平滑
+html {
+  scroll-behavior: smooth;
+}
+
+// 焦点轮廓样式
+:focus {
+  outline: none;
+}
+
+// 禁用用户选择
+.no-select {
+  user-select: none;
+}
+
+// 容器样式
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+// 全局动画
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+} 

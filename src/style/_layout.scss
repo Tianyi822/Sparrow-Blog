@@ -1,0 +1,246 @@
+/* 
+ * 布局样式工具
+ * 包含Flex和Grid布局工具类
+ */
+
+@use 'variables' as *;
+
+// Flex容器
+.d-flex {
+  display: flex;
+}
+
+.d-inline-flex {
+  display: inline-flex;
+}
+
+// Flex方向
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.flex-column-reverse {
+  flex-direction: column-reverse;
+}
+
+// Flex包装
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+// Flex对齐
+.justify-content-start {
+  justify-content: flex-start;
+}
+
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.justify-content-around {
+  justify-content: space-around;
+}
+
+.justify-content-evenly {
+  justify-content: space-evenly;
+}
+
+.align-items-start {
+  align-items: flex-start;
+}
+
+.align-items-end {
+  align-items: flex-end;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.align-items-baseline {
+  align-items: baseline;
+}
+
+.align-items-stretch {
+  align-items: stretch;
+}
+
+// Flex项目
+.flex-grow-0 {
+  flex-grow: 0;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.flex-shrink-1 {
+  flex-shrink: 1;
+}
+
+// Grid容器
+.d-grid {
+  display: grid;
+}
+
+.d-inline-grid {
+  display: inline-grid;
+}
+
+// Grid模板列
+@for $i from 1 through 12 {
+  .grid-cols-#{$i} {
+    grid-template-columns: repeat($i, 1fr);
+  }
+}
+
+// Grid间距
+.gap-xs {
+  gap: $spacing-xs;
+}
+
+.gap-sm {
+  gap: $spacing-sm;
+}
+
+.gap-md {
+  gap: $spacing-md;
+}
+
+.gap-lg {
+  gap: $spacing-lg;
+}
+
+.gap-xl {
+  gap: $spacing-xl;
+}
+
+// 响应式间距
+@media (min-width: $breakpoint-sm) {
+  @for $i from 0 through 5 {
+    .m-sm-#{$i} {
+      margin: #{$i * 0.25}rem;
+    }
+    .mx-sm-#{$i} {
+      margin-left: #{$i * 0.25}rem;
+      margin-right: #{$i * 0.25}rem;
+    }
+    .my-sm-#{$i} {
+      margin-top: #{$i * 0.25}rem;
+      margin-bottom: #{$i * 0.25}rem;
+    }
+    .p-sm-#{$i} {
+      padding: #{$i * 0.25}rem;
+    }
+    .px-sm-#{$i} {
+      padding-left: #{$i * 0.25}rem;
+      padding-right: #{$i * 0.25}rem;
+    }
+    .py-sm-#{$i} {
+      padding-top: #{$i * 0.25}rem;
+      padding-bottom: #{$i * 0.25}rem;
+    }
+  }
+}
+
+@media (min-width: $breakpoint-md) {
+  @for $i from 0 through 5 {
+    .m-md-#{$i} {
+      margin: #{$i * 0.25}rem;
+    }
+    .mx-md-#{$i} {
+      margin-left: #{$i * 0.25}rem;
+      margin-right: #{$i * 0.25}rem;
+    }
+    .my-md-#{$i} {
+      margin-top: #{$i * 0.25}rem;
+      margin-bottom: #{$i * 0.25}rem;
+    }
+    .p-md-#{$i} {
+      padding: #{$i * 0.25}rem;
+    }
+    .px-md-#{$i} {
+      padding-left: #{$i * 0.25}rem;
+      padding-right: #{$i * 0.25}rem;
+    }
+    .py-md-#{$i} {
+      padding-top: #{$i * 0.25}rem;
+      padding-bottom: #{$i * 0.25}rem;
+    }
+  }
+}
+
+// 基础间距工具
+@for $i from 0 through 5 {
+  .m-#{$i} {
+    margin: #{$i * 0.25}rem;
+  }
+  .mt-#{$i} {
+    margin-top: #{$i * 0.25}rem;
+  }
+  .mr-#{$i} {
+    margin-right: #{$i * 0.25}rem;
+  }
+  .mb-#{$i} {
+    margin-bottom: #{$i * 0.25}rem;
+  }
+  .ml-#{$i} {
+    margin-left: #{$i * 0.25}rem;
+  }
+  .mx-#{$i} {
+    margin-left: #{$i * 0.25}rem;
+    margin-right: #{$i * 0.25}rem;
+  }
+  .my-#{$i} {
+    margin-top: #{$i * 0.25}rem;
+    margin-bottom: #{$i * 0.25}rem;
+  }
+  
+  .p-#{$i} {
+    padding: #{$i * 0.25}rem;
+  }
+  .pt-#{$i} {
+    padding-top: #{$i * 0.25}rem;
+  }
+  .pr-#{$i} {
+    padding-right: #{$i * 0.25}rem;
+  }
+  .pb-#{$i} {
+    padding-bottom: #{$i * 0.25}rem;
+  }
+  .pl-#{$i} {
+    padding-left: #{$i * 0.25}rem;
+  }
+  .px-#{$i} {
+    padding-left: #{$i * 0.25}rem;
+    padding-right: #{$i * 0.25}rem;
+  }
+  .py-#{$i} {
+    padding-top: #{$i * 0.25}rem;
+    padding-bottom: #{$i * 0.25}rem;
+  }
+} 
