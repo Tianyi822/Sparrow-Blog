@@ -18,7 +18,7 @@ export interface ServerBaseConfig {
     smtpAuthCode?: string;
 }
 
-// Combined configuration type
+// 组合配置类型，包含所有初始化配置
 export interface ServerConfig {
     serverBase?: ServerBaseConfig;
     logger?: LoggerFormData;
@@ -29,7 +29,7 @@ export interface ServerConfig {
 }
 
 /**
- * Save server base configuration
+ * 服务器基础配置数据的后端格式
  */
 interface ServerBaseBackendData {
     'server.port': string;
@@ -42,6 +42,11 @@ interface ServerBaseBackendData {
     'server.smtp_auth_code'?: string;
 }
 
+/**
+ * 转换服务器基础配置数据为后端格式
+ * @param data 前端服务器配置数据
+ * @returns 转换后的后端格式数据
+ */
 export const transformServerBaseData = (data: ServerBaseConfig): ServerBaseBackendData => {
     return {
         'server.port': data.port,
@@ -55,9 +60,13 @@ export const transformServerBaseData = (data: ServerBaseConfig): ServerBaseBacke
     };
 };
 
+/**
+ * 保存服务器基础配置
+ * @param data 服务器基础配置数据
+ * @returns 保存响应结果
+ */
 export const saveInitiatedServerBaseConfig = async (data: ServerBaseConfig): Promise<ApiResponse<ServerBaseConfig>> => {
     const transformedData = transformServerBaseData(data);
-    console.log('转换后的数据:', transformedData); // 调试用
 
     // 使用JSON格式提交数据
     return request<ApiResponse<ServerBaseConfig>>({
@@ -71,7 +80,7 @@ export const saveInitiatedServerBaseConfig = async (data: ServerBaseConfig): Pro
 };
 
 /**
- * 转换日志配置数据为后端格式
+ * 日志配置的后端格式
  */
 interface LoggerBackendData {
     'logger.level': string;
@@ -82,6 +91,11 @@ interface LoggerBackendData {
     'logger.max_age': string;
 }
 
+/**
+ * 转换日志配置数据为后端格式
+ * @param data 前端日志配置数据
+ * @returns 转换后的后端格式数据
+ */
 export const transformLoggerData = (data: LoggerFormData): LoggerBackendData => {
     return {
         'logger.level': data.logLevel,
@@ -94,11 +108,12 @@ export const transformLoggerData = (data: LoggerFormData): LoggerBackendData => 
 };
 
 /**
- * Save logger configuration
+ * 保存日志配置
+ * @param data 日志配置数据
+ * @returns 保存响应结果
  */
 export const saveInitiatedLoggerConfig = async (data: LoggerFormData): Promise<ApiResponse<LoggerFormData>> => {
     const transformedData = transformLoggerData(data);
-    console.log('转换后的日志配置数据:', transformedData); // 调试用
 
     return request<ApiResponse<LoggerFormData>>({
         method: 'POST',
@@ -111,7 +126,7 @@ export const saveInitiatedLoggerConfig = async (data: LoggerFormData): Promise<A
 };
 
 /**
- * 转换MySQL配置数据为后端格式
+ * MySQL配置的后端格式
  */
 interface MySQLBackendData {
     'mysql.user': string;
@@ -123,6 +138,11 @@ interface MySQLBackendData {
     'mysql.max_idle': string;
 }
 
+/**
+ * 转换MySQL配置数据为后端格式
+ * @param data 前端MySQL配置数据
+ * @returns 转换后的后端格式数据
+ */
 export const transformMySQLData = (data: MySQLFormData): MySQLBackendData => {
     return {
         'mysql.user': data.username,
@@ -136,11 +156,12 @@ export const transformMySQLData = (data: MySQLFormData): MySQLBackendData => {
 };
 
 /**
- * Save MySQL configuration
+ * 保存MySQL配置
+ * @param data MySQL配置数据
+ * @returns 保存响应结果
  */
 export const saveInitiatedMySQLConfig = async (data: MySQLFormData): Promise<ApiResponse<MySQLFormData>> => {
     const transformedData = transformMySQLData(data);
-    console.log('转换后的MySQL配置数据:', transformedData); // 调试用
 
     return request<ApiResponse<MySQLFormData>>({
         method: 'POST',
@@ -154,6 +175,8 @@ export const saveInitiatedMySQLConfig = async (data: MySQLFormData): Promise<Api
 
 /**
  * 转换OSS配置数据为后端格式
+ * @param data 前端OSS配置数据
+ * @returns 转换后的后端格式数据
  */
 export const transformOSSData = (data: OSSConfigFormData): {
     "oss.endpoint": string;
@@ -176,11 +199,12 @@ export const transformOSSData = (data: OSSConfigFormData): {
 };
 
 /**
- * Save OSS storage configuration
+ * 保存OSS存储配置
+ * @param data OSS配置数据
+ * @returns 保存响应结果
  */
 export const saveInitiatedOSSConfig = async (data: OSSConfigFormData): Promise<ApiResponse<OSSConfigFormData>> => {
     const transformedData = transformOSSData(data);
-    console.log('转换后的OSS配置数据:', transformedData); // 调试用
 
     return request<ApiResponse<OSSConfigFormData>>({
         method: 'POST',
@@ -193,7 +217,7 @@ export const saveInitiatedOSSConfig = async (data: OSSConfigFormData): Promise<A
 };
 
 /**
- * 转换缓存配置数据为后端格式
+ * 缓存配置的后端格式
  */
 interface CacheBackendData {
     'cache.aof.enable': string;
@@ -202,6 +226,11 @@ interface CacheBackendData {
     'cache.aof.compress': string;
 }
 
+/**
+ * 转换缓存配置数据为后端格式
+ * @param data 前端缓存配置数据
+ * @returns 转换后的后端格式数据
+ */
 export const transformCacheData = (data: CacheConfigFormData): CacheBackendData => {
     return {
         'cache.aof.enable': data.aofEnabled ? '1' : '0',
@@ -212,11 +241,12 @@ export const transformCacheData = (data: CacheConfigFormData): CacheBackendData 
 };
 
 /**
- * Save Cache configuration
+ * 保存缓存配置
+ * @param data 缓存配置数据
+ * @returns 保存响应结果
  */
 export const saveInitiatedCacheConfig = async (data: CacheConfigFormData): Promise<ApiResponse<CacheConfigFormData>> => {
     const transformedData = transformCacheData(data);
-    console.log('转换后的缓存配置数据:', transformedData); // 调试用
 
     return request<ApiResponse<CacheConfigFormData>>({
         method: 'POST',
@@ -229,7 +259,7 @@ export const saveInitiatedCacheConfig = async (data: CacheConfigFormData): Promi
 };
 
 /**
- * Save User configuration with verification code
+ * 用户配置数据的后端格式（带验证码）
  */
 export interface UserConfigData {
     'user.username': string;
@@ -240,6 +270,11 @@ export interface UserConfigData {
     'user.verification_code': string;
 }
 
+/**
+ * 保存用户配置（需要验证码）
+ * @param data 用户配置数据
+ * @returns 保存响应结果
+ */
 export const saveInitiatedUserConfig = async (data: UserConfigData): Promise<ApiResponse<null>> => {
     return request<ApiResponse<null>>({
         method: 'POST',
@@ -252,12 +287,17 @@ export const saveInitiatedUserConfig = async (data: UserConfigData): Promise<Api
 };
 
 /**
- * Send verification code to email
+ * 验证码请求数据格式
  */
 export interface VerificationCodeData {
     'user.user_email': string;
 }
 
+/**
+ * 发送验证码到邮箱
+ * @param data 包含用户邮箱的数据
+ * @returns 发送响应结果
+ */
 export const sendInitiatedVerificationCode = async (data: VerificationCodeData): Promise<ApiResponse<null>> => {
     return request<ApiResponse<null>>({
         method: 'POST',
@@ -270,7 +310,8 @@ export const sendInitiatedVerificationCode = async (data: VerificationCodeData):
 };
 
 /**
- * Complete configuration and restart server
+ * 完成配置并重启服务器
+ * @returns 完成配置的响应结果
  */
 export const completeInitiatedConfig = async (): Promise<ApiResponse<null>> => {
     return request<ApiResponse<null>>({
