@@ -42,7 +42,7 @@
       transform: translateX(-50%);
       color: rgba(255, 255, 255, 0.8);
       cursor: pointer;
-      animation: float 2s ease-in-out infinite;
+      animation: floatUpDown 2s ease-in-out infinite;
       z-index: 10;
     }
   }
@@ -138,12 +138,12 @@
   }
 }
 
-@keyframes float {
+@keyframes floatUpDown {
   0%, 100% {
-    transform: translate(-50%, 0);
+    transform: translateX(-50%) translateY(0);
   }
   50% {
-    transform: translate(-50%, -10px);
+    transform: translateX(-50%) translateY(-10px);
   }
 }
 
