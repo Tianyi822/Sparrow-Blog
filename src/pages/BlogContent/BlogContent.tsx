@@ -1,20 +1,21 @@
 import Background from "@/components/Background/Background";
+import { CodeBlock } from '@/components/ui/code-block';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { BlogContentData, fetchMarkdownContent, getBlogContent } from '@/services/webService';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { FiCalendar, FiClock, FiX } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import { useNavigate, useParams } from 'react-router-dom';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import './BlogContent.scss';
-import { CodeBlock } from '@/components/ui/code-block';
 
-const BlogContent: React.FC = () => {
-    const {blogId} = useParams<{ blogId: string }>();
+const BlogContent: React.FC = memo(() => {
+    const { blogId } = useParams<{ blogId: string }>();
     const navigate = useNavigate();
-    const {getImageUrl} = useBlogLayoutContext();
+    const { getImageUrl } = useBlogLayoutContext();
 
+    // 状态管理
     const [blogData, setBlogData] = useState<BlogContentData | null>(null);
     const [markdownContent, setMarkdownContent] = useState('');
     const [loading, setLoading] = useState(true);
@@ -91,7 +92,7 @@ const BlogContent: React.FC = () => {
         fetchBlogData();
     }, [blogId, getImageUrl]);
 
-    // 设置可见性
+    // 设置图片放大可见性
     useEffect(() => {
         if (zoomedImage && !isClosing) {
             // 使用 requestAnimationFrame 确保在下一个绘制帧设置可见性
@@ -101,8 +102,8 @@ const BlogContent: React.FC = () => {
         }
     }, [zoomedImage, isClosing]);
 
-    // 格式化日期
-    const formatDate = (dateString: string) => {
+    // 格式化日期显示
+    const formatDate = useCallback((dateString: string) => {
         if (!dateString || dateString === '0001-01-01T00:00:00Z') {
             return '未知日期';
         }
@@ -130,10 +131,10 @@ const BlogContent: React.FC = () => {
         } catch {
             return '日期格式错误';
         }
-    };
+    }, []);
 
-    // 处理图片点击事件
-    const handleImageClick = (event: React.MouseEvent<HTMLImageElement>, src: string) => {
+    // 处理图片点击放大事件
+    const handleImageClick = useCallback((event: React.MouseEvent<HTMLImageElement>, src: string) => {
         const imgElement = event.currentTarget;
         const rect = imgElement.getBoundingClientRect();
 
@@ -151,10 +152,10 @@ const BlogContent: React.FC = () => {
 
         // 防止页面滚动
         document.body.style.overflow = 'hidden';
-    };
+    }, []);
 
     // 关闭放大的图片
-    const closeZoomedImage = () => {
+    const closeZoomedImage = useCallback(() => {
         if (isClosing) return; // 防止重复关闭
 
         setIsClosing(true);
@@ -175,11 +176,11 @@ const BlogContent: React.FC = () => {
             // 恢复页面滚动
             document.body.style.overflow = '';
         }, 350); // 稍微比CSS动画时间(300ms)长一点，确保动画完成
-    };
+    }, [isClosing]);
 
-    // 图片渲染器
+    // 图片渲染器 - 处理Markdown中的图片
     const renderImage = useCallback((props: React.ComponentPropsWithoutRef<'img'>) => {
-        const {src, alt} = props;
+        const { src, alt } = props;
         if (!src) return null;
 
         return (
@@ -187,23 +188,23 @@ const BlogContent: React.FC = () => {
                 src={src}
                 alt={alt || ''}
                 onClick={(e) => handleImageClick(e, src)}
-                style={{cursor: 'zoom-in'}}
+                style={{ cursor: 'zoom-in' }}
                 className="blog-content-image"
             />
         );
-    }, []);
+    }, [handleImageClick]);
 
-    // 代码块渲染器
+    // 代码块渲染器 - 处理Markdown中的代码块
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderCodeBlock = useCallback((props: any) => {
-        const {inline, className, children} = props;
+        const { inline, className, children } = props;
         const match = /language-(\w+)/.exec(className || '');
         const language = match && match[1] ? match[1] : '';
 
         if (!inline && language) {
             const codeContent = String(children).replace(/\n$/, '');
 
-            // 使用新的CodeBlock组件
+            // 使用CodeBlock组件渲染代码
             return (
                 <CodeBlock
                     language={language}
@@ -216,17 +217,16 @@ const BlogContent: React.FC = () => {
     }, []);
 
     // 计算图片缩放动画的样式
-    const getZoomAnimationStyle = () => {
+    const getZoomAnimationStyle = useCallback(() => {
         if (!imagePosition) return {};
-
         return {};
-    };
+    }, [imagePosition]);
 
-    const getZoomedImageStyle = () => {
+    // 获取放大图片的样式
+    const getZoomedImageStyle = useCallback(() => {
         if (!imagePosition) return {};
-
         return {};
-    };
+    }, [imagePosition]);
 
     // 加载中状态
     if (loading) {
@@ -267,37 +267,37 @@ const BlogContent: React.FC = () => {
 
     return (
         <>
-            {backgroundImage && <Background backgroundImage={backgroundImage}/>}
+            {backgroundImage && <Background backgroundImage={backgroundImage} />}
             <div className="blog-content-page">
                 {/* 博客头部信息 */}
                 <header className="blog-content-page-header">
-                    <div className="blog-content-page-header-glow"/>
-                    <div className="blog-content-page-header-border-glow"/>
+                    <div className="blog-content-page-header-glow" />
+                    <div className="blog-content-page-header-border-glow" />
 
                     <h1 className="blog-content-page-header-title">
                         {blog_title}
                         {blog_is_top && (
                             <span className="blog-top-badge">
-                <i className="top-icon">↑</i>置顶
-              </span>
+                                <i className="top-icon">↑</i>置顶
+                            </span>
                         )}
                     </h1>
 
                     <div className="blog-content-page-header-meta">
                         <div className="blog-content-page-header-meta-item">
-                            <FiCalendar className="icon"/>
+                            <FiCalendar className="icon" />
                             <span>创建于 {formatDate(create_time)}</span>
                         </div>
 
                         {update_time && update_time !== '0001-01-01T00:00:00Z' && (
                             <div className="blog-content-page-header-meta-item">
-                                <FiCalendar className="icon"/>
+                                <FiCalendar className="icon" />
                                 <span>更新于 {formatDate(update_time)}</span>
                             </div>
                         )}
 
                         <div className="blog-content-page-header-meta-item">
-                            <FiClock className="icon"/>
+                            <FiClock className="icon" />
                             <span>{blog_words_num} 字</span>
                         </div>
                     </div>
@@ -305,14 +305,14 @@ const BlogContent: React.FC = () => {
                     <div className="blog-content-page-header-tags">
                         {category && (
                             <span className="blog-category">
-                {category.category_name}
-              </span>
+                                {category.category_name}
+                            </span>
                         )}
 
                         {tags && tags.map((tag) => (
                             <span key={tag.tag_id} className="blog-tag">
-                {tag.tag_name}
-              </span>
+                                {tag.tag_name}
+                            </span>
                         ))}
                     </div>
 
@@ -325,8 +325,8 @@ const BlogContent: React.FC = () => {
 
                 {/* 博客正文内容 */}
                 <article className="blog-content-page-article">
-                    <div className="blog-content-page-article-glow"/>
-                    <div className="blog-content-page-article-border-glow"/>
+                    <div className="blog-content-page-article-glow" />
+                    <div className="blog-content-page-article-border-glow" />
 
                     <div className="markdown-content">
                         {markdownContent && (
@@ -343,7 +343,7 @@ const BlogContent: React.FC = () => {
                 </article>
             </div>
 
-            {/* 图片缩放层 */}
+            {/* 图片放大查看层 */}
             {zoomedImage && (
                 <div
                     ref={zoomOverlayRef}
@@ -359,11 +359,11 @@ const BlogContent: React.FC = () => {
                             e.stopPropagation();
                             closeZoomedImage();
                         }}>
-                            <FiX/>
+                            <FiX />
                         </button>
                         <img
                             src={zoomedImage}
-                            alt="Zoomed image"
+                            alt="放大的图片"
                             className={`image-zoom-content ${isVisible ? 'visible' : ''} ${isClosing ? 'closing' : ''} ${isZooming ? 'zooming' : ''}`}
                             onClick={(e) => e.stopPropagation()}
                         />
@@ -372,6 +372,6 @@ const BlogContent: React.FC = () => {
             )}
         </>
     );
-};
+});
 
 export default BlogContent; 
