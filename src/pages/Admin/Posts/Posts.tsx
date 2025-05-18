@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { BlogItem, changeBlogState, deleteBlog, getAllBlogs, setBlogTop } from '@/services/adminService';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     FiArrowUp,
     FiChevronLeft,
@@ -11,9 +12,8 @@ import {
     FiTrash2,
     FiX
 } from 'react-icons/fi';
-import './Posts.scss';
-import { BlogItem, getAllBlogs, changeBlogState, setBlogTop, deleteBlog } from '@/services/adminService';
 import { useNavigate } from 'react-router-dom';
+import './Posts.scss';
 
 // 可选的每页条数选项
 const pageSizeOptions = [25, 50, 75, 100];
@@ -29,7 +29,7 @@ const formatDateTime = (dateStr: string): string => {
     return `${year}-${month}-${day}`;
 };
 
-const Posts: React.FC = () => {
+const Posts: React.FC = memo(() => {
     const [posts, setPosts] = useState<BlogItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -59,7 +59,6 @@ const Posts: React.FC = () => {
                 }
             } catch (err) {
                 setError('获取博客列表时发生错误');
-                console.error('获取博客列表错误:', err);
             } finally {
                 setLoading(false);
             }
@@ -103,21 +102,21 @@ const Posts: React.FC = () => {
     }, [posts, searchTitle, selectedCategory, selectedTag]);
 
     // 重置所有筛选条件
-    const resetFilters = () => {
+    const resetFilters = useCallback(() => {
         setSearchTitle('');
         setSelectedCategory('');
         setSelectedTag('');
         setCurrentPage(1);
-    };
+    }, []);
 
     // 计算总页数
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
     // 获取当前页的文章
-    const getCurrentPagePosts = () => {
+    const getCurrentPagePosts = useCallback(() => {
         const startIndex = (currentPage - 1) * postsPerPage;
         return filteredPosts.slice(startIndex, startIndex + postsPerPage);
-    };
+    }, [currentPage, filteredPosts, postsPerPage]);
 
     // 当筛选条件改变时，重置到第一页
     useEffect(() => {
@@ -130,19 +129,19 @@ const Posts: React.FC = () => {
     }, [postsPerPage]);
 
     // 处理页码变化
-    const handlePageChange = (page: number) => {
+    const handlePageChange = useCallback((page: number) => {
         if (page < 1 || page > totalPages) return;
         setCurrentPage(page);
-    };
+    }, [totalPages]);
 
     // 处理每页显示条数变化
-    const handlePageSizeChange = (size: number) => {
+    const handlePageSizeChange = useCallback((size: number) => {
         setPostsPerPage(size);
         setShowPageSizeSelector(false);
-    };
+    }, []);
 
     // 处理置顶文章
-    const handleTogglePin = async (id: string) => {
+    const handleTogglePin = useCallback(async (id: string) => {
         try {
             const response = await setBlogTop(id);
             if (response.code === 200) {
@@ -155,13 +154,12 @@ const Posts: React.FC = () => {
                 setError(response.msg || '修改置顶状态失败');
             }
         } catch (err) {
-            console.error('修改置顶状态错误:', err);
             setError('修改置顶状态时发生错误');
         }
-    };
+    }, []);
 
     // 处理切换文章状态
-    const handleToggleStatus = async (id: string) => {
+    const handleToggleStatus = useCallback(async (id: string) => {
         try {
             const response = await changeBlogState(id);
             if (response.code === 200) {
@@ -174,18 +172,17 @@ const Posts: React.FC = () => {
                 setError(response.msg || '修改博客状态失败');
             }
         } catch (err) {
-            console.error('修改博客状态错误:', err);
             setError('修改博客状态时发生错误');
         }
-    };
+    }, []);
 
     // 处理编辑文章
-    const handleEditPost = (id: string) => {
+    const handleEditPost = useCallback((id: string) => {
         navigate(`/admin/edit?blog_id=${id}`);
-    };
+    }, [navigate]);
 
     // 处理删除文章
-    const handleDeletePost = async (id: string) => {
+    const handleDeletePost = useCallback(async (id: string) => {
         if (window.confirm('确定要删除这篇文章吗？此操作不可恢复。')) {
             try {
                 const response = await deleteBlog(id);
@@ -197,18 +194,17 @@ const Posts: React.FC = () => {
                     setError(response.msg || '删除博客失败');
                 }
             } catch (err) {
-                console.error('删除博客错误:', err);
                 setError('删除博客时发生错误');
             }
         }
-    };
+    }, []);
 
     // 监听窗口大小变化
     useEffect(() => {
         const handleResize = () => {
             const currentWidth = window.innerWidth;
             setIsNarrowScreen(currentWidth <= 1500);
-            
+
             // 强制重新渲染帖子列表以更新标签显示
             setPosts(prevPosts => [...prevPosts]);
         };
@@ -218,23 +214,23 @@ const Posts: React.FC = () => {
     }, []);
 
     // 获取标签显示数量 - 用于判断是否需要显示"更多"按钮
-    const getTagDisplayCount = () => {
+    const getTagDisplayCount = useCallback(() => {
         if (window.innerWidth > 1900) return 4; // 超宽屏显示4个标签
         if (window.innerWidth > 1700) return 3; // 大屏幕显示3个标签
         if (window.innerWidth > 1500) return 2; // 中等宽度显示2个标签
         return 1; // 小屏幕只显示1个标签
-    };
+    }, []);
 
     // 获取标签实际显示数量 - 限制直接显示的标签数，其余在"+n"中显示
-    const getTagLimitCount = () => {
+    const getTagLimitCount = useCallback(() => {
         if (window.innerWidth > 1900) return 3; // 超宽屏直接显示3个标签
         if (window.innerWidth > 1700) return 2; // 大屏幕直接显示2个标签
         if (window.innerWidth > 1500) return 1; // 中等宽度直接显示1个标签
         return 0; // 小屏幕不直接显示标签，全部用+n按钮
-    };
+    }, []);
 
     // 处理点击more-tags显示弹窗
-    const handleMoreTagsClick = (postId: string, event: React.MouseEvent) => {
+    const handleMoreTagsClick = useCallback((postId: string, event: React.MouseEvent) => {
         event.stopPropagation(); // 阻止事件冒泡
 
         if (activeTagPopup === postId) {
@@ -250,20 +246,20 @@ const Posts: React.FC = () => {
             });
             setActiveTagPopup(postId);
         }
-    };
+    }, [activeTagPopup]);
 
     // 处理弹窗关闭
-    const closePopup = () => {
+    const closePopup = useCallback(() => {
         setIsClosing(true);
         setTimeout(() => {
             setActiveTagPopup(null);
             setPopupPosition(null);
             setIsClosing(false);
         }, 200); // 动画持续时间
-    };
+    }, []);
 
     // 渲染搜索组件
-    const renderSearchComponent = () => {
+    const renderSearchComponent = useCallback(() => {
         return (
             <div className="search-container">
                 <div className="search-input-wrapper">
@@ -321,10 +317,10 @@ const Posts: React.FC = () => {
                 </div>
             </div>
         );
-    };
+    }, [categories, resetFilters, searchTitle, selectedCategory, selectedTag, tags]);
 
     // 渲染每页显示条数选择器
-    const renderPageSizeSelector = () => {
+    const renderPageSizeSelector = useCallback(() => {
         return (
             <div className="page-size-selector">
                 <button
@@ -351,10 +347,10 @@ const Posts: React.FC = () => {
                 )}
             </div>
         );
-    };
+    }, [handlePageSizeChange, postsPerPage, showPageSizeSelector]);
 
     // 生成页码按钮
-    const renderPagination = () => {
+    const renderPagination = useCallback(() => {
         return (
             <div className="pagination-container">
                 <div className="pagination">
@@ -384,17 +380,17 @@ const Posts: React.FC = () => {
                 {renderPageSizeSelector()}
             </div>
         );
-    };
+    }, [currentPage, handlePageChange, renderPageSizeSelector, totalPages]);
 
     // 渲染结果统计
-    const renderResultSummary = () => {
+    const renderResultSummary = useCallback(() => {
         return (
             <div className="result-summary">
                 显示 {filteredPosts.length} 个结果中的 {Math.min(postsPerPage, getCurrentPagePosts().length)}
                 {(searchTitle || selectedCategory || selectedTag) && ' (已筛选)'}
             </div>
         );
-    };
+    }, [filteredPosts.length, getCurrentPagePosts, postsPerPage, searchTitle, selectedCategory, selectedTag]);
 
     // 点击页面其他地方关闭标签弹窗
     useEffect(() => {
@@ -420,7 +416,7 @@ const Posts: React.FC = () => {
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [activeTagPopup]);
+    }, [activeTagPopup, closePopup]);
 
     if (loading) {
         return <div className="loading-container">加载中...</div>;
@@ -553,6 +549,6 @@ const Posts: React.FC = () => {
             )}
         </div>
     );
-};
+});
 
 export default Posts; 
