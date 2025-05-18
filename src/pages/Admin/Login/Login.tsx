@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import {
+  getUserInfo,
+  loginWithVerificationCode,
+  sendVerificationCode
+} from '@/services/adminService';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FiLock, FiMail } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import { 
-  sendVerificationCode, 
-  loginWithVerificationCode, 
-  getUserInfo
-} from '@/services/adminService';
 import './Login.scss';
 
+// 登录表单数据接口
 interface LoginFormData {
   email: string;
   verifyCode: string;
 }
 
+// 表单验证错误接口
 interface ValidationErrors {
   [key: string]: string;
 }
@@ -20,9 +22,9 @@ interface ValidationErrors {
 // 本地存储键名
 const COUNTDOWN_END_TIME_KEY = 'verify_code_end_time';
 
-const Login: React.FC = () => {
+const Login: React.FC = memo(() => {
   const navigate = useNavigate();
-  
+
   // 状态定义
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
@@ -42,12 +44,12 @@ const Login: React.FC = () => {
       try {
         setFetchingUserData(true);
         const response = await getUserInfo();
-        
+
         if (response.code === 200 && response.data?.user_name) {
           setUserName(response.data.user_name);
         }
       } catch (error) {
-        console.error('获取用户信息失败:', error);
+        setSubmitError('获取用户信息失败');
       } finally {
         setFetchingUserData(false);
       }
@@ -62,7 +64,7 @@ const Login: React.FC = () => {
     if (endTimeStr) {
       const endTime = parseInt(endTimeStr, 10);
       const now = Date.now();
-      
+
       // 如果结束时间还未到，计算剩余时间
       if (endTime > now) {
         const remainingSeconds = Math.ceil((endTime - now) / 1000);
@@ -94,7 +96,7 @@ const Login: React.FC = () => {
   }, [countdown]);
 
   // 表单输入变更处理
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setFormData(prev => ({
@@ -113,10 +115,10 @@ const Login: React.FC = () => {
 
     // 清除提交错误
     if (submitError) setSubmitError('');
-  };
+  }, [errors, submitError]);
 
   // 验证表单字段
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     const newErrors: ValidationErrors = {};
 
     if (!formData.email.trim()) {
@@ -131,10 +133,10 @@ const Login: React.FC = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData.email, formData.verifyCode]);
 
   // 发送验证码
-  const handleSendVerifyCode = async () => {
+  const handleSendVerifyCode = useCallback(async () => {
     // 先验证邮箱
     if (!formData.email.trim()) {
       setErrors(prev => ({
@@ -143,7 +145,7 @@ const Login: React.FC = () => {
       }));
       return;
     }
-    
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setErrors(prev => ({
         ...prev,
@@ -155,22 +157,21 @@ const Login: React.FC = () => {
     try {
       setVerifyCodeSending(true);
       // 调用验证码发送接口
-      await sendVerificationCode({ 
-        user_email: formData.email 
+      await sendVerificationCode({
+        user_email: formData.email
       });
 
       setCountdown(60); // 设置60秒倒计时
       // 成功提示可以在这里添加
     } catch (error) {
-      console.error('发送验证码失败:', error);
       setSubmitError('发送验证码失败，请稍后重试');
     } finally {
       setVerifyCodeSending(false);
     }
-  };
+  }, [formData.email]);
 
   // 提交登录
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -179,33 +180,28 @@ const Login: React.FC = () => {
 
     try {
       setLoading(true);
-      console.log('开始登录请求...');
       // 调用登录接口
       const response = await loginWithVerificationCode({
         user_email: formData.email,
         verification_code: formData.verifyCode
       });
 
-      console.log('登录响应:', response);
-      
       // 登录成功直接跳转到管理后台
       if (response.code === 200) {
-        console.log('登录成功，准备跳转');
         // 清除倒计时状态
         localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
-        
+
         // 跳转到管理页面
         navigate('/admin');
       } else {
         setSubmitError(response.msg || '登录失败，请稍后再试');
       }
     } catch (error) {
-      console.error('登录失败:', error);
       setSubmitError(error instanceof Error ? error.message : '登录失败，请稍后再试');
     } finally {
       setLoading(false);
     }
-  };
+  }, [formData.email, formData.verifyCode, navigate, validateForm]);
 
   return (
     <div className="login-container">
@@ -284,6 +280,6 @@ const Login: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Login;
