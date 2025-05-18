@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { FiDatabase, FiFolder, FiHardDrive, FiZap, FiAlertCircle } from 'react-icons/fi';
-import './CacheSetting.scss';
 import { getCacheConfig, updateCacheConfig } from '@/services/adminService';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { FiAlertCircle, FiDatabase, FiFolder, FiHardDrive, FiZap } from 'react-icons/fi';
+import './CacheSetting.scss';
 
+// 缓存表单数据接口
 interface CacheFormData {
     aofEnabled: boolean;
     aofPath: string;
@@ -10,15 +11,17 @@ interface CacheFormData {
     compressEnabled: boolean;
 }
 
+// 表单验证错误接口
 interface ValidationErrors {
     [key: string]: string;
 }
 
+// 组件属性接口
 interface CacheSettingProps {
     onSaveSuccess?: () => void;
 }
 
-const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
+const CacheSetting: React.FC<CacheSettingProps> = memo(({ onSaveSuccess }) => {
     const [formData, setFormData] = useState<CacheFormData>({
         aofEnabled: true,
         aofPath: '',
@@ -54,10 +57,8 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
                 } else {
                     // 显示后端返回的错误信息
                     setSubmitError(`获取缓存配置失败: ${response.msg}`);
-                    console.error('获取缓存配置失败:', response.msg);
                 }
             } catch (error) {
-                console.error('获取缓存配置时出错:', error);
                 setSubmitError('获取缓存配置时发生错误，请稍后再试');
             } finally {
                 setLoading(false);
@@ -67,7 +68,8 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
         fetchCacheConfig();
     }, []);
 
-    const validateField = (name: string, value: string): string => {
+    // 验证单个字段
+    const validateField = useCallback((name: string, value: string): string => {
         switch (name) {
             case 'aofPath':
                 // AOF路径可以为空
@@ -82,9 +84,10 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
             default:
                 return '';
         }
-    };
+    }, []);
 
-    const validateForm = (): boolean => {
+    // 验证整个表单
+    const validateForm = useCallback((): boolean => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
 
@@ -103,21 +106,22 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
 
         setErrors(newErrors);
         return isValid;
-    };
+    }, [formData, validateField]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value, type, checked} = e.target;
+    // 处理输入变更
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = e.target;
 
         if (type === 'checkbox') {
-            setFormData(prev => ({...prev, [name]: checked}));
+            setFormData(prev => ({ ...prev, [name]: checked }));
         } else {
-            setFormData(prev => ({...prev, [name]: value}));
+            setFormData(prev => ({ ...prev, [name]: value }));
         }
 
         // 清除错误
         if (errors[name]) {
             setErrors(prev => {
-                const newErrors = {...prev};
+                const newErrors = { ...prev };
                 delete newErrors[name];
                 return newErrors;
             });
@@ -127,9 +131,10 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
         if (saveSuccess) {
             setSaveSuccess(false);
         }
-    };
+    }, [errors, saveSuccess]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // 提交表单
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!validateForm()) {
@@ -166,16 +171,15 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
             } else {
                 // 显示后端返回的错误信息
                 setSubmitError(`${response.msg}`);
-                console.error('保存失败:', response.msg);
             }
         } catch (error) {
-            console.error('保存缓存配置时出错:', error);
             setSubmitError('保存配置时发生错误，请稍后再试');
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [formData, onSaveSuccess, validateForm]);
 
+    // 显示加载中状态
     if (loading) {
         return (
             <div className="cache-setting-card">
@@ -192,7 +196,7 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
             <div className="cache-img-section">
                 <div className="cache-info-overlay">
                     <div className="cache-title">
-                        <FiDatabase className="cache-icon"/>
+                        <FiDatabase className="cache-icon" />
                         <h2>缓存配置</h2>
                     </div>
                     <div className="cache-description">
@@ -211,7 +215,7 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
             <div className="cache-setting-form-wrapper">
                 {saveSuccess && (
                     <div className="save-notification">
-                        <FiAlertCircle/>
+                        <FiAlertCircle />
                         设置已保存成功！
                     </div>
                 )}
@@ -228,9 +232,9 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
                             />
                             <span className="checkbox-icon"></span>
                             <span className="label-text">
-                <FiDatabase className="input-icon"/>
-                启用AOF持久化
-              </span>
+                                <FiDatabase className="input-icon" />
+                                启用AOF持久化
+                            </span>
                         </label>
                     </div>
 
@@ -238,7 +242,7 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
                         <>
                             <div className="form-group">
                                 <label>
-                                    <FiFolder className="input-icon"/>
+                                    <FiFolder className="input-icon" />
                                     AOF文件目录
                                 </label>
                                 <input
@@ -256,7 +260,7 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
 
                             <div className="form-group">
                                 <label>
-                                    <FiHardDrive className="input-icon"/>
+                                    <FiHardDrive className="input-icon" />
                                     AOF文件最大大小 (MB)
                                 </label>
                                 <input
@@ -282,9 +286,9 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
                                     />
                                     <span className="checkbox-icon"></span>
                                     <span className="label-text">
-                    <FiZap className="input-icon"/>
-                    启用压缩
-                  </span>
+                                        <FiZap className="input-icon" />
+                                        启用压缩
+                                    </span>
                                 </label>
                             </div>
                         </>
@@ -308,6 +312,6 @@ const CacheSetting: React.FC<CacheSettingProps> = ({onSaveSuccess}) => {
             </div>
         </div>
     );
-};
+});
 
 export default CacheSetting; 

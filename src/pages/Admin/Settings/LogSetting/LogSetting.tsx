@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { FiFile, FiCpu, FiAlertCircle, FiType, FiLayers, FiClock, FiArchive } from 'react-icons/fi';
 import './LogSetting.scss';
 import { getLoggerConfig, updateLoggerConfig } from '@/services/adminService';
 
+// 组件属性接口
 interface LogConfigProps {
     onSaveSuccess?: () => void;
 }
 
-const LogSetting: React.FC<LogConfigProps> = ({ onSaveSuccess }) => {
+const LogSetting: React.FC<LogConfigProps> = memo(({ onSaveSuccess }) => {
     // 表单状态
     const [formData, setFormData] = useState({
         logLevel: 'info',
@@ -48,10 +49,8 @@ const LogSetting: React.FC<LogConfigProps> = ({ onSaveSuccess }) => {
                 } else {
                     // 显示后端返回的错误信息
                     setSubmitError(`获取日志配置失败: ${response.msg}`);
-                    console.error('获取日志配置失败:', response.msg);
                 }
             } catch (error) {
-                console.error('获取日志配置失败:', error);
                 setSubmitError('获取日志配置时发生错误，请稍后再试');
             } finally {
                 setLoading(false);
@@ -62,33 +61,33 @@ const LogSetting: React.FC<LogConfigProps> = ({ onSaveSuccess }) => {
     }, []);
 
     // 处理输入变化
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target as HTMLInputElement;
 
         if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
-            setFormData({
-                ...formData,
+            setFormData(prevData => ({
+                ...prevData,
                 [name]: checked,
-            });
+            }));
         } else {
-            setFormData({
-                ...formData,
+            setFormData(prevData => ({
+                ...prevData,
                 [name]: value,
-            });
+            }));
         }
 
         // 清除对应字段的错误
         if (errors[name]) {
-            setErrors({
-                ...errors,
+            setErrors(prevErrors => ({
+                ...prevErrors,
                 [name]: '',
-            });
+            }));
         }
-    };
+    }, [errors]);
 
     // 表单验证
-    const validateForm = () => {
+    const validateForm = useCallback(() => {
         const newErrors: { [key: string]: string } = {};
 
         // 验证日志目录
@@ -119,10 +118,10 @@ const LogSetting: React.FC<LogConfigProps> = ({ onSaveSuccess }) => {
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
+    }, [formData]);
 
     // 处理表单提交
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
 
         // 清空所有错误
@@ -161,15 +160,14 @@ const LogSetting: React.FC<LogConfigProps> = ({ onSaveSuccess }) => {
                 } else {
                     // 显示后端返回的错误信息
                     setSubmitError(`${response.msg}`);
-                    console.error('保存失败:', response.msg);
                 }
             } catch (error) {
-                console.error('保存日志配置时出错:', error);
                 setSubmitError('保存配置时发生错误，请稍后再试');
             }
         }
-    };
+    }, [formData, onSaveSuccess, validateForm]);
 
+    // 显示加载中状态
     if (loading) {
         return (
             <div className="log-setting-card">
@@ -318,6 +316,6 @@ const LogSetting: React.FC<LogConfigProps> = ({ onSaveSuccess }) => {
             </div>
         </div>
     );
-};
+});
 
 export default LogSetting; 

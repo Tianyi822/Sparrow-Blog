@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { FiDatabase, FiUser, FiLock, FiServer, FiSettings, FiRefreshCw, FiClock, FiAlertCircle } from 'react-icons/fi';
 import './DatabaseSetting.scss';
 import { getMySQLConfig, updateMySQLConfig } from '@/services/adminService';
 
+// 数据库表单数据接口
 interface DatabaseFormData {
     username: string;
     password: string;
@@ -13,15 +14,17 @@ interface DatabaseFormData {
     maxIdleConns: string;
 }
 
+// 表单验证错误接口
 interface ValidationErrors {
     [key: string]: string;
 }
 
+// 组件属性接口
 interface DatabaseConfigProps {
     onSaveSuccess?: () => void;
 }
 
-const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
+const DatabaseSetting: React.FC<DatabaseConfigProps> = memo(({onSaveSuccess}) => {
     const [formData, setFormData] = useState<DatabaseFormData>({
         username: '',
         password: '',
@@ -63,10 +66,8 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
                 } else {
                     // 显示后端返回的错误信息
                     setSubmitError(`获取数据库配置失败: ${response.msg}`);
-                    console.error('获取数据库配置失败:', response.msg);
                 }
             } catch (error) {
-                console.error('获取数据库配置时出错:', error);
                 setSubmitError('获取数据库配置时发生错误，请稍后再试');
             } finally {
                 setLoading(false);
@@ -76,7 +77,8 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
         fetchDatabaseConfig();
     }, []);
 
-    const validateField = (name: string, value: string): string => {
+    // 验证单个字段
+    const validateField = useCallback((name: string, value: string): string => {
         switch (name) {
             case 'username':
                 return value.trim() ? '' : '数据库用户名不能为空';
@@ -123,9 +125,10 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
             default:
                 return '';
         }
-    };
+    }, [formData.maxOpenConns]);
 
-    const validateForm = (): boolean => {
+    // 验证整个表单
+    const validateForm = useCallback((): boolean => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
 
@@ -139,9 +142,10 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
 
         setErrors(newErrors);
         return isValid;
-    };
+    }, [formData, validateField]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 处理输入变更
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
 
         // 处理数字输入
@@ -165,9 +169,10 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
         if (saveSuccess) {
             setSaveSuccess(false);
         }
-    };
+    }, [errors, saveSuccess]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // 提交表单
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!validateForm()) {
@@ -210,16 +215,15 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
             } else {
                 // 显示后端返回的错误信息
                 setSubmitError(`${response.msg}`);
-                console.error('保存失败:', response.msg);
             }
         } catch (error) {
-            console.error('保存数据库配置时出错:', error);
             setSubmitError('保存配置时发生错误，请稍后再试');
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [formData, onSaveSuccess, validateForm]);
 
+    // 显示加载中状态
     if (loading) {
         return (
             <div className="database-setting-card">
@@ -389,6 +393,6 @@ const DatabaseSetting: React.FC<DatabaseConfigProps> = ({onSaveSuccess}) => {
             </div>
         </div>
     );
-};
+});
 
 export default DatabaseSetting;

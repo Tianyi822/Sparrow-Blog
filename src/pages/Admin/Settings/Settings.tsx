@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
     FiChevronDown,
     FiCpu,
@@ -7,17 +7,19 @@ import {
     FiServer,
     FiUser
 } from 'react-icons/fi';
+import CacheSetting from './CacheSetting';
+import DatabaseSetting from './DatabaseSetting';
 import LogSetting from './LogSetting';
+import OssSetting from './OssSetting';
 import ServiceSetting from './ServiceSetting';
 import './Settings.scss';
 import UserSetting from './UserSetting';
-import DatabaseSetting from './DatabaseSetting';
-import OssSetting from './OssSetting';
-import CacheSetting from './CacheSetting';
 
+// 设置标签页类型定义
 type SettingTab = 'user' | 'service' | 'log' | 'database' | 'oss' | 'cache';
 
-const Settings: React.FC = () => {
+const Settings: React.FC = memo(() => {
+    // 状态管理
     const [activeTab, setActiveTab] = useState<SettingTab>(() => {
         // 从localStorage读取上次选择的标签页，如果没有则默认为'user'
         const savedTab = localStorage.getItem('settings_active_tab');
@@ -25,6 +27,7 @@ const Settings: React.FC = () => {
     });
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+    // 标签页配置选项
     const tabOptions = [
         { id: 'user', label: '用户设置', icon: <FiUser /> },
         { id: 'log', label: '日志设置', icon: <FiCpu /> },
@@ -34,22 +37,26 @@ const Settings: React.FC = () => {
         { id: 'service', label: '服务设置', icon: <FiServer /> },
     ];
 
-    const handleSaveSuccess = () => {
+    // 保存成功回调处理
+    const handleSaveSuccess = useCallback(() => {
         // 各组件内部处理保存成功提示
-    };
+    }, []);
 
-    const handleTabChange = (tab: SettingTab) => {
+    // 标签页切换处理
+    const handleTabChange = useCallback((tab: SettingTab) => {
         setActiveTab(tab);
         // 将当前选中的标签页保存到localStorage
         localStorage.setItem('settings_active_tab', tab);
         setIsDropdownOpen(false);
-    };
+    }, []);
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
-    };
+    // 切换下拉菜单开关状态
+    const toggleDropdown = useCallback(() => {
+        setIsDropdownOpen(prevState => !prevState);
+    }, []);
 
-    const renderTabContent = () => {
+    // 渲染当前激活的标签页内容
+    const renderTabContent = useCallback(() => {
         switch (activeTab) {
             case 'user':
                 return <UserSetting onSaveSuccess={handleSaveSuccess} />;
@@ -66,21 +73,23 @@ const Settings: React.FC = () => {
             default:
                 return null;
         }
-    };
+    }, [activeTab, handleSaveSuccess]);
 
-    const getActiveTabLabel = () => {
+    // 获取当前激活标签页的标签和图标
+    const getActiveTabLabel = useCallback(() => {
         const activeOption = tabOptions.find(option => option.id === activeTab);
         return activeOption ? (
             <>
                 {activeOption.icon} {activeOption.label}
             </>
         ) : null;
-    };
+    }, [activeTab, tabOptions]);
 
     return (
         <div className="settings-page">
             <div className="edit-container">
                 <div className="edit-header">
+                    {/* 桌面版标签栏 */}
                     <div className="settings-tabs">
                         {tabOptions.map(option => (
                             <button
@@ -93,6 +102,7 @@ const Settings: React.FC = () => {
                         ))}
                     </div>
 
+                    {/* 移动端下拉菜单 */}
                     <div className="settings-dropdown">
                         <button className="dropdown-toggle" onClick={toggleDropdown}>
                             {getActiveTabLabel()} <FiChevronDown className={isDropdownOpen ? 'rotate' : ''} />
@@ -113,12 +123,13 @@ const Settings: React.FC = () => {
                     </div>
                 </div>
 
+                {/* 设置内容区域 */}
                 <div className="user-setting-wrapper">
                     {renderTabContent()}
                 </div>
             </div>
         </div>
     );
-};
+});
 
 export default Settings;

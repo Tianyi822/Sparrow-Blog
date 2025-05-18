@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import {
     FiBox,
     FiCloud,
@@ -12,6 +12,7 @@ import {
 import './OssSetting.scss';
 import { getOSSConfig, updateOSSConfig } from '@/services/adminService';
 
+// OSS表单数据接口
 interface OssFormData {
     endpoint: string;
     region: string;
@@ -22,15 +23,17 @@ interface OssFormData {
     blogPath: string;
 }
 
+// 表单验证错误接口
 interface ValidationErrors {
     [key: string]: string;
 }
 
+// 组件属性接口
 interface OssConfigProps {
     onSaveSuccess?: () => void;
 }
 
-const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
+const OssSetting: React.FC<OssConfigProps> = memo(({onSaveSuccess}) => {
     const [formData, setFormData] = useState<OssFormData>({
         endpoint: '',
         region: '',
@@ -72,10 +75,8 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
                 } else {
                     // 显示后端返回的错误信息
                     setSubmitError(`获取OSS配置失败: ${response.msg}`);
-                    console.error('获取OSS配置失败:', response.msg);
                 }
             } catch (error) {
-                console.error('获取OSS配置时出错:', error);
                 setSubmitError('获取OSS配置时发生错误，请稍后再试');
             } finally {
                 setLoading(false);
@@ -85,7 +86,8 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
         fetchOssConfig();
     }, []);
 
-    const validateField = (name: string, value: string): string => {
+    // 验证单个字段
+    const validateField = useCallback((name: string, value: string): string => {
         switch (name) {
             case 'endpoint':
                 return value.trim() ? '' : 'Endpoint 不能为空';
@@ -108,9 +110,10 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
             default:
                 return '';
         }
-    };
+    }, []);
 
-    const validateForm = (): boolean => {
+    // 验证整个表单
+    const validateForm = useCallback((): boolean => {
         const newErrors: ValidationErrors = {};
         let isValid = true;
 
@@ -124,9 +127,10 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
 
         setErrors(newErrors);
         return isValid;
-    };
+    }, [formData, validateField]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 处理输入变更
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
 
         setFormData(prev => ({...prev, [name]: value}));
@@ -144,9 +148,10 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
         if (saveSuccess) {
             setSaveSuccess(false);
         }
-    };
+    }, [errors, saveSuccess]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // 提交表单
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!validateForm()) {
@@ -184,17 +189,16 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
             } else {
                 // 显示后端返回的错误信息
                 setSubmitError(`${response.msg}`);
-                console.error('保存失败:', response.msg);
             }
         } catch (error) {
-            console.error('保存OSS配置时出错:', error);
             setSubmitError('保存配置时发生错误，请稍后再试');
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [formData, onSaveSuccess, validateForm]);
 
-    const getIconByFieldName = (name: string) => {
+    // 根据字段名获取对应的图标
+    const getIconByFieldName = useCallback((name: string) => {
         switch (name) {
             case 'endpoint':
                 return <FiCloud className="input-icon"/>;
@@ -213,9 +217,10 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
             default:
                 return null;
         }
-    };
+    }, []);
 
-    const getFieldLabel = (name: string) => {
+    // 根据字段名获取对应的标签文本
+    const getFieldLabel = useCallback((name: string) => {
         switch (name) {
             case 'endpoint':
                 return 'OSS Endpoint';
@@ -234,9 +239,10 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
             default:
                 return name;
         }
-    };
+    }, []);
 
-    const getFieldPlaceholder = (name: string) => {
+    // 根据字段名获取对应的占位符文本
+    const getFieldPlaceholder = useCallback((name: string) => {
         switch (name) {
             case 'endpoint':
                 return 'oss-cn-guangzhou.aliyuncs.com';
@@ -255,9 +261,10 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
             default:
                 return '';
         }
-    };
+    }, []);
 
-    const getFieldType = (name: string) => {
+    // 根据字段名获取对应的输入类型
+    const getFieldType = useCallback((name: string) => {
         switch (name) {
             case 'accessKeyId':
             case 'accessKeySecret':
@@ -265,8 +272,9 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
             default:
                 return 'text';
         }
-    };
+    }, []);
 
+    // 表单字段列表
     const formFields = [
         'endpoint',
         'region',
@@ -277,6 +285,7 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
         'blogPath'
     ];
 
+    // 显示加载中状态
     if (loading) {
         return (
             <div className="oss-setting-card">
@@ -352,6 +361,6 @@ const OssSetting: React.FC<OssConfigProps> = ({onSaveSuccess}) => {
             </div>
         </div>
     );
-};
+});
 
 export default OssSetting; 

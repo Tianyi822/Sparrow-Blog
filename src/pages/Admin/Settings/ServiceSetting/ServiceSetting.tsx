@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { FiServer, FiGlobe, FiClock, FiAlertCircle, FiPlus, FiX, FiKey, FiRefreshCw, FiMail, FiSend } from 'react-icons/fi';
 import './ServiceSetting.scss';
 import { getServerConfig, sendSMTPVerificationCode } from '@/services/adminService';
 import { businessApiRequest } from '@/services/api';
 import { ApiResponse } from '@/services/api.ts';
 
+// 组件属性接口
 interface ServiceConfigProps {
     onSaveSuccess?: () => void;
 }
 
-const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
+const ServiceSetting: React.FC<ServiceConfigProps> = memo(({ onSaveSuccess }) => {
     // 表单状态
     const [formData, setFormData] = useState({
         tokenExpireDuration: '',
@@ -84,10 +85,8 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
                 } else {
                     // 显示后端返回的错误信息
                     setSubmitError(`获取服务器配置失败: ${response.msg}`);
-                    console.error('获取服务器配置失败:', response.msg);
                 }
             } catch (error) {
-                console.error('获取服务器配置失败:', error);
                 setSubmitError('获取服务器配置时发生错误，请稍后再试');
             } finally {
                 setLoading(false);
@@ -98,12 +97,12 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
     }, []);
 
     // 处理输入变化
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
+        setFormData(prevData => ({
+            ...prevData,
             [name]: value,
-        });
+        }));
 
         // 检查SMTP账号是否被修改
         if (name === 'smtpAccount' && value !== initialSmtpAccount) {
@@ -114,45 +113,49 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
 
         // 清除对应字段的错误
         if (errors[name]) {
-            setErrors({
-                ...errors,
+            setErrors(prevErrors => ({
+                ...prevErrors,
                 [name]: '',
-            });
+            }));
         }
-    };
+    }, [errors, initialSmtpAccount]);
 
     // 处理新增跨域来源
-    const handleAddCorsOrigin = () => {
+    const handleAddCorsOrigin = useCallback(() => {
         if (!newCorsOrigin.trim()) return;
 
         if (!/^(http|https):\/\//.test(newCorsOrigin)) {
-            setErrors({
-                ...errors,
+            setErrors(prevErrors => ({
+                ...prevErrors,
                 newCorsOrigin: '跨域来源必须以http://或https://开头',
-            });
+            }));
             return;
         }
 
-        setCorsOrigins([...corsOrigins, newCorsOrigin.trim()]);
+        setCorsOrigins(prevOrigins => [...prevOrigins, newCorsOrigin.trim()]);
         setNewCorsOrigin('');
 
         // 清除错误
         if (errors.newCorsOrigin) {
-            const newErrors = { ...errors };
-            delete newErrors.newCorsOrigin;
-            setErrors(newErrors);
+            setErrors(prevErrors => {
+                const newErrors = { ...prevErrors };
+                delete newErrors.newCorsOrigin;
+                return newErrors;
+            });
         }
-    };
+    }, [newCorsOrigin, errors]);
 
     // 处理删除跨域来源
-    const handleRemoveCorsOrigin = (index: number) => {
-        const newOrigins = [...corsOrigins];
-        newOrigins.splice(index, 1);
-        setCorsOrigins(newOrigins);
-    };
+    const handleRemoveCorsOrigin = useCallback((index: number) => {
+        setCorsOrigins(prevOrigins => {
+            const newOrigins = [...prevOrigins];
+            newOrigins.splice(index, 1);
+            return newOrigins;
+        });
+    }, []);
 
     // 生成随机令牌密钥
-    const generateRandomTokenKey = () => {
+    const generateRandomTokenKey = useCallback(() => {
         const length = 32;
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let result = '';
@@ -163,20 +166,20 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
             result += randomChar;
         }
 
-        setFormData({
-            ...formData,
+        setFormData(prevData => ({
+            ...prevData,
             tokenKey: result,
-        });
-    };
+        }));
+    }, []);
 
     // 发送SMTP验证码
-    const handleSendSMTPVerificationCode = async () => {
+    const handleSendSMTPVerificationCode = useCallback(async () => {
         // 验证SMTP字段
         if (!formData.smtpAccount || !formData.smtpAddress || !formData.smtpPort || !formData.smtpAuthCode) {
-            setErrors({
-                ...errors,
+            setErrors(prevErrors => ({
+                ...prevErrors,
                 smtpVerification: '请完整填写SMTP配置信息和授权码'
-            });
+            }));
             return;
         }
 
@@ -193,28 +196,29 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
             if (response.code === 200) {
                 setVerificationSent(true);
                 // 清除错误
-                const newErrors = { ...errors };
-                delete newErrors.smtpVerification;
-                setErrors(newErrors);
-            } else {
-                setErrors({
-                    ...errors,
-                    smtpVerification: `发送验证码失败: ${response.msg}`
+                setErrors(prevErrors => {
+                    const newErrors = { ...prevErrors };
+                    delete newErrors.smtpVerification;
+                    return newErrors;
                 });
+            } else {
+                setErrors(prevErrors => ({
+                    ...prevErrors,
+                    smtpVerification: `发送验证码失败: ${response.msg}`
+                }));
             }
         } catch (error) {
-            console.error('发送SMTP验证码失败:', error);
-            setErrors({
-                ...errors,
+            setErrors(prevErrors => ({
+                ...prevErrors,
                 smtpVerification: '发送验证码时发生错误，请稍后再试'
-            });
+            }));
         } finally {
             setSmtpVerifying(false);
         }
-    };
+    }, [formData]);
 
     // 表单验证
-    const validateForm = () => {
+    const validateForm = useCallback(() => {
         const newErrors: { [key: string]: string } = {};
 
         // 验证JWT令牌过期时间
@@ -246,10 +250,10 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
+    }, [formData, corsOrigins, smtpModified]);
 
     // 处理表单提交
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
 
         // 清空所有错误
@@ -320,15 +324,22 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
                 } else {
                     // 显示后端返回的错误信息
                     setSubmitError(`${response.msg}`);
-                    console.error('保存失败:', response.msg);
                 }
             } catch (error) {
-                console.error('保存服务配置时出错:', error);
                 setSubmitError('保存配置时发生错误，请稍后再试');
             }
         }
-    };
+    }, [formData, corsOrigins, smtpModified, validateForm, onSaveSuccess]);
 
+    // 处理键盘Enter事件添加跨域来源
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddCorsOrigin();
+        }
+    }, [handleAddCorsOrigin]);
+
+    // 显示加载中状态
     if (loading) {
         return (
             <div className="service-setting-card">
@@ -396,12 +407,7 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
                                 onChange={(e) => setNewCorsOrigin(e.target.value)}
                                 placeholder="输入新的跨域来源，例如: http://localhost:5173"
                                 className={errors.newCorsOrigin ? 'has-error' : ''}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleAddCorsOrigin();
-                                    }
-                                }}
+                                onKeyDown={handleKeyDown}
                             />
                             {errors.newCorsOrigin && <div className="error-message">{errors.newCorsOrigin}</div>}
                         </div>
@@ -577,6 +583,6 @@ const ServiceSetting: React.FC<ServiceConfigProps> = ({ onSaveSuccess }) => {
             </div>
         </div>
     );
-};
+});
 
 export default ServiceSetting; 

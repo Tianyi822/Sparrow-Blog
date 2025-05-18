@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { FiUser, FiMail, FiAlertCircle, FiUpload, FiImage, FiSave, FiGithub, FiCode, FiType, FiPlus, FiLock, FiSend } from 'react-icons/fi';
 import './UserSetting.scss';
 import ImageSelectorModal from '@/components/ImageSelectorModal';
@@ -10,7 +10,7 @@ interface UserConfigProps {
     onSaveSuccess?: () => void;
 }
 
-const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
+const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [originalEmail, setOriginalEmail] = useState(''); // 保存原始邮箱
@@ -89,7 +89,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                     }
                 }
             } catch (error) {
-                console.error('获取用户配置失败:', error);
+                // 获取用户配置失败
             } finally {
                 setLoading(false);
             }
@@ -103,21 +103,25 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
         if (countdown <= 0) return;
 
         const timer = setTimeout(() => {
-            setCountdown(countdown - 1);
+            setCountdown(prevCount => prevCount - 1);
         }, 1000);
 
         return () => clearTimeout(timer);
     }, [countdown]);
 
-    const clearError = (field: string) => {
+    // 清除表单项错误
+    const clearError = useCallback((field: string) => {
         if (errors[field]) {
-            const newErrors = { ...errors };
-            delete newErrors[field];
-            setErrors(newErrors);
+            setErrors(prevErrors => {
+                const newErrors = { ...prevErrors };
+                delete newErrors[field];
+                return newErrors;
+            });
         }
-    };
+    }, [errors]);
 
-    const validateForm = (): boolean => {
+    // 验证表单
+    const validateForm = useCallback((): boolean => {
         const newErrors: { [key: string]: string } = {};
 
         if (!username.trim()) {
@@ -141,15 +145,15 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
+    }, [username, email, githubAddress, isEmailChanged, verificationCode]);
 
     // 发送邮箱验证码
-    const handleSendVerificationCode = async () => {
+    const handleSendVerificationCode = useCallback(async () => {
         if (!email.trim()) {
-            setErrors({ ...errors, email: '邮箱不能为空' });
+            setErrors(prevErrors => ({ ...prevErrors, email: '邮箱不能为空' }));
             return;
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setErrors({ ...errors, email: '邮箱格式不正确' });
+            setErrors(prevErrors => ({ ...prevErrors, email: '邮箱格式不正确' }));
             return;
         }
 
@@ -163,12 +167,12 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                 alert(`验证码发送失败: ${response.msg}`);
             }
         } catch (error) {
-            console.error('发送验证码时出错:', error);
             alert('发送验证码失败，请稍后再试');
         }
-    };
+    }, [email]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // 提交表单
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!validateForm()) {
@@ -209,28 +213,26 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                 }
             } else {
                 // 处理错误
-                console.error('保存失败:', response.msg);
                 alert(`保存失败: ${response.msg}`);
             }
         } catch (error) {
-            console.error('保存用户配置时出错:', error);
             alert('保存配置时发生错误，请稍后再试');
         }
-    };
+    }, [username, email, githubAddress, icpFilingNumber, userHobbies, typewriterContent, isEmailChanged, verificationCode, validateForm, onSaveSuccess]);
 
     // 打开图片选择器
-    const openImageSelector = (type: ImageUsageType) => {
+    const openImageSelector = useCallback((type: ImageUsageType) => {
         setSelectedImageType(type);
         setModalOpen(true);
-    };
+    }, []);
 
     // 关闭图片选择器
-    const closeImageSelector = () => {
+    const closeImageSelector = useCallback(() => {
         setModalOpen(false);
-    };
+    }, []);
 
     // 处理选择图片
-    const handleImageSelect = (image: GalleryImage, usageType: ImageUsageType) => {
+    const handleImageSelect = useCallback((image: GalleryImage, usageType: ImageUsageType) => {
         // 获取图片URL
         const imageUrl = getImageUrl(image.img_id);
 
@@ -247,10 +249,10 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
         }
 
         closeImageSelector();
-    };
+    }, [closeImageSelector]);
 
     // 处理所有图片一起保存
-    const handleSaveImages = async () => {
+    const handleSaveImages = useCallback(async () => {
         // 清除之前的错误信息
         setSaveImageError(null);
 
@@ -268,60 +270,62 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                 setTimeout(() => setSaveSuccess(false), 3000);
             } else {
                 // 显示错误信息
-                console.error('保存图片失败:', response.msg);
                 setSaveImageError(response.msg || '保存图片失败');
             }
         } catch (error) {
-            console.error('保存图片时出错:', error);
             setSaveImageError('保存图片时发生错误，请稍后再试');
         }
-    };
+    }, [avatarImageId, logoImageId, backgroundImageId]);
 
     // 添加打字机内容
-    const handleAddTypewriterContent = () => {
+    const handleAddTypewriterContent = useCallback(() => {
         if (newTypewriterContent.trim()) {
-            setTypewriterContent([...typewriterContent, newTypewriterContent.trim()]);
+            setTypewriterContent(prev => [...prev, newTypewriterContent.trim()]);
             setNewTypewriterContent('');
         }
-    };
+    }, [newTypewriterContent]);
 
     // 处理打字机内容输入框按键事件
-    const handleTypewriterKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleTypewriterKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             handleAddTypewriterContent();
         }
-    };
+    }, [handleAddTypewriterContent]);
 
     // 删除打字机内容
-    const handleRemoveTypewriterContent = (index: number) => {
-        const updatedContent = [...typewriterContent];
-        updatedContent.splice(index, 1);
-        setTypewriterContent(updatedContent);
-    };
+    const handleRemoveTypewriterContent = useCallback((index: number) => {
+        setTypewriterContent(prevContent => {
+            const updatedContent = [...prevContent];
+            updatedContent.splice(index, 1);
+            return updatedContent;
+        });
+    }, []);
 
     // 添加爱好
-    const handleAddHobby = () => {
+    const handleAddHobby = useCallback(() => {
         if (newHobby.trim() && !userHobbies.includes(newHobby.trim())) {
-            setUserHobbies([...userHobbies, newHobby.trim()]);
+            setUserHobbies(prev => [...prev, newHobby.trim()]);
             setNewHobby('');
         }
-    };
+    }, [newHobby, userHobbies]);
 
     // 处理爱好输入框按键事件
-    const handleHobbyKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleHobbyKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             handleAddHobby();
         }
-    };
+    }, [handleAddHobby]);
 
     // 删除爱好
-    const handleRemoveHobby = (index: number) => {
-        const updatedHobbies = [...userHobbies];
-        updatedHobbies.splice(index, 1);
-        setUserHobbies(updatedHobbies);
-    };
+    const handleRemoveHobby = useCallback((index: number) => {
+        setUserHobbies(prevHobbies => {
+            const updatedHobbies = [...prevHobbies];
+            updatedHobbies.splice(index, 1);
+            return updatedHobbies;
+        });
+    }, []);
 
     return (
         <div className="user-setting-card">
@@ -337,7 +341,7 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                     } : {}}>
-                        {/* Add aria-label for the background image for screen readers */}
+                        {/* 为屏幕阅读器添加背景图片的aria-label */}
                         {backgroundImage && <span className="visually-hidden" aria-label="网站背景图片"></span>}
                         <div className="user-info-overlay">
                             <div className="user-title">
@@ -760,6 +764,6 @@ const UserSetting: React.FC<UserConfigProps> = ({ onSaveSuccess }) => {
             )}
         </div>
     );
-};
+});
 
 export default UserSetting;
