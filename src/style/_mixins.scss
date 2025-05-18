@@ -9,7 +9,6 @@
 
 // 基础毛玻璃 hover 效果，不包含动画
 @mixin glass-card-hover-base {
-
   .title,
   h3,
   h4,
@@ -36,11 +35,6 @@
   transition: transform 0.2s ease-out;
 }
 
-// 完整的毛玻璃 hover 效果，包含动画
-@mixin glass-card-hover {
-  @include glass-card-hover-base;
-}
-
 @mixin glass-glow {
   & {
     &-glow {
@@ -65,7 +59,7 @@
   }
 }
 
-// 确保card-style mixin被正确定义
+// 卡片样式基础组件
 @mixin card-style {
   position: relative;
   background: rgba(255, 255, 255, 0.1);

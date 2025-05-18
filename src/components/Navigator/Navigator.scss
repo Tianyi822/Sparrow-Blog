@@ -1,4 +1,7 @@
-@use '@/style/variables' as *;
+// 定义本地样式变量，替代全局变量
+$navigator-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$navigator-font-weight-bolder: 500;
+$navigator-primary-400: #1976d2;
 
 .navigator {
   position: fixed;
@@ -79,9 +82,9 @@
   }
 
   .nav-brand {
-    font-family: $font-family-sans-serif;
+    font-family: $navigator-font-family;
     font-size: 1.5rem;
-    font-weight: $font-weight-bolder * 1.5;
+    font-weight: $navigator-font-weight-bolder * 1.5;
     color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
   }
@@ -117,7 +120,7 @@
     }
 
     &:hover span {
-      background-color: $primary-400;
+      background-color: $navigator-primary-400;
     }
   }
 
@@ -149,9 +152,9 @@
     padding: 0;
 
     .nav-item {
-      font-family: $font-family-sans-serif;
+      font-family: $navigator-font-family;
       font-size: 1rem;
-      font-weight: $font-weight-bolder * 1.2;
+      font-weight: $navigator-font-weight-bolder * 1.2;
       padding: 0.5rem 1rem;
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
