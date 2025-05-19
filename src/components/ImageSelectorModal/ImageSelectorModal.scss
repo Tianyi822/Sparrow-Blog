@@ -1,6 +1,7 @@
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
 
+/* 淡入动画 */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -10,6 +11,7 @@
   }
 }
 
+/* 缩放进入动画 */
 @keyframes scaleIn {
   from {
     opacity: 0;
@@ -21,6 +23,7 @@
   }
 }
 
+/* 旋转动画 */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -30,7 +33,7 @@
   }
 }
 
-// 图片选择器模态框样式
+/* 图片选择器模态框样式 */
 .image-selector-modal-overlay {
   position: fixed;
   top: 0;
@@ -59,6 +62,7 @@
   animation: scaleIn 0.2s ease;
   border: $border-width-thin solid rgba($white, 0.1);
   
+  /* 选择器头部 */
   .selector-header {
     display: flex;
     justify-content: space-between;
@@ -137,7 +141,7 @@
     }
   }
   
-  // 上传预览区域
+  /* 上传预览区域 */
   .upload-preview {
     margin: $spacing-sm $spacing-lg;
     padding: $spacing-sm + 0.3rem;
@@ -240,11 +244,12 @@
     }
   }
   
+  /* 选择器内容区域 */
   .selector-content {
     flex: 1;
     overflow-y: auto;
     padding: $spacing-md + 0.25rem;
-    max-height: calc(80vh - 130px); // 为底部按钮留出空间
+    max-height: calc(80vh - 130px); /* 为底部按钮留出空间 */
     
     .selector-loading, .selector-empty {
       display: flex;
