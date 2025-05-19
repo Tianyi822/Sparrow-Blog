@@ -1,16 +1,17 @@
 @use "@/style/mixins" as *;
+@use "@/style/variables" as *;
 
 .user-email-config-form-container {
   @include glass-card-base;
   position: relative;
   max-width: 500px;
   width: 100%;
-  padding: 2rem;
-  border-radius: 12px;
-  margin: 2rem auto;
+  padding: $spacing-xl;
+  border-radius: $border-radius-md;
+  margin: $spacing-xl auto;
   
   &:hover {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-lg;
   }
   
   .card-glow, .card-border-glow {
@@ -18,10 +19,10 @@
   }
   
   h2 {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba($white, 0.9);
     text-align: center;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
+    font-weight: $font-weight-semibold;
+    margin-bottom: $spacing-lg;
   }
   
   .loading-container {
@@ -34,16 +35,16 @@
     .loading-spinner {
       width: 40px;
       height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      border-top: 4px solid rgba(255, 255, 255, 0.7);
+      border: 4px solid rgba($white, 0.1);
+      border-radius: $border-radius-circle;
+      border-top: 4px solid rgba($white, 0.7);
       animation: spin 1s linear infinite;
     }
     
     .loading-text {
-      margin-top: 1rem;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1rem;
+      margin-top: $spacing-md;
+      color: rgba($white, 0.7);
+      font-size: $font-size-md;
     }
     
     @keyframes spin {
@@ -53,26 +54,26 @@
   }
   
   .form-section-header {
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
+    margin-top: $spacing-sm;
+    margin-bottom: $spacing-md;
     position: relative;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: $spacing-sm;
+    border-bottom: $border-width-thin solid rgba($white, 0.15);
     
     h3 {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 1.1rem;
-      font-weight: 500;
+      color: rgba($white, 0.9);
+      font-size: $font-size-md + 0.1rem;
+      font-weight: $font-weight-medium;
       display: flex;
       align-items: center;
       
       .icon {
-        font-size: 1.25rem;
-        margin-right: 0.5rem;
+        font-size: $font-size-lg;
+        margin-right: $spacing-sm;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgba(255, 255, 255, 0.9);
+        color: rgba($white, 0.9);
       }
     }
     
@@ -84,70 +85,70 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: $spacing-md + 0.2rem;
     
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: $spacing-sm;
       
       label {
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        color: rgba(255, 255, 255, 0.85);
-        font-weight: 500;
+        color: rgba($white, 0.85);
+        font-weight: $font-weight-medium;
         
         .icon {
-          font-size: 1.2rem;
-          margin-right: 0.5rem;
+          font-size: $font-size-lg;
+          margin-right: $spacing-sm;
           display: flex;
           align-items: center;
         }
       }
       
       .help-text {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.8rem;
-        margin-top: 0.25rem;
+        color: rgba($white, 0.6);
+        font-size: $font-size-xs;
+        margin-top: $spacing-xs;
         font-style: italic;
       }
       
       .error-message {
-        color: #ff4d4f;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
+        color: $danger;
+        font-size: $font-size-sm;
+        margin-top: $spacing-xs;
       }
       
       input, select {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 6px;
-        padding: 0.6rem 1rem;
-        color: rgba(255, 255, 255, 0.9);
+        background: rgba($white, 0.1);
+        border: $border-width-thin solid rgba($white, 0.2);
+        border-radius: $border-radius-md;
+        padding: $spacing-sm + 0.1rem $spacing-md;
+        color: rgba($white, 0.9);
         outline: none;
-        transition: all 0.2s ease;
+        transition: $transition-base;
         box-sizing: border-box;
         height: 40px;
         line-height: normal;
         
         &:focus {
-          border-color: rgba(255, 255, 255, 0.5);
-          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+          border-color: rgba($white, 0.5);
+          box-shadow: 0 0 0 2px rgba($white, 0.1);
         }
         
         &::placeholder {
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba($white, 0.5);
         }
         
         &:disabled {
           opacity: 0.7;
           cursor: not-allowed;
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba($white, 0.05);
         }
       }
       
-      // Specific styling for select element
+      // 下拉选择框特定样式
       select {
         appearance: none;
         background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -158,14 +159,14 @@
 
         option {
           background-color: #2c3e50;
-          color: rgba(255, 255, 255, 0.9);
+          color: rgba($white, 0.9);
         }
       }
       
       &.checkbox-group {
         flex-direction: row;
         align-items: center;
-        gap: 0.75rem;
+        gap: $spacing-sm + 0.25rem;
         
         input[type="checkbox"] {
           width: 18px;
@@ -175,7 +176,7 @@
         }
         
         label {
-          color: rgba(255, 255, 255, 0.85);
+          color: rgba($white, 0.85);
         }
       }
       
@@ -187,20 +188,20 @@
         
         input {
           flex: 1;
-          border-radius: 6px;
+          border-radius: $border-radius-md;
         }
         
         .send-code-button {
           min-width: 120px;
           height: 40px;
           background: rgba(65, 81, 145, 0.8);
-          color: #fff;
+          color: $white;
           border: none;
-          border-radius: 6px;
-          font-size: 0.9rem;
-          font-weight: 500;
+          border-radius: $border-radius-md;
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: $transition-base;
           padding: 0 16px;
           white-space: nowrap;
           display: flex;
@@ -209,12 +210,12 @@
           
           &:hover:not(:disabled) {
             background: rgba(65, 81, 145, 0.9);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: $shadow-sm;
           }
           
           &:active:not(:disabled) {
             transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: $shadow-sm;
           }
           
           &:disabled {
@@ -228,26 +229,26 @@
     
     .form-actions {
       display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
+      gap: $spacing-md;
+      margin-top: $spacing-md;
       justify-content: center;
 
       .submit-button,
       .next-button {
         flex: 1;
-        background: rgba(255, 255, 255, 0.15);
-        color: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 6px;
-        padding: 0.75rem 0;
-        font-weight: 600;
+        background: rgba($white, 0.15);
+        color: rgba($white, 0.95);
+        border: $border-width-thin solid rgba($white, 0.3);
+        border-radius: $border-radius-md;
+        padding: $spacing-sm + 0.25rem 0;
+        font-weight: $font-weight-semibold;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: $transition-base;
 
         &:hover:not(:disabled) {
-          background: rgba(255, 255, 255, 0.25);
+          background: rgba($white, 0.25);
           transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: $shadow-sm;
         }
 
         &:active:not(:disabled) {
@@ -267,7 +268,7 @@
 
       .next-button {
         background: rgba(40, 167, 69, 0.2);
-        border: 1px solid rgba(40, 167, 69, 0.3);
+        border: $border-width-thin solid rgba(40, 167, 69, 0.3);
         
         &:hover {
           background: rgba(40, 167, 69, 0.3);
@@ -276,9 +277,9 @@
       
       .restart-button {
         background: rgba(214, 51, 132, 0.25);
-        border: 1px solid rgba(214, 51, 132, 0.4);
-        color: rgba(255, 255, 255, 0.95);
-        font-weight: 600;
+        border: $border-width-thin solid rgba(214, 51, 132, 0.4);
+        color: rgba($white, 0.95);
+        font-weight: $font-weight-semibold;
         
         &:hover {
           background: rgba(214, 51, 132, 0.4);
@@ -288,54 +289,54 @@
     }
     
     .success-message-container {
-      margin-top: 1rem;
-      padding: 0.75rem;
+      margin-top: $spacing-md;
+      padding: $spacing-sm + 0.25rem;
       background-color: rgba(40, 167, 69, 0.1);
-      border: 1px solid rgba(40, 167, 69, 0.2);
-      border-radius: 6px;
+      border: $border-width-thin solid rgba(40, 167, 69, 0.2);
+      border-radius: $border-radius-md;
       
       .success-message {
-        color: #52c41a;
-        font-size: 0.9rem;
+        color: $success;
+        font-size: $font-size-sm;
         text-align: center;
-        font-weight: 500;
+        font-weight: $font-weight-medium;
       }
     }
     
     .error-message-container {
-      margin-top: 1rem;
-      padding: 0.75rem;
+      margin-top: $spacing-md;
+      padding: $spacing-sm + 0.25rem;
       background-color: rgba(220, 53, 69, 0.1);
-      border: 1px solid rgba(220, 53, 69, 0.2);
-      border-radius: 6px;
+      border: $border-width-thin solid rgba(220, 53, 69, 0.2);
+      border-radius: $border-radius-md;
       
       .error-message {
-        color: #ff4d4f;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
+        color: $danger;
+        font-size: $font-size-sm;
+        margin-bottom: $spacing-sm;
         
         .error-title {
-          font-weight: 600;
-          margin-right: 0.25rem;
+          font-weight: $font-weight-semibold;
+          margin-right: $spacing-xs;
         }
       }
       
       .error-details {
-        background-color: rgba(0, 0, 0, 0.2);
-        border-radius: 4px;
-        padding: 0.5rem;
-        margin-top: 0.5rem;
+        background-color: rgba($black, 0.2);
+        border-radius: $border-radius-sm;
+        padding: $spacing-sm;
+        margin-top: $spacing-sm;
         
         .error-details-title {
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 0.85rem;
-          font-weight: 600;
-          margin-bottom: 0.25rem;
+          color: rgba($white, 0.9);
+          font-size: $font-size-xs + 0.1rem;
+          font-weight: $font-weight-semibold;
+          margin-bottom: $spacing-xs;
         }
         
         pre {
-          color: rgba(255, 255, 255, 0.8);
-          font-size: 0.8rem;
+          color: rgba($white, 0.8);
+          font-size: $font-size-xs;
           white-space: pre-wrap;
           word-break: break-word;
           margin: 0;
@@ -344,13 +345,13 @@
     }
     
     .server-error-message {
-      margin-top: 1rem;
-      padding: 0.75rem;
-      color: #dc3545;
+      margin-top: $spacing-md;
+      padding: $spacing-sm + 0.25rem;
+      color: $danger;
       background-color: rgba(220, 53, 69, 0.1);
-      border: 1px solid rgba(220, 53, 69, 0.2);
-      border-radius: 4px;
-      font-size: 0.9rem;
+      border: $border-width-thin solid rgba(220, 53, 69, 0.2);
+      border-radius: $border-radius-sm;
+      font-size: $font-size-sm;
       text-align: center;
     }
   }
@@ -359,20 +360,20 @@
 .tag-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
+  gap: $spacing-xs * 2;
+  margin-top: $spacing-sm + 0.2rem;
 }
 
 .tag-item {
   display: flex;
   align-items: center;
   background-color: rgba(65, 81, 145, 0.1);
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 14px;
+  border-radius: $border-radius-sm;
+  padding: $spacing-xs + 0.1rem $spacing-sm + 0.2rem;
+  font-size: $font-size-sm;
   
   span {
-    margin-right: 6px;
+    margin-right: $spacing-xs + 0.1rem;
   }
   
   .delete-tag {
@@ -382,13 +383,13 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: #666;
+    color: $gray-600;
     padding: 0;
-    font-size: 14px;
+    font-size: $font-size-sm;
     line-height: 1;
     
     &:hover {
-      color: #e74c3c;
+      color: $danger;
     }
   }
 }
