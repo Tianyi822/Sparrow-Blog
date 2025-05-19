@@ -1,23 +1,26 @@
 @use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
+/* 工具组件容器 */
 .tools {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: $spacing-lg;
+    right: $spacing-lg;
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    gap: 12px;  // 组件之间的间距
-    align-items: flex-end;  // 让子元素靠右对齐
+    gap: $spacing-sm;  /* 组件之间的间距 */
+    align-items: flex-end;  /* 让子元素靠右对齐 */
 
+    /* 返回顶部按钮 */
     .tools-back-to-top {
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-        @include glass-card-base; // 使用基础毛玻璃效果
+        transition: opacity $transition-base, visibility $transition-base;
+        @include glass-card-base; /* 使用基础毛玻璃效果 */
         width: 36px;
         height: 36px;
-        border-radius: 8px;
+        border-radius: $border-radius-md;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -27,29 +30,32 @@
             @include glass-card-hover-base;
         }
 
+        /* 可见状态 */
         &.visible {
             opacity: 1;
             visibility: visible;
         }
 
+        /* 动画状态 */
         &.animating {
-            animation: floatUp 0.3s ease forwards;
+            animation: floatUp $transition-base forwards;
             pointer-events: none;
         }
     }
 
+    /* 网站备案信息 */
     .tools-website-record {
-        position: relative;  // 为绝对定位的内容提供参考点
-        width: 36px;  // 固定初始宽度
+        position: relative;  /* 为绝对定位的内容提供参考点 */
+        width: 36px;  /* 固定初始宽度 */
 
         .website-record {
             position: absolute;
-            right: 0;  // 靠右对齐
-            width: 36px;  // 初始宽度
+            right: 0;  /* 靠右对齐 */
+            width: 36px;  /* 初始宽度 */
             height: 36px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            @include glass-card-base; // 使用基础毛玻璃效果
+            border-radius: $border-radius-md;
+            transition: $transition-base;
+            @include glass-card-base; /* 使用基础毛玻璃效果 */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -59,18 +65,20 @@
                 @include glass-card-hover-base;
             }
 
+            /* 展开状态 */
             &.expanded {
-                width: 220px;  // 展开宽度
+                width: 220px;  /* 展开宽度 */
             }
         }
     }
 
-    // 移除窄屏隐藏的媒体查询
+    /* 移除窄屏隐藏的媒体查询 */
     /* @media screen and (max-width: 768px) {
         display: none;
     } */
 }
 
+/* 上浮动画 */
 @keyframes floatUp {
     0% {
         opacity: 1;

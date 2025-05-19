@@ -1,6 +1,6 @@
 @use '@/style/variables' as *;
 
-// 定义动画时间
+/* 定义动画时间 */
 $blink-duration: 1s;
 
 .type-writer {
@@ -18,7 +18,7 @@ $blink-duration: 1s;
       animation: blink $blink-duration step-end infinite;
       position: relative;
       display: inline;
-      margin-left: -$spacing-xs / 2;
+      margin-left: -$spacing-xs;
     }
   }
 
@@ -31,6 +31,7 @@ $blink-duration: 1s;
   }
 }
 
+/* 光标闪烁动画 */
 @keyframes blink {
   from, to {
     opacity: 1;

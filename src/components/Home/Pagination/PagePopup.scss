@@ -27,7 +27,7 @@
     .page-popup {
         position: absolute;
         border-radius: $border-radius-md;
-        padding: $spacing-sm + 0.3rem;
+        padding: $spacing-md;
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: $spacing-sm;

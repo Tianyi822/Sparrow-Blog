@@ -1,5 +1,7 @@
 @use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
+/* 网站备案号组件 */
 .website-record {
     @include glass-card-base;
     display: flex;
@@ -8,12 +10,13 @@
     width: 36px;
     height: 36px;
     padding: 0;
-    border-radius: 8px;
+    border-radius: $border-radius-md;
     cursor: pointer;
     overflow: hidden;
     position: relative;
-    transition: background 0.3s, box-shadow 0.3s, width 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: background $transition-base, box-shadow $transition-base, width 0.3s cubic-bezier(0.4,0,0.2,1);
 
+    /* 图标容器 */
     .icon-container {
         display: flex;
         align-items: center;
@@ -24,35 +27,39 @@
         position: relative;
         transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
         
+        /* 居中对齐状态 */
         &.centered {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
         }
         
+        /* 左对齐状态 */
         &.left-aligned {
             position: relative;
             left: 0;
             transform: translateX(0);
         }
         
+        /* 图标样式 */
         .svg-icon {
             width: 36px;
             height: 36px;
             flex-shrink: 0;
-            padding: 6px;
+            padding: $spacing-sm;
             box-sizing: border-box;
-            color: #fff;
+            color: $white;
             z-index: 2;
-            transition: color 0.3s;
+            transition: color $transition-base;
         }
     }
 
+    /* 备案文本 */
     .record-text {
-        margin-left: 4px;
+        margin-left: $spacing-xs;
         white-space: nowrap;
-        color: #fff;
-        font-size: 0.85rem;
+        color: $white;
+        font-size: $font-size-xs + 0.1rem;
         line-height: 36px;
         opacity: 0;
         pointer-events: none;
@@ -61,9 +68,10 @@
         display: flex;
         align-items: center;
         height: 36px;
-        padding-right: 12px;
+        padding-right: $spacing-sm;
     }
 
+    /* 展开状态 */
     &.expanded {
         width: auto;
         min-width: 36px;
@@ -77,17 +85,19 @@
         }
     }
 
+    /* 悬停效果 */
     &:hover {
         @include glass-card-hover-base;
         .svg-icon {
-            color: #fff;
+            color: $white;
         }
         .record-text {
-            color: #fff;
+            color: $white;
         }
     }
 }
 
+/* 记录展开动画 */
 @keyframes recordExpand {
     0% {
         width: 36px;

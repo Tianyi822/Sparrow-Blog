@@ -62,7 +62,7 @@
     
     h3 {
       color: rgba($white, 0.9);
-      font-size: $font-size-md + 0.1rem;
+      font-size: $font-size-lg;
       font-weight: $font-weight-medium;
       display: flex;
       align-items: center;
@@ -85,7 +85,7 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: $spacing-md + 0.2rem;
+    gap: $spacing-lg;
     
     .form-group {
       display: flex;
@@ -124,7 +124,7 @@
         background: rgba($white, 0.1);
         border: $border-width-thin solid rgba($white, 0.2);
         border-radius: $border-radius-md;
-        padding: $spacing-sm + 0.1rem $spacing-md;
+        padding: $spacing-md $spacing-md;
         color: rgba($white, 0.9);
         outline: none;
         transition: $transition-base;
@@ -148,7 +148,7 @@
         }
       }
       
-      // 下拉选择框特定样式
+      /* 下拉选择框特定样式 */
       select {
         appearance: none;
         background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -166,7 +166,7 @@
       &.checkbox-group {
         flex-direction: row;
         align-items: center;
-        gap: $spacing-sm + 0.25rem;
+        gap: $spacing-md;
         
         input[type="checkbox"] {
           width: 18px;
@@ -180,7 +180,7 @@
         }
       }
       
-      // 验证码输入框和按钮的容器
+      /* 验证码输入框和按钮的容器 */
       .verify-code-input-container {
         display: flex;
         gap: 10px;
@@ -240,7 +240,7 @@
         color: rgba($white, 0.95);
         border: $border-width-thin solid rgba($white, 0.3);
         border-radius: $border-radius-md;
-        padding: $spacing-sm + 0.25rem 0;
+        padding: $spacing-md 0;
         font-weight: $font-weight-semibold;
         cursor: pointer;
         transition: $transition-base;
@@ -290,7 +290,7 @@
     
     .success-message-container {
       margin-top: $spacing-md;
-      padding: $spacing-sm + 0.25rem;
+      padding: $spacing-md;
       background-color: rgba(40, 167, 69, 0.1);
       border: $border-width-thin solid rgba(40, 167, 69, 0.2);
       border-radius: $border-radius-md;
@@ -305,7 +305,7 @@
     
     .error-message-container {
       margin-top: $spacing-md;
-      padding: $spacing-sm + 0.25rem;
+      padding: $spacing-md;
       background-color: rgba(220, 53, 69, 0.1);
       border: $border-width-thin solid rgba(220, 53, 69, 0.2);
       border-radius: $border-radius-md;
@@ -329,7 +329,7 @@
         
         .error-details-title {
           color: rgba($white, 0.9);
-          font-size: $font-size-xs + 0.1rem;
+          font-size: $font-size-sm;
           font-weight: $font-weight-semibold;
           margin-bottom: $spacing-xs;
         }
@@ -346,7 +346,7 @@
     
     .server-error-message {
       margin-top: $spacing-md;
-      padding: $spacing-sm + 0.25rem;
+      padding: $spacing-md;
       color: $danger;
       background-color: rgba(220, 53, 69, 0.1);
       border: $border-width-thin solid rgba(220, 53, 69, 0.2);
@@ -360,8 +360,8 @@
 .tag-list {
   display: flex;
   flex-wrap: wrap;
-  gap: $spacing-xs * 2;
-  margin-top: $spacing-sm + 0.2rem;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
 }
 
 .tag-item {
@@ -369,11 +369,11 @@
   align-items: center;
   background-color: rgba(65, 81, 145, 0.1);
   border-radius: $border-radius-sm;
-  padding: $spacing-xs + 0.1rem $spacing-sm + 0.2rem;
+  padding: $spacing-sm $spacing-md;
   font-size: $font-size-sm;
   
   span {
-    margin-right: $spacing-xs + 0.1rem;
+    margin-right: $spacing-xs;
   }
   
   .delete-tag {

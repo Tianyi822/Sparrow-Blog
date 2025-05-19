@@ -1,6 +1,8 @@
 @use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 @use "sass:color";
 
+/* 作者信息 */
 .author-info {
     user-select: none;
     -webkit-user-select: none;
@@ -15,7 +17,7 @@
             transform-style: preserve-3d;
             perspective: 1000px;
             transition: transform 0.2s ease-out;
-            padding: 1.2rem;
+            padding: $spacing-md + 0.2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -24,7 +26,7 @@
             isolation: isolate;
             will-change: transform;
             box-sizing: border-box;
-            border-radius: 12px;
+            border-radius: $border-radius-md;
             user-select: none !important;
             -webkit-user-select: none !important;
             -moz-user-select: none !important;
@@ -34,29 +36,30 @@
         &:hover {
             // transform: perspective(1000px) rotateX(1deg) rotateY(1deg) scale(1.01);
             
-            // 鼠标悬停时改变文字颜色
+            /* 鼠标悬停时改变文字颜色 */
             .author-info-name {
-                color: rgba(26, 38, 52, 0.95); // 深黑色
+                color: rgba(26, 38, 52, 0.95); /* 深黑色 */
             }
             
             .author-info-bio {
-                color: rgba(44, 62, 80, 0.9); // 稍浅的黑色
+                color: rgba(44, 62, 80, 0.9); /* 稍浅的黑色 */
             }
             
             .author-info-stats {
                 .stat-item {
                     .stat-value {
-                        color: rgba(26, 38, 52, 0.95); // 深黑色
+                        color: rgba(26, 38, 52, 0.95); /* 深黑色 */
                     }
                     
                     .stat-label {
-                        color: rgba(44, 62, 80, 0.9); // 稍浅的黑色
+                        color: rgba(44, 62, 80, 0.9); /* 稍浅的黑色 */
                     }
                 }
             }
         }
     }
     
+    /* 光晕效果 */
     &-glow {
         position: absolute;
         inset: 0;
@@ -64,33 +67,36 @@
         pointer-events: none;
         mix-blend-mode: soft-light;
         transition: all 0.2s ease-out;
-        border-radius: 12px;
+        border-radius: $border-radius-md;
         user-select: none;
     }
     
+    /* 边框光晕 */
     &-border-glow {
         position: absolute;
-        inset: -2px;
+        inset: -$spacing-xs;
         z-index: 1;
         pointer-events: none;
-        border-radius: 14px;
+        border-radius: $border-radius-lg;
         transition: all 0.2s ease-out;
         mix-blend-mode: overlay;
         opacity: 1;
         user-select: none;
     }
     
+    /* 头像 */
     &-avatar {
         width: 80px;
         height: 80px;
-        border-radius: 50%;
+        border-radius: $border-radius-circle;
         object-fit: cover;
-        margin-bottom: 12px;
+        margin-bottom: $spacing-sm;
         position: relative;
         z-index: 3;
         user-select: none;
     }
     
+    /* 详细信息 */
     &-details {
         width: 100%;
         position: relative;
@@ -101,29 +107,32 @@
         -ms-user-select: none !important;
     }
     
+    /* 作者姓名 */
     &-name {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 4px;
-        color: var(--text-primary, #ffffff);
-        transition: color 0.3s ease; // 添加过渡效果
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+        margin-bottom: $spacing-xs;
+        color: var(--text-primary, $white);
+        transition: color $transition-base; /* 添加过渡效果 */
         user-select: none !important;
         -webkit-user-select: none !important;
     }
     
+    /* 作者简介 */
     &-bio {
-        font-size: 0.9rem;
-        color: var(--text-secondary, rgba(255, 255, 255, 0.8));
-        margin-bottom: 16px;
-        transition: color 0.3s ease; // 添加过渡效果
+        font-size: $font-size-sm;
+        color: var(--text-secondary, rgba($white, 0.8));
+        margin-bottom: $spacing-md;
+        transition: color $transition-base; /* 添加过渡效果 */
         user-select: none !important;
         -webkit-user-select: none !important;
     }
     
+    /* 统计信息 */
     &-stats {
         display: flex;
         justify-content: space-around;
-        margin: 16px 0;
+        margin: $spacing-md 0;
         user-select: none !important;
         -webkit-user-select: none !important;
         
@@ -135,28 +144,29 @@
             -webkit-user-select: none !important;
             
             .stat-value {
-                font-size: 1.2rem;
-                font-weight: 600;
-                color: var(--text-primary, #ffffff);
-                transition: color 0.3s ease; // 添加过渡效果
+                font-size: $font-size-lg;
+                font-weight: $font-weight-semibold;
+                color: var(--text-primary, $white);
+                transition: color $transition-base; /* 添加过渡效果 */
                 user-select: none !important;
                 -webkit-user-select: none !important;
             }
             
             .stat-label {
-                font-size: 0.8rem;
-                color: var(--text-secondary, rgba(255, 255, 255, 0.8));
-                transition: color 0.3s ease; // 添加过渡效果
+                font-size: $font-size-xs;
+                color: var(--text-secondary, rgba($white, 0.8));
+                transition: color $transition-base; /* 添加过渡效果 */
                 user-select: none !important;
                 -webkit-user-select: none !important;
             }
         }
     }
     
+    /* 社交链接 */
     &-social {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: $spacing-xs;
         width: 100%;
         user-select: none !important;
         -webkit-user-select: none !important;
@@ -164,11 +174,11 @@
         a, button {
             display: block;
             width: 100%;
-            padding: 8px 0;
-            border-radius: 6px;
+            padding: $spacing-xs 0;
+            border-radius: $border-radius-sm;
             text-align: center;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-weight: $font-weight-medium;
+            transition: $transition-short;
             text-decoration: none;
             border: none;
             cursor: pointer;
@@ -176,7 +186,7 @@
             
             &.github {
                 background-color: #4267B2;
-                color: white;
+                color: $white;
                 
                 &:hover {
                     background-color: color.adjust(#4267B2, $lightness: -10%);
@@ -185,7 +195,7 @@
             
             &.email {
                 background-color: #4CAF50;
-                color: white;
+                color: $white;
                 
                 &:hover {
                     background-color: color.adjust(#4CAF50, $lightness: -10%);

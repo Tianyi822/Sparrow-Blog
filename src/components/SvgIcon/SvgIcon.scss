@@ -1,24 +1,26 @@
-// 基础图标样式
+@use '@/style/variables'as *;
+
+/* 基础图标样式 */
 .svg-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease;
+  transition: transform $transition-base;
   color: inherit;
 
-  // 默认尺寸 normal
+  /* 默认尺寸 normal */
   &.svg-icon-normal {
     width: 24px;
     height: 24px;
   }
 
-  // 小尺寸
+  /* 小尺寸 */
   &.svg-icon-small {
     width: 16px;
     height: 16px;
   }
 
-  // 大尺寸
+  /* 大尺寸 */
   &.svg-icon-large {
     width: 32px;
     height: 32px;
@@ -28,8 +30,8 @@
     transform: scale(1.1);
   }
 
-  // 移动端大小调整
-  @media (max-width: 768px) {
+  /* 移动端大小调整 */
+  @media (max-width: $breakpoint-md) {
     &.svg-icon-small {
       width: 20px;
       height: 20px;
@@ -50,4 +52,3 @@
     filter: drop-shadow(0 0 0 var(--svg-fill, currentColor));
   }
 }
-

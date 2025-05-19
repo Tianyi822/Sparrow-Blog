@@ -1,18 +1,19 @@
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
 
+/* 分页组件 */
 .pagination {
     display: flex;
-    justify-content: center; // 确保水平居中
+    justify-content: center; /* 确保水平居中 */
     align-items: center;
-    gap: $spacing-sm; // 统一设置基础间距
-    width: fit-content; // 修改为适应内容的宽度
-    margin: 0 auto; // 添加这行以确保居中
-    position: relative;  // 添加这行，作为定位上下文
+    gap: $spacing-sm; /* 统一设置基础间距 */
+    width: fit-content; /* 修改为适应内容的宽度 */
+    margin: 0 auto; /* 添加这行以确保居中 */
+    position: relative;  /* 添加这行，作为定位上下文 */
     min-height: 2rem;
-    user-select: none;  // 添加这行，使整个组件文本不可选中
+    user-select: none;  /* 添加这行，使整个组件文本不可选中 */
 
-    // 基础按钮样式
+    /* 基础按钮样式 */
     %button-base {
         width: 2rem;
         height: 2rem;
@@ -30,7 +31,7 @@
         }
     }
 
-    // 箭头区域
+    /* 箭头区域 */
     .pagination-arrow-area {
         width: 2rem;
         height: 2rem;
@@ -39,7 +40,7 @@
         justify-content: center;
     }
 
-    // 箭头按钮
+    /* 箭头按钮 */
     .pagination-arrow {
         @extend %button-base;
 
@@ -50,14 +51,14 @@
         }
     }
 
-    // 数字按钮区域
+    /* 数字按钮区域 */
     .pagination-numbers {
         display: flex;
-        gap: $spacing-sm; // 与外层间距保持一致
-        justify-content: center;  // 确保数字始终居中
+        gap: $spacing-sm; /* 与外层间距保持一致 */
+        justify-content: center;  /* 确保数字始终居中 */
     }
 
-    // 数字按钮
+    /* 数字按钮 */
     .pagination-number {
         @extend %button-base;
 
@@ -73,7 +74,7 @@
         &.ellipsis {
             cursor: pointer;
             position: relative;
-            font-size: 0; // 隐藏原始内容
+            font-size: 0; /* 隐藏原始内容 */
             
             &::after {
                 content: '•••';
@@ -82,7 +83,7 @@
                 left: 50%;
                 transform: translate(-50%, -50%);
                 transition: $transition-base;
-                font-size: $font-size-base; // 恢复字体大小
+                font-size: $font-size-base; /* 恢复字体大小 */
             }
 
             &:hover {
@@ -96,12 +97,13 @@
         }
     }
 
+    /* 响应式调整 */
     @media (max-width: $breakpoint-md) {
         gap: $spacing-sm;
         
         .pagination-numbers {
             gap: $spacing-sm;
-            // Don't hide any rendered page numbers now that we control exactly which ones to show
+            /* 不再隐藏任何页码，因为我们现在精确控制显示哪些页码 */
         }
     }
 } 

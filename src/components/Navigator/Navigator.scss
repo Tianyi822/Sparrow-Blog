@@ -1,7 +1,9 @@
-// 定义本地样式变量，替代全局变量
-$navigator-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-$navigator-font-weight-bolder: 500;
-$navigator-primary-400: #1976d2;
+@use '@/style/variables'as *;
+
+/* 定义本地样式变量，替代全局变量 */
+$navigator-font-family: $font-family-sans-serif;
+$navigator-font-weight-bolder: $font-weight-medium;
+$navigator-primary-400: $primary-400;
 
 .navigator {
   position: fixed;
@@ -11,86 +13,87 @@ $navigator-primary-400: #1976d2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
+  padding: $spacing-md $spacing-xl;
   background: transparent;
   z-index: 1000;
-  transition: all 0.3s ease;
+  transition: $transition-base;
   transform: translateY(0);
   user-select: none;
 
-  // 向下滚动时隐藏
+  /* 向下滚动时隐藏 */
   &.nav-hidden {
     transform: translateY(-100%);
     opacity: 0;
   }
 
-  // 向上滚动时显示毛玻璃效果
+  /* 向上滚动时显示毛玻璃效果 */
   &.nav-solid {
     transform: translateY(0);
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba($white, 0.1);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba($black, 0.1);
 
     .nav-brand {
-      color: rgba(255, 255, 255, 0.95);
+      color: rgba($white, 0.95);
     }
 
     .nav-list .nav-item {
-      color: rgba(255, 255, 255, 0.95);
+      color: rgba($white, 0.95);
 
       &::after {
         background-color: rgba(135, 206, 235, 0.8);
       }
 
       .svg-icon {
-        transition: all 0.3s ease;
-        color: rgba(255, 255, 255, 0.95) !important;
+        transition: $transition-base;
+        color: rgba($white, 0.95) !important;
       }
     }
 
     .nav-menu-button span {
-      background-color: rgba(255, 255, 255, 0.95);
+      background-color: rgba($white, 0.95);
     }
 
     .svg-icon {
-      color: rgba(255, 255, 255, 0.95) !important;
+      color: rgba($white, 0.95) !important;
     }
   }
 
-  // 在顶部时透明背景
+  /* 在顶部时透明背景 */
   &.nav-transparent {
     transform: translateY(0);
     background: transparent;
     box-shadow: none;
 
     .nav-brand {
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba($white, 0.9);
     }
 
     .nav-list .nav-item {
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba($white, 0.8);
 
       .svg-icon {
-        transition: all 0.3s ease;
+        transition: $transition-base;
       }
     }
 
     .nav-menu-button span {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: rgba($white, 0.9);
     }
   }
 
   .nav-brand {
     font-family: $navigator-font-family;
-    font-size: 1.5rem;
+    font-size: $font-size-xl;
     font-weight: $navigator-font-weight-bolder * 1.5;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba($white, 0.9);
     cursor: pointer;
   }
 
   .nav-menu-button {
-    display: none;  // 默认隐藏
+    display: none;
+    /* 默认隐藏 */
     z-index: 1001;
     width: 30px;
     height: 30px;
@@ -102,8 +105,8 @@ $navigator-primary-400: #1976d2;
       position: absolute;
       width: 25px;
       height: 3px;
-      background-color: rgba(255, 255, 255, 0.9);
-      transition: all 0.3s ease;
+      background-color: rgba($white, 0.9);
+      transition: $transition-base;
       left: 0;
 
       &:first-child {
@@ -124,10 +127,10 @@ $navigator-primary-400: #1976d2;
     }
   }
 
-  // 菜单打开时的动画效果
-  .nav-list.open ~ .nav-menu-button {
+  /* 菜单打开时的动画效果 */
+  .nav-list.open~.nav-menu-button {
     span {
-      background-color: #333;
+      background-color: $gray-800;
 
       &:first-child {
         transform: translateY(9px) rotate(45deg);
@@ -146,53 +149,55 @@ $navigator-primary-400: #1976d2;
   .nav-list {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: $spacing-md;
     list-style: none;
     margin: 0;
     padding: 0;
 
     .nav-item {
       font-family: $navigator-font-family;
-      font-size: 1rem;
+      font-size: $font-size-md;
       font-weight: $navigator-font-weight-bolder * 1.2;
-      padding: 0.5rem 1rem;
+      padding: $spacing-sm $spacing-md;
       cursor: pointer;
-      color: rgba(255, 255, 255, 0.8);
-      transition: all 0.3s ease;
-      border-radius: 0.5rem;
+      color: rgba($white, 0.8);
+      transition: $transition-base;
+      border-radius: $border-radius-md;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: $spacing-sm;
       position: relative;
 
-      // 下划线效果
+      /* 下划线效果 */
       &::after {
         content: '';
         position: absolute;
-        bottom: -0.2rem;
+        bottom: -$spacing-xs;
         left: 15%;
         width: 0;
         height: 3px;
         background-color: rgba(135, 206, 235, 0.8);
-        transition: all 0.3s ease;
+        transition: $transition-base;
       }
 
-      &:hover, &.active {
+      &:hover,
+      &.active {
         &::after {
           width: 75%;
         }
       }
 
       .nav-text {
-        margin-left: 0.5rem;
+        margin-left: $spacing-sm;
       }
 
       .svg-icon {
-        transition: transform 0.3s ease;
+        transition: transform $transition-base;
         stroke-width: 2;
       }
 
-      &:hover, &.active {
+      &:hover,
+      &.active {
         &::after {
           width: 75%;
         }
@@ -212,24 +217,25 @@ $navigator-primary-400: #1976d2;
     }
   }
 
-  // 响应式布局
+  /* 响应式布局 */
   @media (max-width: 1050px) {
-    padding: 1rem;
+    padding: $spacing-md;
 
     .nav-list {
-      gap: 0.5rem;
-      
+      gap: $spacing-sm;
+
       .nav-item {
-        font-size: 0.9rem;
-        padding: 0.4rem 0.8rem;
+        font-size: $font-size-sm;
+        padding: $spacing-sm $spacing-md;
       }
     }
   }
 
-  // 折叠导航栏样式
+  /* 折叠导航栏样式 */
   @media (max-width: 900px) {
     .nav-menu-button {
-      display: block;  // 窄屏时显示
+      display: block;
+      /* 窄屏时显示 */
     }
 
     .nav-list {
@@ -239,12 +245,14 @@ $navigator-primary-400: #1976d2;
       width: 25%;
       height: 100vh;
       flex-direction: column;
-      background: rgba(255, 255, 255, 0.1); // 改为半透明背景
-      backdrop-filter: blur(16px) saturate(180%); // 添加毛玻璃效果
+      background: rgba($white, 0.1);
+      /* 改为半透明背景 */
+      backdrop-filter: blur(16px) saturate(180%);
+      /* 添加毛玻璃效果 */
       -webkit-backdrop-filter: blur(16px) saturate(180%);
-      padding: 4rem 1rem 2rem;
-      transition: right 0.3s ease;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+      padding: $spacing-xl $spacing-md $spacing-xl;
+      transition: right $transition-base;
+      box-shadow: -2px 0 10px rgba($black, 0.1);
 
       &.open {
         right: 0;
@@ -252,53 +260,55 @@ $navigator-primary-400: #1976d2;
 
       .nav-item {
         width: 100%;
-        margin: 0.5rem 0;
-        padding: 0.8rem 1.2rem;
+        margin: $spacing-sm 0;
+        padding: $spacing-md $spacing-md;
         border-left: 3px solid transparent;
-        color: rgba(255, 255, 255, 0.95) !important;
+        color: rgba($white, 0.95) !important;
 
-        &:hover, &.active {
+        &:hover,
+        &.active {
           border-left-color: rgba(135, 206, 235, 0.9);
-          background: rgba(255, 255, 255, 0.15);
+          background: rgba($white, 0.15);
+
           &::after {
             width: 0;
           }
         }
 
         .nav-text {
-          margin-left: 1rem;
-          font-size: 0.95rem;
+          margin-left: $spacing-md;
+          font-size: $font-size-sm;
         }
 
         .svg-icon {
           width: 1.2rem;
           min-width: 1.2rem;
           height: 1.2rem;
-          color: rgba(255, 255, 255, 0.95) !important;
+          color: rgba($white, 0.95) !important;
         }
       }
 
       .about-link {
         margin-left: 0;
-        margin-top: 2rem;
+        margin-top: $spacing-xl;
       }
     }
 
-    // 添加菜单打开时的样式
-    .nav-list.open + .nav-menu-button span,
-    .nav-list.open ~ .nav-menu-button span {
-      background-color: rgba(255, 255, 255, 0.95);
+    /* 添加菜单打开时的样式 */
+    .nav-list.open+.nav-menu-button span,
+    .nav-list.open~.nav-menu-button span {
+      background-color: rgba($white, 0.95);
     }
   }
 
-  // 超小屏幕样式
+  /* 超小屏幕样式 */
   @media (max-width: 370px) {
     .nav-list {
       width: 4rem;
       padding: 4rem 0.5rem 2rem;
 
       .nav-item {
-        padding: 0.8rem;
+        padding: $spacing-md;
         justify-content: center;
 
         .nav-text {

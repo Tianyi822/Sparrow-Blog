@@ -1,3 +1,5 @@
+@use '@/style/variables' as *;
+
 .home {
   width: 100%;
   position: relative;
@@ -18,10 +20,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8rem;
+      gap: $spacing-xxl;
       width: 100%;
       max-width: 1800px;
-      padding: 0 4rem;
+      padding: 0 $spacing-xl;
       box-sizing: border-box;
 
       .home-introduction {
@@ -37,10 +39,10 @@
 
     .home-down-arrow {
       position: absolute;
-      bottom: 2rem;
+      bottom: $spacing-lg;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba($white, 0.8);
       cursor: pointer;
       animation: floatUpDown 2s ease-in-out infinite;
       z-index: 10;
@@ -55,9 +57,9 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    padding: 4rem 0;
+    padding: $spacing-xl 0;
     scroll-margin-top: 0;
-    gap: 2rem;
+    gap: $spacing-lg;
     align-items: flex-start;
 
     .blog-content {
@@ -72,7 +74,7 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 2rem;
+        gap: $spacing-lg;
         padding: 0;
         margin-top: 0;
       }
@@ -82,7 +84,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 2rem 0;
+        padding: $spacing-lg 0;
         box-sizing: border-box;
       }
     }
@@ -100,7 +102,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba($black, 0.4);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     z-index: 1000;
@@ -123,9 +125,9 @@
       .preview-card-container {
         width: 100%;
         height: 500px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        background: $white;
+        border-radius: $border-radius-lg;
+        box-shadow: $shadow-lg;
         overflow: hidden;
         opacity: 0;
         animation: fadeIn 0.3s ease 0.1s forwards;
@@ -138,15 +140,17 @@
   }
 }
 
+/* 上下浮动动画 */
 @keyframes floatUpDown {
   0%, 100% {
     transform: translateX(-50%) translateY(0);
   }
   50% {
-    transform: translateX(-50%) translateY(-10px);
+    transform: translateX(-50%) translateY(-$spacing-md);
   }
 }
 
+/* 淡入动画 */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -156,6 +160,7 @@
   }
 }
 
+/* 淡出动画 */
 @keyframes fadeOut {
   from {
     opacity: 1;
@@ -165,6 +170,7 @@
   }
 }
 
+/* 缩放入场动画 */
 @keyframes scaleIn {
   from {
     opacity: 0;
@@ -176,6 +182,7 @@
   }
 }
 
+/* 缩放退场动画 */
 @keyframes scaleOut {
   from {
     opacity: 1;
@@ -187,13 +194,13 @@
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: $breakpoint-xl) {
   .home {
     .landing-page {
       .landing-content {
         flex-direction: column;
-        gap: 3rem;
-        padding: 0 2rem;
+        gap: $spacing-lg;
+        padding: 0 $spacing-lg;
         width: 100%;
         max-width: none;
 
@@ -211,12 +218,12 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .home {
     .main-content {
       flex-direction: column;
       align-items: center;
-      padding: 1rem;
+      padding: $spacing-md;
       box-sizing: border-box;
       
       .blog-content {
@@ -237,7 +244,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          padding: 2rem 0;
+          padding: $spacing-lg 0;
           box-sizing: border-box;
 
           .pagination {
@@ -249,7 +256,7 @@
 
       .home-web-content {
         width: 90%;
-        margin: 2rem 0 0 0;
+        margin: $spacing-lg 0 0 0;
         padding: 0;
         box-sizing: border-box;
       }
@@ -258,8 +265,8 @@
     .landing-page {
       .landing-content {
         flex-direction: column;
-        gap: 3rem;
-        padding: 0 2rem;
+        gap: $spacing-lg;
+        padding: 0 $spacing-lg;
         width: 100%;
         max-width: none;
 
@@ -277,59 +284,60 @@
   }
 }
 
-// Filter styles
+/* 筛选器样式 */
 .active-filter {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba($white, 0.1);
     backdrop-filter: blur(5px);
-    border-radius: 8px;
-    padding: 10px 16px;
-    margin-bottom: 20px;
+    border-radius: $border-radius-lg;
+    padding: $spacing-sm $spacing-md;
+    margin-bottom: $spacing-lg;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-sm;
     
     .filter-info {
         display: flex;
         align-items: center;
-        gap: 8px;
-        font-size: 14px;
+        gap: $spacing-sm;
+        font-size: $font-size-sm;
         color: var(--text-color-secondary);
         
         .filter-type {
             color: var(--primary-color);
-            font-weight: 500;
+            font-weight: $font-weight-medium;
         }
         
         .filter-name {
             background: var(--primary-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 500;
+            color: $white;
+            padding: $spacing-xs $spacing-sm;
+            border-radius: $border-radius-sm;
+            font-weight: $font-weight-medium;
         }
     }
     
     .clear-filter {
         background: transparent;
-        border: 1px solid var(--border-color);
+        border: $border-width-thin solid var(--border-color);
         color: var(--text-color-secondary);
-        padding: 4px 10px;
-        border-radius: 4px;
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $border-radius-sm;
         cursor: pointer;
-        font-size: 12px;
-        transition: all 0.2s ease;
+        font-size: $font-size-xs;
+        transition: $transition-base;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba($white, 0.1);
             color: var(--text-color-primary);
         }
     }
 }
 
+/* 无博客信息提示 */
 .no-blogs-message {
     text-align: center;
-    padding: 40px 0;
+    padding: $spacing-xl 0;
     color: var(--text-color-secondary);
-    font-size: 16px;
+    font-size: $font-size-md;
 }

@@ -1,5 +1,7 @@
 @use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
+/* 返回顶部按钮样式 */
 .back-to-top {
     @include glass-card-base;
     display: flex;
@@ -8,22 +10,25 @@
     width: 36px;
     height: 36px;
     padding: 0;
-    border-radius: 8px;
+    border-radius: $border-radius-md;
     cursor: pointer;
 
+    /* 图标样式 */
     .svg-icon {
         width: 36px;
         height: 36px;
         flex-shrink: 0;
-        padding: 6px;
+        padding: $spacing-sm;
         box-sizing: border-box;
 
+        /* 翻转箭头指向上方 */
         svg {
             transform: rotate(180deg);
         }
     }
 
+    /* 悬停效果 */
     &:hover {
         @include glass-card-hover-base;
     }
-} 
+}
