@@ -138,8 +138,8 @@
       }
 
       /* 确保菜单图标在菜单打开时正确变换 */
-      .nav-list.open~.nav-menu-button span,
-      .nav-list.open+.nav-menu-button span {
+      .nav-list.open ~ .nav-menu-button span,
+      .nav-list.open + .nav-menu-button span {
         &:first-child {
           transform: translateY(9px) rotate(45deg);
         }

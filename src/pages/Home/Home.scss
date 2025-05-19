@@ -1,4 +1,4 @@
-@use '@/style/variables' as *;
+@use '@/style/variables' as var;
 
 .home {
   width: 100%;
@@ -20,10 +20,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: $spacing-xxl;
+      gap: var.$spacing-xxl;
       width: 100%;
       max-width: 1800px;
-      padding: 0 $spacing-xl;
+      padding: 0 var.$spacing-xl;
       box-sizing: border-box;
 
       .home-introduction {
@@ -39,10 +39,10 @@
 
     .home-down-arrow {
       position: absolute;
-      bottom: $spacing-lg;
+      bottom: var.$spacing-lg;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba($white, 0.8);
+      color: rgba(var.$white, 0.8);
       cursor: pointer;
       animation: floatUpDown 2s ease-in-out infinite;
       z-index: 10;
@@ -57,9 +57,9 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    padding: $spacing-xl 0;
+    padding: var.$spacing-xl 0;
     scroll-margin-top: 0;
-    gap: $spacing-lg;
+    gap: var.$spacing-lg;
     align-items: flex-start;
 
     .blog-content {
@@ -74,7 +74,7 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: $spacing-lg;
+        gap: var.$spacing-lg;
         padding: 0;
         margin-top: 0;
       }
@@ -84,7 +84,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: $spacing-lg 0;
+        padding: var.$spacing-lg 0;
         box-sizing: border-box;
       }
     }
@@ -102,7 +102,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba($black, 0.4);
+    background-color: rgba(var.$black, 0.4);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     z-index: 1000;
@@ -125,9 +125,9 @@
       .preview-card-container {
         width: 100%;
         height: 500px;
-        background: $white;
-        border-radius: $border-radius-lg;
-        box-shadow: $shadow-lg;
+        background: var.$white;
+        border-radius: var.$border-radius-lg;
+        box-shadow: var.$shadow-lg;
         overflow: hidden;
         opacity: 0;
         animation: fadeIn 0.3s ease 0.1s forwards;
@@ -142,11 +142,12 @@
 
 /* 上下浮动动画 */
 @keyframes floatUpDown {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(-50%) translateY(0);
   }
   50% {
-    transform: translateX(-50%) translateY(-$spacing-md);
+    transform: translateX(-50%) translateY(calc(-1 * var.$spacing-md));
   }
 }
 
@@ -194,13 +195,13 @@
   }
 }
 
-@media (max-width: $breakpoint-xl) {
+@media (max-width: var.$breakpoint-xl) {
   .home {
     .landing-page {
       .landing-content {
         flex-direction: column;
-        gap: $spacing-lg;
-        padding: 0 $spacing-lg;
+        gap: var.$spacing-lg;
+        padding: 0 var.$spacing-lg;
         width: 100%;
         max-width: none;
 
@@ -218,12 +219,12 @@
   }
 }
 
-@media (max-width: $breakpoint-md) {
+@media (max-width: var.$breakpoint-md) {
   .home {
     .main-content {
       flex-direction: column;
       align-items: center;
-      padding: $spacing-md;
+      padding: var.$spacing-md;
       box-sizing: border-box;
       
       .blog-content {
@@ -244,7 +245,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          padding: $spacing-lg 0;
+          padding: var.$spacing-lg 0;
           box-sizing: border-box;
 
           .pagination {
@@ -256,7 +257,7 @@
 
       .home-web-content {
         width: 90%;
-        margin: $spacing-lg 0 0 0;
+        margin: var.$spacing-lg 0 0 0;
         padding: 0;
         box-sizing: border-box;
       }
@@ -265,8 +266,8 @@
     .landing-page {
       .landing-content {
         flex-direction: column;
-        gap: $spacing-lg;
-        padding: 0 $spacing-lg;
+        gap: var.$spacing-lg;
+        padding: 0 var.$spacing-lg;
         width: 100%;
         max-width: none;
 
@@ -286,49 +287,49 @@
 
 /* 筛选器样式 */
 .active-filter {
-    background: rgba($white, 0.1);
+    background: rgba(var.$white, 0.1);
     backdrop-filter: blur(5px);
-    border-radius: $border-radius-lg;
-    padding: $spacing-sm $spacing-md;
-    margin-bottom: $spacing-lg;
+    border-radius: var.$border-radius-lg;
+    padding: var.$spacing-sm var.$spacing-md;
+    margin-bottom: var.$spacing-lg;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: $shadow-sm;
+    box-shadow: var.$shadow-sm;
     
     .filter-info {
         display: flex;
         align-items: center;
-        gap: $spacing-sm;
-        font-size: $font-size-sm;
+        gap: var.$spacing-sm;
+        font-size: var.$font-size-sm;
         color: var(--text-color-secondary);
         
         .filter-type {
             color: var(--primary-color);
-            font-weight: $font-weight-medium;
+            font-weight: var.$font-weight-medium;
         }
         
         .filter-name {
             background: var(--primary-color);
-            color: $white;
-            padding: $spacing-xs $spacing-sm;
-            border-radius: $border-radius-sm;
-            font-weight: $font-weight-medium;
+            color: var.$white;
+            padding: var.$spacing-xs var.$spacing-sm;
+            border-radius: var.$border-radius-sm;
+            font-weight: var.$font-weight-medium;
         }
     }
     
     .clear-filter {
         background: transparent;
-        border: $border-width-thin solid var(--border-color);
+        border: var.$border-width-thin solid var(--border-color);
         color: var(--text-color-secondary);
-        padding: $spacing-xs $spacing-sm;
-        border-radius: $border-radius-sm;
+        padding: var.$spacing-xs var.$spacing-sm;
+        border-radius: var.$border-radius-sm;
         cursor: pointer;
-        font-size: $font-size-xs;
-        transition: $transition-base;
+        font-size: var.$font-size-xs;
+        transition: var.$transition-base;
         
         &:hover {
-            background: rgba($white, 0.1);
+            background: rgba(var.$white, 0.1);
             color: var(--text-color-primary);
         }
     }
@@ -337,7 +338,7 @@
 /* 无博客信息提示 */
 .no-blogs-message {
     text-align: center;
-    padding: $spacing-xl 0;
+    padding: var.$spacing-xl 0;
     color: var(--text-color-secondary);
-    font-size: $font-size-md;
+    font-size: var.$font-size-md;
 }
