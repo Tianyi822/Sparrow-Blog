@@ -1,16 +1,21 @@
-@use '@/style/mixins' as *;
+@use '@/style/mixins'as *;
+@use '@/style/variables'as var;
 
+/* 
+ * 用户设置卡片组件
+ * 包含用户配置表单和图片上传功能
+ */
 .user-setting-card {
   width: calc(100% - 4rem);
   max-width: 90%;
   display: flex;
-  border-radius: 16px;
+  border-radius: var.$border-radius-xl;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  margin: 0 2rem;
+  box-shadow: var.$shadow-lg;
+  margin: 0 var.$spacing-xl;
   max-height: 80vh;
 
-  // Loading container styles
+  /* 加载状态容器 */
   .loading-container {
     display: flex;
     flex-direction: column;
@@ -18,27 +23,27 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    padding: 3rem;
+    padding: var.$spacing-xxl;
     background: linear-gradient(145deg, rgba(60, 60, 80, 0.15), rgba(40, 40, 70, 0.25));
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: inherit;
-    color: white;
+    color: var.$white;
 
     .loading-spinner {
       width: 50px;
       height: 50px;
-      border: 3px solid rgba(147, 118, 224, 0.3);
-      border-radius: 50%;
+      border: var.$border-width-thick solid rgba(147, 118, 224, 0.3);
+      border-radius: var.$border-radius-circle;
       border-top-color: #9376E0;
       animation: spin 1s ease-in-out infinite;
-      margin-bottom: 1.5rem;
+      margin-bottom: var.$spacing-lg;
     }
 
     p {
-      font-size: 1.2rem;
-      font-weight: 500;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      font-size: var.$font-size-lg;
+      font-weight: var.$font-weight-medium;
+      text-shadow: 0 2px 4px rgba(var.$black, 0.2);
     }
 
     @keyframes spin {
@@ -48,6 +53,7 @@
     }
   }
 
+  /* 左侧用户图片设置区域 */
   .user-imgs-setting {
     flex: 1;
     background-image: url('https://images.unsplash.com/photo-1533873984035-25970ab07461?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
@@ -58,7 +64,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: var.$spacing-xl;
     max-height: 80vh;
     overflow: hidden;
 
@@ -69,18 +75,19 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+      background: linear-gradient(to bottom, rgba(var.$black, 0.7), rgba(var.$black, 0.5));
       z-index: 1;
       border-radius: inherit;
     }
 
+    /* 图片上的信息浮层 */
     .user-info-overlay {
       position: absolute;
       z-index: 2;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: white;
+      color: var.$white;
       max-width: 80%;
       width: 80%;
       text-align: center;
@@ -89,33 +96,36 @@
       align-items: center;
       justify-content: center;
 
+      /* 用户标题区域 */
       .user-title {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 2rem;
+        margin-bottom: var.$spacing-xl;
 
         .user-icon {
-          font-size: 4rem;
-          margin-bottom: 1rem;
+          font-size: var.$font-size-xxxl;
+          margin-bottom: var.$spacing-md;
           color: #9376E0;
         }
 
         h2 {
-          font-size: 2rem;
-          font-weight: 600;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          font-size: var.$font-size-xxl;
+          font-weight: var.$font-weight-semibold;
+          text-shadow: 0 2px 4px rgba(var.$black, 0.3);
           margin: 0;
         }
       }
 
+      /* 用户描述文本 */
       .user-description {
         width: 100%;
+
         p {
-          font-size: 1.1rem;
-          margin-bottom: 1rem;
-          line-height: 1.6;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+          font-size: var.$font-size-lg;
+          margin-bottom: var.$spacing-md;
+          line-height: var.$line-height-base;
+          text-shadow: 0 1px 2px rgba(var.$black, 0.5);
 
           &:last-child {
             margin-bottom: 0;
@@ -124,6 +134,7 @@
       }
     }
 
+    /* 桌面端上传容器 */
     .desktop-upload-container {
       position: absolute;
       bottom: 0;
@@ -134,31 +145,34 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
-      padding-bottom: 3rem;
+      gap: var.$spacing-md;
+      padding-bottom: var.$spacing-xxl;
 
+      /* 上传项目行 */
       .upload-items-row {
         display: flex;
         flex-direction: row;
         justify-content: center;
-        gap: 3rem;
+        gap: var.$spacing-xxl;
         width: 100%;
       }
 
+      /* 单个上传项 */
       .upload-item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 1rem;
+        gap: var.$spacing-md;
 
+        /* 上传圆形区域 */
         .upload-circle {
           width: 100px;
           height: 100px;
-          border-radius: 50%;
-          background-color: rgba(255, 255, 255, 0.15);
+          border-radius: var.$border-radius-circle;
+          background-color: rgba(var.$white, 0.15);
           backdrop-filter: blur(5px);
           -webkit-backdrop-filter: blur(5px);
-          border: 2px dashed rgba(255, 255, 255, 0.4);
+          border: var.$border-width-medium dashed rgba(var.$white, 0.4);
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -166,15 +180,16 @@
           position: relative;
           overflow: hidden;
           cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+          transition: var.$transition-base;
+          box-shadow: var.$shadow-lg;
           text-align: center;
 
+          /* 已选图片样式 */
           .selected-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 50%;
+            border-radius: var.$border-radius-circle;
             position: absolute;
             top: 0;
             left: 0;
@@ -182,15 +197,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.85rem;
+            color: rgba(var.$white, 0.9);
+            font-size: var.$font-size-xs;
           }
 
           img.selected-image {
             display: flex;
             align-items: center;
             justify-content: center;
-            
+
             &::before {
               content: attr(alt);
               position: absolute;
@@ -201,9 +216,9 @@
               display: flex;
               align-items: center;
               justify-content: center;
-              background-color: rgba(0, 0, 0, 0.5);
-              color: white;
-              font-size: 0.85rem;
+              background-color: rgba(var.$black, 0.5);
+              color: var.$white;
+              font-size: var.$font-size-xs;
               padding: 5px;
               text-align: center;
             }
@@ -211,7 +226,7 @@
 
           &:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 12px 20px rgba(var.$black, 0.3);
 
             .upload-overlay {
               opacity: 0.9;
@@ -220,25 +235,27 @@
 
           .avatar-icon {
             font-size: 2.5rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(var.$white, 0.9);
             margin-bottom: 6px;
           }
 
           .logo-icon {
             font-size: 2.5rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(var.$white, 0.9);
             margin-bottom: 6px;
           }
 
+          /* 上传标签内部文字 */
           .upload-label-inner {
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.9);
+            margin-top: var.$spacing-sm;
+            font-size: var.$font-size-xs;
+            color: rgba(var.$white, 0.9);
             position: relative;
             z-index: 2;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 1px 2px rgba(var.$black, 0.5);
           }
 
+          /* 上传悬浮层 */
           .upload-overlay {
             position: absolute;
             top: 0;
@@ -281,17 +298,17 @@
           transition: all 0.3s ease;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
           width: 120px;
-          
+
           .save-icon {
             font-size: 1rem;
           }
-          
+
           &:hover {
             transform: translateY(-2px);
             background-color: rgba(46, 204, 113, 0.3);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
           }
-          
+
           &:active {
             transform: translateY(-1px);
           }
@@ -306,7 +323,7 @@
         gap: 1rem;
         margin-top: 1rem;
       }
-      
+
       .bg-upload-button {
         background-color: rgba(255, 255, 255, 0.1);
         border: 2px dashed rgba(255, 255, 255, 0.3);
@@ -321,11 +338,11 @@
         cursor: pointer;
         transition: all 0.3s ease;
         width: calc(160px + 2rem);
-        
+
         .upload-icon {
           font-size: 1.1rem;
         }
-        
+
         &:hover {
           background-color: rgba(255, 255, 255, 0.2);
         }
@@ -334,7 +351,7 @@
       .bg-save-button {
         width: 120px;
       }
-      
+
       .save-images-button {
         margin-top: 1rem;
         background-color: rgba(46, 204, 113, 0.25);
@@ -354,17 +371,17 @@
         transition: all 0.3s ease;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         width: calc(160px + 2rem);
-        
+
         .save-icon {
           font-size: 1.1rem;
         }
-        
+
         &:hover {
           transform: translateY(-3px);
           background-color: rgba(46, 204, 113, 0.4);
           box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
         }
-        
+
         &:active {
           transform: translateY(-1px);
         }
@@ -555,17 +572,17 @@
         justify-content: center;
         gap: 0.5rem;
         width: 100%;
-        
+
         svg {
           font-size: 1.2rem;
         }
-        
+
         &:hover {
           background-color: rgba(147, 118, 224, 0.5);
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         &:active {
           transform: translateY(0);
         }
@@ -578,7 +595,7 @@
       margin-bottom: 2rem;
       padding-bottom: 1.5rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      
+
       .upload-items-row {
         display: flex;
         flex-direction: row;
@@ -586,12 +603,12 @@
         gap: 3rem;
         margin-bottom: 1.5rem;
       }
-      
+
       .upload-item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        
+
         .upload-circle {
           width: 80px;
           height: 80px;
@@ -607,7 +624,7 @@
           transition: all 0.3s ease;
           border: 2px dashed rgba(255, 255, 255, 0.3);
           text-align: center;
-          
+
           .selected-image {
             width: 100%;
             height: 100%;
@@ -623,12 +640,12 @@
             color: rgba(255, 255, 255, 0.9);
             font-size: 0.75rem;
           }
-          
+
           img.selected-image {
             display: flex;
             align-items: center;
             justify-content: center;
-            
+
             &::before {
               content: attr(alt);
               position: absolute;
@@ -646,12 +663,13 @@
               text-align: center;
             }
           }
-          
-          .avatar-icon, .logo-icon {
+
+          .avatar-icon,
+          .logo-icon {
             font-size: 2rem;
             color: rgba(255, 255, 255, 0.8);
           }
-          
+
           .upload-overlay {
             position: absolute;
             top: 0;
@@ -666,19 +684,19 @@
             border-radius: 50%;
             opacity: 0;
             transition: opacity 0.3s ease;
-            
+
             svg {
               font-size: 1.3rem;
               color: #9376E0;
               margin-bottom: 0.3rem;
             }
-            
+
             .upload-label-inner {
               font-size: 0.75rem;
               color: white;
             }
           }
-          
+
           &:hover {
             .upload-overlay {
               opacity: 0.9;
@@ -704,17 +722,17 @@
           transition: all 0.3s ease;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
           width: 120px;
-          
+
           .save-icon {
             font-size: 1rem;
           }
-          
+
           &:hover {
             transform: translateY(-2px);
             background-color: rgba(46, 204, 113, 0.3);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
           }
-          
+
           &:active {
             transform: translateY(-1px);
           }
@@ -729,7 +747,7 @@
         gap: 1rem;
         margin: 1rem 0;
       }
-      
+
       .bg-upload-button {
         background-color: rgba(255, 255, 255, 0.1);
         border: 2px dashed rgba(255, 255, 255, 0.3);
@@ -744,16 +762,16 @@
         cursor: pointer;
         transition: all 0.3s ease;
         width: calc(160px + 2rem);
-        
+
         .upload-icon {
           font-size: 1.1rem;
         }
-        
+
         &:hover {
           background-color: rgba(255, 255, 255, 0.2);
         }
       }
-      
+
       .bg-save-button {
         width: 120px;
       }
@@ -777,17 +795,17 @@
         transition: all 0.3s ease;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         width: calc(160px + 2rem);
-        
+
         .save-icon {
           font-size: 1.1rem;
         }
-        
+
         &:hover {
           transform: translateY(-3px);
           background-color: rgba(46, 204, 113, 0.4);
           box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
         }
-        
+
         &:active {
           transform: translateY(-1px);
         }
@@ -801,14 +819,17 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   15% {
     opacity: 1;
     transform: translateY(0);
   }
+
   85% {
     opacity: 1;
     transform: translateY(0);
   }
+
   100% {
     opacity: 0;
     transform: translateY(-10px);
@@ -820,6 +841,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -861,7 +883,7 @@
         border-top-left-radius: 16px;
         border-top-right-radius: 16px;
       }
-      
+
       .user-info-overlay {
         max-width: 90%;
         width: 90%;
@@ -869,20 +891,20 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        
+
         .user-title {
           margin-bottom: 1rem;
-          
+
           .user-icon {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
           }
-          
+
           h2 {
             font-size: 1.5rem;
           }
         }
-        
+
         .user-description {
           p {
             font-size: 0.9rem;
@@ -890,7 +912,7 @@
           }
         }
       }
-      
+
       .desktop-upload-container {
         display: none;
       }
@@ -915,7 +937,7 @@
     width: calc(100% - 2rem);
     border-radius: 12px;
     overflow: hidden;
-    
+
     .user-imgs-setting {
       min-height: 200px;
       padding: 1rem;
@@ -932,23 +954,23 @@
         border-top-left-radius: 12px;
         border-top-right-radius: 12px;
       }
-      
+
       .user-info-overlay {
         width: 90%;
-        
+
         .user-title {
           margin-bottom: 0.75rem;
-          
+
           .user-icon {
             font-size: 2.2rem;
             margin-bottom: 0.4rem;
           }
-          
+
           h2 {
             font-size: 1.4rem;
           }
         }
-        
+
         .user-description {
           p {
             font-size: 0.85rem;
@@ -1053,7 +1075,7 @@
   flex-wrap: wrap;
   gap: 10px;
   min-height: 40px;
-  
+
   .empty-tag-hint {
     color: rgba(255, 255, 255, 0.5);
     font-style: italic;
@@ -1105,14 +1127,14 @@
     background-color: rgba(60, 60, 80, 0.5);
     color: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    
+
     .remove-tag {
       color: rgba(255, 255, 255, 0.7);
-      
+
       &:hover {
         background-color: rgba(255, 255, 255, 0.15);
         color: #ff6b6b;
       }
     }
   }
-} 
+}

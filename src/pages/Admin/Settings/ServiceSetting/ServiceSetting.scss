@@ -1,15 +1,21 @@
-@use '@/style/mixins' as *;
+@use '@/style/mixins'as *;
+@use '@/style/variables'as var;
 
+/* 
+ * 服务设置卡片组件
+ * 包含服务配置表单和图片信息展示
+ */
 .service-setting-card {
   width: calc(100% - 4rem);
   max-width: 90%;
   display: flex;
-  border-radius: 16px;
+  border-radius: var.$border-radius-xl;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  margin: 0 2rem;
+  box-shadow: var.$shadow-lg;
+  margin: 0 var.$spacing-xl;
   max-height: 80vh;
-  
+
+  /* 左侧图片区域 */
   .service-img-section {
     flex: 1;
     background-image: url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2034&q=80');
@@ -20,8 +26,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
-    
+    padding: var.$spacing-xl;
+
     &::before {
       content: '';
       position: absolute;
@@ -29,44 +35,47 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+      background: linear-gradient(to bottom, rgba(var.$black, 0.7), rgba(var.$black, 0.5));
       z-index: 1;
     }
-    
+
+    /* 图片上的信息浮层 */
     .service-info-overlay {
       position: relative;
       z-index: 2;
-      color: white;
+      color: var.$white;
       max-width: 80%;
       text-align: center;
-      
+
+      /* 服务标题区域 */
       .service-title {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 2rem;
-        
+        margin-bottom: var.$spacing-xl;
+
         .service-icon {
-          font-size: 4rem;
-          margin-bottom: 1rem;
+          font-size: var.$font-size-xxxl;
+          margin-bottom: var.$spacing-md;
           color: #9376E0;
         }
-        
+
         h2 {
-          font-size: 2rem;
-          font-weight: 600;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          font-size: var.$font-size-xxl;
+          font-weight: var.$font-weight-semibold;
+          text-shadow: 0 2px 4px rgba(var.$black, 0.3);
           margin: 0;
         }
       }
-      
+
+      /* 服务描述文本 */
       .service-description {
         p {
-          font-size: 1.1rem;
-          margin-bottom: 1rem;
-          line-height: 1.6;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-          
+          font-size: var.$font-size-lg;
+          margin-bottom: var.$spacing-md;
+          line-height: var.$line-height-base;
+          text-shadow: 0 1px 2px rgba(var.$black, 0.5);
+
           &:last-child {
             margin-bottom: 0;
           }
@@ -74,30 +83,33 @@
       }
     }
   }
-  
+
+  /* 服务设置表单区域 */
   .service-setting-form-wrapper {
     flex: 1.3;
     @include glass-card-base;
-    padding: 3rem;
+    padding: var.$spacing-xxl;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     max-height: 80vh;
-    
+
+    /* 保存成功通知 */
     .save-notification {
-      margin-bottom: 1.5rem;
+      margin-bottom: var.$spacing-lg;
       background-color: rgba(46, 204, 113, 0.15);
-      border-left: 3px solid #2ecc71;
+      border-left: var.$border-width-thick solid #2ecc71;
       padding: 0.8rem 1.2rem;
-      color: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
-      font-size: 0.9rem;
+      color: rgba(var.$white, 0.9);
+      border-radius: var.$border-radius-md;
+      font-size: var.$font-size-sm;
       animation: fadeInOut 3s ease-in-out;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var.$spacing-sm;
     }
-    
+
+    /* 加载状态容器 */
     .loading-container {
       display: flex;
       flex-direction: column;
@@ -105,27 +117,27 @@
       justify-content: center;
       width: 100%;
       height: 400px;
-      padding: 3rem;
+      padding: var.$spacing-xxl;
       background: linear-gradient(145deg, rgba(60, 60, 80, 0.15), rgba(40, 40, 70, 0.25));
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border-radius: inherit;
-      color: white;
+      color: var.$white;
 
       .loading-spinner {
         width: 50px;
         height: 50px;
-        border: 3px solid rgba(147, 118, 224, 0.3);
-        border-radius: 50%;
+        border: var.$border-width-thick solid rgba(147, 118, 224, 0.3);
+        border-radius: var.$border-radius-circle;
         border-top-color: #9376E0;
         animation: spin 1s ease-in-out infinite;
-        margin-bottom: 1.5rem;
+        margin-bottom: var.$spacing-lg;
       }
 
       p {
-        font-size: 1.2rem;
-        font-weight: 500;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-size: var.$font-size-lg;
+        font-weight: var.$font-weight-medium;
+        text-shadow: 0 2px 4px rgba(var.$black, 0.2);
       }
 
       @keyframes spin {
@@ -134,114 +146,120 @@
         }
       }
     }
-    
+
+    /* 表单主体 */
     .service-setting-form {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: var.$spacing-lg;
       overflow-y: auto;
-      
+
+      /* 表单组 */
       .form-group {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
-        
+        gap: var.$spacing-sm;
+
+        /* 标签与按钮组合 */
         .label-with-button {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          
+
           label {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.05rem;
-            
+            gap: var.$spacing-sm;
+            font-weight: var.$font-weight-medium;
+            color: rgba(var.$white, 0.9);
+            font-size: var.$font-size-md + 0.05rem;
+
             .input-icon {
-              color: rgba(255, 255, 255, 0.8);
-              font-size: 1.1rem;
+              color: rgba(var.$white, 0.8);
+              font-size: var.$font-size-md + 0.1rem;
             }
           }
-          
+
           .icon-button {
             background-color: rgba(147, 118, 224, 0.2);
             color: #9376E0;
             border: none;
-            border-radius: 50%;
+            border-radius: var.$border-radius-circle;
             width: 28px;
             height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s ease;
-            
+            transition: var.$transition-short;
+
             &:hover {
               background-color: rgba(147, 118, 224, 0.4);
               transform: scale(1.1);
             }
-            
+
             &:active {
               transform: scale(0.95);
             }
           }
         }
-        
+
+        /* 只读值显示 */
         .readonly-value {
           width: 100%;
-          padding: 1rem 1.2rem;
-          background-color: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 8px;
-          font-size: 1.05rem;
-          color: rgba(255, 255, 255, 0.9);
-          font-weight: 500;
+          padding: var.$spacing-md var.$spacing-md + 0.2rem;
+          background-color: rgba(var.$white, 0.1);
+          border: var.$border-width-thin solid rgba(var.$white, 0.2);
+          border-radius: var.$border-radius-md;
+          font-size: var.$font-size-md + 0.05rem;
+          color: rgba(var.$white, 0.9);
+          font-weight: var.$font-weight-medium;
         }
-        
+
+        /* 端口注释 */
         .port-note {
-          font-size: 0.85rem;
+          font-size: var.$font-size-xs + 0.1rem;
           color: #FF9671;
-          margin-top: 0.3rem;
+          margin-top: var.$spacing-xs;
           margin-bottom: 0;
           font-style: italic;
         }
-        
+
+        /* 源地址列表 */
         .origins-list {
           list-style: none;
           padding: 0;
-          margin: 0.5rem 0 0 0;
-          
+          margin: var.$spacing-sm 0 0 0;
+
           .origin-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.08);
-            border-radius: 6px;
-            padding: 0.7rem 1rem;
-            margin-bottom: 0.5rem;
-            
+            background-color: rgba(var.$white, 0.08);
+            border-radius: var.$border-radius-sm;
+            padding: 0.7rem var.$spacing-md;
+            margin-bottom: var.$spacing-sm;
+
             span {
-              color: rgba(255, 255, 255, 0.9);
-              font-size: 0.95rem;
+              color: rgba(var.$white, 0.9);
+              font-size: var.$font-size-sm;
               word-break: break-all;
             }
-            
+
             .remove-button {
               background: none;
               border: none;
-              color: rgba(255, 255, 255, 0.6);
+              color: rgba(var.$white, 0.6);
               cursor: pointer;
               display: flex;
               align-items: center;
               justify-content: center;
               padding: 4px;
-              margin-left: 8px;
-              border-radius: 50%;
-              transition: all 0.2s ease;
-              
+              margin-left: var.$spacing-sm;
+              border-radius: var.$border-radius-circle;
+              transition: var.$transition-short;
+
               &:hover {
                 color: #ff6b6b;
                 background-color: rgba(255, 107, 107, 0.1);
@@ -249,168 +267,177 @@
             }
           }
         }
-        
+
+        /* 无源地址提示 */
         .no-origins {
-          color: rgba(255, 255, 255, 0.6);
+          color: rgba(var.$white, 0.6);
           text-align: center;
           font-style: italic;
-          margin: 1rem 0;
+          margin: var.$spacing-md 0;
         }
-        
+
+        /* 添加源地址容器 */
         .add-origin-container {
-          margin-bottom: 0.5rem;
+          margin-bottom: var.$spacing-sm;
         }
-        
+
+        /* 带按钮的输入框 */
         .input-with-button {
           position: relative;
           display: flex;
-          
+
           input {
             width: 100%;
-            padding-right: 3rem;
+            padding-right: var.$spacing-xxl;
           }
-          
+
           .generate-button {
             position: absolute;
-            right: 0.5rem;
+            right: var.$spacing-sm;
             top: 50%;
             transform: translateY(-50%);
             background-color: rgba(147, 118, 224, 0.2);
             color: #9376E0;
             border: none;
-            border-radius: 50%;
+            border-radius: var.$border-radius-circle;
             width: 32px;
             height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s ease;
-            
+            transition: var.$transition-short;
+
             &:hover {
               background-color: rgba(147, 118, 224, 0.4);
               transform: translateY(-50%) scale(1.1);
             }
-            
+
             &:active {
               transform: translateY(-50%) scale(0.95);
             }
           }
         }
-        
+
         label {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          font-weight: 500;
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 1.05rem;
-          
+          gap: var.$spacing-sm;
+          font-weight: var.$font-weight-medium;
+          color: rgba(var.$white, 0.9);
+          font-size: var.$font-size-md + 0.05rem;
+
           .input-icon {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
+            color: rgba(var.$white, 0.8);
+            font-size: var.$font-size-md + 0.1rem;
           }
         }
-        
+
         input {
           width: 100%;
-          padding: 1rem 1.2rem;
-          background-color: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 8px;
-          font-size: 1.05rem;
-          color: rgba(255, 255, 255, 0.9);
-          transition: all 0.2s ease;
-          
+          padding: var.$spacing-md var.$spacing-md + 0.2rem;
+          background-color: rgba(var.$white, 0.1);
+          border: var.$border-width-thin solid rgba(var.$white, 0.2);
+          border-radius: var.$border-radius-md;
+          font-size: var.$font-size-md + 0.05rem;
+          color: rgba(var.$white, 0.9);
+          transition: var.$transition-short;
+
           &:focus {
             outline: none;
             border-color: #9376E0;
             box-shadow: 0 0 0 2px rgba(147, 118, 224, 0.3);
           }
-          
+
           &::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(var.$white, 0.5);
           }
-          
+
           &.has-error {
             border-color: #ff6b6b;
           }
         }
-        
+
+        /* 错误信息 */
         .error-message {
-          font-size: 0.9rem;
+          font-size: var.$font-size-sm;
           color: #ff6b6b;
-          margin-top: 0.3rem;
+          margin-top: var.$spacing-xs;
         }
-        
+
+        /* 只读字段 */
         .read-only-field {
           width: 100%;
-          background-color: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 8px;
-          padding: 1rem 1.2rem;
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 1.05rem;
-          
+          background-color: rgba(var.$white, 0.05);
+          border: var.$border-width-thin solid rgba(var.$white, 0.15);
+          border-radius: var.$border-radius-md;
+          padding: var.$spacing-md var.$spacing-md + 0.2rem;
+          color: rgba(var.$white, 0.9);
+          font-size: var.$font-size-md + 0.05rem;
+
           span {
             display: block;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
+            font-weight: var.$font-weight-medium;
+            color: rgba(var.$white, 0.9);
           }
-          
+
+          /* 字段注释 */
           .field-note {
-            margin-top: 0.5rem;
+            margin-top: var.$spacing-sm;
             margin-bottom: 0;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: var.$font-size-xs + 0.1rem;
+            color: rgba(var.$white, 0.6);
             font-style: italic;
           }
         }
-        
+
+        /* 字段帮助文本 */
         .field-helper {
-          font-size: 0.85rem;
-          color: rgba(255, 255, 255, 0.7);
-          margin-top: 0.3rem;
+          font-size: var.$font-size-xs + 0.1rem;
+          color: rgba(var.$white, 0.7);
+          margin-top: var.$spacing-xs;
           margin-bottom: 0;
         }
       }
-      
+
+      /* 提交按钮 */
       .submit-button {
-        margin-top: 1rem;
+        margin-top: var.$spacing-md;
         background-color: rgba(147, 118, 224, 0.3);
-        color: white;
-        border: 2px solid rgba(147, 118, 224, 0.5);
-        border-radius: 8px;
-        padding: 1rem;
-        font-size: 1.05rem;
-        font-weight: 500;
+        color: var.$white;
+        border: var.$border-width-medium solid rgba(147, 118, 224, 0.5);
+        border-radius: var.$border-radius-md;
+        padding: var.$spacing-md;
+        font-size: var.$font-size-md + 0.05rem;
+        font-weight: var.$font-weight-medium;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: var.$transition-base;
         text-align: center;
-        
+
         &:hover {
           background-color: rgba(147, 118, 224, 0.5);
           transform: translateY(-2px);
         }
-        
+
         &:active {
           transform: translateY(0);
         }
       }
-      
+
+      /* 提交错误信息 */
       .submit-error {
-        margin-top: 1rem;
+        margin-top: var.$spacing-md;
         padding: 0.8rem 1.2rem;
         background-color: rgba(255, 107, 107, 0.15);
-        border-left: 3px solid #ff6b6b;
-        border-radius: 8px;
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 0.95rem;
+        border-left: var.$border-width-thick solid #ff6b6b;
+        border-radius: var.$border-radius-md;
+        color: rgba(var.$white, 0.9);
+        font-size: var.$font-size-sm;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var.$spacing-sm;
         animation: fadeIn 0.3s ease-in-out;
-        
+
         .error-icon {
           color: #ff6b6b;
           min-width: 16px;
@@ -420,11 +447,27 @@
   }
 }
 
+/* 关键帧动画 */
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(10px); }
-  15% { opacity: 1; transform: translateY(0); }
-  85% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes fadeIn {
@@ -432,6 +475,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -449,112 +493,115 @@
   .service-setting-card {
     flex-direction: column;
     max-width: calc(600px - 4rem);
-    margin: 0 2rem;
+    margin: 0 var.$spacing-xl;
     max-height: none;
-    
+
     .service-img-section {
       min-height: 160px;
-      padding: 1.5rem;
-      
+      padding: var.$spacing-lg;
+
       .service-info-overlay {
         max-width: 100%;
-        
+
         .service-title {
-          margin-bottom: 1rem;
-          
+          margin-bottom: var.$spacing-md;
+
           .service-icon {
             font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: var.$spacing-sm;
           }
-          
+
           h2 {
-            font-size: 1.5rem;
+            font-size: var.$font-size-xl;
           }
         }
-        
+
         .service-description {
           p {
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            font-size: var.$font-size-sm;
+            margin-bottom: var.$spacing-sm;
           }
         }
       }
     }
-    
+
     .service-setting-form-wrapper {
       max-height: none;
-      padding: 2rem;
+      padding: var.$spacing-xl;
     }
   }
 }
 
 @media (max-width: 576px) {
   .service-setting-card {
-    margin: 0 1rem;
-    width: calc(100% - 2rem);
-    
+    margin: 0 var.$spacing-md;
+    width: calc(100% - var.$spacing-xl);
+
     .service-img-section {
-      padding: 1rem;
+      padding: var.$spacing-md;
     }
-    
+
     .service-setting-form-wrapper {
-      padding: 1.5rem;
+      padding: var.$spacing-lg;
     }
   }
 }
 
+/* 验证码容器 */
 .verification-container {
   display: flex;
   flex-direction: row;
   width: 100%;
-  gap: 10px;
-  margin-top: 0.5rem;
+  gap: var.$spacing-sm;
+  margin-top: var.$spacing-sm;
 }
 
+/* 验证码输入框 */
 .verification-input {
   flex: 1;
   height: 50px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 0 1.2rem;
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.9);
-  
+  background-color: rgba(var.$white, 0.1);
+  border: var.$border-width-thin solid rgba(var.$white, 0.2);
+  border-radius: var.$border-radius-md;
+  padding: 0 var.$spacing-md + 0.2rem;
+  font-size: var.$font-size-md + 0.05rem;
+  color: rgba(var.$white, 0.9);
+
   &:focus {
     outline: none;
     border-color: #9376E0;
     box-shadow: 0 0 0 2px rgba(147, 118, 224, 0.3);
   }
-  
+
   &::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(var.$white, 0.5);
   }
-  
+
   &.has-error {
     border-color: #ff6b6b;
   }
 }
 
+/* 发送验证码按钮 */
 .send-code-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var.$spacing-sm;
   background-color: #4a3a80;
-  color: white;
+  color: var.$white;
   border: none;
-  border-radius: 8px;
-  padding: 0 1.2rem;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: var.$border-radius-md;
+  padding: 0 var.$spacing-md + 0.2rem;
+  font-size: var.$font-size-md;
+  font-weight: var.$font-weight-medium;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var.$transition-short;
   height: 50px;
   min-width: 120px;
 
   .button-icon {
-    font-size: 1.1rem;
+    font-size: var.$font-size-md + 0.1rem;
   }
 
   &:hover {
@@ -566,23 +613,24 @@
   }
 
   &:disabled {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(var.$white, 0.1);
+    color: rgba(var.$white, 0.5);
     cursor: not-allowed;
   }
 }
 
+/* 成功消息 */
 .success-message {
   color: #4ade80;
-  font-size: 0.9rem;
+  font-size: var.$font-size-sm;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: var.$spacing-sm;
+  margin-top: var.$spacing-sm;
   animation: fadeIn 0.3s ease-in-out;
 
   &::before {
     content: '✓';
-    font-weight: bold;
+    font-weight: var.$font-weight-bold;
   }
-} 
+}

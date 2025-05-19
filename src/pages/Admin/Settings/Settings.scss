@@ -1,5 +1,7 @@
-@use '@/style/mixins' as *;
+@use '@/style/mixins'as *;
+@use '@/style/variables'as var;
 
+// 设置页面主容器
 .settings-page {
   height: 100vh;
   max-height: calc(100vh - 60px);
@@ -7,14 +9,16 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  
+
+  // 小屏幕适配
   @media (max-width: 992px) {
     height: auto;
     max-height: none;
     overflow-y: visible;
-    padding-bottom: 2rem;
+    padding-bottom: var.$spacing-xl;
   }
-  
+
+  // 内容容器
   .edit-container {
     width: 100%;
     height: 100%;
@@ -25,94 +29,105 @@
     align-items: center;
     justify-content: center;
     min-height: calc(100vh - 60px);
-    
+
+    // 小屏幕适配
     @media (max-width: 992px) {
       height: auto;
       min-height: auto;
       justify-content: flex-start;
     }
   }
-  
+
+  // 页面头部
   .edit-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
-    margin-bottom: 1.5rem;
+    padding: var.$spacing-md 0;
+    margin-bottom: var.$spacing-lg;
     border-bottom: 1px solid var(--border-color);
 
+    // 窄屏适配
     @media (max-width: 880px) {
       flex-direction: column;
       align-items: flex-start;
-      gap: 1rem;
+      gap: var.$spacing-md;
     }
   }
-  
+
+  // 设置选项卡
   .settings-tabs {
     display: flex;
     gap: 0.2rem;
     overflow-x: auto;
-    padding-bottom: 0.5rem;
-    
+    padding-bottom: var.$spacing-sm;
+
+    // 滚动条样式
     &::-webkit-scrollbar {
       height: 4px;
     }
-    
+
     &::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
+      border-radius: var.$border-radius-sm;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
+      border-radius: var.$border-radius-sm;
     }
-    
+
+    // 选项卡按钮
     .tab-item {
       background: transparent;
       color: rgba(255, 255, 255, 0.7);
       border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-size: 0.95rem;
+      padding: var.$spacing-sm var.$spacing-md;
+      border-radius: var.$border-radius-md - 0.25rem;
+      font-size: var.$font-size-sm;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var.$spacing-sm;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: var.$transition-short;
       white-space: nowrap;
-      
+
       svg {
-        font-size: 1.1rem;
+        font-size: var.$font-size-md + 0.1rem;
       }
-      
+
+      // 悬停状态
       &:hover {
         background: rgba(255, 255, 255, 0.1);
         color: rgba(255, 255, 255, 0.9);
       }
-      
+
+      // 活动状态
       &.active {
         background: rgba(147, 118, 224, 0.25);
-        color: #fff;
-        font-weight: 500;
-        
+        color: var.$white;
+        font-weight: var.$font-weight-medium;
+
         svg {
           color: #9376E0;
         }
       }
     }
-    
+
+    // 在移动设备上隐藏选项卡
     @media (max-width: 880px) {
       display: none;
     }
   }
-  
+
+  // 设置下拉菜单（移动端）
   .settings-dropdown {
     display: none;
     position: relative;
     width: 100%;
     z-index: 20;
-    
+
+    // 下拉菜单切换按钮
     .dropdown-toggle {
       @include glass-card-base;
       display: flex;
@@ -121,36 +136,41 @@
       width: 100%;
       padding: 0.6rem 1.2rem;
       border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 0.95rem;
-      font-weight: 500;
+      border-radius: var.$border-radius-lg;
+      color: var.$white;
+      font-size: var.$font-size-sm;
+      font-weight: var.$font-weight-medium;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: var.$transition-short;
       background-color: rgba(60, 60, 70, 0.5);
       height: 38px;
-      
+
+      // 图标样式
       svg {
-        margin-right: 0.5rem;
-        font-size: 1.1rem;
-        
+        margin-right: var.$spacing-sm;
+        font-size: var.$font-size-md + 0.1rem;
+
+        // 旋转动画类
         &.rotate {
           transform: rotate(180deg);
-          transition: transform 0.3s ease;
+          transition: transform var.$transition-base;
         }
-        
+
+        // 最后一个图标（箭头）
         &:last-child {
           margin-right: 0;
-          margin-left: 0.5rem;
-          transition: transform 0.3s ease;
+          margin-left: var.$spacing-sm;
+          transition: transform var.$transition-base;
         }
       }
-      
+
+      // 悬停效果
       &:hover {
         background-color: rgba(80, 80, 90, 0.5);
       }
     }
-    
+
+    // 下拉菜单内容
     .dropdown-menu {
       position: absolute;
       top: calc(100% + 5px);
@@ -159,13 +179,14 @@
       background-color: rgba(30, 30, 35, 0.95);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border-radius: 8px;
+      border-radius: var.$border-radius-lg;
       overflow: hidden;
       z-index: 100;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      box-shadow: var.$shadow-lg;
       border: 1px solid rgba(255, 255, 255, 0.1);
       animation: dropdown-fade 0.3s ease-in-out;
-      
+
+      // 下拉菜单项
       .dropdown-item {
         width: 100%;
         padding: 0.8rem 1.2rem;
@@ -173,38 +194,43 @@
         background: transparent;
         border: none;
         color: rgba(255, 255, 255, 0.8);
-        font-size: 0.95rem;
+        font-size: var.$font-size-sm;
         cursor: pointer;
         display: flex;
         align-items: center;
-        transition: background-color 0.2s ease;
-        
+        transition: background-color var.$transition-short;
+
+        // 菜单项图标
         svg {
           margin-right: 0.8rem;
-          font-size: 1.1rem;
+          font-size: var.$font-size-md + 0.1rem;
         }
-        
+
+        // 悬停状态
         &:hover {
           background-color: rgba(255, 255, 255, 0.1);
         }
-        
+
+        // 活动状态
         &.active {
           background-color: rgba(147, 118, 224, 0.2);
-          color: white;
-          
+          color: var.$white;
+
           svg {
             color: #9376E0;
           }
         }
       }
     }
-    
+
+    // 在移动设备上显示下拉菜单
     @media (max-width: 880px) {
       display: block;
       width: 100%;
     }
   }
-  
+
+  // 用户设置包装器
   .user-setting-wrapper {
     display: flex;
     justify-content: center;
@@ -217,7 +243,8 @@
     max-height: calc(100vh - 60px);
     height: 100%;
     margin: auto 0;
-    
+
+    // 中屏幕适配
     @media (max-width: 1220px) {
       padding: 0;
       width: 100%;
@@ -225,75 +252,110 @@
       height: auto;
       overflow-y: visible;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: var.$spacing-xl;
     }
-    
+
+    // 小屏幕适配
     @media (max-width: 576px) {
       max-height: none;
       height: auto;
       overflow-y: visible;
       align-items: center;
       padding: 0;
-      margin-bottom: 2rem;
+      margin-bottom: var.$spacing-xl;
     }
   }
-  
+
+  // 占位内容（未选择设置时）
   .placeholder-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4rem;
+    padding: var.$spacing-xxl;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 16px;
+    border-radius: var.$border-radius-xl;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: var.$shadow-lg;
     min-height: 300px;
     width: 80%;
     max-width: 800px;
-    
+
+    // 占位图标
     .placeholder-icon {
-      font-size: 4rem;
+      font-size: var.$font-size-xxxl;
       color: rgba(255, 255, 255, 0.2);
-      margin-bottom: 1.5rem;
+      margin-bottom: var.$spacing-lg;
       animation: pulse 2s infinite;
     }
-    
+
+    // 占位文本
     p {
-      font-size: 1.5rem;
+      font-size: var.$font-size-xl;
       color: rgba(255, 255, 255, 0.6);
       text-align: center;
     }
-    
+
+    // 中屏幕适配
     @media (max-width: 1220px) {
       width: 90%;
-      padding: 2rem;
+      padding: var.$spacing-xl;
     }
   }
-  
+
+  // 淡入淡出动画
   @keyframes fadeInOut {
-    0% { opacity: 0; transform: translateY(10px); }
-    15% { opacity: 1; transform: translateY(0); }
-    85% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-10px); }
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    15% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    85% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
   }
-  
+
+  // 脉冲动画
   @keyframes pulse {
-    0% { opacity: 0.3; transform: scale(0.95); }
-    50% { opacity: 0.5; transform: scale(1.05); }
-    100% { opacity: 0.3; transform: scale(0.95); }
+    0% {
+      opacity: 0.3;
+      transform: scale(0.95);
+    }
+
+    50% {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+
+    100% {
+      opacity: 0.3;
+      transform: scale(0.95);
+    }
   }
-  
+
+  // 下拉菜单淡入动画
   @keyframes dropdown-fade {
     from {
       opacity: 0;
       transform: translateY(-10px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
-} 
+}

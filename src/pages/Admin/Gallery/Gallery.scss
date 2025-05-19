@@ -1,41 +1,41 @@
 @use "sass:color";
+@use "@/style/mixins"as *;
+@use "@/style/variables"as var;
 
-// Define CSS variables matching the AdminLayout theme (adjust if needed)
-// 定义匹配 AdminLayout 主题的 CSS 变量（如果需要，请调整）
+// 定义匹配 AdminLayout 主题的 CSS 变量
 :root {
-  --dark-bg: #1a1a1a; // Adjust based on actual admin theme background / 根据实际管理主题背景调整
-  --light-text: #f0f0f0; // Adjust based on actual admin theme text / 根据实际管理主题文本调整
-  --accent-color: #4e9af1; // Adjust based on actual admin theme accent / 根据实际管理主题强调色调整
+  --dark-bg: #1a1a1a; // 根据实际管理主题背景调整
+  --light-text: #f0f0f0; // 根据实际管理主题文本调整
+  --accent-color: #4e9af1; // 根据实际管理主题强调色调整
 }
 
+// 图库容器
 .gallery-container {
-  padding: 20px;
+  padding: var.$spacing-lg;
   position: relative; // 建立定位上下文，使内部的绝对定位元素相对于此元素定位
-  // Inherit background and text color from the layout or set explicitly
-  // 从布局继承背景和文本颜色或显式设置
-  // background: var(--dark-bg); // Remove if inherited from AdminLayout / 如果从 AdminLayout 继承则移除
-  // color: var(--light-text); // Remove if inherited from AdminLayout / 如果从 AdminLayout 继承则移除
-  min-height: calc(100vh - 60px); // Example: Adjust based on header/footer height / 示例：根据页眉/页脚高度调整
+  min-height: calc(100vh - 60px); // 根据页眉/页脚高度调整
 }
 
+// 搜索框
 .search-box {
   width: 100%;
   max-width: 500px;
-  margin: 0 auto 30px;
+  margin: 0 auto var.$spacing-xl;
   position: relative;
-  display: flex; // Make it a flex container to align button
-  align-items: center; // Vertically center items
+  display: flex; // 设为flex容器以对齐按钮
+  align-items: center; // 垂直居中项目
 }
 
+// 搜索输入框
 .search-input {
   width: 100%;
-  padding: 12px 20px 12px 45px; // Adjusted padding for icon
+  padding: 0.75rem 1.25rem 0.75rem 2.8rem; // 调整内边距以适应图标
   border: none;
-  border-radius: 30px;
+  border-radius: var.$border-radius-pill;
   background: rgba(255, 255, 255, 0.1);
-  color: var(--light-text); // Use theme text color
-  font-size: 1rem;
-  transition: all 0.3s;
+  color: var(--light-text); // 使用主题文本颜色
+  font-size: var.$font-size-md;
+  transition: var.$transition-base;
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.7);
@@ -49,26 +49,27 @@
   }
 }
 
+// 搜索图标
 .search-icon {
   position: absolute;
-  left: 15px;
+  left: var.$spacing-sm + 0.15rem;
   top: 50%;
   transform: translateY(-50%);
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1.2rem; // Adjust icon size if needed / 如果需要，调整图标大小
-  pointer-events: none; // Prevent icon from blocking input focus / 防止图标阻挡输入焦点
+  font-size: var.$font-size-lg;
+  pointer-events: none; // 防止图标阻挡输入焦点
 }
 
 // 添加图片按钮
 .add-image-btn {
-  margin-left: 15px;
+  margin-left: var.$spacing-sm + 0.15rem;
   background-color: var(--accent-color);
   border: none;
-  border-radius: 30px;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  border-radius: var.$border-radius-pill;
+  color: var.$white;
+  padding: 0.6rem 1.25rem;
+  font-size: var.$font-size-sm + 0.05rem;
+  font-weight: var.$font-weight-medium;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -85,23 +86,19 @@
   }
 
   .add-icon {
-    margin-right: 6px;
-    font-size: 1rem;
+    margin-right: var.$spacing-xs + 0.1rem;
+    font-size: var.$font-size-md;
   }
 }
 
+// 图库瀑布流布局
 .gallery {
-  // 删除之前的网格布局
-  // display: grid;
-  // grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  // gap: 25px;
-
-  // 改用瀑布流布局
+  // 使用瀑布流布局
   column-count: 4; // 默认4列
-  column-gap: 25px;
+  column-gap: var.$spacing-xl;
   width: 100%;
 
-  // 增加resizing时的优化样式
+  // 提升调整窗口大小时的性能
   &.resizing {
     transition: none !important;
 
@@ -116,10 +113,10 @@
       transform: none !important;
 
       .gallery-img {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: var.$shadow-md !important;
       }
 
-      // Ensure captions are hidden during resize
+      // 确保在调整大小期间隐藏说明
       .gallery-caption {
         opacity: 0 !important;
       }
@@ -127,16 +124,17 @@
   }
 }
 
+// 图库项目
 .gallery-item {
   position: relative;
-  // 瀑布流项目需要显示为块并打破避免列间的断裂
+  // 瀑布流项目需要显示为块并避免列间断裂
   display: block;
   break-inside: avoid;
-  margin-bottom: 25px; // 项目之间的垂直间距
+  margin-bottom: var.$spacing-xl; // 项目之间的垂直间距
   cursor: pointer;
   transition: transform 0.25s ease;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: var.$border-radius-md;
   // 添加硬件加速
   transform: translateZ(0);
 
@@ -148,7 +146,7 @@
       animation: shimmer 1.5s infinite linear;
       width: 100%;
       min-height: 200px;
-      border-radius: 8px;
+      border-radius: var.$border-radius-md;
     }
 
     .gallery-img {
@@ -167,8 +165,8 @@
 
   &:hover .gallery-img {
     transform: scale(1.05) translateZ(0);
-    // 减少hover时的box-shadow复杂度
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    // 减少hover时的阴影复杂度
+    box-shadow: var.$shadow-lg;
   }
 
   &:hover .gallery-caption {
@@ -182,50 +180,49 @@
   }
 }
 
+// 图库项目内部容器
 .gallery-item-inner {
   position: relative;
   width: 100%;
   overflow: hidden;
-  // 不需要固定高度，让图片决定高度
-  // height: 100%;
   transform: translateZ(0);
 }
 
+// 图库图片
 .gallery-img {
   display: block;
   width: 100%;
   height: auto; // 让图片保持原始宽高比
   object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: var.$border-radius-md;
+  box-shadow: var.$shadow-md;
   transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
   transform: translateZ(0);
   will-change: transform;
 }
 
+// 图库说明文字
 .gallery-caption {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 25px;
-  background: linear-gradient(
-                  to top,
-                  rgba(0, 0, 0, 0.8) 0%,
-                  transparent 100%
-  );
+  padding: var.$spacing-xl;
+  background: linear-gradient(to top,
+      rgba(0, 0, 0, 0.8) 0%,
+      transparent 100%);
   opacity: 0;
   transform: translateY(20px) translateZ(0);
   transition: opacity 0.3s ease, transform 0.3s ease;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 var.$border-radius-md var.$border-radius-md;
   z-index: 2;
   color: var(--light-text);
   will-change: transform, opacity;
 
   h3 {
-    margin: 0 0 10px 0;
-    font-size: 1.2rem;
-    font-weight: 500;
+    margin: 0 0 0.6rem 0;
+    font-size: var.$font-size-lg;
+    font-weight: var.$font-weight-medium;
     transform: translateY(10px);
     transition: transform 0.3s;
     white-space: nowrap;
@@ -235,7 +232,7 @@
 
   p {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: var.$font-size-sm;
     opacity: 0.9;
     transform: translateY(10px);
     transition: transform 0.3s;
@@ -250,11 +247,11 @@
     width: 100%;
     background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    color: white;
-    padding: 8px 10px;
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    border-radius: var.$border-radius-sm;
+    color: var.$white;
+    padding: var.$spacing-xs var.$spacing-sm;
+    font-size: var.$font-size-md;
+    transition: var.$transition-short;
 
     &:focus {
       outline: none;
@@ -270,29 +267,30 @@
 
   .name-error-message {
     color: rgba(255, 99, 71, 0.9);
-    font-size: 0.85rem;
-    margin-top: 5px;
-    padding: 2px 5px;
+    font-size: var.$font-size-xs;
+    margin-top: var.$spacing-xs;
+    padding: 2px var.$spacing-xs;
     background: rgba(0, 0, 0, 0.5);
-    border-radius: 3px;
+    border-radius: var.$border-radius-sm - 0.15rem;
     text-align: center;
   }
 }
 
+// 无结果提示
 .no-results {
-  grid-column: 1 / -1; // Span across all columns / 跨越所有列
+  grid-column: 1 / -1; // 跨越所有列
   text-align: center;
-  padding: 40px 0;
+  padding: var.$spacing-xxl 0;
   color: rgba(255, 255, 255, 0.7);
 }
 
-// Loading indicator
+// 加载指示器
 .loading-indicator {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 60px 0;
+  padding: var.$spacing-xxl 0;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 1.2rem;
+  font-size: var.$font-size-lg;
   position: relative;
 
   &::after {
@@ -304,20 +302,23 @@
     border: 3px solid rgba(255, 255, 255, 0.2);
     border-top-color: var(--accent-color);
     animation: spin 1s linear infinite;
-    margin: 20px auto 0;
+    margin: var.$spacing-lg auto 0;
   }
 }
 
+// 旋转动画
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
+// 闪烁加载效果动画
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -325,21 +326,22 @@
 
 // 响应式样式调整
 @media (max-width: 1500px) {
+
   // 1500px以下的屏幕，减小字体大小
   .gallery-caption {
-    padding: 20px;
+    padding: var.$spacing-lg;
 
     h3 {
-      font-size: 1.1rem;
-      margin-bottom: 6px;
+      font-size: var.$font-size-md + 0.1rem;
+      margin-bottom: var.$spacing-xs;
     }
 
     p {
-      font-size: 0.85rem;
+      font-size: var.$font-size-xs + 0.1rem;
     }
 
     .rename-input {
-      font-size: 0.95rem;
+      font-size: var.$font-size-sm + 0.1rem;
     }
   }
 }
@@ -353,41 +355,41 @@
 @media (max-width: 1000px) {
   .gallery {
     column-count: 2; // 中等屏幕2列
-    column-gap: 20px;
+    column-gap: var.$spacing-lg;
   }
 
   .gallery-item {
-    margin-bottom: 20px;
+    margin-bottom: var.$spacing-lg;
   }
 }
 
 @media (max-width: 600px) {
   .gallery {
     column-count: 1; // 小屏幕单列
-    column-gap: 15px;
+    column-gap: var.$spacing-md;
   }
 
   .gallery-item {
-    margin-bottom: 15px;
+    margin-bottom: var.$spacing-md;
   }
 
   // 小屏幕上减小图片名称和日期的字体大小
   .gallery-caption {
-    padding: 12px; // 进一步减小内边距
+    padding: 0.75rem; // 进一步减小内边距
 
     h3 {
-      font-size: 0.85rem; // 缩小名称字体
-      margin-bottom: 3px;
+      font-size: var.$font-size-xs + 0.1rem; // 缩小名称字体
+      margin-bottom: 0.2rem;
     }
 
     p {
-      font-size: 0.65rem; // 缩小日期字体
+      font-size: var.$font-size-xs - 0.1rem; // 缩小日期字体
     }
 
     // 调整小屏幕上的输入框
     .rename-input {
-      padding: 6px 8px;
-      font-size: 0.9rem;
+      padding: var.$spacing-xs var.$spacing-xs;
+      font-size: var.$font-size-sm;
     }
   }
 }
@@ -395,26 +397,26 @@
 // 更小屏幕的额外调整
 @media (max-width: 400px) {
   .gallery-caption {
-    padding: 8px; // 更小屏幕上进一步减小内边距
+    padding: var.$spacing-xs; // 更小屏幕上进一步减小内边距
 
     h3 {
-      font-size: 0.75rem;
-      margin-bottom: 2px;
+      font-size: var.$font-size-xs;
+      margin-bottom: 0.12rem;
     }
 
     p {
-      font-size: 0.6rem;
+      font-size: var.$font-size-xs - 0.15rem;
     }
 
     // 调整更小屏幕上的输入框
     .rename-input {
-      padding: 4px 6px;
-      font-size: 0.85rem;
+      padding: 0.25rem var.$spacing-xs;
+      font-size: var.$font-size-xs + 0.1rem;
     }
   }
 }
 
-// 为了提高性能，在网格布局计算时添加content-visibility优化
+// 性能优化
 @supports (content-visibility: auto) {
   .gallery-item {
     content-visibility: auto;
@@ -422,26 +424,23 @@
   }
 }
 
-// --- Context Menu Styles ---
 // --- 右键菜单样式 ---
 .context-menu {
-  position: fixed; // 改为固定定位，相对于视口
+  position: fixed; // 固定定位，相对于视口
   min-width: 180px;
   background-color: rgba(25, 25, 25, 0.85);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.3);
+  border-radius: var.$border-radius-lg;
+  box-shadow: var.$shadow-lg;
   z-index: 9999; // 增加z-index确保显示在最上层
   overflow: hidden;
   color: var(--light-text);
-  font-size: 0.95rem;
-  padding: 6px 0;
+  font-size: var.$font-size-sm + 0.1rem;
+  padding: var.$spacing-xs 0;
   transform-origin: top left;
   animation: contextMenuFadeIn 0.15s ease-out forwards;
-
-  // 确保gallery-container的position是relative以实现正确的定位上下文
 
   &.closing {
     animation: contextMenuFadeOut 0.12s ease-in forwards;
@@ -454,8 +453,8 @@
   }
 
   .menu-icon {
-    margin-right: 8px;
-    font-size: 1rem;
+    margin-right: var.$spacing-xs + 0.2rem;
+    font-size: var.$font-size-md;
     opacity: 0.8;
     vertical-align: middle;
     position: relative;
@@ -463,17 +462,17 @@
   }
 
   li {
-    padding: 10px 16px;
+    padding: 0.6rem var.$spacing-md;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var.$transition-short;
     position: relative;
     display: flex;
     align-items: center;
 
     &:hover {
       background-color: rgba(78, 154, 241, 0.2);
-      color: white;
-      padding-left: 22px;
+      color: var.$white;
+      padding-left: 1.4rem;
 
       .menu-icon {
         opacity: 1;
@@ -488,30 +487,34 @@
       content: '';
       position: absolute;
       bottom: 0;
-      left: 8px;
-      right: 8px;
+      left: var.$spacing-xs + 0.2rem;
+      right: var.$spacing-xs + 0.2rem;
       height: 1px;
       background: rgba(255, 255, 255, 0.07);
     }
   }
 }
 
+// 右键菜单淡入动画
 @keyframes contextMenuFadeIn {
   from {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
   }
 }
 
+// 右键菜单淡出动画
 @keyframes contextMenuFadeOut {
   from {
     opacity: 1;
     transform: scale(1);
   }
+
   to {
     opacity: 0;
     transform: scale(0.95);
@@ -533,68 +536,72 @@
   animation: fadeIn 0.3s ease;
 }
 
+// 上传模态框
 .upload-modal {
   background-color: #2a2a2a;
-  border-radius: 10px;
+  border-radius: var.$border-radius-lg;
   width: 90%;
   max-width: 700px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: var.$shadow-lg;
   animation: scaleIn 0.3s ease;
 }
 
+// 上传模态框头部
 .upload-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: var.$spacing-lg;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
   h2 {
     margin: 0;
     color: var(--light-text);
-    font-size: 1.5rem;
-    font-weight: 500;
+    font-size: var.$font-size-xl;
+    font-weight: var.$font-weight-medium;
   }
 
   .close-button {
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.7);
-    font-size: 1.8rem;
+    font-size: var.$font-size-xl + 0.3rem;
     cursor: pointer;
     padding: 0;
     line-height: 1;
     transition: color 0.2s;
 
     &:hover {
-      color: #fff;
+      color: var.$white;
     }
   }
 }
 
+// 上传模态框内容
 .upload-modal-body {
-  padding: 20px;
+  padding: var.$spacing-lg;
 }
 
+// 文件拖放区域
 .drop-zone {
   border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  padding: 30px 20px;
+  border-radius: var.$border-radius-md;
+  padding: var.$spacing-xl var.$spacing-lg;
   text-align: center;
-  transition: all 0.3s;
+  transition: var.$transition-base;
   cursor: pointer;
-  margin-bottom: 20px;
+  margin-bottom: var.$spacing-lg;
 
   p {
-    margin: 0 0 10px;
+    margin: 0 0 0.6rem;
     color: var(--light-text);
-    font-size: 1.1rem;
+    font-size: var.$font-size-md + 0.1rem;
   }
 
   .file-type-hint {
-    font-size: 0.9rem;
+    font-size: var.$font-size-sm;
     color: rgba(255, 255, 255, 0.6);
   }
 
@@ -609,25 +616,27 @@
   }
 }
 
+// 上传文件列表
 .upload-file-list {
   margin-top: 1.5rem;
 
   h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.1rem;
-    font-weight: 500;
+    margin: 0 0 var.$spacing-md 0;
+    font-size: var.$font-size-md + 0.1rem;
+    font-weight: var.$font-weight-medium;
     color: rgba(255, 255, 255, 0.9);
   }
 
   .file-items {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
+    gap: var.$spacing-md;
   }
 
+  // 文件项
   .file-item {
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: var.$border-radius-md;
     overflow: hidden;
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -660,29 +669,29 @@
         z-index: 2;
 
         .compression-spinner {
-          font-size: 2rem;
+          font-size: var.$font-size-xxl;
           color: rgba(130, 180, 255, 0.9);
-          margin-bottom: 0.5rem;
+          margin-bottom: var.$spacing-xs;
           animation: spin 1.5s linear infinite;
         }
 
         span {
           color: rgba(255, 255, 255, 0.9);
-          font-size: 0.9rem;
-          margin-bottom: 0.75rem;
+          font-size: var.$font-size-sm;
+          margin-bottom: var.$spacing-xs + 0.25rem;
         }
 
         .progress-bar-container {
           width: 80%;
           height: 8px;
           background: rgba(255, 255, 255, 0.2);
-          border-radius: 4px;
+          border-radius: var.$border-radius-sm;
           overflow: hidden;
 
           .progress-bar {
             height: 100%;
             background: linear-gradient(to right, #2ecc71, #82b4ff);
-            border-radius: 4px;
+            border-radius: var.$border-radius-sm;
             transition: width 0.2s ease;
 
             &[style*="width: 100%"] {
@@ -694,12 +703,12 @@
     }
 
     .file-info {
-      padding: 0.75rem;
+      padding: var.$spacing-sm + 0.25rem;
       position: relative;
 
       .file-name {
-        font-size: 0.9rem;
-        margin: 0 0 0.5rem 0;
+        font-size: var.$font-size-sm;
+        margin: 0 0 var.$spacing-xs 0;
         color: rgba(255, 255, 255, 0.9);
         white-space: nowrap;
         overflow: hidden;
@@ -708,7 +717,7 @@
       }
 
       .file-meta {
-        font-size: 0.8rem;
+        font-size: var.$font-size-xs + 0.05rem;
 
         .compression-status {
           display: flex;
@@ -748,21 +757,21 @@
 
       .remove-file {
         position: absolute;
-        top: 0.75rem;
-        right: 0.75rem;
+        top: var.$spacing-sm + 0.25rem;
+        right: var.$spacing-sm + 0.25rem;
         width: 20px;
         height: 20px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.1);
         border: none;
         color: rgba(255, 255, 255, 0.7);
-        font-size: 1rem;
+        font-size: var.$font-size-md;
         line-height: 1;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: var.$transition-short;
 
         &:hover {
           background: rgba(255, 87, 87, 0.2);
@@ -778,6 +787,7 @@
     }
   }
 
+  // 上传操作按钮
   .upload-actions {
     margin-top: 1.5rem;
     display: flex;
@@ -787,17 +797,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 500;
+      padding: var.$spacing-sm + 0.25rem var.$spacing-md + 0.5rem;
+      border-radius: var.$border-radius-md;
+      font-size: var.$font-size-md;
+      font-weight: var.$font-weight-medium;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: var.$transition-short;
       border: none;
 
       svg {
-        margin-right: 0.5rem;
-        font-size: 1.1rem;
+        margin-right: var.$spacing-xs;
+        font-size: var.$font-size-md + 0.1rem;
       }
 
       &.enabled {
@@ -820,94 +830,105 @@
   }
 }
 
+// 旋转动画定义
 @keyframes spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
-// 动画
+// 淡入动画
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
+// 缩放淡入动画
 @keyframes scaleIn {
   from {
     transform: scale(0.9);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
   }
 }
 
+// 进度条完成动画
 @keyframes progressComplete {
   0% {
     box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
   }
 }
 
-// 添加上传相关样式
+// 上传相关样式
 .upload-overlay {
-    background-color: rgba(0, 0, 0, 0.7);
-    
-    .compression-spinner {
-        color: #2ecc71;
-    }
+  background-color: rgba(0, 0, 0, 0.7);
+
+  .compression-spinner {
+    color: #2ecc71;
+  }
 }
 
+// 上传进度条
 .upload-progress {
-    background-color: #2ecc71;
+  background-color: #2ecc71;
 }
 
+// 上传错误消息
 .upload-error {
-    color: #e74c3c;
-    font-size: 0.75rem;
-    margin-top: 4px;
-    padding: 2px 4px;
-    background-color: rgba(231, 76, 60, 0.1);
-    border-radius: 2px;
+  color: var.$danger;
+  font-size: var.$font-size-xs;
+  margin-top: var.$spacing-xs;
+  padding: 2px var.$spacing-xs;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: var.$border-radius-sm - 0.15rem;
 }
 
+// 错误消息样式
 .error-message {
-    background-color: rgba(231, 76, 60, 0.1);
-    color: #e74c3c;
-    border-left: 3px solid #e74c3c;
-    margin: 10px 0;
-    padding: 10px 15px;
-    position: relative;
-    border-radius: 0 4px 4px 0;
-    font-size: 0.9rem;
-    
-    .close-error-btn {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #e74c3c;
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 0 5px;
-        
-        &:hover {
-            color: #c0392b;
-        }
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var.$danger;
+  border-left: 3px solid var.$danger;
+  margin: var.$spacing-sm 0;
+  padding: var.$spacing-sm var.$spacing-md;
+  position: relative;
+  border-radius: 0 var.$border-radius-sm var.$border-radius-sm 0;
+  font-size: var.$font-size-sm;
+
+  .close-error-btn {
+    position: absolute;
+    right: var.$spacing-sm;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var.$danger;
+    font-size: var.$font-size-lg;
+    cursor: pointer;
+    padding: 0 var.$spacing-xs;
+
+    &:hover {
+      color: #c0392b;
     }
-} 
+  }
+}

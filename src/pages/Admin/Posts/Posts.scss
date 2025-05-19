@@ -1,4 +1,5 @@
-@use '@/style/mixins' as *;
+@use '@/style/mixins'as *;
+@use '@/style/variables'as var;
 @use "sass:color";
 
 // 添加淡入淡出动画
@@ -7,6 +8,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -18,51 +20,54 @@
     opacity: 1;
     transform: translateY(0);
   }
+
   to {
     opacity: 0;
     transform: translateY(10px);
   }
 }
 
-// 添加独立的全局标签弹窗样式
+// 标签弹窗样式
 .tags-popup {
   position: fixed;
   background-color: rgba(45, 45, 60, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
+  border-radius: var.$border-radius-md - 0.25rem;
   padding: 0.8rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: var.$shadow-lg;
   z-index: 1000;
   display: flex;
   flex-direction: column;
   min-width: 200px;
   max-width: 300px;
   animation: fadeIn 0.2s ease-in-out;
-  
+
   &.closing {
     animation: fadeOut 0.2s ease-in-out forwards;
   }
 
+  // 弹窗标签项
   .popup-tag {
-    padding: 0.5rem 0.7rem;
-    border-radius: 4px;
+    padding: var.$spacing-sm var.$spacing-sm + 0.2rem;
+    border-radius: var.$border-radius-sm;
     background-color: rgba(70, 70, 90, 0.4);
     color: rgba(255, 255, 255, 0.95);
     margin-bottom: 0.4rem;
-    font-size: 0.85rem;
+    font-size: var.$font-size-xs;
     white-space: normal;
     word-break: break-word;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
-    
+
     &:hover {
       background-color: rgba(80, 80, 100, 0.5);
       color: rgba(255, 255, 255, 1);
     }
   }
-  
+
+  // 弹窗箭头
   &::after {
     content: '';
     position: absolute;
@@ -90,43 +95,46 @@
   .search-container {
     flex-shrink: 0; // 不允许收缩
     width: 100%;
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
+    margin-bottom: var.$spacing-md;
+    padding: 0.75rem var.$spacing-md;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
+    border-radius: var.$border-radius-md;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    
+    box-shadow: var.$shadow-sm;
+
     // 使用flex布局将所有元素放在一行
     display: flex;
     flex-direction: row;
     align-items: center;
     flex-wrap: nowrap;
-    gap: 1rem;
+    gap: var.$spacing-md;
 
+    // 搜索输入框包装器
     .search-input-wrapper {
       position: relative;
       margin-bottom: 0; // 移除底部边距
       min-width: 200px;
       flex: 1; // 让搜索框占据可用空间
 
+      // 搜索图标
       .search-icon {
         position: absolute;
         left: 12px;
         top: 50%;
         transform: translateY(-50%);
         color: rgba(255, 255, 255, 0.6);
-        font-size: 1rem;
+        font-size: var.$font-size-md;
       }
 
+      // 搜索输入框
       .search-input {
         width: 100%;
         padding: 0.7rem 2.5rem;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
+        border-radius: var.$border-radius-lg;
         background: rgba(255, 255, 255, 0.05);
         color: rgba(255, 255, 255, 0.9);
-        font-size: 0.9rem;
+        font-size: var.$font-size-sm;
 
         &::placeholder {
           color: rgba(255, 255, 255, 0.5);
@@ -139,6 +147,7 @@
         }
       }
 
+      // 清除搜索按钮
       .clear-search {
         position: absolute;
         right: 12px;
@@ -159,31 +168,34 @@
       }
     }
 
+    // 过滤部分
     .filter-section {
       display: flex;
       flex-wrap: nowrap;
-      gap: 1rem;
+      gap: var.$spacing-md;
       align-items: center;
       white-space: nowrap;
 
+      // 过滤项
       .filter-item {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var.$spacing-sm;
 
         label {
-          font-size: 0.9rem;
+          font-size: var.$font-size-sm;
           color: rgba(255, 255, 255, 0.7);
         }
 
+        // 过滤选择器
         .filter-select {
-          padding: 0.5rem;
+          padding: var.$spacing-sm;
           padding-right: 1.8rem; // 增加右侧内边距，为箭头留出空间
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 6px;
+          border-radius: var.$border-radius-md - 0.25rem;
           background: rgba(255, 255, 255, 0.05);
           color: rgba(255, 255, 255, 0.9);
-          font-size: 0.85rem;
+          font-size: var.$font-size-xs;
           width: 120px;
           cursor: pointer;
           appearance: none; // 移除默认的下拉箭头
@@ -196,7 +208,7 @@
             background-color: #121212;
             color: rgba(255, 255, 255, 0.9);
             padding: 8px;
-            font-size: 0.85rem;
+            font-size: var.$font-size-xs;
           }
 
           &:focus {
@@ -204,7 +216,7 @@
             border-color: rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
           }
-          
+
           &:hover {
             border-color: rgba(255, 255, 255, 0.2);
           }
@@ -228,17 +240,17 @@
         }
       }
     }
-    
+
     // 窄屏适配
     @media (max-width: 1100px) {
       flex-wrap: wrap;
-      
+
       .search-input-wrapper {
         width: 100%;
         flex: 1 0 100%;
         margin-bottom: 0.75rem;
       }
-      
+
       .filter-section {
         width: 100%;
         justify-content: space-between;
@@ -265,7 +277,7 @@
     border-radius: 12px;
     background: rgba(20, 20, 30, 0.8);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1),
-    0 6px 6px rgba(0, 0, 0, 0.1);
+      0 6px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
 
     // 修改固定高度为响应式
@@ -282,7 +294,8 @@
       table-layout: fixed;
       border: 1px solid rgba(255, 255, 255, 0.1); // 表格外边框
 
-      th, td {
+      th,
+      td {
         padding: 1rem; // 减小内边距
         border-bottom: 1px solid rgba(255, 255, 255, 0.1); // 横向分隔线
         border-right: 1px solid rgba(255, 255, 255, 0.05); // 纵向分隔线
@@ -296,7 +309,8 @@
       }
 
       // 调整列宽
-      th, td {
+      th,
+      td {
         &.index-column {
           width: 70px;
           text-align: center;
@@ -328,17 +342,17 @@
           max-width: 150px;
           padding: 0.7rem 1rem;
           position: relative; // 用于弹窗定位
-          
+
           @media (max-width: 1900px) {
             width: 130px;
             max-width: 130px;
           }
-          
+
           @media (max-width: 1700px) {
             width: 110px;
             max-width: 110px;
           }
-          
+
           @media (max-width: 1500px) {
             display: none;
           }
@@ -347,6 +361,7 @@
         &.word-count-column {
           width: 50px;
           text-align: center;
+
           @media (max-width: 1500px) {
             display: none;
           }
@@ -524,7 +539,7 @@
           overflow: hidden;
           white-space: nowrap;
         }
-        
+
         .tag-badge {
           display: inline-flex;
           align-items: center;
@@ -540,30 +555,30 @@
           overflow: hidden;
           text-overflow: ellipsis;
           height: 24px;
-          
+
           // 根据屏幕宽度调整最大宽度
           @media (min-width: 1900px) {
             max-width: 100px;
             min-width: 40px;
           }
-          
+
           @media (max-width: 1899px) and (min-width: 1700px) {
             max-width: 85px;
             min-width: 40px;
           }
-          
+
           @media (max-width: 1699px) and (min-width: 1500px) {
             max-width: 75px;
             min-width: 40px;
           }
-          
+
           &.more-tags {
             background-color: rgba(100, 108, 255, 0.2);
             color: rgba(150, 160, 255, 0.9);
             cursor: pointer;
             min-width: 35px;
             max-width: 40px; // 确保"更多"按钮大小固定
-            
+
             &:hover {
               background-color: rgba(100, 108, 255, 0.3);
             }
@@ -601,7 +616,7 @@
           padding-right: 5px; // 为固定标题添加一些右侧间距
           box-sizing: border-box; // 确保padding不影响总宽度
           cursor: default; // 鼠标样式
-          
+
           &:hover {
             text-decoration: none;
           }
@@ -836,7 +851,7 @@
         }
       }
     }
-    
+
     .posts-table-container {
       height: calc(100vh - 130px); // 窄屏下进一步增加表格高度
       min-height: 420px; // 增加窄屏时的最小高度
@@ -844,44 +859,45 @@
 
     .posts-table {
       min-width: 700px; // 调整最小宽度以适应窄屏
-      
-      th, td {
+
+      th,
+      td {
         padding: 0.8rem 0.6rem; // 减小内边距
-        
+
         &.date-column {
           width: 90px; // 窄屏上减小日期列宽度
         }
-        
+
         &.created-date-column {
           width: 90px; // 确保创建时间列有正确的宽度
           display: table-cell; // 确保显示
         }
-        
+
         &.category-column {
           width: 80px; // 窄屏上减小分类列宽度
         }
-        
+
         &.title-column {
           min-width: 120px !important; // 窄屏上也需增加宽度
           max-width: 140px !important; // 窄屏上增加宽度
           width: 140px !important; // 固定宽度
         }
-        
+
         &.status-column {
           width: 70px !important; // 窄屏上减小状态列宽度
           min-width: 70px !important;
           max-width: 70px !important;
         }
-        
+
         &.index-column {
           width: 60px; // 窄屏上减小序号列宽度
         }
-        
+
         &.action-column {
           width: 120px; // 窄屏上减小操作列宽度
         }
       }
-      
+
       // 修复窄屏下的固定列
       .fixed-column {
         &.index-column {
@@ -889,13 +905,13 @@
           left: 0;
         }
       }
-      
+
       // 修复窄屏下的固定表头
       th.fixed-column {
         &.index-column {
           width: 60px;
         }
-        
+
         &.title-column {
           left: 60px; // 与窄屏下的index-column宽度一致
         }
@@ -908,12 +924,12 @@
         height: 26px;
       }
     }
-    
+
     .status-badge {
       padding: 0.2rem 0.4rem;
       font-size: 0.75rem;
     }
-    
+
     .post-title {
       font-size: 0.9rem;
     }
@@ -925,18 +941,18 @@
   .admin-posts {
     .search-container {
       padding: 0.6rem;
-      
+
       .filter-section {
         flex-wrap: wrap;
         gap: 0.5rem;
-        
+
         .filter-item {
           flex: 1 0 calc(50% - 0.5rem);
-          
+
           label {
             font-size: 0.8rem;
           }
-          
+
           .filter-select {
             width: 100%;
             padding: 0.4rem;
@@ -944,7 +960,7 @@
             font-size: 0.8rem;
           }
         }
-        
+
         .reset-filters {
           flex: 1 0 100%;
           margin-top: 0.5rem;
@@ -962,20 +978,22 @@
 @media (max-width: 1800px) and (min-width: 1501px) {
   .admin-posts {
     .posts-table {
-      th, td {
+
+      th,
+      td {
         &.tags-column {
           width: 200px; // 中等屏幕宽度，足够放下3个标签
           max-width: 200px;
           padding: 0.7rem 0.8rem;
         }
-        
+
         &.title-column {
           min-width: 130px !important; // 与非响应式宽度保持一致
           max-width: 150px !important; // 在窄屏上调整
           width: 150px !important; // 固定宽度
         }
       }
-      
+
       .tags-column {
         .tag-badge {
           max-width: 75px; // 中等屏幕下标签略窄
@@ -996,4 +1014,4 @@
   white-space: nowrap;
   text-overflow: ellipsis; // 显示省略号
   box-sizing: border-box; // 确保盒模型一致
-} 
+}

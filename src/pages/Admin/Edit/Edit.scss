@@ -1,92 +1,99 @@
-@use '@/style/mixins' as *;
+@use '@/style/mixins'as *;
+@use '@/style/variables'as var;
 
 .edit-page {
   height: 100%;
   padding: 0;
   overflow-y: auto;
-  
-  // 使用flex布局代替grid，确保更好的高度控制
+
+  // 使用flex布局，确保更好的高度控制
   display: flex;
   flex-direction: column;
-  
+
+  // 编辑容器
   .edit-container {
-    width: 100%; // Change from max-width: 95% to width: 100%
+    width: 100%; // 从max-width: 95%改为width: 100%
     margin: 0 auto;
-    padding: 0; // Remove the padding to match Posts component
+    padding: 0; // 移除内边距以匹配Posts组件
   }
-  
+
+  // 编辑页头部
   .edit-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    padding: 0 0.5rem; // Add specific padding here
-    
+    margin-bottom: var.$spacing-xl;
+    padding: 0 var.$spacing-sm; // 在这里添加特定的内边距
+
     h1 {
       margin: 0;
-      font-size: 1.8rem;
+      font-size: var.$font-size-xl + 0.3rem;
       background: linear-gradient(to right, #e2e8f0, #fff);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
-    
+
+    // 头部操作按钮
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: var.$spacing-md;
     }
-    
+
+    // 最后保存信息
     .last-saved-info {
-      font-size: 0.85rem;
+      font-size: var.$font-size-xs;
       color: rgba(255, 255, 255, 0.7);
     }
-    
+
+    // 草稿按钮
     .draft-button {
       @include glass-card-base;
       padding: 0.7rem 1.2rem;
       color: rgba(255, 255, 255, 0.8);
-      font-size: 0.9rem;
+      font-size: var.$font-size-sm;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
+      gap: var.$spacing-sm;
+      font-weight: var.$font-weight-semibold;
       border: none;
-      border-radius: 8px;
+      border-radius: var.$border-radius-lg;
       cursor: pointer;
-      transition: all 0.3s ease;
-      
+      transition: var.$transition-base;
+
       &:hover {
         background: rgba(255, 255, 255, 0.15);
       }
-      
+
       &:active {
         transform: translateY(0);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: var.$shadow-sm;
       }
     }
-    
+
+    // 保存按钮
     .save-button {
       @include glass-card-base;
       padding: 0.7rem 1.5rem;
       color: rgba(255, 255, 255, 0.9);
-      font-size: 0.95rem;
-      font-weight: 600;
+      font-size: var.$font-size-sm + 0.05rem;
+      font-weight: var.$font-weight-semibold;
       border: none;
-      border-radius: 8px;
+      border-radius: var.$border-radius-lg;
       cursor: pointer;
-      transition: all 0.3s ease;
-      
+      transition: var.$transition-base;
+
       &:hover {
         background: rgba(255, 255, 255, 0.2);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       }
-      
+
       &:active {
         transform: translateY(0);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: var.$shadow-sm;
       }
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
@@ -95,63 +102,68 @@
       }
     }
   }
-  
+
+  // 缓存提示
   .cache-prompt {
     @include glass-card-base;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 0 0.5rem 1.5rem;
+    margin: 0 var.$spacing-sm var.$spacing-lg;
     padding: 0.8rem 1.2rem;
-    border-radius: 10px;
+    border-radius: var.$border-radius-md;
     border-left: 3px solid #3498db;
     background-color: rgba(52, 152, 219, 0.1);
-    
+
     .alert-icon {
       color: #3498db;
-      font-size: 1.2rem;
+      font-size: var.$font-size-md + 0.2rem;
       margin-right: 0.8rem;
     }
-    
+
     span {
       flex: 1;
       color: rgba(255, 255, 255, 0.9);
     }
-    
+
+    // 缓存操作
     .cache-actions {
       display: flex;
       gap: 0.8rem;
-      
+
       button {
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        font-weight: 500;
+        padding: var.$spacing-sm var.$spacing-md;
+        border-radius: var.$border-radius-md - 0.25rem;
+        font-size: var.$font-size-xs;
+        font-weight: var.$font-weight-medium;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: var.$transition-short;
         border: none;
       }
-      
+
+      // 恢复按钮
       .restore-button {
         background-color: rgba(52, 152, 219, 0.2);
         color: rgba(255, 255, 255, 0.9);
-        
+
         &:hover {
           background-color: rgba(52, 152, 219, 0.3);
         }
       }
-      
+
+      // 丢弃按钮
       .discard-button {
         background-color: rgba(255, 255, 255, 0.1);
         color: rgba(255, 255, 255, 0.7);
-        
+
         &:hover {
           background-color: rgba(255, 255, 255, 0.15);
         }
       }
     }
   }
-  
+
+  // 自动保存通知
   .auto-save-notification {
     position: fixed;
     bottom: 20px;
@@ -160,44 +172,63 @@
     border-left: 3px solid #2ecc71;
     padding: 0.8rem 1.2rem;
     color: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: var.$border-radius-lg;
+    font-size: var.$font-size-sm;
+    box-shadow: var.$shadow-md;
     z-index: 1000;
     animation: fadeInOut 3s ease-in-out;
   }
-  
+
+  // 淡入淡出动画
   @keyframes fadeInOut {
-    0% { opacity: 0; transform: translateY(10px); }
-    15% { opacity: 1; transform: translateY(0); }
-    85% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-10px); }
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    15% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    85% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
   }
-  
+
+  // 提交错误
   .submit-error {
-    margin: 0 0.5rem 1rem;
-    padding: 0.75rem 1rem;
+    margin: 0 var.$spacing-sm var.$spacing-md;
+    padding: 0.75rem var.$spacing-md;
     background-color: rgba(255, 107, 107, 0.15);
-    border-radius: 6px;
+    border-radius: var.$border-radius-md - 0.25rem;
     border-left: 3px solid #ff6b6b;
   }
-  
+
+  // 编辑主体
   .edit-main {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 0 0.5rem; // Add padding to match the Posts component spacing
-    width: 100%;       // Ensure full width
+    gap: var.$spacing-lg;
+    padding: 0 var.$spacing-sm; // 添加内边距以匹配Posts组件的间距
+    width: 100%; // 确保全宽
     box-sizing: border-box;
   }
-  
+
+  // 编辑部分
   .edit-section {
     @include glass-card-base;
-    padding: 1.5rem;
-    border-radius: 12px;
+    padding: var.$spacing-lg;
+    border-radius: var.$border-radius-md;
     width: 100%;
     box-sizing: border-box;
-    
+
     .section-label {
       display: block;
       font-size: 1rem;
@@ -205,19 +236,19 @@
       margin-bottom: 0.8rem;
       color: rgba(255, 255, 255, 0.9);
     }
-    
+
     .content-header {
       display: flex;
       align-items: center;
       justify-content: flex-start;
       margin-bottom: 0.8rem;
       flex-wrap: wrap;
-      
+
       .section-label {
         margin-bottom: 0;
         margin-right: 0.75rem;
       }
-      
+
       .content-error-message {
         color: #ff6b6b;
         font-size: 0.85rem;
@@ -229,7 +260,7 @@
         background: rgba(255, 107, 107, 0.1);
         padding: 0.2rem 0.5rem;
         border-radius: 4px;
-        
+
         &::before {
           content: '!';
           display: inline-flex;
@@ -246,44 +277,44 @@
         }
       }
     }
-    
+
     // 文章标题和封面图
     .intro-with-image {
       display: flex;
       gap: 1.5rem;
       align-items: stretch; // 确保子元素拉伸以填充容器高度
-      
+
       @media (max-width: 1800px) {
         flex-direction: column;
         gap: 1rem;
       }
-      
+
       .intro-input-container {
         flex: 1;
         display: flex;
         flex-direction: column;
-        
+
         .intro-input {
           flex: 1;
           height: calc(9/16 * 200px); // 根据封面图宽度(200px)和比例(16:9)计算精确高度
-          resize: none;      // 禁用手动调整大小
-          padding: 0.8rem;   // 保持与其他输入框一致的内边距
+          resize: none; // 禁用手动调整大小
+          padding: 0.8rem; // 保持与其他输入框一致的内边距
         }
       }
-      
+
       .article-image-container {
         width: 200px;
         display: flex;
         flex-direction: column;
-        
+
         @media (max-width: 1800px) {
           width: 100%;
         }
-        
+
         .section-label {
           margin-bottom: 0.8rem;
         }
-        
+
         .article-image-preview {
           width: 100%;
           height: calc(9/16 * 200px); // 确保高度与简介输入框完全相同
@@ -296,29 +327,29 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          
+
           &:hover {
             border-color: rgba(130, 180, 255, 0.4);
             background: rgba(255, 255, 255, 0.1);
           }
-          
+
           img {
             width: 100%;
             height: 100%;
             object-fit: cover;
           }
-          
+
           .image-placeholder {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 0.5rem;
             color: rgba(255, 255, 255, 0.5);
-            
+
             svg {
               font-size: 1.5rem;
             }
-            
+
             span {
               font-size: 0.9rem;
             }
@@ -326,8 +357,9 @@
         }
       }
     }
-    
-    input[type="text"], textarea {
+
+    input[type="text"],
+    textarea {
       width: 100%;
       padding: 0.8rem;
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -336,35 +368,35 @@
       color: rgba(255, 255, 255, 0.9);
       font-size: 0.95rem;
       transition: all 0.3s ease;
-      
+
       &:focus {
         outline: none;
         border-color: rgba(130, 180, 255, 0.4);
         box-shadow: 0 0 0 2px rgba(130, 180, 255, 0.2);
       }
-      
+
       &::placeholder {
         color: rgba(255, 255, 255, 0.4);
       }
-      
+
       &.error {
         border-color: #ff6b6b;
         box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.4);
       }
     }
-    
+
     textarea {
       resize: vertical;
       min-height: 80px;
     }
-    
+
     .error-message {
       color: #ff6b6b;
       font-size: 0.85rem;
       margin-top: 0.4rem;
       display: flex;
       align-items: center;
-      
+
       &::before {
         content: '!';
         display: inline-flex;
@@ -381,20 +413,20 @@
       }
     }
   }
-  
+
   // 分类样式
   .category-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    
+
     .category-input-container {
       position: relative;
-      
+
       .category-input {
         padding-right: 2.5rem;
       }
-      
+
       .selected-category {
         position: absolute;
         top: 50%;
@@ -405,12 +437,12 @@
         padding: 0.3rem 0.6rem;
         background: rgba(130, 180, 255, 0.2);
         border-radius: 4px;
-        
+
         span {
           font-size: 0.9rem;
           color: rgba(255, 255, 255, 0.9);
         }
-        
+
         .remove-btn {
           margin-left: 0.5rem;
           background: none;
@@ -422,19 +454,19 @@
           padding: 0.1rem;
           cursor: pointer;
           transition: color 0.2s ease;
-          
+
           &:hover {
             color: rgba(255, 255, 255, 1);
           }
         }
       }
     }
-    
+
     .category-options {
       display: flex;
       flex-wrap: wrap;
       gap: 0.8rem;
-      
+
       .category-option {
         padding: 0.6rem 1rem;
         background: rgba(255, 255, 255, 0.05);
@@ -444,12 +476,12 @@
         font-size: 0.9rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        
+
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-        
+
         &.selected {
           background: rgba(130, 180, 255, 0.2);
           border-color: rgba(130, 180, 255, 0.4);
@@ -458,18 +490,19 @@
       }
     }
   }
-  
+
   // 标签样式
   .tags-container {
     display: flex;
     flex-direction: column;
-    padding: 0;;
+    padding: 0;
+    ;
     gap: 1rem;
-    
+
     .tags-input-container {
       display: flex;
       gap: 0.5rem;
-      
+
       .tags-input-wrapper {
         flex: 1;
         display: flex;
@@ -480,7 +513,7 @@
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.05);
         min-height: 50px;
-        
+
         .tags-input {
           flex: 1;
           min-width: 100px;
@@ -489,16 +522,16 @@
           color: rgba(255, 255, 255, 0.9);
           font-size: 0.95rem;
           padding: 0.3rem;
-          
+
           &:focus {
             outline: none;
           }
-          
+
           &::placeholder {
             color: rgba(255, 255, 255, 0.4);
           }
         }
-        
+
         .tag-item {
           display: flex;
           align-items: center;
@@ -506,12 +539,12 @@
           padding: 0.3rem 0.6rem;
           background: rgba(130, 180, 255, 0.2);
           border-radius: 4px;
-          
+
           span {
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.9);
           }
-          
+
           .remove-btn {
             background: none;
             border: none;
@@ -522,14 +555,14 @@
             padding: 0.1rem;
             cursor: pointer;
             transition: color 0.2s ease;
-            
+
             &:hover {
               color: rgba(255, 255, 255, 1);
             }
           }
         }
       }
-      
+
       .add-tag-btn {
         display: flex;
         align-items: center;
@@ -543,18 +576,18 @@
         cursor: pointer;
         transition: all 0.2s ease;
         align-self: center;
-        
+
         &:hover {
           background: rgba(255, 255, 255, 0.2);
         }
       }
     }
-    
+
     .tags-options {
       display: flex;
       flex-wrap: wrap;
       gap: 0.8rem;
-      
+
       .tag-option {
         padding: 0.5rem 0.8rem;
         background: rgba(255, 255, 255, 0.05);
@@ -564,7 +597,7 @@
         font-size: 0.9rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        
+
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
@@ -572,19 +605,19 @@
       }
     }
   }
-  
+
   // 设置样式
   .settings-section {
     display: flex;
     justify-content: flex-start;
     gap: 2rem;
     align-items: center;
-    
+
     .toggle-setting {
       display: flex;
       align-items: center;
       gap: 1rem;
-      
+
       .toggle-label {
         display: flex;
         align-items: center;
@@ -593,7 +626,7 @@
         color: rgba(255, 255, 255, 0.9);
         cursor: pointer;
         margin: 0;
-        
+
         .toggle-icon {
           font-size: 1.2rem;
           display: flex;
@@ -601,20 +634,20 @@
           justify-content: center;
         }
       }
-      
+
       .toggle-switch-container {
         position: relative;
         display: flex;
         align-items: center;
         height: 26px;
-        
+
         .toggle-switch {
           position: absolute;
           opacity: 0;
           width: 0;
           height: 0;
-          
-          & + .toggle-switch-label {
+
+          &+.toggle-switch-label {
             display: inline-flex;
             align-items: center;
             width: 50px;
@@ -625,7 +658,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin: 0;
-            
+
             &::after {
               content: '';
               position: absolute;
@@ -638,10 +671,10 @@
               transition: all 0.3s ease;
             }
           }
-          
-          &:checked + .toggle-switch-label {
+
+          &:checked+.toggle-switch-label {
             background: rgba(130, 180, 255, 0.5);
-            
+
             &::after {
               left: calc(100% - 23px);
               background: rgba(255, 255, 255, 1);
@@ -651,7 +684,7 @@
       }
     }
   }
-  
+
   // Markdown编辑器
   .markdown-section {
     .markdown-editor-container {
@@ -659,20 +692,21 @@
       gap: 1rem;
       min-height: 85vh;
       height: 85vh;
-      
+
       @media (max-width: 1800px) {
         flex-direction: column;
         height: auto;
       }
-      
-      .markdown-editor, .markdown-preview {
+
+      .markdown-editor,
+      .markdown-preview {
         flex: 1;
         display: flex;
         flex-direction: column;
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 8px;
         overflow: hidden;
-        
+
         @media (max-width: 1800px) {
           min-height: 85vh;
         }
@@ -682,25 +716,27 @@
       .markdown-editor {
         @media (max-width: 1800px) {
           display: flex;
+
           &.hidden {
             display: none;
           }
         }
       }
-      
+
       .markdown-preview {
         @media (min-width: 1801px) {
           display: flex; // 在宽屏上始终显示
         }
-        
+
         @media (max-width: 1800px) {
           display: none; // 在窄屏上默认隐藏
+
           &.visible {
             display: flex; // 只有在可见状态才显示
           }
         }
       }
-      
+
       .markdown-input {
         flex: 1;
         padding: 1rem;
@@ -715,8 +751,9 @@
         overflow-y: auto;
         border-radius: 0;
       }
-      
-      .markdown-edit-header, .preview-header {
+
+      .markdown-edit-header,
+      .preview-header {
         padding: 0.5rem 1rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         background: rgba(35, 35, 45, 0.5);
@@ -726,13 +763,13 @@
         align-items: center;
         justify-content: space-between;
         position: relative;
-        
+
         .editor-actions {
           display: flex;
           align-items: center;
           gap: 0.75rem;
         }
-        
+
         .editor-img-btn {
           background: rgba(255, 255, 255, 0.1);
           border: none;
@@ -745,16 +782,16 @@
           justify-content: center;
           cursor: pointer;
           transition: all 0.2s ease;
-          
+
           &:hover {
             background: rgba(255, 255, 255, 0.2);
           }
-          
+
           .action-icon {
             font-size: 1rem;
           }
         }
-        
+
         .preview-toggle-btn {
           background: rgba(255, 255, 255, 0.1);
           border: none;
@@ -767,20 +804,20 @@
           gap: 0.4rem;
           cursor: pointer;
           transition: all 0.2s ease;
-          
+
           @media (min-width: 1801px) {
             display: none; // 在宽屏上隐藏预览按钮，因为预览始终显示
           }
-          
+
           &:hover {
             background: rgba(255, 255, 255, 0.2);
           }
-          
+
           .toggle-icon {
             font-size: 1rem;
           }
         }
-        
+
         // 图片库弹出层样式
         .image-gallery-popup {
           position: absolute;
@@ -798,21 +835,21 @@
           flex-direction: column;
           backdrop-filter: blur(10px);
           margin-top: 5px; // Add margin to create space between header and popup
-          
+
           .gallery-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0.75rem 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            
+
             h3 {
               margin: 0;
               font-size: 1rem;
               font-weight: 500;
               color: rgba(255, 255, 255, 0.9);
             }
-            
+
             .close-gallery-btn {
               background: transparent;
               border: none;
@@ -823,34 +860,35 @@
               justify-content: center;
               cursor: pointer;
               padding: 0.25rem;
-              
+
               &:hover {
                 color: rgba(255, 255, 255, 0.9);
               }
             }
           }
-          
+
           .gallery-content {
             flex: 1;
             overflow-y: auto;
             padding: 1rem;
             max-height: 400px; // Ensure scrolling for many images
-            
-            .gallery-loading, .gallery-empty {
+
+            .gallery-loading,
+            .gallery-empty {
               display: flex;
               flex-direction: column;
               align-items: center;
               justify-content: center;
               min-height: 200px;
               color: rgba(255, 255, 255, 0.6);
-              
+
               .spin-icon {
                 font-size: 1.5rem;
                 margin-bottom: 0.5rem;
                 animation: spin 1.5s linear infinite;
               }
             }
-            
+
             .gallery-list {
               list-style: none;
               padding: 0;
@@ -858,7 +896,7 @@
               display: grid;
               grid-template-columns: repeat(3, 1fr);
               gap: 1rem;
-              
+
               .gallery-item {
                 display: flex;
                 flex-direction: column;
@@ -868,19 +906,20 @@
                 transition: all 0.2s ease;
                 border: 1px solid rgba(255, 255, 255, 0.05);
                 overflow: hidden;
-                
+
                 &:hover {
                   background: rgba(35, 35, 45, 0.8);
                   transform: translateY(-2px);
                   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
                 }
-                
+
                 .image-preview {
                   width: 100%;
                   position: relative;
-                  padding-top: 75%; /* 4:3 aspect ratio */
+                  padding-top: 75%;
+                  /* 4:3 aspect ratio */
                   overflow: hidden;
-                  
+
                   img {
                     position: absolute;
                     top: 0;
@@ -890,13 +929,13 @@
                     object-fit: cover;
                   }
                 }
-                
+
                 .image-info {
                   padding: 0.75rem;
                   display: flex;
                   flex-direction: column;
                   gap: 0.5rem;
-                  
+
                   .image-name {
                     font-size: 0.9rem;
                     color: rgba(255, 255, 255, 0.9);
@@ -904,9 +943,11 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                   }
-                  
+
                   .image-action {
-                    .copy-hint, .copied-status {
+
+                    .copy-hint,
+                    .copied-status {
                       display: flex;
                       align-items: center;
                       justify-content: center;
@@ -914,17 +955,18 @@
                       padding: 0.4rem;
                       border-radius: 4px;
                       width: 100%;
-                      
-                      .copy-icon, .copied-icon {
+
+                      .copy-icon,
+                      .copied-icon {
                         margin-right: 0.4rem;
                       }
                     }
-                    
+
                     .copy-hint {
                       color: rgba(255, 255, 255, 0.7);
                       background: rgba(255, 255, 255, 0.05);
                     }
-                    
+
                     .copied-status {
                       color: rgba(46, 204, 113, 1);
                       background: rgba(46, 204, 113, 0.15);
@@ -936,7 +978,7 @@
           }
         }
       }
-      
+
       .preview-content {
         flex: 1;
         padding: 1rem;
@@ -944,43 +986,48 @@
         min-height: 85vh;
         max-height: 85vh;
         background: rgba(35, 35, 45, 0.5);
-        
+
         // Markdown内容样式
-        h1, h2, h3, h4, h5, h6 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
           margin-top: 1.5rem;
           margin-bottom: 1rem;
           color: rgba(255, 255, 255, 0.95);
         }
-        
+
         h1 {
           font-size: 1.8rem;
           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
           padding-bottom: 0.5rem;
         }
-        
+
         h2 {
           font-size: 1.5rem;
         }
-        
+
         h3 {
           font-size: 1.3rem;
         }
-        
+
         p {
           margin: 1rem 0;
           line-height: 1.6;
           color: rgba(255, 255, 255, 0.85);
         }
-        
+
         a {
           color: #82b4ff;
           text-decoration: none;
-          
+
           &:hover {
             text-decoration: underline;
           }
         }
-        
+
         code {
           font-family: monospace;
           background: rgba(0, 0, 0, 0.2);
@@ -988,37 +1035,38 @@
           border-radius: 4px;
           font-size: 0.9rem;
         }
-        
+
         pre {
           background: rgba(0, 0, 0, 0.2);
           padding: 1rem;
           border-radius: 8px;
           overflow-x: auto;
           margin: 1rem 0;
-          
+
           code {
             background: transparent;
             padding: 0;
             border-radius: 0;
           }
         }
-        
+
         img {
           max-width: 100%;
           border-radius: 8px;
           margin: 1rem 0;
         }
-        
-        ul, ol {
+
+        ul,
+        ol {
           margin: 1rem 0;
           padding-left: 2rem;
-          
+
           li {
             margin: 0.5rem 0;
             color: rgba(255, 255, 255, 0.85);
           }
         }
-        
+
         blockquote {
           border-left: 4px solid rgba(130, 180, 255, 0.5);
           padding-left: 1rem;
@@ -1028,7 +1076,7 @@
       }
     }
   }
-  
+
   // Add the following styles for the spinner notification
   .auto-save-spinner {
     position: fixed;
@@ -1046,55 +1094,61 @@
     animation: fadeInOut 3s ease;
     border: 1px solid rgba(46, 204, 113, 0.3);
     backdrop-filter: blur(3px);
-    
+
     .spinner-icon {
       animation: spin 1.5s linear infinite;
       color: rgba(46, 204, 113, 0.9);
       font-size: 22px;
     }
   }
-  
+
   @keyframes spin {
     from {
       transform: rotate(0deg);
     }
+
     to {
       transform: rotate(360deg);
     }
   }
-  
+
   @keyframes fadeInOut {
     0% {
       opacity: 0;
     }
+
     20% {
       opacity: 1;
     }
+
     80% {
       opacity: 1;
     }
+
     100% {
       opacity: 0;
     }
   }
-  
+
   @keyframes fadeIn {
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
   }
-  
+
   @keyframes scaleIn {
     from {
       opacity: 0;
       transform: scale(0.95);
     }
+
     to {
       opacity: 1;
       transform: scale(1);
     }
   }
-} 
+}
