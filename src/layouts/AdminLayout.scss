@@ -1,18 +1,19 @@
-@use '@/style/mixins' as *;
+@use '@/style/mixins'as *;
+@use '@/style/variables'as var;
 
 .admin-layout {
   display: flex;
   min-height: 100vh;
   background: #121212; // 低饱和度黑色背景
   background-attachment: fixed; // 确保背景固定，不随滚动而移动
-  transition: margin 0.3s ease; // 只过渡需要的属性，不使用all
+  transition: margin var.$transition-base; // 只过渡需要的属性，不使用all
   color: rgba(255, 255, 255, 0.9);
   will-change: margin-left; // 提示浏览器这个属性会改变
-  
+
   // 登录页特殊样式
   &.login-only {
     display: block;
-    
+
     .admin-main.full-width {
       height: 100vh;
       padding: 0;
@@ -23,24 +24,24 @@
       overflow: hidden;
     }
   }
-  
-  // Sidebar styles
+
+  // 侧边栏样式
   .admin-sidebar {
     width: 250px;
     @include glass-card-base;
     color: #fff;
     display: flex;
     flex-direction: column;
-    transition: width 0.3s ease, transform 0.3s ease; // 只过渡需要的属性
+    transition: width var.$transition-base, transform var.$transition-base; // 只过渡需要的属性
     position: fixed;
     height: 100vh;
     z-index: 10;
-    box-shadow: 
+    box-shadow:
       0 10px 20px rgba(0, 0, 0, 0.1),
       0 6px 6px rgba(0, 0, 0, 0.1),
       0 0 0 1px rgba(255, 255, 255, 0.05);
     will-change: width, transform; // 提示浏览器这些属性会改变
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -54,29 +55,31 @@
       filter: blur(8px);
       opacity: 0.7;
     }
-    
+
+    // 侧边栏头部
     .sidebar-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.2rem 1.5rem;
+      padding: var.$spacing-md + 0.2rem var.$spacing-lg;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      
+
       .logo {
-        font-size: 1.5rem;
-        font-weight: 700;
+        font-size: var.$font-size-xl;
+        font-weight: var.$font-weight-bold;
         margin: 0;
         background: linear-gradient(to right, #e2e8f0, #fff);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
       }
-      
+
+      // 折叠按钮
       .collapse-btn {
         background: none;
         border: none;
         color: white;
-        font-size: 1.2rem;
+        font-size: var.$font-size-md + 0.2rem;
         cursor: pointer;
         padding: 0;
         width: 32px;
@@ -85,70 +88,74 @@
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        
+
         &:hover {
           background: rgba(255, 255, 255, 0.1);
         }
-        
+
         svg {
-          width: 1.2rem;
-          height: 1.2rem;
+          width: var.$font-size-md + 0.2rem;
+          height: var.$font-size-md + 0.2rem;
         }
       }
     }
-    
+
+    // 侧边栏导航
     .sidebar-nav {
       flex: 1;
-      padding: 1rem 0;
+      padding: var.$spacing-md 0;
       overflow-y: auto;
-      
+
       ul {
         list-style: none;
         padding: 0;
         margin: 0;
-        
+
         li {
-          margin-bottom: 0.25rem;
-          
+          margin-bottom: var.$spacing-xs;
+
+          // 导航项目
           .nav-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem var.$spacing-lg;
             color: rgba(255, 255, 255, 0.75);
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: var.$transition-short;
             border-left: 4px solid transparent;
-            
+
             &:hover {
               background: rgba(255, 255, 255, 0.1);
               color: white;
               transform: translateY(-2px);
             }
-            
+
             &.active {
               background: rgba(255, 255, 255, 0.15);
               color: white;
               border-left-color: #90caf9;
             }
-            
+
             .nav-icon {
-              font-size: 1.2rem;
+              font-size: var.$font-size-md + 0.2rem;
               margin-right: 0.75rem;
             }
-            
+
             .nav-text {
-              font-size: 0.95rem;
-              font-weight: 500;
+              font-size: var.$font-size-sm;
+              font-weight: var.$font-weight-medium;
             }
           }
         }
       }
     }
-    
+
+    // 侧边栏底部
     .sidebar-footer {
-      padding: 1rem 1.5rem;
+      padding: var.$spacing-md var.$spacing-lg;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      
+
+      // 登出按钮
       .logout-btn {
         width: 100%;
         display: flex;
@@ -157,115 +164,117 @@
         background: rgba(255, 255, 255, 0.05);
         color: rgba(255, 255, 255, 0.75);
         border: none;
-        border-radius: 4px;
+        border-radius: var.$border-radius-sm;
         cursor: pointer;
-        transition: all 0.2s ease;
-        min-height: 40px; /* Ensure minimum height */
-        
+        transition: var.$transition-short;
+        min-height: 40px;
+        /* 确保最小高度 */
+
         &:hover {
           background: rgba(255, 255, 255, 0.15);
           color: white;
           transform: translateY(-2px);
         }
-        
+
         .nav-icon {
-          font-size: 1.2rem;
+          font-size: var.$font-size-md + 0.2rem;
           margin-right: 0.75rem;
-          flex-shrink: 0; /* Prevent icon from shrinking */
-          display: block; /* Ensure it's displayed as block */
+          flex-shrink: 0;
+          /* 防止图标缩小 */
+          display: block;
+          /* 确保显示为块级元素 */
         }
-        
+
         .nav-text {
-          font-size: 0.95rem;
-          font-weight: 500;
+          font-size: var.$font-size-sm;
+          font-weight: var.$font-weight-medium;
         }
       }
     }
   }
-  
-  // Main content area styles
+
+  // 主内容区域样式
   .admin-content {
     flex: 1;
     margin-left: 250px;
-    transition: margin-left 0.3s ease; // 只过渡需要的属性
+    transition: margin-left var.$transition-base; // 只过渡需要的属性
     position: relative;
     will-change: margin-left; // 提示浏览器这个属性会改变
-    
+
     .admin-main {
-      padding: 2rem;
+      padding: var.$spacing-xl;
       height: 100vh;
       overflow: auto;
       contain: layout; // 告诉浏览器包含子元素的布局变化
-      
+
       // 给内部组件添加毛玻璃效果
-      .admin-posts {        
+      .admin-posts {
         .posts-table-container {
           @include glass-card-base;
           border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 
-            0 10px 20px rgba(0, 0, 0, 0.1),
-            0 6px 6px rgba(0, 0, 0, 0.1);
-          
+          box-shadow: var.$shadow-lg;
+
           .posts-table {
             th {
               background-color: rgba(255, 255, 255, 0.05);
               color: rgba(255, 255, 255, 0.9);
               border-bottom: 2px solid rgba(255, 255, 255, 0.1);
             }
-            
+
             td {
               color: rgba(255, 255, 255, 0.8);
               border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             }
-            
+
             .fixed-column {
               background-color: rgba(26, 35, 126, 0.2);
-              
+
               &::after {
                 background-color: rgba(255, 255, 255, 0.1);
               }
             }
-            
+
             th.fixed-column {
               background-color: rgba(255, 255, 255, 0.05);
             }
-            
+
             tr {
               &:hover {
                 background-color: rgba(255, 255, 255, 0.05);
-                
+
                 td.fixed-column {
                   background-color: rgba(26, 35, 126, 0.3);
                 }
               }
-              
+
               &.pinned-row {
                 background-color: rgba(26, 35, 126, 0.2);
-                
+
                 td.fixed-column {
                   background-color: rgba(26, 35, 126, 0.3);
                 }
-                
+
                 &:hover {
                   background-color: rgba(26, 35, 126, 0.3);
-                  
+
                   td.fixed-column {
                     background-color: rgba(26, 35, 126, 0.4);
                   }
                 }
               }
             }
-            
+
+            // 操作按钮
             .action-btn {
               background: rgba(255, 255, 255, 0.05);
               border: 1px solid rgba(255, 255, 255, 0.1);
               color: rgba(255, 255, 255, 0.7);
-              
+
               &:hover {
                 background-color: rgba(255, 255, 255, 0.1);
                 transform: translateY(-2px);
               }
-              
+
               &.toggle-pin.active {
                 color: #ffb74d;
                 border-color: rgba(255, 183, 77, 0.5);
@@ -277,181 +286,188 @@
       }
     }
   }
-  
-  // Collapsed sidebar styles
+
+  // 折叠侧边栏样式
   &.sidebar-collapsed {
     .admin-sidebar {
       width: 70px;
-      
+
       .sidebar-header {
         padding: 0.75rem 0;
         display: flex;
         justify-content: center;
-        height: 54px; // Match the height of nav items
-        
+        height: 54px; // 与导航项目高度匹配
+
         .logo {
           display: none;
         }
-        
+
         .collapse-btn {
           margin: 0;
-          
+
           svg {
-            width: 1.2rem; // Match size with nav icons
-            height: 1.2rem;
+            width: var.$font-size-md + 0.2rem; // 与导航图标大小匹配
+            height: var.$font-size-md + 0.2rem;
           }
         }
       }
-      
+
       .nav-text {
         display: none;
       }
-      
+
       .sidebar-nav ul li .nav-item {
         padding: 0.75rem;
         justify-content: center;
-        
+
         .nav-icon {
           margin-right: 0;
           display: block;
-          font-size: 1.2rem;
+          font-size: var.$font-size-md + 0.2rem;
           visibility: visible;
           opacity: 1;
         }
       }
-      
+
       .sidebar-footer {
         padding: 0.75rem 0.5rem;
-        
+
         .logout-btn {
           padding: 0.75rem;
           justify-content: center;
           width: 100%;
           height: 40px;
-          
+
           .nav-icon {
             margin-right: 0;
-            display: block !important; /* Force display */
-            font-size: 1.2rem;
-            visibility: visible !important; /* Force visibility */
-            opacity: 1 !important; /* Force opacity */
-            width: 1.2rem;
-            height: 1.2rem;
+            display: block !important;
+            /* 强制显示 */
+            font-size: var.$font-size-md + 0.2rem;
+            visibility: visible !important;
+            /* 强制可见 */
+            opacity: 1 !important;
+            /* 强制不透明 */
+            width: var.$font-size-md + 0.2rem;
+            height: var.$font-size-md + 0.2rem;
           }
-          
+
           .nav-text {
             display: none;
           }
         }
       }
     }
-    
+
     .admin-content {
       margin-left: 70px;
     }
   }
 }
 
-// Responsive styles
+// 响应式样式
 @media (max-width: 768px) {
   .admin-layout {
     .admin-sidebar {
       width: 70px;
-      
+
       .sidebar-header {
         justify-content: center;
-        padding: 1.2rem 0;
-        
+        padding: var.$spacing-md + 0.2rem 0;
+
         .logo {
           display: none;
         }
       }
-      
+
       .nav-text {
         display: none;
       }
-      
+
       .sidebar-nav ul li .nav-item {
         justify-content: center;
         padding: 0.75rem;
-        
+
         .nav-icon {
           margin-right: 0;
           display: block;
         }
       }
-      
+
       .sidebar-footer {
         padding: 0.75rem 0.5rem;
-        
+
         .logout-btn {
           justify-content: center;
           height: 40px;
-          
+
           .nav-text {
             display: none;
           }
-          
+
           .nav-icon {
             margin-right: 0;
-            display: block !important; /* Force display */
-            font-size: 1.2rem;
-            visibility: visible !important; /* Force visibility */
-            opacity: 1 !important; /* Force opacity */
-            width: 1.2rem;
-            height: 1.2rem;
+            display: block !important;
+            /* 强制显示 */
+            font-size: var.$font-size-md + 0.2rem;
+            visibility: visible !important;
+            /* 强制可见 */
+            opacity: 1 !important;
+            /* 强制不透明 */
+            width: var.$font-size-md + 0.2rem;
+            height: var.$font-size-md + 0.2rem;
           }
         }
       }
     }
-    
+
     .admin-content {
       margin-left: 70px;
     }
-    
+
+    // 展开侧边栏时的样式
     &.sidebar-expanded {
       .admin-sidebar {
         width: 250px;
-        
+
         .sidebar-header {
           justify-content: space-between;
-          padding: 1.2rem 1.5rem;
-          
+          padding: var.$spacing-md + 0.2rem var.$spacing-lg;
+
           .logo {
             display: block;
           }
         }
-        
+
         .nav-text {
           display: block;
         }
-        
+
         .sidebar-nav ul li .nav-item {
           justify-content: flex-start;
-          padding: 0.75rem 1.5rem;
-          
+          padding: 0.75rem var.$spacing-lg;
+
           .nav-icon {
             margin-right: 0.75rem;
           }
         }
-        
+
         .sidebar-footer .logout-btn {
           justify-content: flex-start;
-          
+
           .nav-text {
             display: block;
           }
-          
+
           .nav-icon {
             margin-right: 0.75rem;
           }
         }
       }
-      
+
       .admin-content {
         margin-left: 0;
         position: relative;
-        
+
         &:before {
           content: '';
           position: fixed;
@@ -465,10 +481,10 @@
       }
     }
   }
-  
+
   .admin-layout.login-only {
     .admin-main.full-width {
-      padding: 1rem;
+      padding: var.$spacing-md;
     }
   }
-} 
+}
