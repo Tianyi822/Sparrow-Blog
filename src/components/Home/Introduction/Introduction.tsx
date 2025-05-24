@@ -23,7 +23,6 @@ const Introduction: React.FC<IntroductionProps> = ({
                 <span className="hello">(＾Ｕ＾)ノ~ 你好，我是</span>
                 <span className="name">{userName}</span>
             </div>
-            <div className="identity">一名二次元 + 程序员</div>
             
             {userHobbies && userHobbies.length > 0 && (
                 <div className="tech-stack">
