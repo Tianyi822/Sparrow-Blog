@@ -976,7 +976,6 @@
       width: 30px;
       height: 30px;
       border-radius: $border-radius-sm;
-      border: none;
       @include glass-card-base;
       background: rgba($white, 0.08);
       backdrop-filter: blur(8px) saturate(180%);
