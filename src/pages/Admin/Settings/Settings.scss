@@ -1,5 +1,5 @@
-@use '@/style/mixins'as *;
-@use '@/style/variables'as var;
+@use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
 // 设置页面主容器
 .settings-page {
@@ -9,13 +9,19 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(135deg, 
+    rgba($gray-900, 0.3) 0%, 
+    rgba($primary-500, 0.05) 25%, 
+    rgba($primary-400, 0.08) 50%, 
+    rgba($gray-800, 0.2) 100%
+  );
 
   // 小屏幕适配
-  @media (max-width: 992px) {
+  @media (max-width: $breakpoint-lg) {
     height: auto;
     max-height: none;
     overflow-y: visible;
-    padding-bottom: var.$spacing-xl;
+    padding-bottom: $spacing-xl;
   }
 
   // 内容容器
@@ -23,44 +29,70 @@
     width: 100%;
     height: 100%;
     margin: 0 auto;
-    padding: 0;
+    padding: $spacing-lg 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: calc(100vh - 60px);
 
     // 小屏幕适配
-    @media (max-width: 992px) {
+    @media (max-width: $breakpoint-lg) {
       height: auto;
       min-height: auto;
-      justify-content: flex-start;
+      padding: $spacing-md 0;
     }
   }
 
   // 页面头部
   .edit-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: var.$spacing-md 0;
-    margin-bottom: var.$spacing-lg;
-    border-bottom: 1px solid var(--border-color);
+    padding: $spacing-md 0;
+    margin-bottom: $spacing-lg;
+    width: 100%;
+    position: relative;
+    flex-shrink: 0;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: $border-width-thin;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba($primary-200, 0.3) 20%, 
+        rgba($primary-300, 0.6) 50%, 
+        rgba($primary-200, 0.3) 80%, 
+        transparent 100%
+      );
+    }
 
     // 窄屏适配
     @media (max-width: 880px) {
       flex-direction: column;
-      align-items: flex-start;
-      gap: var.$spacing-md;
+      align-items: center;
+      gap: $spacing-md;
+      padding: $spacing-sm 0;
+      margin-bottom: $spacing-md;
     }
   }
 
   // 设置选项卡
   .settings-tabs {
     display: flex;
-    gap: 0.2rem;
+    gap: $spacing-sm;
     overflow-x: auto;
-    padding-bottom: var.$spacing-sm;
+    padding: $spacing-sm;
+    @include glass-card-base;
+    background: rgba($white, 0.06);
+    border-radius: $border-radius-xl;
+    border: $border-width-thin solid rgba($white, 0.1);
+    box-shadow: $shadow-lg, 0 0 20px rgba($primary-300, 0.1);
 
     // 滚动条样式
     &::-webkit-scrollbar {
@@ -68,48 +100,89 @@
     }
 
     &::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: var.$border-radius-sm;
+      background: rgba($white, 0.05);
+      border-radius: $border-radius-sm;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: var.$border-radius-sm;
+      background: rgba($primary-200, 0.4);
+      border-radius: $border-radius-sm;
+      
+      &:hover {
+        background: rgba($primary-200, 0.6);
+      }
     }
 
     // 选项卡按钮
     .tab-item {
       background: transparent;
-      color: rgba(255, 255, 255, 0.7);
-      border: none;
-      padding: var.$spacing-sm var.$spacing-md;
-      border-radius: var.$border-radius-md - 0.25rem;
-      font-size: var.$font-size-sm;
+      color: rgba($white, 0.8);
+      border: $border-width-thin solid transparent;
+      padding: $spacing-md $spacing-lg;
+      border-radius: $border-radius-lg;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
       display: flex;
       align-items: center;
-      gap: var.$spacing-sm;
+      gap: $spacing-sm;
       cursor: pointer;
-      transition: var.$transition-short;
+      transition: $transition-base;
       white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba($white, 0);
+        transition: $transition-base;
+        z-index: -1;
+      }
 
       svg {
-        font-size: var.$font-size-md + 0.1rem;
+        font-size: $font-size-lg;
+        transition: $transition-base;
       }
 
       // 悬停状态
       &:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.9);
+        color: $white;
+        border-color: rgba($primary-200, 0.3);
+        transform: translateY(-2px);
+        box-shadow: $shadow-sm;
+
+        &::before {
+          background: rgba($primary-300, 0.1);
+        }
+
+        svg {
+          color: $primary-200;
+          transform: scale(1.1);
+        }
       }
 
       // 活动状态
       &.active {
-        background: rgba(147, 118, 224, 0.25);
-        color: var.$white;
-        font-weight: var.$font-weight-medium;
+        background: linear-gradient(135deg, 
+          rgba($primary-300, 0.2), 
+          rgba($primary-400, 0.15)
+        );
+        color: $white;
+        border-color: $primary-200;
+        font-weight: $font-weight-semibold;
+        box-shadow: $shadow-md, 0 0 15px rgba($primary-300, 0.3);
+
+        &::before {
+          background: rgba($primary-400, 0.1);
+        }
 
         svg {
-          color: #9376E0;
+          color: $primary-200;
+          text-shadow: 0 0 8px rgba($primary-200, 0.5);
         }
       }
     }
@@ -125,6 +198,7 @@
     display: none;
     position: relative;
     width: 100%;
+    max-width: 400px;
     z-index: 20;
 
     // 下拉菜单切换按钮
@@ -134,91 +208,156 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: var.$border-radius-lg;
-      color: var.$white;
-      font-size: var.$font-size-sm;
-      font-weight: var.$font-weight-medium;
+      padding: $spacing-md $spacing-lg;
+      border: $border-width-thin solid rgba($white, 0.15);
+      border-radius: $border-radius-lg;
+      color: $white;
+      font-size: $font-size-md;
+      font-weight: $font-weight-medium;
       cursor: pointer;
-      transition: var.$transition-short;
-      background-color: rgba(60, 60, 70, 0.5);
-      height: 38px;
+      transition: $transition-base;
+      background: rgba($white, 0.08);
+      min-height: 48px;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba($primary-300, 0);
+        transition: $transition-base;
+        z-index: -1;
+      }
 
       // 图标样式
       svg {
-        margin-right: var.$spacing-sm;
-        font-size: var.$font-size-md + 0.1rem;
+        margin-right: $spacing-sm;
+        font-size: $font-size-lg;
+        transition: $transition-base;
 
         // 旋转动画类
         &.rotate {
           transform: rotate(180deg);
-          transition: transform var.$transition-base;
+          transition: transform $transition-base;
         }
 
         // 最后一个图标（箭头）
         &:last-child {
           margin-right: 0;
-          margin-left: var.$spacing-sm;
-          transition: transform var.$transition-base;
+          margin-left: $spacing-sm;
+          transition: transform $transition-base;
         }
       }
 
       // 悬停效果
       &:hover {
-        background-color: rgba(80, 80, 90, 0.5);
+        background: rgba($white, 0.12);
+        border-color: rgba($primary-200, 0.3);
+        transform: translateY(-1px);
+        box-shadow: $shadow-sm;
+
+        &::before {
+          background: rgba($primary-300, 0.1);
+        }
+      }
+
+      &:active {
+        transform: translateY(0);
       }
     }
 
     // 下拉菜单内容
     .dropdown-menu {
       position: absolute;
-      top: calc(100% + 5px);
+      top: calc(100% + $spacing-sm);
       left: 0;
       width: 100%;
-      background-color: rgba(30, 30, 35, 0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: var.$border-radius-lg;
+      @include glass-card-base;
+      background: rgba($gray-800, 0.9);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-radius: $border-radius-lg;
       overflow: hidden;
       z-index: 100;
-      box-shadow: var.$shadow-lg;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      animation: dropdown-fade 0.3s ease-in-out;
+      box-shadow: $shadow-lg, 0 0 25px rgba($black, 0.3);
+      border: $border-width-thin solid rgba($white, 0.15);
+      animation: dropdown-fade 0.3s ease-out;
 
       // 下拉菜单项
       .dropdown-item {
         width: 100%;
-        padding: 0.8rem 1.2rem;
+        padding: $spacing-md $spacing-lg;
         text-align: left;
         background: transparent;
         border: none;
-        color: rgba(255, 255, 255, 0.8);
-        font-size: var.$font-size-sm;
+        color: rgba($white, 0.85);
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
         cursor: pointer;
         display: flex;
         align-items: center;
-        transition: background-color var.$transition-short;
+        transition: $transition-base;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba($white, 0);
+          transition: $transition-base;
+          z-index: -1;
+        }
 
         // 菜单项图标
         svg {
-          margin-right: 0.8rem;
-          font-size: var.$font-size-md + 0.1rem;
+          margin-right: $spacing-md;
+          font-size: $font-size-lg;
+          transition: $transition-base;
         }
 
         // 悬停状态
         &:hover {
-          background-color: rgba(255, 255, 255, 0.1);
+          color: $white;
+
+          &::before {
+            background: rgba($white, 0.08);
+          }
+
+          svg {
+            color: $primary-200;
+            transform: scale(1.1);
+          }
         }
 
         // 活动状态
         &.active {
-          background-color: rgba(147, 118, 224, 0.2);
-          color: var.$white;
+          background: linear-gradient(90deg, 
+            rgba($primary-300, 0.2), 
+            rgba($primary-400, 0.15)
+          );
+          color: $white;
+          font-weight: $font-weight-semibold;
+
+          &::before {
+            background: rgba($primary-400, 0.1);
+          }
 
           svg {
-            color: #9376E0;
+            color: $primary-200;
+            text-shadow: 0 0 8px rgba($primary-200, 0.5);
           }
+        }
+
+        &:last-child {
+          border-bottom: none;
         }
       }
     }
@@ -234,35 +373,27 @@
   .user-setting-wrapper {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     width: 100%;
-    flex: 1;
+    flex: 0 1 auto;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow-y: visible;
     padding: 0;
-    max-height: calc(100vh - 60px);
-    height: 100%;
-    margin: auto 0;
+    min-height: 0;
 
     // 中屏幕适配
     @media (max-width: 1220px) {
       padding: 0;
       width: 100%;
-      max-height: none;
-      height: auto;
-      overflow-y: visible;
-      align-items: center;
-      margin-bottom: var.$spacing-xl;
+      align-items: flex-start;
+      margin-bottom: $spacing-xl;
     }
 
     // 小屏幕适配
-    @media (max-width: 576px) {
-      max-height: none;
-      height: auto;
-      overflow-y: visible;
-      align-items: center;
+    @media (max-width: $breakpoint-sm) {
+      align-items: flex-start;
       padding: 0;
-      margin-bottom: var.$spacing-xl;
+      margin-bottom: $spacing-xl;
     }
   }
 
@@ -272,90 +403,121 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var.$spacing-xxl;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: var.$border-radius-xl;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: var.$shadow-lg;
-    min-height: 300px;
+    padding: $spacing-xxl;
+    @include glass-card-base;
+    background: rgba($white, 0.06);
+    border-radius: $border-radius-xl;
+    border: $border-width-thin solid rgba($white, 0.1);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    box-shadow: $shadow-lg, 0 0 30px rgba($primary-300, 0.1);
+    min-height: 400px;
     width: 80%;
-    max-width: 800px;
+    max-width: 600px;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, 
+        rgba($primary-300, 0.2), 
+        rgba($white, 0.05), 
+        rgba($primary-400, 0.15),
+        rgba($primary-200, 0.1)
+      );
+      border-radius: inherit;
+      z-index: -1;
+      filter: blur(8px);
+      opacity: 0.7;
+    }
 
     // 占位图标
     .placeholder-icon {
-      font-size: var.$font-size-xxxl;
-      color: rgba(255, 255, 255, 0.2);
-      margin-bottom: var.$spacing-lg;
-      animation: pulse 2s infinite;
+      font-size: 4rem;
+      color: rgba($primary-200, 0.4);
+      margin-bottom: $spacing-xl;
+      animation: pulse 3s infinite ease-in-out;
     }
 
     // 占位文本
     p {
-      font-size: var.$font-size-xl;
-      color: rgba(255, 255, 255, 0.6);
+      font-size: $font-size-xl;
+      color: rgba($white, 0.7);
       text-align: center;
+      font-weight: $font-weight-medium;
+      line-height: $line-height-loose;
     }
 
     // 中屏幕适配
     @media (max-width: 1220px) {
       width: 90%;
-      padding: var.$spacing-xl;
+      padding: $spacing-xl;
+      min-height: 300px;
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      padding: $spacing-lg;
+      min-height: 250px;
+
+      .placeholder-icon {
+        font-size: 3rem;
+        margin-bottom: $spacing-lg;
+      }
+
+      p {
+        font-size: $font-size-lg;
+      }
     }
   }
 
-  // 淡入淡出动画
+  // 动画定义
   @keyframes fadeInOut {
     0% {
       opacity: 0;
       transform: translateY(10px);
     }
-
     15% {
       opacity: 1;
       transform: translateY(0);
     }
-
     85% {
       opacity: 1;
       transform: translateY(0);
     }
-
     100% {
       opacity: 0;
       transform: translateY(-10px);
     }
   }
 
-  // 脉冲动画
   @keyframes pulse {
     0% {
-      opacity: 0.3;
+      opacity: 0.4;
       transform: scale(0.95);
     }
-
     50% {
-      opacity: 0.5;
+      opacity: 0.8;
       transform: scale(1.05);
     }
-
     100% {
-      opacity: 0.3;
+      opacity: 0.4;
       transform: scale(0.95);
     }
   }
 
-  // 下拉菜单淡入动画
   @keyframes dropdown-fade {
     from {
       opacity: 0;
-      transform: translateY(-10px);
+      transform: translateY(-10px) scale(0.95);
     }
-
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
 }
