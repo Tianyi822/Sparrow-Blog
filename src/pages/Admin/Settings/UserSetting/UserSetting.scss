@@ -509,6 +509,30 @@
           }
         }
 
+        // 爱好数量显示
+        .hobby-count {
+          color: #9376E0;
+          font-weight: 500;
+        }
+
+        // 爱好限制通知
+        .hobby-limit-notice {
+          margin-top: 8px;
+          display: flex;
+          align-items: center;
+          font-size: 0.9rem;
+          color: #e74c3c;
+          background-color: rgba(231, 76, 60, 0.1);
+          padding: 8px 12px;
+          border-radius: 6px;
+          border-left: 3px solid #e74c3c;
+
+          .notice-icon {
+            margin-right: 8px;
+            flex-shrink: 0;
+          }
+        }
+
         // 验证码组
         &.verification-code-group {
           .verification-code-container {
@@ -1034,6 +1058,13 @@
 
   input {
     flex: 1;
+
+    &:disabled {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.5);
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
   }
 
   .add-tag-button {
@@ -1057,14 +1088,23 @@
       font-size: 1rem;
     }
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: rgba(147, 118, 224, 0.5);
       transform: translateY(-2px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    &:active {
+    &:active:not(:disabled) {
       transform: translateY(0);
+    }
+
+    &:disabled {
+      background-color: rgba(147, 118, 224, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+      border-color: rgba(147, 118, 224, 0.2);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
   }
 }

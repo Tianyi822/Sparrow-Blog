@@ -51,11 +51,11 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                 setLoading(true);
                 const response = await getUserConfig();
                 if (response.code === 200 && response.data) {
-                    const { 
-                        user_name, 
-                        user_email, 
-                        avatar_image, 
-                        web_logo, 
+                    const {
+                        user_name,
+                        user_email,
+                        avatar_image,
+                        web_logo,
                         background_image,
                         user_github_address,
                         user_hobbies,
@@ -89,6 +89,7 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                     }
                 }
             } catch (error) {
+                console.error('获取用户配置失败:', error instanceof Error ? error.message : '未知错误');
                 // 获取用户配置失败
             } finally {
                 setLoading(false);
@@ -167,6 +168,7 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                 alert(`验证码发送失败: ${response.msg}`);
             }
         } catch (error) {
+            console.error('发送验证码失败:', error instanceof Error ? error.message : '未知错误');
             alert('发送验证码失败，请稍后再试');
         }
     }, [email]);
@@ -196,13 +198,13 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                 isEmailChanged ? verificationCode : undefined,
                 isEmailChanged
             );
-            
+
             if (response.code === 200) {
                 // 更新原始邮箱
                 setOriginalEmail(email);
                 // 清空验证码
                 setVerificationCode('');
-                
+
                 // 显示保存成功提示
                 setSaveSuccess(true);
                 setTimeout(() => setSaveSuccess(false), 3000);
@@ -216,6 +218,7 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                 alert(`保存失败: ${response.msg}`);
             }
         } catch (error) {
+            console.error('保存配置失败:', error instanceof Error ? error.message : '未知错误');
             alert('保存配置时发生错误，请稍后再试');
         }
     }, [username, email, githubAddress, icpFilingNumber, userHobbies, typewriterContent, isEmailChanged, verificationCode, validateForm, onSaveSuccess]);
@@ -263,7 +266,7 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                 logoImageId,
                 backgroundImageId
             );
-            
+
             if (response.code === 200) {
                 // 显示保存成功提示
                 setSaveSuccess(true);
@@ -273,6 +276,7 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                 setSaveImageError(response.msg || '保存图片失败');
             }
         } catch (error) {
+            console.error('保存图片失败:', error instanceof Error ? error.message : '未知错误');
             setSaveImageError('保存图片时发生错误，请稍后再试');
         }
     }, [avatarImageId, logoImageId, backgroundImageId]);
@@ -304,7 +308,7 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
 
     // 添加爱好
     const handleAddHobby = useCallback(() => {
-        if (newHobby.trim() && !userHobbies.includes(newHobby.trim())) {
+        if (newHobby.trim() && !userHobbies.includes(newHobby.trim()) && userHobbies.length < 10) {
             setUserHobbies(prev => [...prev, newHobby.trim()]);
             setNewHobby('');
         }
@@ -314,9 +318,11 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
     const handleHobbyKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            handleAddHobby();
+            if (userHobbies.length < 10) {
+                handleAddHobby();
+            }
         }
-    }, [handleAddHobby]);
+    }, [handleAddHobby, userHobbies.length]);
 
     // 删除爱好
     const handleRemoveHobby = useCallback((index: number) => {
@@ -360,9 +366,9 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                 <div className="upload-item">
                                     <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
                                         {avatarImage ? (
-                                            <img 
-                                                src={avatarImage} 
-                                                alt="用户头像" 
+                                            <img
+                                                src={avatarImage}
+                                                alt="用户头像"
                                                 className="selected-image"
                                                 aria-label="用户头像"
                                                 onError={(e) => {
@@ -390,9 +396,9 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                 <div className="upload-item">
                                     <div className="upload-circle" onClick={() => openImageSelector('logo')}>
                                         {logoImage ? (
-                                            <img 
-                                                src={logoImage} 
-                                                alt="网站Logo" 
+                                            <img
+                                                src={logoImage}
+                                                alt="网站Logo"
                                                 className="selected-image"
                                                 aria-label="网站Logo"
                                                 onError={(e) => {
@@ -444,9 +450,9 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                 <div className="upload-item">
                                     <div className="upload-circle" onClick={() => openImageSelector('avatar')}>
                                         {avatarImage ? (
-                                            <img 
-                                                src={avatarImage} 
-                                                alt="用户头像" 
+                                            <img
+                                                src={avatarImage}
+                                                alt="用户头像"
                                                 className="selected-image"
                                                 aria-label="用户头像"
                                                 onError={(e) => {
@@ -474,9 +480,9 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                 <div className="upload-item">
                                     <div className="upload-circle" onClick={() => openImageSelector('logo')}>
                                         {logoImage ? (
-                                            <img 
-                                                src={logoImage} 
-                                                alt="网站Logo" 
+                                            <img
+                                                src={logoImage}
+                                                alt="网站Logo"
                                                 className="selected-image"
                                                 aria-label="网站Logo"
                                                 onError={(e) => {
@@ -575,7 +581,7 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                 )}
                                 {isEmailChanged && (
                                     <div className="email-change-notice">
-                                        <FiAlertCircle className="notice-icon" /> 
+                                        <FiAlertCircle className="notice-icon" />
                                         您修改了邮箱地址，需要验证
                                     </div>
                                 )}
@@ -672,8 +678,8 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                         onKeyDown={handleTypewriterKeyDown}
                                         placeholder="请输入打字机内容，按回车添加"
                                     />
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         className="add-tag-button"
                                         onClick={handleAddTypewriterContent}
                                     >
@@ -687,9 +693,9 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                     {typewriterContent.map((content, index) => (
                                         <div key={index} className="tag">
                                             {content}
-                                            <button 
-                                                type="button" 
-                                                className="remove-tag" 
+                                            <button
+                                                type="button"
+                                                className="remove-tag"
                                                 onClick={() => handleRemoveTypewriterContent(index)}
                                                 aria-label="删除该内容"
                                             >
@@ -707,7 +713,10 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                     <span>用户爱好</span>
                                 </label>
                                 <p className="input-description">
-                                    添加您的技术栈或个人爱好，将显示在个人简介中。
+                                    添加您的技术栈或个人爱好，将显示在个人简介中。最多可添加10个。
+                                    {userHobbies.length > 0 && (
+                                        <span className="hobby-count"> 当前已添加：{userHobbies.length}/10</span>
+                                    )}
                                 </p>
                                 <div className="tag-input-container">
                                     <input
@@ -716,16 +725,24 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                         value={newHobby}
                                         onChange={(e) => setNewHobby(e.target.value)}
                                         onKeyDown={handleHobbyKeyDown}
-                                        placeholder="请输入用户爱好，按回车添加"
+                                        placeholder={userHobbies.length >= 10 ? "已达到最大数量限制" : "请输入用户爱好，按回车添加"}
+                                        disabled={userHobbies.length >= 10}
                                     />
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         className="add-tag-button"
                                         onClick={handleAddHobby}
+                                        disabled={userHobbies.length >= 10 || !newHobby.trim()}
                                     >
                                         <FiPlus /> 添加
                                     </button>
                                 </div>
+                                {userHobbies.length >= 10 && (
+                                    <div className="hobby-limit-notice">
+                                        <FiAlertCircle className="notice-icon" />
+                                        已达到最大数量限制（10个），请删除后再添加新的爱好
+                                    </div>
+                                )}
                                 <div className="tags-container">
                                     {userHobbies.length === 0 && (
                                         <div className="empty-tag-hint">暂无内容，请添加</div>
@@ -733,9 +750,9 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                                     {userHobbies.map((hobby, index) => (
                                         <div key={index} className="tag">
                                             {hobby}
-                                            <button 
-                                                type="button" 
-                                                className="remove-tag" 
+                                            <button
+                                                type="button"
+                                                className="remove-tag"
                                                 onClick={() => handleRemoveHobby(index)}
                                                 aria-label="删除该爱好"
                                             >
