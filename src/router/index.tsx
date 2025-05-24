@@ -16,18 +16,18 @@ import { checkSystemStatus } from "@/services/webService";
 // 检查登录状态的loader函数
 const checkAuthStatus = () => {
     const token = localStorage.getItem('auth_token');
-    return {isAuthenticated: !!token};
+    return { isAuthenticated: !!token };
 };
 
-// 检查系统状态的loader函数
-const checkSystemStatusLoader = async () => {
+// 统一的系统状态检查函数
+const checkSystemStatusLoader = async (routeName: string = 'unknown') => {
     try {
-        console.log('路由器: 开始检查系统状态...');
+        console.log(`路由器 [${routeName}]: 开始检查系统状态...`);
         const { isRuntime, errorMessage } = await checkSystemStatus();
-        console.log('路由器: 系统状态检查结果:', { isRuntime, errorMessage });
-        
+        console.log(`路由器 [${routeName}]: 系统状态检查结果:`, { isRuntime, errorMessage });
+
         if (!isRuntime) {
-            console.log('路由器: 系统未就绪，重定向到等待页面');
+            console.log(`路由器 [${routeName}]: 系统未就绪，重定向到等待页面`);
             throw new Response("", {
                 status: 302,
                 headers: {
@@ -35,17 +35,17 @@ const checkSystemStatusLoader = async () => {
                 },
             });
         }
-        
-        console.log('路由器: 系统已就绪，允许访问');
+
+        console.log(`路由器 [${routeName}]: 系统已就绪，允许访问`);
         return null;
     } catch (error) {
         // 如果是重定向错误，直接抛出
         if (error instanceof Response) {
             throw error;
         }
-        
+
         // 其他错误也重定向到等待页面
-        console.error('路由器: 系统状态检查失败:', error);
+        console.error(`路由器 [${routeName}]: 系统状态检查失败:`, error);
         throw new Response("", {
             status: 302,
             headers: {
@@ -55,30 +55,87 @@ const checkSystemStatusLoader = async () => {
     }
 };
 
+// 管理后台路由的loader（包含系统状态检查和认证检查）
+const adminLoader = async () => {
+    // 首先检查系统状态
+    await checkSystemStatusLoader('admin');
+
+    // 只有登录页不需要检查认证状态
+    if (window.location.pathname !== '/admin/login') {
+        const { isAuthenticated } = checkAuthStatus();
+        if (!isAuthenticated) {
+            throw new Response("", {
+                status: 302,
+                headers: {
+                    Location: "/admin/login",
+                },
+            });
+        }
+    }
+
+    return null;
+};
+
+// 登录页面的loader（包含系统状态检查和已登录检查）
+const loginLoader = async () => {
+    // 首先检查系统状态
+    await checkSystemStatusLoader('admin/login');
+
+    // 如果已登录，重定向到管理后台
+    const { isAuthenticated } = checkAuthStatus();
+    if (isAuthenticated) {
+        throw new Response("", {
+            status: 302,
+            headers: {
+                Location: "/admin",
+            },
+        });
+    }
+
+    return null;
+};
+
+// 管理后台子路由的认证检查（不需要重复检查系统状态，因为父路由已检查）
+const adminAuthLoader = async (routeName: string) => {
+    console.log(`管理后台 [${routeName}]: 检查认证状态...`);
+    const { isAuthenticated } = checkAuthStatus();
+    if (!isAuthenticated) {
+        console.log(`管理后台 [${routeName}]: 未认证，重定向到登录页`);
+        throw new Response("", {
+            status: 302,
+            headers: {
+                Location: "/admin/login",
+            },
+        });
+    }
+    console.log(`管理后台 [${routeName}]: 认证通过，允许访问`);
+    return null;
+};
+
 // 定义路由配置
 const routes: RouteObject[] = [
     {
         path: "/",
-        element: <BlogLayout/>,
-        loader: checkSystemStatusLoader,
+        element: <BlogLayout />,
+        loader: () => checkSystemStatusLoader('blog-layout'),
         children: [
             {
                 index: true,
-                element: <Home/>
+                element: <Home />
             },
             {
                 path: "blog/:blogId",
-                element: <BlogContent/>
+                element: <BlogContent />
             },
             {
                 path: "friends",
-                element: <FriendLink/>
+                element: <FriendLink />
             }
         ]
     },
     {
         path: "/waiting",
-        element: <Waiting/>,
+        element: <Waiting />,
         loader: () => {
             console.log('等待页面: 直接加载，不检查系统状态');
             return null;
@@ -86,93 +143,46 @@ const routes: RouteObject[] = [
     },
     {
         path: "/admin",
-        element: <AdminLayout/>,
-        loader: async () => {
-            // 首先检查系统状态
-            try {
-                const { isRuntime } = await checkSystemStatus();
-                if (!isRuntime) {
-                    throw new Response("", {
-                        status: 302,
-                        headers: {
-                            Location: "/waiting",
-                        },
-                    });
-                }
-            } catch (error) {
-                if (error instanceof Response) {
-                    throw error;
-                }
-                console.error('系统状态检查失败:', error);
-                throw new Response("", {
-                    status: 302,
-                    headers: {
-                        Location: "/waiting",
-                    },
-                });
-            }
-            
-            // 只有登录页不需要检查认证状态
-            if (window.location.pathname !== '/admin/login') {
-                const {isAuthenticated} = checkAuthStatus();
-                if (!isAuthenticated) {
-                    throw new Response("", {
-                        status: 302,
-                        headers: {
-                            Location: "/admin/login",
-                        },
-                    });
-                }
-            }
-
-            return null;
-        },
+        element: <AdminLayout />,
+        loader: adminLoader,
         children: [
             {
                 index: true,
-                element: <Posts/>
+                element: <Posts />,
+                loader: () => adminAuthLoader('posts')
             },
             {
                 path: "login",
-                element: <Login/>,
-                loader: async () => {
-                    // 如果已登录，重定向到管理后台
-                    const {isAuthenticated} = checkAuthStatus();
-                    if (isAuthenticated) {
-                        throw new Response("", {
-                            status: 302,
-                            headers: {
-                                Location: "/admin",
-                            },
-                        });
-                    }
-
-                    return null;
-                }
+                element: <Login />,
+                loader: loginLoader
             },
-            // 这里可以添加更多的管理页面路由
             {
                 path: "posts",
-                element: <Posts/>
+                element: <Posts />,
+                loader: () => adminAuthLoader('posts')
             },
             {
                 path: "edit",
-                element: <Edit/>
+                element: <Edit />,
+                loader: () => adminAuthLoader('edit')
             },
             {
                 path: "gallery",
-                element: <Gallery/>
+                element: <Gallery />,
+                loader: () => adminAuthLoader('gallery')
             },
             {
                 path: "settings",
-                element: <Settings/>
+                element: <Settings />,
+                loader: () => adminAuthLoader('settings')
             }
         ]
     },
-    // 添加 404 路由，匹配所有未匹配的路径
+    // 404 路由也需要检查系统状态
     {
         path: "*",
-        element: <NotFound/>
+        element: <NotFound />,
+        loader: () => checkSystemStatusLoader('not-found')
     }
 ];
 
