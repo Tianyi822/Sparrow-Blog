@@ -1,5 +1,5 @@
-@use '@/style/mixins'as *;
-@use '@/style/variables'as *;
+@use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
 // 标签弹窗动画
 @keyframes fadeIn {
@@ -7,7 +7,6 @@
     opacity: 0;
     transform: translateY(-10px) scale(0.95);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -19,7 +18,6 @@
     opacity: 1;
     transform: translateY(0) scale(1);
   }
-
   to {
     opacity: 0;
     transform: translateY(10px) scale(0.95);
@@ -28,12 +26,9 @@
 
 // 脉冲动画
 @keyframes pulse {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: scale(1);
   }
-
   50% {
     transform: scale(1.05);
   }
@@ -182,7 +177,7 @@
           background: rgba($white, 0.08);
           box-shadow: 0 0 0 3px rgba($primary-300, 0.2);
 
-          +.search-icon {
+          + .search-icon {
             color: rgba($primary-200, 0.8);
           }
         }
@@ -264,13 +259,21 @@
           &:focus {
             outline: none;
             border-color: rgba($primary-200, 0.4);
-            background: rgba($white, 0.08);
+            background-color: rgba($white, 0.08);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right $spacing-sm center;
+            background-size: 1rem;
             box-shadow: 0 0 0 3px rgba($primary-300, 0.2);
           }
 
           &:hover {
             border-color: rgba($white, 0.2);
-            background: rgba($white, 0.08);
+            background-color: rgba($white, 0.08);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right $spacing-sm center;
+            background-size: 1rem;
           }
         }
       }
@@ -479,14 +482,14 @@
         isolation: isolate;
 
         tr {
-          background: linear-gradient(135deg,
-              rgba($white, 0.06),
-              rgba($white, 0.04)) !important;
+          background: linear-gradient(135deg, 
+            rgba($white, 0.06), 
+            rgba($white, 0.04)) !important;
 
           th {
-            background: linear-gradient(135deg,
-                rgba($white, 0.06),
-                rgba($white, 0.04)) !important;
+            background: linear-gradient(135deg, 
+              rgba($white, 0.06), 
+              rgba($white, 0.04)) !important;
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             font-weight: $font-weight-medium;
@@ -546,17 +549,17 @@
         z-index: 3;
 
         &.index-column {
-          background: linear-gradient(135deg,
-              rgba($white, 0.06),
-              rgba($white, 0.04)) !important;
+          background: linear-gradient(135deg, 
+            rgba($white, 0.06), 
+            rgba($white, 0.04)) !important;
           left: 0;
           box-shadow: 2px 0 6px rgba($black, 0.08);
         }
 
         &.title-column {
-          background: linear-gradient(135deg,
-              rgba($white, 0.06),
-              rgba($white, 0.04)) !important;
+          background: linear-gradient(135deg, 
+            rgba($white, 0.06), 
+            rgba($white, 0.04)) !important;
           left: 70px;
         }
       }
@@ -626,33 +629,33 @@
         transition: $transition-base;
 
         &.public {
-          background: linear-gradient(135deg,
-              rgba($success, 0.2),
-              rgba($success, 0.3));
+          background: linear-gradient(135deg, 
+            rgba($success, 0.2), 
+            rgba($success, 0.3));
           border: $border-width-thin solid rgba($success, 0.4);
           color: lighten($success, 10%);
           box-shadow: 0 0 10px rgba($success, 0.2);
 
           &:hover {
-            background: linear-gradient(135deg,
-                rgba($success, 0.3),
-                rgba($success, 0.4));
+            background: linear-gradient(135deg, 
+              rgba($success, 0.3), 
+              rgba($success, 0.4));
             transform: scale(1.05);
           }
         }
 
         &.hidden {
-          background: linear-gradient(135deg,
-              rgba($gray-500, 0.2),
-              rgba($gray-500, 0.3));
+          background: linear-gradient(135deg, 
+            rgba($gray-500, 0.2), 
+            rgba($gray-500, 0.3));
           border: $border-width-thin solid rgba($gray-500, 0.4);
           color: lighten($gray-500, 10%);
           box-shadow: 0 0 10px rgba($gray-500, 0.2);
 
           &:hover {
-            background: linear-gradient(135deg,
-                rgba($gray-500, 0.3),
-                rgba($gray-500, 0.4));
+            background: linear-gradient(135deg, 
+              rgba($gray-500, 0.3), 
+              rgba($gray-500, 0.4));
             transform: scale(1.05);
           }
         }
@@ -1165,7 +1168,6 @@
 @media (max-width: 1800px) and (min-width: 1501px) {
   .admin-posts {
     .posts-table {
-
       th,
       td {
         &.tags-column {
