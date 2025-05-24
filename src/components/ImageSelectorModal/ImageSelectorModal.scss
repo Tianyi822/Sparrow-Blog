@@ -43,6 +43,16 @@ body.modal-open {
   }
 }
 
+/* 加载动画 */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
 /* 图片选择器模态框样式 - 模仿UploadModal的遮罩效果 */
 .image-selector-modal-overlay {
   position: fixed;
@@ -291,7 +301,27 @@ body.modal-open {
     flex: 1;
     overflow-y: auto;
     padding: $spacing-md + 0.25rem;
-    max-height: calc(80vh - 130px); /* 为底部按钮留出空间 */
+    max-height: calc(80vh - 200px); /* 为头部和底部留出空间 */
+    min-height: 300px;
+    
+    // 自定义滚动条
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba($white, 0.05);
+      border-radius: $border-radius-sm;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba($primary-200, 0.4);
+      border-radius: $border-radius-sm;
+
+      &:hover {
+        background: rgba($primary-200, 0.6);
+      }
+    }
     
     .selector-loading, .selector-empty {
       display: flex;
@@ -339,11 +369,21 @@ body.modal-open {
           box-shadow: 0 4px 12px rgba(147, 118, 224, 0.4);
         }
         
+        &.loading .image-preview {
+          background: linear-gradient(110deg,
+              rgba($gray-700, 0.8) 8%,
+              rgba($gray-600, 0.9) 18%,
+              rgba($gray-700, 0.8) 33%);
+          background-size: 200% 100%;
+          animation: shimmer 1.5s infinite linear;
+        }
+        
         .image-preview {
           width: 100%;
           position: relative;
           padding-top: 75%; /* 4:3 aspect ratio */
           overflow: hidden;
+          background: rgba($gray-700, 0.3);
           
           img {
             position: absolute;
@@ -352,6 +392,48 @@ body.modal-open {
             width: 100%;
             height: 100%;
             object-fit: cover;
+          }
+          
+          .image-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba($gray-700, 0.5);
+            color: rgba($white, 0.6);
+            
+            .spin-icon {
+              font-size: $font-size-lg;
+              animation: spin 1.5s linear infinite;
+            }
+          }
+          
+          .image-error {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba($danger, 0.1);
+            color: rgba($danger, 0.8);
+            gap: $spacing-xs;
+            
+            svg {
+              font-size: $font-size-md;
+            }
+            
+            span {
+              font-size: $font-size-xs;
+              font-weight: $font-weight-medium;
+            }
           }
           
           .selected-overlay {

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { FiLoader, FiPlus, FiX, FiCheckCircle, FiUploadCloud, FiUser, FiImage, FiLayout } from 'react-icons/fi';
 import { GalleryImage, getAllGalleryImages, addGalleryImages, AddImagesRequest, getImageUrl } from '@/services/adminService';
@@ -48,6 +48,136 @@ interface ImageSelectorModalProps {
 }
 
 /**
+ * 图片项组件 - 单独的组件以便优化渲染
+ */
+interface ImageItemProps {
+    image: GalleryImage;
+    isSelected: boolean;
+    onSelect: (image: GalleryImage) => void;
+}
+
+const ImageItem: React.FC<ImageItemProps> = React.memo(({ image, isSelected, onSelect }) => {
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [imageError, setImageError] = useState(false);
+    const [isInView, setIsInView] = useState(false);
+    const imgRef = useRef<HTMLImageElement>(null);
+    const itemRef = useRef<HTMLLIElement>(null);
+
+    // 使用Intersection Observer实现懒加载
+    useEffect(() => {
+        const element = itemRef.current;
+        if (!element) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting && !isInView) {
+                    setIsInView(true);
+                }
+            },
+            {
+                rootMargin: '50px' // 提前50px开始加载
+            }
+        );
+
+        observer.observe(element);
+
+        return () => {
+            observer.unobserve(element);
+        };
+    }, [isInView]);
+
+    const handleImageLoad = useCallback(() => {
+        setImageLoaded(true);
+        setImageError(false);
+    }, []);
+
+    const handleImageError = useCallback(() => {
+        setImageError(true);
+        setImageLoaded(false);
+    }, []);
+
+    const handleClick = useCallback(() => {
+        onSelect(image);
+    }, [image, onSelect]);
+
+    return (
+        <li
+            ref={itemRef}
+            className={`selector-item ${isSelected ? 'selected' : ''} ${imageLoaded ? 'loaded' : 'loading'}`}
+            onClick={handleClick}
+        >
+            <div className="image-preview">
+                {!imageLoaded && !imageError && (
+                    <div className="image-placeholder">
+                        <FiLoader className="spin-icon" />
+                    </div>
+                )}
+                {isInView && (
+                    <img
+                        ref={imgRef}
+                        src={getImageUrl(image.img_id)}
+                        alt={image.img_name}
+                        onLoad={handleImageLoad}
+                        onError={handleImageError}
+                        style={{ 
+                            opacity: imageLoaded ? 1 : 0,
+                            transition: 'opacity 0.3s ease'
+                        }}
+                    />
+                )}
+                {imageError && (
+                    <div className="image-error">
+                        <FiX />
+                        <span>加载失败</span>
+                    </div>
+                )}
+                {isSelected && imageLoaded && (
+                    <div className="selected-overlay">
+                        <FiCheckCircle className="selected-icon" />
+                    </div>
+                )}
+            </div>
+            <div className="image-info">
+                <span className="image-name">{image.img_name}</span>
+            </div>
+        </li>
+    );
+});
+
+ImageItem.displayName = 'ImageItem';
+
+// 图片库数据缓存
+let imageGalleryCache: GalleryImage[] | null = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5分钟缓存
+
+/**
+ * 节流函数
+ * @param func 要节流的函数
+ * @param delay 延迟时间
+ * @returns 节流后的函数
+ */
+function throttle<T extends (...args: any[]) => any>(func: T, delay: number): (...args: Parameters<T>) => void {
+    let timeoutId: NodeJS.Timeout | null = null;
+    let lastExecTime = 0;
+    
+    return (...args: Parameters<T>) => {
+        const currentTime = Date.now();
+        
+        if (currentTime - lastExecTime > delay) {
+            func(...args);
+            lastExecTime = currentTime;
+        } else {
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func(...args);
+                lastExecTime = Date.now();
+            }, delay - (currentTime - lastExecTime));
+        }
+    };
+}
+
+/**
  * 图片选择器模态框组件
  * 支持图片库浏览、图片上传、压缩和使用
  */
@@ -62,8 +192,10 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
     const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
     const [galleryLoading, setGalleryLoading] = useState<boolean>(false);
     const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+    const [displayCount, setDisplayCount] = useState<number>(20); // 初始显示20张图片
     const galleryRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     // 上传状态
     const [uploadFile, setUploadFile] = useState<UploadFileState | null>(null);
@@ -109,6 +241,13 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
      * 加载图片库数据
      */
     const loadImageGallery = useCallback(async () => {
+        // 检查缓存
+        const now = Date.now();
+        if (imageGalleryCache && (now - cacheTimestamp) < CACHE_DURATION) {
+            setGalleryImages(imageGalleryCache);
+            return;
+        }
+
         setGalleryLoading(true);
         try {
             const response = await getAllGalleryImages();
@@ -119,6 +258,11 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                     const dateB = new Date(b.create_time || 0).getTime();
                     return dateB - dateA; // 降序排列，最新的在前
                 });
+                
+                // 缓存数据
+                imageGalleryCache = sortedImages;
+                cacheTimestamp = now;
+                
                 setGalleryImages(sortedImages);
             } else {
                 console.error('获取图片库失败:', response.msg);
@@ -129,6 +273,45 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             setGalleryLoading(false);
         }
     }, []);
+
+    /**
+     * 清除图片库缓存
+     */
+    const clearImageGalleryCache = useCallback(() => {
+        imageGalleryCache = null;
+        cacheTimestamp = 0;
+    }, []);
+
+    // 显示的图片列表（分批渲染）
+    const displayImages = useMemo(() => {
+        return galleryImages.slice(0, displayCount);
+    }, [galleryImages, displayCount]);
+
+    // 滚动加载更多图片
+    const handleScroll = useCallback(() => {
+        const element = contentRef.current;
+        if (!element) return;
+
+        const { scrollTop, scrollHeight, clientHeight } = element;
+        
+        // 当滚动到底部附近时加载更多
+        if (scrollHeight - scrollTop - clientHeight < 200 && displayCount < galleryImages.length) {
+            setDisplayCount(prev => Math.min(prev + 10, galleryImages.length));
+        }
+    }, [displayCount, galleryImages.length]);
+
+    // 绑定滚动事件
+    useEffect(() => {
+        const element = contentRef.current;
+        if (!element) return;
+
+        const throttledScroll = throttle(handleScroll, 100);
+        element.addEventListener('scroll', throttledScroll);
+
+        return () => {
+            element.removeEventListener('scroll', throttledScroll);
+        };
+    }, [handleScroll]);
 
     /**
      * 验证文件类型
@@ -350,6 +533,8 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             const response = await addGalleryImages(addRequest);
 
             if (response.code === 200) {
+                // 清除缓存，确保下次加载最新数据
+                clearImageGalleryCache();
                 // 重新加载图片库数据
                 await loadImageGallery();
                 // 清空上传状态
@@ -362,7 +547,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             console.error('API调用失败:', error);
             alert('添加图片到图库失败: ' + (error instanceof Error ? error.message : String(error)));
         }
-    }, [loadImageGallery]);
+    }, [loadImageGallery, clearImageGalleryCache]);
 
     /**
      * 处理图片上传
@@ -459,6 +644,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
     // 当组件打开时加载图片
     useEffect(() => {
         if (isOpen) {
+            setDisplayCount(20); // 重置显示数量
             loadImageGallery();
             setSelectedImageId(null);
         }
@@ -606,7 +792,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                 )}
 
                 {/* 图片列表区域 */}
-                <div className="selector-content">
+                <div className="selector-content" ref={contentRef}>
                     {galleryLoading ? (
                         <div className="selector-loading">
                             <FiLoader className="spin-icon" />
@@ -618,27 +804,13 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                         </div>
                     ) : (
                         <ul className="selector-list">
-                            {galleryImages.map(image => (
-                                <li
+                            {displayImages.map(image => (
+                                <ImageItem
                                     key={image.img_id}
-                                    className={`selector-item ${selectedImageId === image.img_id ? 'selected' : ''}`}
-                                    onClick={() => handleImageSelect(image)}
-                                >
-                                    <div className="image-preview">
-                                        <img
-                                            src={getImageUrl(image.img_id)}
-                                            alt={image.img_name}
-                                        />
-                                        {selectedImageId === image.img_id && (
-                                            <div className="selected-overlay">
-                                                <FiCheckCircle className="selected-icon" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="image-info">
-                                        <span className="image-name">{image.img_name}</span>
-                                    </div>
-                                </li>
+                                    image={image}
+                                    isSelected={selectedImageId === image.img_id}
+                                    onSelect={handleImageSelect}
+                                />
                             ))}
                         </ul>
                     )}
