@@ -145,7 +145,7 @@ export const businessApiRequest = async <T>(config: AxiosRequestConfig): Promise
     }
 };
 
-// 通用请求函数 (兼容 InitiateConfigService 中的用法)
+// 通用请求函数
 export const request = async <T>(config: AxiosRequestConfig): Promise<T> => {
     // 默认使用配置服务
     return configApiRequest<T>(config);

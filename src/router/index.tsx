@@ -1,5 +1,4 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
-import InitiateConfig from "@/pages/InitiateConfig";
 import Home from "@/pages/Home";
 import FriendLink from "@/pages/FriendLink";
 import BlogContent from "@/pages/BlogContent";
@@ -11,27 +10,8 @@ import NotFound from "@/pages/NotFound/NotFound";
 import Edit from "@/pages/Admin/Edit";
 import Gallery from "@/pages/Admin/Gallery";
 import Settings from "@/pages/Admin/Settings";
-import { ApiResponse, businessApiRequest } from "@/services/api";
-
-// 检查系统状态的loader函数
-const checkApiConfig = async () => {
-    try {
-        // 直接调用API获取原始响应，以便能够访问code字段
-        const response = await businessApiRequest<ApiResponse<null>>({
-            method: 'GET',
-            url: '/web/sys/status'
-        });
-
-        console.log('系统状态检查结果:', response);
-        return {
-            isRuntime: response.code === 200,
-            code: response.code
-        };
-    } catch (error) {
-        console.error('系统状态检查失败:', error);
-        return {isRuntime: false, code: 0};
-    }
-};
+import Waiting from "@/pages/Waiting";
+import { checkSystemStatus } from "@/services/webService";
 
 // 检查登录状态的loader函数
 const checkAuthStatus = () => {
@@ -39,23 +19,48 @@ const checkAuthStatus = () => {
     return {isAuthenticated: !!token};
 };
 
+// 检查系统状态的loader函数
+const checkSystemStatusLoader = async () => {
+    try {
+        console.log('路由器: 开始检查系统状态...');
+        const { isRuntime, errorMessage } = await checkSystemStatus();
+        console.log('路由器: 系统状态检查结果:', { isRuntime, errorMessage });
+        
+        if (!isRuntime) {
+            console.log('路由器: 系统未就绪，重定向到等待页面');
+            throw new Response("", {
+                status: 302,
+                headers: {
+                    Location: "/waiting",
+                },
+            });
+        }
+        
+        console.log('路由器: 系统已就绪，允许访问');
+        return null;
+    } catch (error) {
+        // 如果是重定向错误，直接抛出
+        if (error instanceof Response) {
+            throw error;
+        }
+        
+        // 其他错误也重定向到等待页面
+        console.error('路由器: 系统状态检查失败:', error);
+        throw new Response("", {
+            status: 302,
+            headers: {
+                Location: "/waiting",
+            },
+        });
+    }
+};
+
 // 定义路由配置
 const routes: RouteObject[] = [
     {
         path: "/",
         element: <BlogLayout/>,
-        loader: async () => {
-            const {isRuntime} = await checkApiConfig();
-            if (!isRuntime) {
-                throw new Response("", {
-                    status: 302,
-                    headers: {
-                        Location: "/config",
-                    },
-                });
-            }
-            return null;
-        },
+        loader: checkSystemStatusLoader,
         children: [
             {
                 index: true,
@@ -72,19 +77,10 @@ const routes: RouteObject[] = [
         ]
     },
     {
-        path: "/config",
-        element: <InitiateConfig/>,
-        loader: async () => {
-            const {isRuntime, code} = await checkApiConfig();
-            // 如果系统已配置(isRuntime=true)或者响应code为200，跳转到首页
-            if (isRuntime || code === 200) {
-                throw new Response("", {
-                    status: 302,
-                    headers: {
-                        Location: "/",
-                    },
-                });
-            }
+        path: "/waiting",
+        element: <Waiting/>,
+        loader: () => {
+            console.log('等待页面: 直接加载，不检查系统状态');
             return null;
         }
     },
@@ -92,17 +88,30 @@ const routes: RouteObject[] = [
         path: "/admin",
         element: <AdminLayout/>,
         loader: async () => {
-            // 检查系统状态，如果未配置，重定向到配置页面
-            const {isRuntime} = await checkApiConfig();
-            if (!isRuntime) {
+            // 首先检查系统状态
+            try {
+                const { isRuntime } = await checkSystemStatus();
+                if (!isRuntime) {
+                    throw new Response("", {
+                        status: 302,
+                        headers: {
+                            Location: "/waiting",
+                        },
+                    });
+                }
+            } catch (error) {
+                if (error instanceof Response) {
+                    throw error;
+                }
+                console.error('系统状态检查失败:', error);
                 throw new Response("", {
                     status: 302,
                     headers: {
-                        Location: "/config",
+                        Location: "/waiting",
                     },
                 });
             }
-
+            
             // 只有登录页不需要检查认证状态
             if (window.location.pathname !== '/admin/login') {
                 const {isAuthenticated} = checkAuthStatus();
