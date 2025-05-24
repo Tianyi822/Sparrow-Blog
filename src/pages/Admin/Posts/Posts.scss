@@ -1,3 +1,4 @@
+@use "sass:color";
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
 
@@ -633,7 +634,7 @@
             rgba($success, 0.2), 
             rgba($success, 0.3));
           border: $border-width-thin solid rgba($success, 0.4);
-          color: lighten($success, 10%);
+          color: color.adjust($success, $lightness: 10%);
           box-shadow: 0 0 10px rgba($success, 0.2);
 
           &:hover {
@@ -649,7 +650,7 @@
             rgba($gray-500, 0.2), 
             rgba($gray-500, 0.3));
           border: $border-width-thin solid rgba($gray-500, 0.4);
-          color: lighten($gray-500, 10%);
+          color: color.adjust($gray-500, $lightness: 10%);
           box-shadow: 0 0 10px rgba($gray-500, 0.2);
 
           &:hover {

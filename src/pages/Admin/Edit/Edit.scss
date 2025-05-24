@@ -1,3 +1,4 @@
+@use "sass:color";
 @use '@/style/mixins'as *;
 @use '@/style/variables'as *;
 
@@ -313,7 +314,7 @@
         @include glass-card-base;
         background: rgba($danger, 0.2);
         border: $border-width-thin solid rgba($danger, 0.4);
-        color: lighten($danger, 10%);
+        color: color.adjust($danger, $lightness: 10%);
         font-size: $font-size-xs;
         display: inline-flex;
         align-items: center;
@@ -467,7 +468,7 @@
       @include glass-card-base;
       background: rgba($danger, 0.15);
       border: $border-width-thin solid rgba($danger, 0.3);
-      color: lighten($danger, 10%);
+      color: color.adjust($danger, $lightness: 10%);
       font-size: $font-size-xs;
       font-weight: $font-weight-medium;
       margin-top: $spacing-xs;
@@ -1214,7 +1215,7 @@
     @include glass-card-base;
     background: rgba($danger, 0.15);
     border: $border-width-thin solid rgba($danger, 0.3);
-    color: lighten($danger, 10%);
+    color: color.adjust($danger, $lightness: 10%);
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
     margin-top: $spacing-xs;

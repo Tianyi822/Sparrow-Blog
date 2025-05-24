@@ -310,7 +310,7 @@
   }
 
   .name-error-message {
-    color: lighten($danger, 10%);
+    color: color.adjust($danger, $lightness: 10%);
     font-size: $font-size-xs;
     font-weight: $font-weight-medium;
     margin-top: $spacing-xs;
