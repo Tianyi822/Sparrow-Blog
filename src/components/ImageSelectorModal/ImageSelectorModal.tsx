@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { FiLoader, FiPlus, FiX, FiCheckCircle, FiUploadCloud, FiUser, FiImage, FiLayout } from 'react-icons/fi';
 import { GalleryImage, getAllGalleryImages, addGalleryImages, AddImagesRequest, getImageUrl } from '@/services/adminService';
 import { getPreSignUrl, uploadToOSS, FileType, ContentType } from '@/services/ossService';
@@ -463,6 +464,27 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
         }
     }, [isOpen, loadImageGallery]);
 
+    // 防止背景页面滚动
+    useEffect(() => {
+        if (isOpen) {
+            // 保存当前滚动位置
+            const scrollY = window.scrollY;
+            
+            // 添加CSS类防止滚动
+            document.body.classList.add('modal-open');
+            document.body.style.top = `-${scrollY}px`;
+            
+            return () => {
+                // 移除CSS类恢复滚动
+                document.body.classList.remove('modal-open');
+                document.body.style.top = '';
+                
+                // 恢复滚动位置
+                window.scrollTo(0, scrollY);
+            };
+        }
+    }, [isOpen]);
+
     /**
      * 格式化文件大小显示
      * @param bytes 字节数
@@ -487,7 +509,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
 
     if (!isOpen) return null;
 
-    return (
+    const modalContent = (
         <div className="image-selector-modal-overlay">
             <div className="image-selector-modal" ref={galleryRef}>
                 {/* 模态框头部 */}
@@ -634,6 +656,9 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
             </div>
         </div>
     );
+
+    // 使用Portal将模态框渲染到body下，完全脱离父容器
+    return createPortal(modalContent, document.body);
 };
 
 export default ImageSelectorModal; 

@@ -1005,346 +1005,144 @@
             font-size: $font-size-md;
           }
         }
+      }
+    }
 
-        // 图片库弹出层样式
-        .image-gallery-popup {
-          position: absolute;
-          top: 100%;
-          right: 0;
-          width: 380px;
-          max-height: 500px;
-          @include glass-card-base;
-          background: rgba($gray-800, 0.95);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border: $border-width-thin solid rgba($white, 0.15);
-          border-radius: $border-radius-lg;
-          box-shadow: $shadow-lg, 0 0 30px rgba($black, 0.3);
-          z-index: 1000;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          margin-top: $spacing-sm;
-          animation: scaleIn 0.2s ease-out;
+    .preview-content {
+      flex: 1;
+      padding: $spacing-lg;
+      overflow-y: auto;
+      min-height: 85vh;
+      max-height: 85vh;
+      background: rgba($gray-800, 0.5);
+      backdrop-filter: blur(8px) saturate(180%);
+      -webkit-backdrop-filter: blur(8px) saturate(180%);
 
-          .gallery-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: $spacing-md $spacing-lg;
-            border-bottom: $border-width-thin solid rgba($white, 0.1);
-            @include glass-card-base;
-            background: rgba($white, 0.05);
+      // 自定义滚动条
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
 
-            h3 {
-              margin: 0;
-              font-size: $font-size-md;
-              font-weight: $font-weight-medium;
-              color: rgba($white, 0.95);
-            }
+      &::-webkit-scrollbar-track {
+        background: rgba($white, 0.05);
+        border-radius: $border-radius-sm;
+      }
 
-            .close-gallery-btn {
-              @include glass-card-base;
-              background: rgba($white, 0.1);
-              border: $border-width-thin solid rgba($white, 0.2);
-              border-radius: $border-radius-circle;
-              color: rgba($white, 0.6);
-              font-size: $font-size-lg;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-              padding: $spacing-xs;
-              width: 28px;
-              height: 28px;
-              transition: $transition-base;
+      &::-webkit-scrollbar-thumb {
+        background: rgba($primary-200, 0.4);
+        border-radius: $border-radius-sm;
 
-              &:hover {
-                background: rgba($danger, 0.2);
-                border-color: rgba($danger, 0.4);
-                color: $white;
-                transform: scale(1.1);
-              }
-            }
-          }
-
-          .gallery-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: $spacing-lg;
-            max-height: 400px;
-
-            // 自定义滚动条
-            &::-webkit-scrollbar {
-              width: 6px;
-            }
-
-            &::-webkit-scrollbar-track {
-              background: rgba($white, 0.05);
-              border-radius: $border-radius-sm;
-            }
-
-            &::-webkit-scrollbar-thumb {
-              background: rgba($primary-200, 0.4);
-              border-radius: $border-radius-sm;
-
-              &:hover {
-                background: rgba($primary-200, 0.6);
-              }
-            }
-
-            .gallery-loading,
-            .gallery-empty {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              min-height: 200px;
-              color: rgba($white, 0.6);
-
-              .spin-icon {
-                font-size: $font-size-xl;
-                margin-bottom: $spacing-sm;
-                animation: spin 1.5s linear infinite;
-              }
-            }
-
-            .gallery-list {
-              list-style: none;
-              padding: 0;
-              margin: 0;
-              display: grid;
-              grid-template-columns: repeat(3, 1fr);
-              gap: $spacing-lg;
-
-              .gallery-item {
-                @include glass-card-base;
-                background: rgba($white, 0.05);
-                backdrop-filter: blur(8px) saturate(180%);
-                -webkit-backdrop-filter: blur(8px) saturate(180%);
-                border: $border-width-thin solid rgba($white, 0.1);
-                display: flex;
-                flex-direction: column;
-                border-radius: $border-radius-lg;
-                cursor: pointer;
-                transition: $transition-base;
-                overflow: hidden;
-
-                &:hover {
-                  background: rgba($white, 0.08);
-                  border-color: rgba($white, 0.2);
-                  transform: translateY(-2px);
-                  box-shadow: $shadow-md;
-                }
-
-                .image-preview {
-                  width: 100%;
-                  position: relative;
-                  padding-top: 75%;
-                  overflow: hidden;
-
-                  img {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    transition: $transition-base;
-                  }
-                }
-
-                .image-info {
-                  padding: $spacing-md;
-                  display: flex;
-                  flex-direction: column;
-                  gap: $spacing-sm;
-
-                  .image-name {
-                    font-size: $font-size-sm;
-                    color: rgba($white, 0.95);
-                    font-weight: $font-weight-medium;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  }
-
-                  .image-action {
-
-                    .copy-hint,
-                    .copied-status {
-                      @include glass-card-base;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      font-size: $font-size-xs;
-                      font-weight: $font-weight-medium;
-                      padding: $spacing-xs;
-                      border-radius: $border-radius-sm;
-                      width: 100%;
-                      transition: $transition-base;
-
-                      .copy-icon,
-                      .copied-icon {
-                        margin-right: $spacing-xs;
-                      }
-                    }
-
-                    .copy-hint {
-                      color: rgba($white, 0.7);
-                      background: rgba($white, 0.05);
-                      border: $border-width-thin solid rgba($white, 0.1);
-                    }
-
-                    .copied-status {
-                      color: $success;
-                      background: rgba($success, 0.15);
-                      border: $border-width-thin solid rgba($success, 0.3);
-                    }
-                  }
-                }
-              }
-            }
-          }
+        &:hover {
+          background: rgba($primary-200, 0.6);
         }
       }
 
-      .preview-content {
-        flex: 1;
-        padding: $spacing-lg;
-        overflow-y: auto;
-        min-height: 85vh;
-        max-height: 85vh;
-        background: rgba($gray-800, 0.5);
+      // Markdown内容样式
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin-top: $spacing-xl;
+        margin-bottom: $spacing-lg;
+        color: rgba($white, 0.95);
+        font-weight: $font-weight-semibold;
+        text-shadow: 0 1px 2px rgba($black, 0.3);
+      }
+
+      h1 {
+        font-size: $font-size-xl;
+        border-bottom: $border-width-thin solid rgba($white, 0.15);
+        padding-bottom: $spacing-sm;
+      }
+
+      h2 {
+        font-size: $font-size-lg;
+      }
+
+      h3 {
+        font-size: $font-size-md + 0.2rem;
+      }
+
+      p {
+        margin: $spacing-lg 0;
+        line-height: $line-height-relaxed;
+        color: rgba($white, 0.85);
+        font-weight: $font-weight-normal;
+      }
+
+      a {
+        color: $primary-200;
+        text-decoration: none;
+        font-weight: $font-weight-medium;
+        transition: $transition-base;
+
+        &:hover {
+          color: $primary-100;
+          text-decoration: underline;
+        }
+      }
+
+      code {
+        font-family: $font-family-monospace;
+        background: rgba($black, 0.3);
+        color: rgba($white, 0.95);
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $border-radius-sm;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+      }
+
+      pre {
+        @include glass-card-base;
+        background: rgba($black, 0.4);
         backdrop-filter: blur(8px) saturate(180%);
         -webkit-backdrop-filter: blur(8px) saturate(180%);
-
-        // 自定义滚动条
-        &::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        &::-webkit-scrollbar-track {
-          background: rgba($white, 0.05);
-          border-radius: $border-radius-sm;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background: rgba($primary-200, 0.4);
-          border-radius: $border-radius-sm;
-
-          &:hover {
-            background: rgba($primary-200, 0.6);
-          }
-        }
-
-        // Markdown内容样式
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-          margin-top: $spacing-xl;
-          margin-bottom: $spacing-lg;
-          color: rgba($white, 0.95);
-          font-weight: $font-weight-semibold;
-          text-shadow: 0 1px 2px rgba($black, 0.3);
-        }
-
-        h1 {
-          font-size: $font-size-xl;
-          border-bottom: $border-width-thin solid rgba($white, 0.15);
-          padding-bottom: $spacing-sm;
-        }
-
-        h2 {
-          font-size: $font-size-lg;
-        }
-
-        h3 {
-          font-size: $font-size-md + 0.2rem;
-        }
-
-        p {
-          margin: $spacing-lg 0;
-          line-height: $line-height-relaxed;
-          color: rgba($white, 0.85);
-          font-weight: $font-weight-normal;
-        }
-
-        a {
-          color: $primary-200;
-          text-decoration: none;
-          font-weight: $font-weight-medium;
-          transition: $transition-base;
-
-          &:hover {
-            color: $primary-100;
-            text-decoration: underline;
-          }
-        }
+        border: $border-width-thin solid rgba($white, 0.1);
+        padding: $spacing-lg;
+        border-radius: $border-radius-lg;
+        overflow-x: auto;
+        margin: $spacing-lg 0;
+        box-shadow: $shadow-sm;
 
         code {
-          font-family: $font-family-monospace;
-          background: rgba($black, 0.3);
+          background: transparent;
+          padding: 0;
+          border-radius: 0;
           color: rgba($white, 0.95);
-          padding: $spacing-xs $spacing-sm;
-          border-radius: $border-radius-sm;
-          font-size: $font-size-sm;
-          font-weight: $font-weight-medium;
         }
+      }
 
-        pre {
-          @include glass-card-base;
-          background: rgba($black, 0.4);
-          backdrop-filter: blur(8px) saturate(180%);
-          -webkit-backdrop-filter: blur(8px) saturate(180%);
-          border: $border-width-thin solid rgba($white, 0.1);
-          padding: $spacing-lg;
-          border-radius: $border-radius-lg;
-          overflow-x: auto;
-          margin: $spacing-lg 0;
-          box-shadow: $shadow-sm;
+      img {
+        max-width: 100%;
+        border-radius: $border-radius-lg;
+        margin: $spacing-lg 0;
+        box-shadow: $shadow-md;
+      }
 
-          code {
-            background: transparent;
-            padding: 0;
-            border-radius: 0;
-            color: rgba($white, 0.95);
-          }
+      ul,
+      ol {
+        margin: $spacing-lg 0;
+        padding-left: $spacing-xxl;
+
+        li {
+          margin: $spacing-sm 0;
+          color: rgba($white, 0.85);
+          line-height: $line-height-relaxed;
         }
+      }
 
-        img {
-          max-width: 100%;
-          border-radius: $border-radius-lg;
-          margin: $spacing-lg 0;
-          box-shadow: $shadow-md;
-        }
-
-        ul,
-        ol {
-          margin: $spacing-lg 0;
-          padding-left: $spacing-xxl;
-
-          li {
-            margin: $spacing-sm 0;
-            color: rgba($white, 0.85);
-            line-height: $line-height-relaxed;
-          }
-        }
-
-        blockquote {
-          @include glass-card-base;
-          background: rgba($primary-300, 0.1);
-          border-left: 4px solid rgba($primary-200, 0.5);
-          padding: $spacing-md $spacing-lg;
-          color: rgba($white, 0.8);
-          margin: $spacing-lg 0;
-          border-radius: 0 $border-radius-md $border-radius-md 0;
-          font-style: italic;
-          font-weight: $font-weight-medium;
-        }
+      blockquote {
+        @include glass-card-base;
+        background: rgba($primary-300, 0.1);
+        border-left: 4px solid rgba($primary-200, 0.5);
+        padding: $spacing-md $spacing-lg;
+        color: rgba($white, 0.8);
+        margin: $spacing-lg 0;
+        border-radius: 0 $border-radius-md $border-radius-md 0;
+        font-style: italic;
+        font-weight: $font-weight-medium;
       }
     }
   }

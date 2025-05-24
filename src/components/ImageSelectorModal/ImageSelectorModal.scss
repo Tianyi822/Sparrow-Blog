@@ -1,6 +1,16 @@
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
 
+// 确保模态框不受外部样式影响
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* 淡入动画 */
 @keyframes fadeIn {
   from {
@@ -33,42 +43,67 @@
   }
 }
 
-/* 图片选择器模态框样式 */
+/* 图片选择器模态框样式 - 模仿UploadModal的遮罩效果 */
 .image-selector-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba($black, 0.5);
-  backdrop-filter: blur(3px);
+  right: 0;
+  bottom: 0;
+  background: rgba($black, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2000;
-  animation: fadeIn 0.2s ease;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
 }
 
 .image-selector-modal {
+  @include glass-card-base;
+  background: rgba($gray-800, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: $border-width-thin solid rgba($white, 0.15);
+  border-radius: $border-radius-xl;
   width: 80%;
   max-width: 650px;
   max-height: 80vh;
-  background: rgba(25, 25, 35, 0.95);
-  border-radius: $border-radius-md;
-  box-shadow: $shadow-lg;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: scaleIn 0.2s ease;
-  border: $border-width-thin solid rgba($white, 0.1);
+  box-shadow: $shadow-lg, 0 0 40px rgba($primary-300, 0.2);
+  animation: scaleIn 0.3s ease;
+  
+  // 自定义滚动条
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba($white, 0.05);
+    border-radius: $border-radius-sm;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary-200, 0.4);
+    border-radius: $border-radius-sm;
+
+    &:hover {
+      background: rgba($primary-200, 0.6);
+    }
+  }
   
   /* 选择器头部 */
   .selector-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: $spacing-md $spacing-lg;
+    padding: $spacing-xl;
     border-bottom: $border-width-thin solid rgba($white, 0.1);
+    @include glass-card-base;
+    background: rgba($white, 0.05);
     
     .selector-title {
       display: flex;
@@ -87,8 +122,10 @@
         
         h3 {
           margin: 0;
-          font-size: $font-size-md + 0.1rem;
-          font-weight: $font-weight-medium;
+          color: rgba($white, 0.95);
+          font-size: $font-size-xl;
+          font-weight: $font-weight-semibold;
+          text-shadow: 0 1px 2px rgba($black, 0.3);
         }
       }
       
@@ -122,21 +159,26 @@
     }
     
     .close-selector-btn {
-      background: transparent;
-      border: none;
-      color: rgba($white, 0.6);
-      font-size: $font-size-lg + 0.05rem;
+      background: rgba($white, 0.1);
+      border: $border-width-thin solid rgba($white, 0.2);
+      border-radius: $border-radius-circle;
+      color: rgba($white, 0.8);
+      font-size: $font-size-lg;
+      cursor: pointer;
+      padding: $spacing-sm;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      padding: $spacing-xs + 0.15rem;
-      border-radius: $border-radius-sm;
+      line-height: 1;
       transition: $transition-base;
       
       &:hover {
-        color: rgba($white, 0.9);
-        background: rgba($white, 0.1);
+        background: rgba($danger, 0.2);
+        border-color: rgba($danger, 0.4);
+        color: $white;
+        transform: scale(1.1);
       }
     }
   }
