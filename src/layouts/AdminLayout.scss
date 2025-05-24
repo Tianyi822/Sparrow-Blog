@@ -1,14 +1,15 @@
-@use '@/style/mixins'as *;
-@use '@/style/variables'as var;
+@use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background: #121212; // 低饱和度黑色背景
-  background-attachment: fixed; // 确保背景固定，不随滚动而移动
-  transition: margin var.$transition-base; // 只过渡需要的属性，不使用all
-  color: rgba(255, 255, 255, 0.9);
-  will-change: margin-left; // 提示浏览器这个属性会改变
+  background: linear-gradient(135deg, $gray-900 0%, #0d1117 25%, #161b22 50%, #21262d 75%, $gray-800 100%);
+  background-attachment: fixed;
+  transition: margin $transition-base;
+  color: rgba($white, 0.9);
+  will-change: margin-left;
+  font-family: $font-family-base;
 
   // 登录页特殊样式
   &.login-only {
@@ -27,20 +28,21 @@
 
   // 侧边栏样式
   .admin-sidebar {
-    width: 250px;
+    width: 280px;
     @include glass-card-base;
-    color: #fff;
+    background: rgba($white, 0.08);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: $border-width-thin solid rgba($white, 0.1);
+    color: $white;
     display: flex;
     flex-direction: column;
-    transition: width var.$transition-base, transform var.$transition-base; // 只过渡需要的属性
+    transition: width $transition-base, transform $transition-base;
     position: fixed;
     height: 100vh;
     z-index: 10;
-    box-shadow:
-      0 10px 20px rgba(0, 0, 0, 0.1),
-      0 6px 6px rgba(0, 0, 0, 0.1),
-      0 0 0 1px rgba(255, 255, 255, 0.05);
-    will-change: width, transform; // 提示浏览器这些属性会改变
+    box-shadow: $shadow-lg, 0 0 0 1px rgba($primary-200, 0.1);
+    will-change: width, transform;
 
     &::before {
       content: '';
@@ -49,11 +51,16 @@
       left: -1px;
       right: -1px;
       bottom: -1px;
-      background: linear-gradient(45deg, rgba(26, 35, 126, 0.3), rgba(255, 255, 255, 0.1), rgba(26, 35, 126, 0.3));
-      border-radius: 0;
+      background: linear-gradient(45deg, 
+        rgba($primary-300, 0.2), 
+        rgba($white, 0.05), 
+        rgba($primary-400, 0.15),
+        rgba($primary-200, 0.1)
+      );
+      border-radius: inherit;
       z-index: -1;
-      filter: blur(8px);
-      opacity: 0.7;
+      filter: blur(12px);
+      opacity: 0.6;
     }
 
     // 侧边栏头部
@@ -61,41 +68,53 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: var.$spacing-md + 0.2rem var.$spacing-lg;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: $spacing-lg $spacing-xl;
+      border-bottom: $border-width-thin solid rgba($white, 0.1);
+      background: rgba($white, 0.03);
 
       .logo {
-        font-size: var.$font-size-xl;
-        font-weight: var.$font-weight-bold;
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
         margin: 0;
-        background: linear-gradient(to right, #e2e8f0, #fff);
+        background: linear-gradient(135deg, $primary-200, $white, $primary-300);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
+        text-shadow: 0 2px 4px rgba($primary-400, 0.3);
+        letter-spacing: -0.02em;
       }
 
       // 折叠按钮
       .collapse-btn {
-        background: none;
-        border: none;
-        color: white;
-        font-size: var.$font-size-md + 0.2rem;
+        background: rgba($white, 0.05);
+        border: $border-width-thin solid rgba($white, 0.1);
+        color: $white;
+        font-size: $font-size-lg;
         cursor: pointer;
-        padding: 0;
-        width: 32px;
-        height: 32px;
+        padding: $spacing-sm;
+        width: 36px;
+        height: 36px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
+        border-radius: $border-radius-md;
+        transition: $transition-base;
+        backdrop-filter: blur(8px);
 
         &:hover {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba($primary-300, 0.2);
+          border-color: rgba($primary-200, 0.3);
+          transform: translateY(-1px);
+          box-shadow: $shadow-sm;
+        }
+
+        &:active {
+          transform: translateY(0);
         }
 
         svg {
-          width: var.$font-size-md + 0.2rem;
-          height: var.$font-size-md + 0.2rem;
+          width: $font-size-md;
+          height: $font-size-md;
         }
       }
     }
@@ -103,7 +122,7 @@
     // 侧边栏导航
     .sidebar-nav {
       flex: 1;
-      padding: var.$spacing-md 0;
+      padding: $spacing-lg 0;
       overflow-y: auto;
 
       ul {
@@ -112,38 +131,66 @@
         margin: 0;
 
         li {
-          margin-bottom: var.$spacing-xs;
+          margin-bottom: $spacing-sm;
+          padding: 0 $spacing-md;
 
           // 导航项目
           .nav-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem var.$spacing-lg;
-            color: rgba(255, 255, 255, 0.75);
+            padding: $spacing-md $spacing-lg;
+            color: rgba($white, 0.8);
             text-decoration: none;
-            transition: var.$transition-short;
-            border-left: 4px solid transparent;
+            transition: $transition-base;
+            border-left: 3px solid transparent;
+            border-radius: $border-radius-md;
+            position: relative;
+            overflow: hidden;
+
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba($white, 0);
+              transition: $transition-base;
+              z-index: -1;
+            }
 
             &:hover {
-              background: rgba(255, 255, 255, 0.1);
-              color: white;
-              transform: translateY(-2px);
+              background: rgba($white, 0.08);
+              color: $white;
+              transform: translateX(4px);
+              border-left-color: rgba($primary-200, 0.5);
+
+              &::before {
+                background: rgba($primary-300, 0.1);
+              }
             }
 
             &.active {
-              background: rgba(255, 255, 255, 0.15);
-              color: white;
-              border-left-color: #90caf9;
+              background: rgba($primary-300, 0.15);
+              color: $white;
+              border-left-color: $primary-200;
+              box-shadow: $shadow-sm;
+
+              &::before {
+                background: rgba($primary-400, 0.1);
+              }
             }
 
             .nav-icon {
-              font-size: var.$font-size-md + 0.2rem;
-              margin-right: 0.75rem;
+              font-size: $font-size-lg;
+              margin-right: $spacing-md;
+              min-width: $font-size-lg;
             }
 
             .nav-text {
-              font-size: var.$font-size-sm;
-              font-weight: var.$font-weight-medium;
+              font-size: $font-size-sm;
+              font-weight: $font-weight-medium;
+              letter-spacing: 0.02em;
             }
           }
         }
@@ -152,42 +199,64 @@
 
     // 侧边栏底部
     .sidebar-footer {
-      padding: var.$spacing-md var.$spacing-lg;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: $spacing-lg $spacing-xl;
+      border-top: $border-width-thin solid rgba($white, 0.1);
+      background: rgba($white, 0.03);
 
       // 登出按钮
       .logout-btn {
         width: 100%;
         display: flex;
         align-items: center;
-        padding: 0.75rem;
-        background: rgba(255, 255, 255, 0.05);
-        color: rgba(255, 255, 255, 0.75);
-        border: none;
-        border-radius: var.$border-radius-sm;
+        padding: $spacing-md;
+        background: rgba($danger, 0.1);
+        color: rgba($white, 0.8);
+        border: $border-width-thin solid rgba($danger, 0.2);
+        border-radius: $border-radius-md;
         cursor: pointer;
-        transition: var.$transition-short;
-        min-height: 40px;
-        /* 确保最小高度 */
+        transition: $transition-base;
+        min-height: 44px;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba($danger, 0);
+          transition: $transition-base;
+          z-index: -1;
+        }
 
         &:hover {
-          background: rgba(255, 255, 255, 0.15);
-          color: white;
+          background: rgba($danger, 0.2);
+          color: $white;
           transform: translateY(-2px);
+          border-color: rgba($danger, 0.4);
+          box-shadow: $shadow-md;
+
+          &::before {
+            background: rgba($danger, 0.1);
+          }
+        }
+
+        &:active {
+          transform: translateY(-1px);
         }
 
         .nav-icon {
-          font-size: var.$font-size-md + 0.2rem;
-          margin-right: 0.75rem;
+          font-size: $font-size-lg;
+          margin-right: $spacing-md;
           flex-shrink: 0;
-          /* 防止图标缩小 */
           display: block;
-          /* 确保显示为块级元素 */
         }
 
         .nav-text {
-          font-size: var.$font-size-sm;
-          font-weight: var.$font-weight-medium;
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
         }
       }
     }
@@ -196,69 +265,72 @@
   // 主内容区域样式
   .admin-content {
     flex: 1;
-    margin-left: 250px;
-    transition: margin-left var.$transition-base; // 只过渡需要的属性
+    margin-left: 280px;
+    transition: margin-left $transition-base;
     position: relative;
-    will-change: margin-left; // 提示浏览器这个属性会改变
+    will-change: margin-left;
 
     .admin-main {
-      padding: var.$spacing-xl;
+      padding: $spacing-xl;
       height: 100vh;
       overflow: auto;
-      contain: layout; // 告诉浏览器包含子元素的布局变化
+      contain: layout;
 
       // 给内部组件添加毛玻璃效果
       .admin-posts {
         .posts-table-container {
           @include glass-card-base;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: var.$shadow-lg;
+          background: rgba($white, 0.06);
+          border: $border-width-thin solid rgba($white, 0.1);
+          box-shadow: $shadow-lg;
+          border-radius: $border-radius-lg;
 
           .posts-table {
             th {
-              background-color: rgba(255, 255, 255, 0.05);
-              color: rgba(255, 255, 255, 0.9);
-              border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+              background-color: rgba($white, 0.08);
+              color: rgba($white, 0.95);
+              border-bottom: $border-width-medium solid rgba($white, 0.1);
+              font-weight: $font-weight-semibold;
             }
 
             td {
-              color: rgba(255, 255, 255, 0.8);
-              border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+              color: rgba($white, 0.85);
+              border-bottom: $border-width-thin solid rgba($white, 0.05);
             }
 
             .fixed-column {
-              background-color: rgba(26, 35, 126, 0.2);
+              background-color: rgba($primary-400, 0.15);
 
               &::after {
-                background-color: rgba(255, 255, 255, 0.1);
+                background-color: rgba($white, 0.1);
               }
             }
 
             th.fixed-column {
-              background-color: rgba(255, 255, 255, 0.05);
+              background-color: rgba($white, 0.1);
             }
 
             tr {
               &:hover {
-                background-color: rgba(255, 255, 255, 0.05);
+                background-color: rgba($white, 0.06);
 
                 td.fixed-column {
-                  background-color: rgba(26, 35, 126, 0.3);
+                  background-color: rgba($primary-400, 0.2);
                 }
               }
 
               &.pinned-row {
-                background-color: rgba(26, 35, 126, 0.2);
+                background-color: rgba($primary-400, 0.15);
 
                 td.fixed-column {
-                  background-color: rgba(26, 35, 126, 0.3);
+                  background-color: rgba($primary-400, 0.25);
                 }
 
                 &:hover {
-                  background-color: rgba(26, 35, 126, 0.3);
+                  background-color: rgba($primary-400, 0.2);
 
                   td.fixed-column {
-                    background-color: rgba(26, 35, 126, 0.4);
+                    background-color: rgba($primary-400, 0.3);
                   }
                 }
               }
@@ -266,19 +338,23 @@
 
             // 操作按钮
             .action-btn {
-              background: rgba(255, 255, 255, 0.05);
-              border: 1px solid rgba(255, 255, 255, 0.1);
-              color: rgba(255, 255, 255, 0.7);
+              background: rgba($white, 0.06);
+              border: $border-width-thin solid rgba($white, 0.1);
+              color: rgba($white, 0.8);
+              border-radius: $border-radius-sm;
+              transition: $transition-base;
 
               &:hover {
-                background-color: rgba(255, 255, 255, 0.1);
-                transform: translateY(-2px);
+                background-color: rgba($white, 0.12);
+                transform: translateY(-1px);
+                color: $white;
+                box-shadow: $shadow-sm;
               }
 
               &.toggle-pin.active {
-                color: #ffb74d;
-                border-color: rgba(255, 183, 77, 0.5);
-                background-color: rgba(255, 183, 77, 0.2);
+                color: $warning;
+                border-color: rgba($warning, 0.4);
+                background-color: rgba($warning, 0.15);
               }
             }
           }
@@ -290,13 +366,12 @@
   // 折叠侧边栏样式
   &.sidebar-collapsed {
     .admin-sidebar {
-      width: 70px;
+      width: 80px;
 
       .sidebar-header {
-        padding: 0.75rem 0;
-        display: flex;
+        padding: $spacing-lg $spacing-sm;
         justify-content: center;
-        height: 54px; // 与导航项目高度匹配
+        height: 60px;
 
         .logo {
           display: none;
@@ -306,8 +381,8 @@
           margin: 0;
 
           svg {
-            width: var.$font-size-md + 0.2rem; // 与导航图标大小匹配
-            height: var.$font-size-md + 0.2rem;
+            width: $font-size-md;
+            height: $font-size-md;
           }
         }
       }
@@ -316,39 +391,40 @@
         display: none;
       }
 
-      .sidebar-nav ul li .nav-item {
-        padding: 0.75rem;
-        justify-content: center;
+      .sidebar-nav ul li {
+        padding: 0 $spacing-sm;
 
-        .nav-icon {
-          margin-right: 0;
-          display: block;
-          font-size: var.$font-size-md + 0.2rem;
-          visibility: visible;
-          opacity: 1;
+        .nav-item {
+          padding: $spacing-md;
+          justify-content: center;
+
+          .nav-icon {
+            margin-right: 0;
+            display: block;
+            font-size: $font-size-lg;
+            visibility: visible;
+            opacity: 1;
+          }
         }
       }
 
       .sidebar-footer {
-        padding: 0.75rem 0.5rem;
+        padding: $spacing-lg $spacing-sm;
 
         .logout-btn {
-          padding: 0.75rem;
+          padding: $spacing-md;
           justify-content: center;
           width: 100%;
-          height: 40px;
+          min-height: 44px;
 
           .nav-icon {
             margin-right: 0;
             display: block !important;
-            /* 强制显示 */
-            font-size: var.$font-size-md + 0.2rem;
+            font-size: $font-size-lg;
             visibility: visible !important;
-            /* 强制可见 */
             opacity: 1 !important;
-            /* 强制不透明 */
-            width: var.$font-size-md + 0.2rem;
-            height: var.$font-size-md + 0.2rem;
+            width: $font-size-lg;
+            height: $font-size-lg;
           }
 
           .nav-text {
@@ -359,20 +435,20 @@
     }
 
     .admin-content {
-      margin-left: 70px;
+      margin-left: 80px;
     }
   }
 }
 
 // 响应式样式
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .admin-layout {
     .admin-sidebar {
-      width: 70px;
+      width: 80px;
 
       .sidebar-header {
         justify-content: center;
-        padding: var.$spacing-md + 0.2rem 0;
+        padding: $spacing-lg 0;
 
         .logo {
           display: none;
@@ -383,22 +459,26 @@
         display: none;
       }
 
-      .sidebar-nav ul li .nav-item {
-        justify-content: center;
-        padding: 0.75rem;
+      .sidebar-nav ul li {
+        padding: 0 $spacing-sm;
 
-        .nav-icon {
-          margin-right: 0;
-          display: block;
+        .nav-item {
+          justify-content: center;
+          padding: $spacing-md;
+
+          .nav-icon {
+            margin-right: 0;
+            display: block;
+          }
         }
       }
 
       .sidebar-footer {
-        padding: 0.75rem 0.5rem;
+        padding: $spacing-lg $spacing-sm;
 
         .logout-btn {
           justify-content: center;
-          height: 40px;
+          min-height: 44px;
 
           .nav-text {
             display: none;
@@ -407,31 +487,28 @@
           .nav-icon {
             margin-right: 0;
             display: block !important;
-            /* 强制显示 */
-            font-size: var.$font-size-md + 0.2rem;
+            font-size: $font-size-lg;
             visibility: visible !important;
-            /* 强制可见 */
             opacity: 1 !important;
-            /* 强制不透明 */
-            width: var.$font-size-md + 0.2rem;
-            height: var.$font-size-md + 0.2rem;
+            width: $font-size-lg;
+            height: $font-size-lg;
           }
         }
       }
     }
 
     .admin-content {
-      margin-left: 70px;
+      margin-left: 80px;
     }
 
     // 展开侧边栏时的样式
     &.sidebar-expanded {
       .admin-sidebar {
-        width: 250px;
+        width: 280px;
 
         .sidebar-header {
           justify-content: space-between;
-          padding: var.$spacing-md + 0.2rem var.$spacing-lg;
+          padding: $spacing-lg $spacing-xl;
 
           .logo {
             display: block;
@@ -442,12 +519,16 @@
           display: block;
         }
 
-        .sidebar-nav ul li .nav-item {
-          justify-content: flex-start;
-          padding: 0.75rem var.$spacing-lg;
+        .sidebar-nav ul li {
+          padding: 0 $spacing-md;
 
-          .nav-icon {
-            margin-right: 0.75rem;
+          .nav-item {
+            justify-content: flex-start;
+            padding: $spacing-md $spacing-lg;
+
+            .nav-icon {
+              margin-right: $spacing-md;
+            }
           }
         }
 
@@ -459,7 +540,7 @@
           }
 
           .nav-icon {
-            margin-right: 0.75rem;
+            margin-right: $spacing-md;
           }
         }
       }
@@ -475,8 +556,9 @@
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0, 0, 0, 0.5);
+          background: rgba($black, 0.6);
           z-index: 5;
+          backdrop-filter: blur(4px);
         }
       }
     }
@@ -484,7 +566,7 @@
 
   .admin-layout.login-only {
     .admin-main.full-width {
-      padding: var.$spacing-md;
+      padding: $spacing-lg;
     }
   }
 }
