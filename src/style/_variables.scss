@@ -41,9 +41,33 @@ $background-color-active: $primary-200;
 $background-color-hover: $primary-200;
 
 // 字体家族
-$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
-  "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", 
-  "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-sans-serif: -apple-system,
+BlinkMacSystemFont,
+"Segoe UI",
+Roboto,
+"Helvetica Neue",
+Arial,
+"Noto Sans",
+sans-serif,
+"Apple Color Emoji",
+"Segoe UI Emoji",
+"Segoe UI Symbol",
+"Noto Color Emoji";
+
+$font-family-monospace: 'Consolas',
+'Monaco',
+'Courier New',
+'SF Mono',
+'Menlo',
+'DejaVu Sans Mono',
+'Liberation Mono',
+monospace;
+
+$font-family-serif: Georgia,
+'Times New Roman',
+Times,
+serif;
+
 $font-family-base: $font-family-sans-serif;
 
 // 字体颜色
@@ -75,6 +99,7 @@ $font-weight-base: $font-weight-normal;
 // 行高
 $line-height-tight: 1.25;
 $line-height-base: 1.5;
+$line-height-relaxed: 1.625;
 $line-height-loose: 1.75;
 
 // 间距
@@ -98,9 +123,12 @@ $border-radius-pill: 50rem;
 $border-radius-circle: 50%;
 
 // 阴影
-$shadow-sm: 0 1px 3px rgba($black, 0.12), 0 1px 2px rgba($black, 0.24);
-$shadow-md: 0 4px 6px rgba($black, 0.1), 0 1px 3px rgba($black, 0.08);
-$shadow-lg: 0 10px 20px rgba($black, 0.15), 0 3px 6px rgba($black, 0.1);
+$shadow-sm: 0 1px 3px rgba($black, 0.12),
+0 1px 2px rgba($black, 0.24);
+$shadow-md: 0 4px 6px rgba($black, 0.1),
+0 1px 3px rgba($black, 0.08);
+$shadow-lg: 0 10px 20px rgba($black, 0.15),
+0 3px 6px rgba($black, 0.1);
 $shadow-inset: inset 0 1px 2px rgba($black, 0.1);
 
 // 过渡
@@ -114,4 +142,4 @@ $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
-$breakpoint-xxl: 1400px; 
+$breakpoint-xxl: 1400px;

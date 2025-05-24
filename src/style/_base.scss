@@ -3,26 +3,35 @@
  * 包含全局通用样式设置
  */
 
+@use './variables' as *;
+
 // 全局边距和盒模型设置
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 // 基础HTML元素样式
-html, body {
+html,
+body {
   width: 100%;
   min-height: 100vh;
   overflow-x: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  
+  font-family: $font-family-base;
+
   // 隐藏滚动条
   &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari 和 Opera */
+    display: none;
+    /* Chrome, Safari 和 Opera */
   }
-  -ms-overflow-style: none; /* IE 和 Edge */
-  scrollbar-width: none; /* Firefox */
+
+  -ms-overflow-style: none;
+  /* IE 和 Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 // 基础链接样式
@@ -30,14 +39,15 @@ a {
   text-decoration: none;
   color: inherit;
   transition: all 0.3s ease;
-  
+
   &:hover {
     opacity: 0.9;
   }
 }
 
 // 基础列表样式
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
@@ -71,6 +81,7 @@ html {
     visibility: visible;
     transform: translateY(0);
   }
+
   100% {
     opacity: 0;
     visibility: hidden;
@@ -82,6 +93,7 @@ html {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -91,7 +103,8 @@ html {
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
-} 
+}
