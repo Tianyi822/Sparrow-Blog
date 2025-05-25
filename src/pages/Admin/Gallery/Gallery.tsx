@@ -6,14 +6,36 @@ import {
     renameGalleryImage,
     RenameImageRequest
 } from '@/services/adminService';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { FiCode, FiEdit, FiFileText, FiPlus, FiSearch, FiTrash2 } from 'react-icons/fi';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState, Suspense } from 'react';
+import { FiCode, FiEdit, FiFileText, FiPlus, FiSearch, FiTrash2, FiLoader } from 'react-icons/fi';
 import './Gallery.scss';
 // 导入布局上下文
 import { LayoutContext } from "@/layouts/LayoutContext.tsx";
 import { createPortal } from 'react-dom';
-// 导入上传模态框组件
-import UploadModal from './UploadModal';
+
+// 懒加载上传模态框组件
+const UploadModal = React.lazy(() => import('./UploadModal'));
+
+// 上传模态框的加载指示器
+const UploadModalLoading = () => (
+    <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.8)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+        color: 'white',
+        fontSize: '18px'
+    }}>
+        <FiLoader style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+        加载上传组件...
+    </div>
+);
 
 // --- 接口定义 ---
 export interface ImageItem {
@@ -599,11 +621,13 @@ const Gallery: React.FC = () => {
             />
 
             {/* 上传模态框组件 */}
-            <UploadModal
-                visible={isUploadModalVisible}
-                onClose={closeUploadModal}
-                onImagesUploaded={handleImagesUploaded}
-            />
+            <Suspense fallback={<UploadModalLoading />}>
+                <UploadModal
+                    visible={isUploadModalVisible}
+                    onClose={closeUploadModal}
+                    onImagesUploaded={handleImagesUploaded}
+                />
+            </Suspense>
         </div>
     );
 };

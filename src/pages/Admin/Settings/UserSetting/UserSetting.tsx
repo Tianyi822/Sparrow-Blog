@@ -1,10 +1,33 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
-import { FiUser, FiMail, FiAlertCircle, FiUpload, FiImage, FiSave, FiGithub, FiCode, FiType, FiPlus, FiLock, FiSend } from 'react-icons/fi';
+import React, { useState, useEffect, useCallback, memo, Suspense } from 'react';
+import { FiUser, FiMail, FiAlertCircle, FiUpload, FiImage, FiSave, FiGithub, FiCode, FiType, FiPlus, FiLock, FiSend, FiLoader } from 'react-icons/fi';
 import './UserSetting.scss';
-import ImageSelectorModal from '@/components/ImageSelectorModal';
 import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
 import { GalleryImage, getImageUrl, UserConfig } from '@/services/adminService';
 import { getUserConfig, updateUserConfig, updateUserImages, sendEmailVerificationCode } from '@/services/adminService';
+
+// 懒加载ImageSelectorModal组件
+const ImageSelectorModal = React.lazy(() => import('@/components/ImageSelectorModal'));
+
+// 图片选择器的加载指示器
+const ImageSelectorLoading = () => (
+    <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.8)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 9999,
+        color: 'white',
+        fontSize: '18px'
+    }}>
+        <FiLoader style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+        加载图片选择器...
+    </div>
+);
 
 interface UserConfigProps {
     onSaveSuccess?: () => void;
@@ -770,13 +793,15 @@ const UserSetting: React.FC<UserConfigProps> = memo(({ onSaveSuccess }) => {
                     </div>
 
                     {/* 图片选择器弹窗 */}
-                    <ImageSelectorModal
-                        isOpen={modalOpen}
-                        onClose={closeImageSelector}
-                        onImageSelect={handleImageSelect}
-                        usageType={selectedImageType}
-                        mode="userSetting"
-                    />
+                    <Suspense fallback={<ImageSelectorLoading />}>
+                        <ImageSelectorModal
+                            isOpen={modalOpen}
+                            onClose={closeImageSelector}
+                            onImageSelect={handleImageSelect}
+                            usageType={selectedImageType}
+                            mode="userSetting"
+                        />
+                    </Suspense>
                 </>
             )}
         </div>

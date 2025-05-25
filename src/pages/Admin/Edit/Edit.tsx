@@ -1,4 +1,4 @@
-import ImageSelectorModal from '@/components/ImageSelectorModal';
+import React, { useCallback, useEffect, useRef, useState, Suspense } from 'react';
 import {
     BlogCategory,
     BlogTag,
@@ -11,10 +11,33 @@ import {
 } from '@/services/adminService';
 import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
 import { marked } from 'marked';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FiAlertCircle, FiArrowUp, FiEye, FiImage, FiLoader, FiPlus, FiSave, FiX } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Edit.scss';
+
+// 懒加载ImageSelectorModal组件
+const ImageSelectorModal = React.lazy(() => import('@/components/ImageSelectorModal'));
+
+// 图片选择器的加载指示器
+const ImageSelectorLoading = () => (
+    <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.8)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 9999,
+        color: 'white',
+        fontSize: '18px'
+    }}>
+        <FiLoader style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+        加载图片选择器...
+    </div>
+);
 
 /**
  * marked配置选项
@@ -1220,22 +1243,30 @@ const Edit: React.FC = () => {
             </div>
 
             {/* 使用ImageSelectorModal组件 */}
-            <ImageSelectorModal
-                isOpen={showImageGallery}
-                onClose={() => setShowImageGallery(false)}
-                onImageInsert={handleImageInsert}
-                mode="editor"
-                usageType="avatar" // 此字段在editor模式下不重要，但需要提供一个值
-            />
+            {(showImageGallery || showArticleImageSelector) && (
+                <Suspense fallback={<ImageSelectorLoading />}>
+                    {showImageGallery && (
+                        <ImageSelectorModal
+                            isOpen={showImageGallery}
+                            onClose={() => setShowImageGallery(false)}
+                            onImageInsert={handleImageInsert}
+                            mode="editor"
+                            usageType="avatar" // 此字段在editor模式下不重要，但需要提供一个值
+                        />
+                    )}
 
-            {/* 文章封面图选择器 */}
-            <ImageSelectorModal
-                isOpen={showArticleImageSelector}
-                onClose={() => setShowArticleImageSelector(false)}
-                onImageSelect={handleArticleImageSelect}
-                mode="article"
-                usageType="avatar" // 此字段在article模式下不重要，但需要提供一个值
-            />
+                    {/* 文章封面图选择器 */}
+                    {showArticleImageSelector && (
+                        <ImageSelectorModal
+                            isOpen={showArticleImageSelector}
+                            onClose={() => setShowArticleImageSelector(false)}
+                            onImageSelect={handleArticleImageSelect}
+                            mode="article"
+                            usageType="avatar" // 此字段在article模式下不重要，但需要提供一个值
+                        />
+                    )}
+                </Suspense>
+            )}
         </div>
     );
 };

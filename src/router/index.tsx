@@ -1,17 +1,41 @@
+import React, { Suspense } from "react";
 import { createBrowserRouter, RouteObject } from "react-router-dom";
-import Home from "@/pages/Home";
-import FriendLink from "@/pages/FriendLink";
-import BlogContent from "@/pages/BlogContent";
-import BlogLayout from "@/layouts/BlogLayout";
-import AdminLayout from "@/layouts/AdminLayout";
-import Posts from "@/pages/Admin/Posts";
-import Login from "@/pages/Admin/Login";
-import NotFound from "@/pages/NotFound/NotFound";
-import Edit from "@/pages/Admin/Edit";
-import Gallery from "@/pages/Admin/Gallery";
-import Settings from "@/pages/Admin/Settings";
-import Waiting from "@/pages/Waiting";
 import { checkSystemStatus } from "@/services/webService";
+
+// 懒加载组件
+const Home = React.lazy(() => import("@/pages/Home"));
+const FriendLink = React.lazy(() => import("@/pages/FriendLink"));
+const BlogContent = React.lazy(() => import("@/pages/BlogContent"));
+const BlogLayout = React.lazy(() => import("@/layouts/BlogLayout"));
+const AdminLayout = React.lazy(() => import("@/layouts/AdminLayout"));
+const Posts = React.lazy(() => import("@/pages/Admin/Posts"));
+const Login = React.lazy(() => import("@/pages/Admin/Login"));
+const NotFound = React.lazy(() => import("@/pages/NotFound/NotFound"));
+const Edit = React.lazy(() => import("@/pages/Admin/Edit"));
+const Gallery = React.lazy(() => import("@/pages/Admin/Gallery"));
+const Settings = React.lazy(() => import("@/pages/Admin/Settings"));
+const Waiting = React.lazy(() => import("@/pages/Waiting"));
+
+// 加载指示器组件
+const LoadingFallback = () => (
+    <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '18px',
+        color: '#666'
+    }}>
+        加载中...
+    </div>
+);
+
+// Suspense包装器
+const withSuspense = (Component: React.ComponentType) => (
+    <Suspense fallback={<LoadingFallback />}>
+        <Component />
+    </Suspense>
+);
 
 // 检查登录状态的loader函数
 const checkAuthStatus = () => {
@@ -116,26 +140,26 @@ const adminAuthLoader = async (routeName: string) => {
 const routes: RouteObject[] = [
     {
         path: "/",
-        element: <BlogLayout />,
+        element: withSuspense(BlogLayout),
         loader: () => checkSystemStatusLoader('blog-layout'),
         children: [
             {
                 index: true,
-                element: <Home />
+                element: withSuspense(Home)
             },
             {
                 path: "blog/:blogId",
-                element: <BlogContent />
+                element: withSuspense(BlogContent)
             },
             {
                 path: "friends",
-                element: <FriendLink />
+                element: withSuspense(FriendLink)
             }
         ]
     },
     {
         path: "/waiting",
-        element: <Waiting />,
+        element: withSuspense(Waiting),
         loader: () => {
             console.log('等待页面: 直接加载，不检查系统状态');
             return null;
@@ -143,37 +167,37 @@ const routes: RouteObject[] = [
     },
     {
         path: "/admin",
-        element: <AdminLayout />,
+        element: withSuspense(AdminLayout),
         loader: adminLoader,
         children: [
             {
                 index: true,
-                element: <Posts />,
+                element: withSuspense(Posts),
                 loader: () => adminAuthLoader('posts')
             },
             {
                 path: "login",
-                element: <Login />,
+                element: withSuspense(Login),
                 loader: loginLoader
             },
             {
                 path: "posts",
-                element: <Posts />,
+                element: withSuspense(Posts),
                 loader: () => adminAuthLoader('posts')
             },
             {
                 path: "edit",
-                element: <Edit />,
+                element: withSuspense(Edit),
                 loader: () => adminAuthLoader('edit')
             },
             {
                 path: "gallery",
-                element: <Gallery />,
+                element: withSuspense(Gallery),
                 loader: () => adminAuthLoader('gallery')
             },
             {
                 path: "settings",
-                element: <Settings />,
+                element: withSuspense(Settings),
                 loader: () => adminAuthLoader('settings')
             }
         ]
@@ -181,7 +205,7 @@ const routes: RouteObject[] = [
     // 404 路由也需要检查系统状态
     {
         path: "*",
-        element: <NotFound />,
+        element: withSuspense(NotFound),
         loader: () => checkSystemStatusLoader('not-found')
     }
 ];
