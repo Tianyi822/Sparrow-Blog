@@ -5,7 +5,10 @@
 
 .app {
     width: 100%;
+    height: 100vh;
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
     position: relative;
 
     // 隐藏默认滚动条 - 保持此处以确保向后兼容性
