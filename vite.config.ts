@@ -24,6 +24,31 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'), // 使用 @ 指向 src 目录
       },
     },
+    // 开发服务器配置
+    server: {
+      port: 5173,
+      host: true,
+      // 配置 SPA fallback，解决前端路由刷新404问题
+      historyApiFallback: {
+        index: '/index.html',
+        rewrites: [
+          // 所有非API请求都回退到index.html
+          { from: /^\/(?!api).*$/, to: '/index.html' }
+        ]
+      }
+    },
+    // 预览服务器配置（用于本地预览生产构建）
+    preview: {
+      port: 4173,
+      host: true,
+      // 配置 SPA fallback
+      historyApiFallback: {
+        index: '/index.html',
+        rewrites: [
+          { from: /^\/(?!api).*$/, to: '/index.html' }
+        ]
+      }
+    },
     build: {
       rollupOptions: {
         output: {

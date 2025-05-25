@@ -1,0 +1,16 @@
+Options -MultiViews
+RewriteEngine On
+
+# Handle Angular and React Router
+# If the requested resource doesn't exist as a file or directory,
+# then send everything to index.html for client-side routing
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule . /index.html [NC,L]
+
+# Optional: Set cache headers for static assets
+<FilesMatch "\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+</FilesMatch> 

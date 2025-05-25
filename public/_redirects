@@ -1,0 +1,6 @@
+# Netlify redirects for SPA routing
+# 所有非API请求都回退到index.html，支持前端路由
+/*    /index.html   200
+
+# API请求不进行重定向
+/api/*  /api/:splat  200 
