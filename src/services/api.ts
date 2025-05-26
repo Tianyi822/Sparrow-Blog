@@ -9,20 +9,10 @@ export interface ApiResponse<T = unknown> {
 
 // 服务地址配置
 export const SERVICE_URLS = {
-    CONFIG: import.meta.env.VITE_INITIATE_CONFIG_SERVICE_URL,
     BUSINESS: import.meta.env.VITE_BUSINESS_SERVICE_URL,
 };
 
-// 创建两个不同的axios实例
-export const configApi = axios.create({
-    baseURL: SERVICE_URLS.CONFIG,
-    timeout: 15000,
-    headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-    }
-});
-
+// 创建axios实例
 export const businessApi = axios.create({
     baseURL: SERVICE_URLS.BUSINESS,
     timeout: 15000,
@@ -33,7 +23,7 @@ export const businessApi = axios.create({
 });
 
 // 统一的请求拦截器配置
-const setupInterceptors = (api: typeof configApi | typeof businessApi) => {
+const setupInterceptors = (api: typeof businessApi) => {
     // 请求拦截器
     api.interceptors.request.use(
         (config) => {
@@ -100,8 +90,7 @@ const setupInterceptors = (api: typeof configApi | typeof businessApi) => {
     );
 };
 
-// 为两个API实例设置拦截器
-setupInterceptors(configApi);
+// 为API实例设置拦截器
 setupInterceptors(businessApi);
 
 // 处理API响应的辅助函数
@@ -110,17 +99,7 @@ export const handleApiResponse = <T>(response: AxiosResponse): T => {
     return response.data;
 };
 
-// 配置服务请求函数
-export const configApiRequest = async <T>(config: AxiosRequestConfig): Promise<T> => {
-    try {
-        const response = await configApi(config);
-        return handleApiResponse<T>(response);
-    } catch (error) {
-        // 保留错误日志，对调试很重要
-        console.error('配置服务请求失败:', error);
-        throw error;
-    }
-};
+
 
 // 业务服务请求函数
 export const businessApiRequest = async <T>(config: AxiosRequestConfig): Promise<T> => {
@@ -147,17 +126,15 @@ export const businessApiRequest = async <T>(config: AxiosRequestConfig): Promise
 
 // 通用请求函数
 export const request = async <T>(config: AxiosRequestConfig): Promise<T> => {
-    // 默认使用配置服务
-    return configApiRequest<T>(config);
+    // 默认使用业务服务
+    return businessApiRequest<T>(config);
 };
 
 // 兼容旧代码，默认使用业务服务
 export const apiRequest = businessApiRequest;
 
 export default {
-    configApi,
     businessApi,
-    configApiRequest,
     businessApiRequest,
     apiRequest,
     request
