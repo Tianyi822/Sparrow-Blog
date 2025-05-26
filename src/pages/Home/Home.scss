@@ -46,6 +46,12 @@
       cursor: pointer;
       animation: floatUpDown 2s ease-in-out infinite;
       z-index: 10;
+      pointer-events: auto;
+      
+      &:hover {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.1);
+      }
     }
   }
 
@@ -57,10 +63,11 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    padding: var.$spacing-xl 0;
+    padding: var.$spacing-xl 0 calc(var.$spacing-xl + 200px) 0;
     scroll-margin-top: 0;
     gap: var.$spacing-lg;
     align-items: flex-start;
+    min-height: calc(100vh + 200px);
 
     .blog-content {
       display: flex;

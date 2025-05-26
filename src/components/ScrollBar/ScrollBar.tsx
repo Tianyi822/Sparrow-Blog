@@ -70,9 +70,11 @@ const ScrollBar: React.FC<ScrollBarProps> = ({className, hideDelay = 1000}) => {
      * 更新滚动条位置并控制滚动条显示隐藏
      */
     const handleScroll = useCallback((): void => {
+        console.log('ScrollBar: handleScroll triggered');
         if (!isDragging) {
             updateScrollThumb();
             setIsScrolling(true);
+            console.log('ScrollBar: setIsScrolling(true)');
 
             // 清除之前的超时
             if (scrollTimeoutRef.current) {
@@ -83,32 +85,31 @@ const ScrollBar: React.FC<ScrollBarProps> = ({className, hideDelay = 1000}) => {
             scrollTimeoutRef.current = setTimeout(() => {
                 setIsScrolling(false);
                 isManualScrollRef.current = false;
+                console.log('ScrollBar: setIsScrolling(false) after timeout');
             }, hideDelay);
         }
     }, [isDragging, hideDelay, updateScrollThumb]);
-    useCallback((): void => {
-        setIsScrolling(true);
-
-        // 清除之前的超时
-        if (scrollTimeoutRef.current) {
-            clearTimeout(scrollTimeoutRef.current);
-        }
-
-        // 设置新的超时以隐藏滚动条
-        scrollTimeoutRef.current = setTimeout(() => {
-            setIsScrolling(false);
-        }, hideDelay);
-    }, [hideDelay]);
 
     // 监听滚动和调整窗口大小事件
     useEffect(() => {
+        console.log('ScrollBar: Adding event listeners');
         window.addEventListener('scroll', handleScroll);
         window.addEventListener('resize', updateScrollThumb);
 
         // 初始化更新
         updateScrollThumb();
+        
+        // 检查页面是否有滚动能力
+        const {scrollHeight, clientHeight} = document.documentElement;
+        console.log('ScrollBar Debug:', {
+            scrollHeight,
+            clientHeight,
+            canScroll: scrollHeight > clientHeight,
+            scrollTop: document.documentElement.scrollTop
+        });
 
         return () => {
+            console.log('ScrollBar: Removing event listeners');
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('resize', updateScrollThumb);
 
@@ -182,11 +183,15 @@ const ScrollBar: React.FC<ScrollBarProps> = ({className, hideDelay = 1000}) => {
     /**
      * 计算滚动条类名
      */
-    const scrollBarClasses = useMemo(() => classNames('scroll-bar-container', className, {
-        'visible': isScrolling || isDragging,
-        'bounce-top': !isDragging && !isManualScrollRef.current && bounceDirection === 'top',
-        'bounce-bottom': !isDragging && !isManualScrollRef.current && bounceDirection === 'bottom'
-    }), [className, isScrolling, isDragging, bounceDirection]);
+    const scrollBarClasses = useMemo(() => {
+        const classes = classNames('scroll-bar-container', className, {
+            'visible': isScrolling || isDragging,
+            'bounce-top': !isDragging && !isManualScrollRef.current && bounceDirection === 'top',
+            'bounce-bottom': !isDragging && !isManualScrollRef.current && bounceDirection === 'bottom'
+        });
+        console.log('ScrollBar classes:', classes, { isScrolling, isDragging });
+        return classes;
+    }, [className, isScrolling, isDragging, bounceDirection]);
 
     return (
         <div

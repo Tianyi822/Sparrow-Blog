@@ -223,11 +223,21 @@ const Home: React.FC = () => {
 
     // 处理向下滚动
     const handleScrollDown = useCallback(() => {
-        const mainSection = document.querySelector('.main-content');
+        const mainSection = document.getElementById('main-content');
         if (mainSection) {
-            const offsetTop = (mainSection as HTMLElement).offsetTop;
+            const offsetTop = mainSection.offsetTop;
+            // 计算滚动目标位置，留出一些顶部空间
+            const targetScrollTop = Math.max(0, offsetTop - 50);
+            
+            console.log('Scroll Debug Info:');
+            console.log('offsetTop:', offsetTop);
+            console.log('targetScrollTop:', targetScrollTop);
+            console.log('Document height:', document.documentElement.scrollHeight);
+            console.log('Window height:', window.innerHeight);
+            console.log('Max scrollable distance:', document.documentElement.scrollHeight - window.innerHeight);
+            
             window.scrollTo({
-                top: offsetTop,
+                top: targetScrollTop,
                 behavior: 'smooth'
             });
         }
@@ -237,9 +247,9 @@ const Home: React.FC = () => {
     const handlePageChange = useCallback((page: number) => {
         setCurrentPage(page);
         // 滚动到内容顶部
-        const mainSection = document.querySelector('.main-content');
+        const mainSection = document.getElementById('main-content');
         if (mainSection) {
-            const offsetTop = (mainSection as HTMLElement).offsetTop;
+            const offsetTop = mainSection.offsetTop;
             window.scrollTo({
                 top: offsetTop,
                 behavior: 'smooth'
