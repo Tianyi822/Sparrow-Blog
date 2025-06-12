@@ -67,6 +67,30 @@ export interface BasicData {
 type BasicDataResponse = ApiResponse<BasicData>;
 
 /**
+ * 搜索结果项接口
+ */
+export interface SearchResultItem {
+    id: string;
+    img_id: string;
+    title: string;
+    highlights: {
+        Content: string[];
+        Title: string[];
+    };
+}
+
+/**
+ * 搜索响应数据接口
+ */
+export interface SearchResponseData {
+    results: SearchResultItem[];
+    time_ms: number;
+}
+
+// 搜索响应类型
+type SearchResponse = ApiResponse<SearchResponseData>;
+
+/**
  * 获取用户基本信息以检查系统状态
  * 如果成功获取用户信息，表示系统已配置完成并在运行状态
  * 如果请求失败，表示系统可能尚未配置或需要初始化
@@ -184,6 +208,31 @@ export const fetchMarkdownContent = async (url: string): Promise<string> => {
 };
 
 /**
+ * 搜索博客内容
+ * 根据关键词搜索博客内容，支持标题和内容全文搜索
+ * 
+ * @param query 搜索关键词
+ * @returns 搜索结果数据，失败时返回null
+ */
+export const searchBlogs = async (query: string): Promise<SearchResponseData | null> => {
+    try {
+        const response = await businessApiRequest<SearchResponse>({
+            method: 'GET',
+            url: `/web/search/${encodeURIComponent(query)}`
+        });
+
+        if (response.code === 200 && response.data) {
+            return response.data;
+        }
+        return null;
+    } catch (error) {
+        // 保留此错误日志，对排查搜索功能问题很重要
+        console.error('搜索博客失败:', error);
+        return null;
+    }
+};
+
+/**
  * 获取图片完整URL
  * 根据图片ID构建完整的图片访问URL
  * 
@@ -200,5 +249,6 @@ export default {
     getHomeData: getBasicData,
     getBlogContent,
     fetchMarkdownContent,
+    searchBlogs,
     getImageUrl
 };
