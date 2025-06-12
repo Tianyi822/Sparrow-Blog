@@ -9,6 +9,7 @@ import SvgIcon, {
     Category
 } from "@/components/SvgIcon/SvgIcon";
 import classNames from "classnames";
+import SearchModal from '@/components/SearchModal/SearchModal';
 
 /**
  * 导航项接口定义
@@ -43,6 +44,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     const { index, setIndex, className, userName } = props
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [scrollDirection, setScrollDirection] = useState('none');
     const [isAtTop, setIsAtTop] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -50,6 +52,9 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     // 监听滚动事件，控制导航栏显示和隐藏
     useEffect(() => {
         const handleScroll = () => {
+            // 如果搜索模态框打开，不处理滚动事件
+            if (isSearchOpen) return;
+            
             const currentScrollY = window.scrollY;
 
             // 检查是否在顶部
@@ -67,9 +72,13 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
             setLastScrollY(currentScrollY);
         };
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
+        // 只在搜索模态框关闭时监听滚动
+        if (!isSearchOpen) {
+            window.addEventListener('scroll', handleScroll, { passive: true });
+        }
+
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
+    }, [lastScrollY, isSearchOpen]);
 
     // 添加点击外部关闭菜单的处理函数
     useEffect(() => {
@@ -97,8 +106,16 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
      * 处理搜索按钮点击
      */
     const handleSearch = useCallback(() => {
-        // 处理搜索点击事件
+        // 打开搜索模态框
+        setIsSearchOpen(true);
         setIsMenuOpen(false);
+    }, []);
+
+    /**
+     * 关闭搜索模态框
+     */
+    const handleCloseSearch = useCallback(() => {
+        setIsSearchOpen(false);
     }, []);
 
     /**
@@ -178,38 +195,46 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     }, []);
 
     return (
-        <nav className={navClasses}>
-            <div
-                className="nav-brand"
-                onClick={handleBrandClick}
-                style={{ cursor: 'pointer' }}
-            >
-                {userName}&#39;s Blog
-            </div>
+        <>
+            <nav className={navClasses}>
+                <div
+                    className="nav-brand"
+                    onClick={handleBrandClick}
+                    style={{ cursor: 'pointer' }}
+                >
+                    {userName}&#39;s Blog
+                </div>
 
-            <ul className={`nav-list ${isMenuOpen ? 'open' : ''}`}>
-                {navItems.map((item, idx) => (
-                    <li
-                        key={item.name}
-                        className={`nav-item ${!item.onClick && idx === index ? 'active' : ''}`}
-                        onClick={() => handleClick(idx, item)}
-                    >
-                        <SvgIcon
-                            name={item.icon}
-                            size={Normal}
-                            color={iconColor}
-                        />
-                        <span className="nav-text">{item.name}</span>
-                    </li>
-                ))}
-            </ul>
+                <ul className={`nav-list ${isMenuOpen ? 'open' : ''}`}>
+                    {navItems.map((item, idx) => (
+                        <li
+                            key={item.name}
+                            className={`nav-item ${!item.onClick && idx === index ? 'active' : ''}`}
+                            onClick={() => handleClick(idx, item)}
+                        >
+                            <SvgIcon
+                                name={item.icon}
+                                size={Normal}
+                                color={iconColor}
+                            />
+                            <span className="nav-text">{item.name}</span>
+                        </li>
+                    ))}
+                </ul>
 
-            <div className="nav-menu-button" onClick={toggleMenu}>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </nav>
+                <div className="nav-menu-button" onClick={toggleMenu}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+            
+            {/* 搜索模态框 */}
+            <SearchModal 
+                isOpen={isSearchOpen} 
+                onClose={handleCloseSearch} 
+            />
+        </>
     )
 }
 
