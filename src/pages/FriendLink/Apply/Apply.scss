@@ -1,3 +1,7 @@
+@use "@/style/variables" as *;
+@use "@/style/mixins" as *;
+@use "@/style/glass" as *;
+
 .apply {
     position: fixed;
     right: -432px;
@@ -16,36 +20,35 @@
     &-toggle {
         flex: 0 0 32px;
         margin-left: -32px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        @extend .glass-subtle;
+        
+        border: 1px solid rgba($white, 0.1);
         border-right: none;
-        border-radius: 6px 0 0 6px;
-        padding: 1rem 0.5rem;
+        border-radius: $border-radius-sm 0 0 $border-radius-sm;
+        padding: $spacing-md $spacing-sm;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: $transition-base;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
+        gap: $spacing-sm;
         width: 32px;
 
         &:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba($white, 0.15);
         }
 
         &-text {
             writing-mode: vertical-rl;
             text-orientation: upright;
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            color: rgba($white, 0.95);
+            font-size: $font-size-sm;
+            font-weight: $font-weight-medium;
+            text-shadow: 0 1px 2px rgba($black, 0.2);
             user-select: none;
         }
 
-        @media screen and (max-width: 500px) {
+        @include responsive-breakpoint(sm) {
             .expanded & {  // 只在展开状态下隐藏
                 display: none;
             }
@@ -55,21 +58,20 @@
     &-form-container {
         flex: 0 0 400px;
         width: 400px;
-        padding: 2rem;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: $spacing-xl;
+        @extend .glass;
+        
+        border-radius: $border-radius-lg;
+        border: 1px solid rgba($white, 0.1);
+        box-shadow: $shadow-lg;
         max-height: 90vh;  // 限制最大高度
         overflow-y: auto;  // 添加滚动
 
-        @media screen and (max-width: 500px) {
+        @include responsive-breakpoint(sm) {
             width: 300px;  // 固定宽度
             flex: 0 0 300px;
-            padding: 1.5rem;
-            font-size: 0.9rem;
+            padding: $spacing-lg;
+            font-size: $font-size-sm;
         }
     }
 
@@ -77,13 +79,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: $spacing-lg;
     }
 
     &-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.95);
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+        color: rgba($white, 0.95);
         user-select: none;
         margin: 0;  // 移除原有的margin-bottom
     }
@@ -92,19 +94,19 @@
         display: none;  // 默认隐藏关闭按钮
         background: none;
         border: none;
-        padding: 0.5rem;
+        padding: $spacing-sm;
         cursor: pointer;
-        color: rgba(255, 255, 255, 0.85);
-        transition: all 0.3s ease;
+        color: rgba($white, 0.85);
+        transition: $transition-base;
 
-        @media screen and (max-width: 500px) {
+        @include responsive-breakpoint(sm) {
             display: flex;  // 在移动端显示
             align-items: center;
             justify-content: center;
         }
 
         &:hover {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba($white, 0.9);
         }
 
         &-icon {
@@ -112,7 +114,7 @@
             width: 24px;
             height: 24px;
 
-            @media screen and (max-width: 500px) {
+            @include responsive-breakpoint(sm) {
                 width: 20px;
                 height: 20px;
             }
@@ -142,24 +144,23 @@
 
     &-form {
         display: grid;
-        gap: 1.5rem;
+        gap: $spacing-lg;
 
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            @include flex-column;
+            gap: $spacing-sm;
 
             label {
-                font-size: 0.9rem;
-                color: rgba(255, 255, 255, 0.8);
+                font-size: $font-size-sm;
+                color: rgba($white, 0.8);
                 user-select: none;
             }
 
             .error-message {
-                font-size: 0.8rem;
-                color: rgba(239, 68, 68, 0.9);
-                margin-top: 0.25rem;
-                padding-left: 0.5rem;
+                font-size: $font-size-xs;
+                color: rgba($danger, 0.9);
+                margin-top: $spacing-xs;
+                padding-left: $spacing-sm;
                 animation: fadeIn 0.2s ease-in;
                 user-select: none;
             }
@@ -176,49 +177,48 @@
             }
 
             input, textarea {
-                padding: 0.875rem 1rem;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 6px;
-                background-color: rgba(255, 255, 255, 0.1);
-                color: rgba(255, 255, 255, 0.9);
-                font-size: 0.875rem;
-                transition: all 0.2s ease;
-                backdrop-filter: blur(5px);
-                -webkit-backdrop-filter: blur(5px);
+                @include input-base;
+                @extend .glass-subtle;
+                
+                padding: $spacing-md $spacing-lg;
+                border: 1px solid rgba($white, 0.1);
+                color: rgba($white, 0.9);
+                font-size: $font-size-sm;
+                transition: $transition-base;
 
                 &:focus {
-                    outline: none;
-                    border-color: rgba(255, 255, 255, 0.2);
-                    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+                    @include input-focus;
+                    border-color: rgba($white, 0.2);
+                    box-shadow: 0 0 0 2px rgba($white, 0.1);
                 }
 
                 &::placeholder {
-                    color: rgba(255, 255, 255, 0.5);
+                    color: rgba($white, 0.5);
                 }
 
                 &.valid {
-                    border-color: rgba(34, 197, 94, 0.6);
+                    border-color: rgba($success, 0.6);
                     background: linear-gradient(
                         to bottom,
-                        rgba(34, 197, 94, 0.1) 0%,
-                        rgba(34, 197, 94, 0.05) 100%
+                        rgba($success, 0.1) 0%,
+                        rgba($success, 0.05) 100%
                     );
 
                     &:focus {
-                        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+                        box-shadow: 0 0 0 2px rgba($success, 0.2);
                     }
                 }
 
                 &.invalid {
-                    border-color: rgba(239, 68, 68, 0.6);
+                    border-color: rgba($danger, 0.6);
                     background: linear-gradient(
                         to bottom,
-                        rgba(239, 68, 68, 0.1) 0%,
-                        rgba(239, 68, 68, 0.05) 100%
+                        rgba($danger, 0.1) 0%,
+                        rgba($danger, 0.05) 100%
                     );
 
                     &:focus {
-                        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+                        box-shadow: 0 0 0 2px rgba($danger, 0.2);
                     }
                 }
             }
@@ -230,71 +230,73 @@
         }
 
         .category-select {
+            @include input-base;
+            @extend .glass-subtle;
+            
             width: 100%;
-            padding: 0.875rem 1rem;
+            padding: $spacing-md $spacing-lg;
             padding-right: 2.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
+            border: 1px solid rgba($white, 0.1);
             background: 
                 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") right 0.8rem center no-repeat,
                 linear-gradient(
                     to bottom,
-                    rgba(255, 255, 255, 0.1) 0%,
-                    rgba(255, 255, 255, 0.05) 100%
+                    rgba($white, 0.1) 0%,
+                    rgba($white, 0.05) 100%
                 );
             appearance: none;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            outline: none;
-            
-            &:hover, &:focus {
-                border-color: rgba(255, 255, 255, 0.2);
-                background: 
-                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") right 0.8rem center no-repeat,
-                    linear-gradient(
-                        to bottom,
-                        rgba(255, 255, 255, 0.15) 0%,
-                        rgba(255, 255, 255, 0.1) 100%
-                    );
+            color: rgba($white, 0.9);
+            font-size: $font-size-sm;
+            transition: $transition-base;
+
+            &:focus {
+                @include input-focus;
+                border-color: rgba($white, 0.2);
+                box-shadow: 0 0 0 2px rgba($white, 0.1);
             }
-            
+
+            &:hover {
+                background-color: rgba($white, 0.15);
+            }
+
             option {
-                background: rgba(30, 30, 30, 0.95);
-                color: rgba(255, 255, 255, 0.8);
-                padding: 0.5rem;
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
+                background: rgba($gray-800, 0.95);
+                color: rgba($white, 0.8);
+                padding: $spacing-sm;
+                @extend .glass;
 
                 &:hover {
-                    background: rgba(255, 255, 255, 0.1);
+                    background: rgba($white, 0.1);
                 }
             }
         }
 
         .submit-button {
-            padding: 0.875rem 2rem;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 500;
+            @include button-base;
+            @extend .glass;
+            
+            width: 100%;
+            padding: $spacing-md;
+            border: 1px solid rgba($white, 0.1);
+            color: rgba($white, 0.9);
+            font-size: $font-size-sm;
+            font-weight: $font-weight-medium;
+            transition: $transition-base;
             cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
 
             &:hover {
-                background-color: rgba(255, 255, 255, 0.3);
+                background-color: rgba($white, 0.15);
                 transform: translateY(-1px);
             }
 
             &:active {
                 transform: translateY(0);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
             }
         }
     }
@@ -308,7 +310,8 @@
             right: 32px;
         }
     }
-} 
+}
+
 .apply {
     &-close {
         background: none;

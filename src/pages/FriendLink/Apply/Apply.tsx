@@ -248,15 +248,15 @@ const Apply: React.FC<ApplyProps> = ({ className, onSubmit }) => {
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
-                            placeholder="请输入您的博客名称"
-                            required
                             className={classNames({
                                 'valid': validation.name === true,
                                 'invalid': validation.name === false
                             })}
+                            placeholder="请输入您的博客名称"
                         />
-                        {errors.name && <span className="error-message">{errors.name}</span>}
+                        {errors.name && <div className="error-message">{errors.name}</div>}
                     </div>
+
                     <div className="form-group">
                         <label htmlFor="url">博客地址</label>
                         <input
@@ -265,32 +265,32 @@ const Apply: React.FC<ApplyProps> = ({ className, onSubmit }) => {
                             name="url"
                             value={formData.url}
                             onChange={handleInputChange}
-                            placeholder="请输入您的博客地址"
-                            required
                             className={classNames({
                                 'valid': validation.url === true,
                                 'invalid': validation.url === false
                             })}
+                            placeholder="请输入您的博客地址，例如: https://example.com"
                         />
-                        {errors.url && <span className="error-message">{errors.url}</span>}
+                        {errors.url && <div className="error-message">{errors.url}</div>}
                     </div>
+
                     <div className="form-group">
-                        <label htmlFor="avatar">头像链接</label>
+                        <label htmlFor="avatar">头像地址</label>
                         <input
                             type="url"
                             id="avatar"
                             name="avatar"
                             value={formData.avatar}
                             onChange={handleInputChange}
-                            placeholder="请输入您的头像链接"
-                            required
                             className={classNames({
                                 'valid': validation.avatar === true,
                                 'invalid': validation.avatar === false
                             })}
+                            placeholder="请输入您的头像图片链接，例如: https://example.com/avatar.jpg"
                         />
-                        {errors.avatar && <span className="error-message">{errors.avatar}</span>}
+                        {errors.avatar && <div className="error-message">{errors.avatar}</div>}
                     </div>
+
                     <div className="form-group">
                         <label htmlFor="description">博客描述</label>
                         <textarea
@@ -298,15 +298,15 @@ const Apply: React.FC<ApplyProps> = ({ className, onSubmit }) => {
                             name="description"
                             value={formData.description}
                             onChange={handleInputChange}
-                            placeholder="请简短描述您的博客"
-                            required
                             className={classNames({
                                 'valid': validation.description === true,
                                 'invalid': validation.description === false
                             })}
+                            placeholder="请输入您的博客描述，至少10个字符"
                         />
-                        {errors.description && <span className="error-message">{errors.description}</span>}
+                        {errors.description && <div className="error-message">{errors.description}</div>}
                     </div>
+
                     <div className="form-group">
                         <label htmlFor="category">博客分类</label>
                         <select
@@ -314,22 +314,28 @@ const Apply: React.FC<ApplyProps> = ({ className, onSubmit }) => {
                             name="category"
                             value={formData.category}
                             onChange={handleInputChange}
-                            required
                             className={classNames('category-select', {
                                 'valid': validation.category === true,
                                 'invalid': validation.category === false
                             })}
                         >
                             <option value="">请选择博客分类</option>
-                            {categoryOptions.map(category => (
-                                <option key={category} value={category}>
-                                    {category}
+                            {categoryOptions.map(option => (
+                                <option key={option} value={option}>
+                                    {option}
                                 </option>
                             ))}
                         </select>
-                        {errors.category && <span className="error-message">{errors.category}</span>}
+                        {errors.category && <div className="error-message">{errors.category}</div>}
                     </div>
-                    <button type="submit" className="submit-button">提交申请</button>
+
+                    <button
+                        type="submit"
+                        className="submit-button"
+                        disabled={!Object.values(validation).every(v => v === true)}
+                    >
+                        提交申请
+                    </button>
                 </form>
             </div>
         </div>

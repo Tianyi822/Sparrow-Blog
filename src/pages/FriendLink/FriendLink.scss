@@ -1,9 +1,14 @@
+@use "@/style/variables" as *;
+@use "@/style/mixins" as *;
+@use "@/style/glass" as *;
+
 .friend-link {
-    padding: 6rem 3rem;
+    @include full-viewport;
+    padding: $spacing-xxl $spacing-xl;
     max-width: 1200px;
     margin: 0 auto;
     position: relative;
-    color: rgba(255, 255, 255, 0.9);
+    color: $font-color-inverse;
 
     // 鼠标跟踪光效
     &::before {
@@ -23,10 +28,9 @@
     }
 
     &-header {
-        margin-bottom: 2rem;
+        margin-bottom: $spacing-xl;
         width: 100%;
-        display: flex;
-        flex-direction: column;
+        @include flex-column;
         align-items: center;
         max-width: 600px;
         margin-left: auto;
@@ -34,63 +38,57 @@
     }
 
     &-search {
+        @include input-base;
+        @extend .glass-subtle;
+        
         width: 100%;
         max-width: 600px;
-        padding: 0.875rem 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        font-size: 0.875rem;
-        background-color: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.9);
-        transition: all 0.2s ease;
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
+        padding: $spacing-md $spacing-lg;
+        border: 1px solid rgba($white, 0.1);
+        color: rgba($white, 0.9);
+        transition: $transition-base;
         appearance: none;
         cursor: pointer;
 
         &:focus {
-            outline: none;
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+            @include input-focus;
+            border-color: rgba($white, 0.2);
+            box-shadow: 0 0 0 2px rgba($white, 0.1);
         }
 
         &:hover {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba($white, 0.15);
         }
     }
 
     &-categories {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
+        @include flex-align-center;
+        gap: $spacing-sm;
+        margin-top: $spacing-md;
         flex-wrap: wrap;
         width: calc(100% + 2rem);
         justify-content: flex-start;
 
         .category-button {
-            padding: 0.5rem 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.7);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.875rem;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            @include button-base;
+            @extend .glass-subtle;
+            
+            padding: $spacing-sm $spacing-md;
+            border: 1px solid rgba($white, 0.1);
+            color: rgba($white, 0.7);
+            font-size: $font-size-sm;
+            border-radius: $border-radius-pill;
 
             &:hover {
-                background-color: rgba(255, 255, 255, 0.15);
-                color: rgba(255, 255, 255, 0.9);
+                background-color: rgba($white, 0.15);
+                color: rgba($white, 0.9);
             }
 
             &.active {
-                background-color: rgba(255, 255, 255, 0.2);
-                color: rgba(255, 255, 255, 1);
-                border-color: rgba(255, 255, 255, 0.3);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                background-color: rgba($white, 0.2);
+                color: rgba($white, 1);
+                border-color: rgba($white, 0.3);
+                box-shadow: $shadow-sm;
             }
         }
     }
@@ -98,67 +96,64 @@
     &-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
+        gap: $spacing-lg;
+        margin-top: $spacing-xl;
     }
 
     .friend-link-card {
+        @include card-style;
+        @extend .glass;
+        @include hover-lift;
+        
         display: flex;
-        padding: 1rem;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        transition: all 0.3s ease;
+        padding: $spacing-md;
         text-decoration: none;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-
-        &:hover {
-            transform: translateY(-2px);
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
+        border: 1px solid rgba($white, 0.1);
 
         .friend-avatar {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            margin-right: 1rem;
+            margin-right: $spacing-md;
             object-fit: cover;
+            border: 2px solid rgba($white, 0.1);
+            box-shadow: $shadow-sm;
         }
 
         .friend-info {
             flex: 1;
 
             .friend-name {
-                margin: 0 0 0.5rem;
-                font-size: 1.1rem;
-                font-weight: 600;
-                color: rgba(255, 255, 255, 0.95);
+                margin: 0 0 $spacing-sm;
+                font-size: $font-size-lg;
+                font-weight: $font-weight-semibold;
+                color: rgba($white, 0.95);
             }
 
             .friend-description {
-                margin: 0 0 0.5rem;
-                font-size: 0.875rem;
-                color: rgba(255, 255, 255, 0.7);
-                line-height: 1.4;
+                margin: 0 0 $spacing-sm;
+                font-size: $font-size-sm;
+                color: rgba($white, 0.7);
+                line-height: $line-height-relaxed;
             }
 
             .friend-category {
-                font-size: 0.75rem;
-                color: rgba(255, 255, 255, 0.6);
-                background-color: rgba(255, 255, 255, 0.1);
-                padding: 0.25rem 0.5rem;
-                border-radius: 12px;
+                @extend .glass-subtle;
+                
+                font-size: $font-size-xs;
+                color: rgba($white, 0.6);
+                padding: $spacing-xs $spacing-sm;
+                border-radius: $border-radius-pill;
+                display: inline-block;
             }
         }
     }
 }
 
 // 响应式设计
-@media (max-width: 768px) {
+@include responsive-breakpoint(md) {
     .friend-link {
-        padding: 6rem 3rem;
+        padding: $spacing-xxl $spacing-lg;
 
         &-search {
             width: 100%;
@@ -167,12 +162,10 @@
         }
 
         &-grid {
-            gap: 1rem 1.5rem;
+            gap: $spacing-md $spacing-lg;
         }
 
-        &-card {
-            width: calc(100% - 1.75rem);
-
+        .friend-link-card {
             .friend-avatar {
                 width: 40px;
                 height: 40px;
