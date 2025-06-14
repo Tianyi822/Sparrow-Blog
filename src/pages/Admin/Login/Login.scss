@@ -1,53 +1,44 @@
-@use "@/style/mixins"as *;
-@use "@/style/variables"as var;
+@use "@/style/variables" as *;
+@use "@/style/mixins" as *;
+@use "@/style/glass" as *;
 
 .login-container {
-  width: 100%;
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #1a237e, #000000); // 从左上角深蓝色到右下角纯黑色的渐变
-  background-attachment: fixed; // 确保背景固定，不随滚动而移动
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var.$spacing-xl;
-  box-sizing: border-box;
-  font-family: var.$font-family-base;
-  color: rgba(255, 255, 255, 0.9);
+  @include full-viewport;
+  @include flex-center;
+  
+  background: linear-gradient(135deg, $primary-500 0%, $gray-900 100%);
+  background-attachment: fixed;
+  padding: $spacing-xl;
+  font-family: $font-family-base;
+  color: $font-color-inverse;
 
   // 登录卡片
   .login-card {
-    @include glass-card-base;
+    @extend .glass-strong;
+    @include card-style;
+    
     max-width: 400px;
     width: 100%;
-    border-radius: var.$border-radius-md;
-    padding: var.$spacing-xl;
-    box-shadow: var.$shadow-lg;
+    padding: $spacing-xl;
     position: relative;
-    transform: translateY(0);
-    transition: var.$transition-base;
-
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow:
-        0 15px 30px rgba(0, 0, 0, 0.2),
-        0 10px 10px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
+    
+    @include hover-lift;
 
     // 登录卡片发光效果
     &::before {
       content: '';
       position: absolute;
-      top: -1px;
-      left: -1px;
-      right: -1px;
-      bottom: -1px;
-      background: linear-gradient(45deg, rgba(26, 35, 126, 0.3), rgba(255, 255, 255, 0.1), rgba(26, 35, 126, 0.3));
-      border-radius: var.$border-radius-md;
+      inset: -1px;
+      background: linear-gradient(45deg, 
+        rgba($primary-400, 0.3), 
+        rgba($white, 0.1), 
+        rgba($primary-400, 0.3)
+      );
+      border-radius: $border-radius-lg;
       z-index: -1;
       filter: blur(8px);
       opacity: 0.7;
-      transition: var.$transition-base;
+      transition: $transition-base;
     }
 
     &:hover::before {
@@ -58,45 +49,39 @@
   // 登录头部
   .login-header {
     text-align: center;
-    margin-bottom: var.$spacing-xl;
+    margin-bottom: $spacing-xl;
 
     h1 {
-      font-size: var.$font-size-xxl;
-      font-weight: var.$font-weight-bold;
-      margin-bottom: var.$spacing-sm;
-      background: linear-gradient(to right, #e2e8f0, #fff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      @include gradient-text($gray-200, $white);
+      font-size: $font-size-xxl;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-sm;
     }
 
     p {
-      font-size: var.$font-size-md;
-      color: rgba(255, 255, 255, 0.7);
+      font-size: $font-size-md;
+      color: rgba($white, 0.7);
     }
   }
 
   // 登录表单
   .login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
+    @include flex-column($spacing-lg);
 
     // 表单组
     .form-group {
-      margin-bottom: var.$spacing-sm;
+      margin-bottom: $spacing-sm;
 
       label {
-        display: flex;
-        align-items: center;
-        margin-bottom: var.$spacing-sm;
-        font-weight: var.$font-weight-medium;
-        color: rgba(255, 255, 255, 0.9);
+        @include flex-align-center;
+        margin-bottom: $spacing-sm;
+        font-weight: $font-weight-medium;
+        color: rgba($white, 0.9);
 
         .icon {
-          margin-right: var.$spacing-sm;
-          color: rgba(255, 255, 255, 0.9); // 图标颜色与文字颜色一致
-          font-size: var.$font-size-md;
+          margin-right: $spacing-sm;
+          color: rgba($white, 0.9);
+          font-size: $font-size-md;
         }
       }
 
@@ -108,156 +93,98 @@
 
       // 输入框
       input {
+        @include input-base;
+        @extend .glass-subtle;
+        
         width: 100%;
-        padding: 0 0.9rem;
-        border-radius: var.$border-radius-lg;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.05);
-        color: rgba(255, 255, 255, 0.9);
-        font-size: var.$font-size-sm;
         height: 36px;
-        line-height: 1;
-        transition: var.$transition-base;
-        text-align: left;
-
+        padding: 0 $spacing-md;
+        color: rgba($white, 0.9);
+        border: 1px solid rgba($white, 0.1);
+        
         &:focus {
-          outline: none;
-          border-color: rgba(255, 255, 255, 0.3);
-          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-          background: rgba(255, 255, 255, 0.1);
+          @include input-focus;
+          border-color: rgba($white, 0.3);
+          box-shadow: 0 0 0 3px rgba($white, 0.1);
+          background: rgba($white, 0.1);
         }
 
         &::placeholder {
-          color: rgba(255, 255, 255, 0.4);
+          color: rgba($white, 0.4);
         }
       }
 
       // 错误信息
       .error-message {
-        color: #ff6b6b;
-        font-size: var.$font-size-xs;
-        margin-top: 0.4rem;
-        display: flex;
-        align-items: center;
+        @include error-message;
+        color: $danger;
+        margin-top: $spacing-xs;
 
         &::before {
-          content: '!';
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background-color: #ff6b6b;
-          color: white;
-          font-weight: var.$font-weight-bold;
-          margin-right: 0.4rem;
-          font-size: var.$font-size-xs - 0.1rem;
+          @include error-icon;
         }
       }
     }
 
     // 验证码组
     .verify-code-group {
-      margin-bottom: 0.75rem !important;
+      margin-bottom: $spacing-lg !important;
 
       .verify-code-container {
-        display: flex;
-        gap: 8px;
-        align-items: center;
+        @include flex-align-center;
+        gap: $spacing-sm;
 
         input {
           flex: 1;
-          font-size: var.$font-size-md;
+          font-size: $font-size-md;
           letter-spacing: 2px;
         }
 
         // 验证码按钮
         .verify-code-button {
-          white-space: nowrap;
+          @include button-base;
+          @extend .glass-subtle;
+          
           height: 36px;
-          padding: 0 0.9rem;
-          border-radius: var.$border-radius-md - 0.25rem;
-          font-size: var.$font-size-sm;
-          background: rgba(255, 255, 255, 0.15);
-          color: rgba(255, 255, 255, 0.95);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          font-weight: var.$font-weight-medium;
-          cursor: pointer;
-          transition: var.$transition-short;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          padding: 0 $spacing-md;
+          font-size: $font-size-sm;
+          color: rgba($white, 0.95);
+          border: 1px solid rgba($white, 0.3);
+          white-space: nowrap;
 
-          &:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-            box-shadow: var.$shadow-sm;
-          }
-
-          &:active:not(:disabled) {
-            transform: translateY(0);
-            box-shadow: none;
-          }
-
-          &:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-          }
+          @include button-hover-effect(rgba($white, 0.25));
         }
       }
     }
 
     // 登录按钮
     .login-button {
+      @include button-primary;
+      @extend .glass-subtle;
+      
       width: 100%;
       height: 42px;
-      padding: 0.7rem;
-      border-radius: var.$border-radius-md - 0.25rem;
-      background: rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      font-weight: var.$font-weight-semibold;
-      font-size: var.$font-size-md !important;
-      cursor: pointer;
-      margin-top: var.$spacing-sm !important;
-      transition: var.$transition-short;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-top: $spacing-sm !important;
+      font-size: $font-size-md !important;
+      background: rgba($white, 0.15);
+      color: rgba($white, 0.95);
+      border: 1px solid rgba($white, 0.3);
 
-      &:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.25);
-        transform: translateY(-2px);
-        box-shadow: var.$shadow-sm;
-      }
-
-      &:active:not(:disabled) {
-        transform: translateY(0);
-        box-shadow: none;
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-      }
+      @include button-hover-effect(rgba($white, 0.25));
     }
 
     // 提交错误容器
     .submit-error-container {
-      margin-top: 0.75rem;
-      padding: 0.7rem;
-      border-radius: var.$border-radius-lg;
-      background-color: rgba(231, 76, 60, 0.15);
-      border: 1px solid rgba(231, 76, 60, 0.3);
+      @extend .glass-subtle;
+      @include error-container;
+      
+      margin-top: $spacing-lg;
+      background-color: rgba($danger, 0.15);
+      border: 1px solid rgba($danger, 0.3);
 
       .submit-error {
-        color: rgba(231, 76, 60, 0.9);
-        font-size: var.$font-size-sm;
+        color: rgba($danger, 0.9);
+        font-size: $font-size-sm;
         text-align: center;
       }
     }
@@ -265,28 +192,28 @@
 }
 
 // 响应式设计
-@media (max-width: 480px) {
+@include responsive-breakpoint(sm) {
   .login-container {
-    padding: var.$spacing-md;
+    padding: $spacing-md;
 
     .login-card {
-      padding: var.$spacing-lg;
+      padding: $spacing-lg;
     }
 
     .login-header {
       h1 {
-        font-size: var.$font-size-xl;
+        font-size: $font-size-xl;
       }
 
       p {
-        font-size: var.$font-size-sm;
+        font-size: $font-size-sm;
       }
     }
 
     .login-form {
       .verify-code-container {
-        flex-direction: column;
-        gap: 10px;
+        @include flex-column;
+        gap: $spacing-sm;
 
         .verify-code-button {
           width: 100%;

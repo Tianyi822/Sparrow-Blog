@@ -120,3 +120,148 @@
     }
   }
 }
+
+// 布局相关 mixins
+@mixin full-viewport {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-align-center {
+  display: flex;
+  align-items: center;
+}
+
+@mixin flex-column($gap: 1rem) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+// 文字效果 mixins
+@mixin gradient-text($from, $to) {
+  background: linear-gradient(to right, $from, $to);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+// 悬停效果 mixins
+@mixin hover-lift {
+  transform: translateY(0);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 15px 30px rgba(0, 0, 0, 0.2),
+      0 10px 10px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+}
+
+// 按钮相关 mixins
+@mixin button-base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  outline: none;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  font-weight: 600;
+}
+
+@mixin button-hover-effect($hover-bg) {
+  &:hover:not(:disabled) {
+    background: $hover-bg;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+// 输入框相关 mixins
+@mixin input-base {
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.3s ease;
+  text-align: left;
+  outline: none;
+}
+
+@mixin input-focus {
+  outline: none;
+}
+
+// 错误处理相关 mixins
+@mixin error-message {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+@mixin error-icon {
+  content: '!';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: currentColor;
+  color: white;
+  font-weight: 700;
+  margin-right: 8px;
+  font-size: 10px;
+}
+
+@mixin error-container {
+  padding: 12px;
+  border-radius: 8px;
+}
+
+// 响应式设计 mixins
+@mixin responsive-breakpoint($size) {
+  @if $size == sm {
+    @media (max-width: 480px) {
+      @content;
+    }
+  }
+  @if $size == md {
+    @media (max-width: 768px) {
+      @content;
+    }
+  }
+  @if $size == lg {
+    @media (max-width: 1024px) {
+      @content;
+    }
+  }
+}
