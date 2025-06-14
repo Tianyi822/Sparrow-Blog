@@ -7,7 +7,7 @@ import {
     FiServer,
     FiUser
 } from 'react-icons/fi';
-import CacheSetting from './CacheSetting';
+import CacheAndIndexSetting from './CacheAndIndexSetting';
 import DatabaseSetting from './DatabaseSetting';
 import LogSetting from './LogSetting';
 import OssSetting from './OssSetting';
@@ -69,7 +69,7 @@ const Settings: React.FC = memo(() => {
             case 'oss':
                 return <OssSetting onSaveSuccess={handleSaveSuccess} />;
             case 'cache':
-                return <CacheSetting onSaveSuccess={handleSaveSuccess} />;
+                return <CacheAndIndexSetting onSaveSuccess={handleSaveSuccess} />;
             default:
                 return null;
         }

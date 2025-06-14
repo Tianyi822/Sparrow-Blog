@@ -849,57 +849,61 @@ export const updateOSSConfig = async (
 };
 
 // ===============================================================
-// 缓存配置相关接口和函数
+// 缓存和索引配置相关接口和函数
 // ===============================================================
 
-export interface CacheConfig {
+export interface CacheAndIndexConfig {
     enable_aof: boolean;
     aof_dir_path: string;
     aof_mix_size: number;
     aof_compress: boolean;
+    index_path: string;
 }
 
-export interface CacheConfigResponse {
+export interface CacheAndIndexConfigResponse {
     code: number;
     msg: string;
-    data: CacheConfig;
+    data: CacheAndIndexConfig;
 }
 
 /**
- * 获取缓存配置信息
- * @returns 缓存配置数据
+ * 获取缓存和索引配置信息
+ * @returns 缓存和索引配置数据
  */
-export const getCacheConfig = async (): Promise<CacheConfigResponse> => {
-    return businessApiRequest<CacheConfigResponse>({
+export const getCacheAndIndexConfig = async (): Promise<CacheAndIndexConfigResponse> => {
+    return businessApiRequest<CacheAndIndexConfigResponse>({
         method: 'GET',
-        url: '/admin/setting/cache/config'
+        url: '/admin/setting/cache-index/config'
     });
 };
 
 /**
- * 更新缓存配置信息
+ * 更新缓存和索引配置信息
  * @param enableAOF 是否启用AOF
  * @param aofPath AOF文件路径
  * @param aofMaxSize AOF文件最大大小(MB)
  * @param aofCompress 是否压缩AOF文件
+ * @param indexPath 索引文件路径
  * @returns 更新结果
  */
-export const updateCacheConfig = async (
+export const updateCacheAndIndexConfig = async (
     enableAOF: boolean,
     aofPath: string,
     aofMaxSize: number,
-    aofCompress: boolean
+    aofCompress: boolean,
+    indexPath: string
 ): Promise<ApiResponse<null>> => {
     const requestData: Record<string, boolean | string | number> = {
         'cache.aof.enable': enableAOF,
         'cache.aof.path': aofPath,
         'cache.aof.max_size': aofMaxSize.toString(),
-        'cache.aof.compress': aofCompress
+        'cache.aof.compress': aofCompress,
+        'search.index.path': indexPath
     };
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/cache/config',
+        url: '/admin/setting/cache-index/config',
         data: requestData,
         headers: {
             'Content-Type': 'application/json'
@@ -943,8 +947,8 @@ export default {
     updateMySQLConfig,
     getOSSConfig,
     updateOSSConfig,
-    getCacheConfig,
-    updateCacheConfig,
+    getCacheAndIndexConfig,
+    updateCacheAndIndexConfig,
     updateUserImages,
     sendEmailVerificationCode,
     sendSMTPVerificationCode
