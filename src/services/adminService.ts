@@ -898,7 +898,7 @@ export const updateCacheAndIndexConfig = async (
         'cache.aof.path': aofPath,
         'cache.aof.max_size': aofMaxSize.toString(),
         'cache.aof.compress': aofCompress,
-        'search.index.path': indexPath
+        'search_engine.index_path': indexPath
     };
 
     return businessApiRequest<ApiResponse<null>>({
@@ -911,13 +911,27 @@ export const updateCacheAndIndexConfig = async (
     });
 };
 
+/**
+ * 重建索引
+ * @returns 重建索引结果
+ */
+export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/setting/cache-index/rebuild-index',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 // 导出所有API函数
 export default {
     // 认证相关
     sendVerificationCode,
     loginWithVerificationCode,
     getUserInfo,
-    
+
     // 博客相关
     getAllBlogs,
     changeBlogState,
@@ -926,7 +940,7 @@ export default {
     getAllTagsAndCategories,
     updateOrAddBlog,
     getBlogDataForEdit,
-    
+
     // 图库相关
     getAllGalleryImages,
     renameGalleryImage,
@@ -935,7 +949,7 @@ export default {
     addGalleryImages,
     checkImageNameExistence,
     getImageUrl,
-    
+
     // 配置相关
     getUserConfig,
     updateUserConfig,
@@ -951,5 +965,6 @@ export default {
     updateCacheAndIndexConfig,
     updateUserImages,
     sendEmailVerificationCode,
-    sendSMTPVerificationCode
+    sendSMTPVerificationCode,
+    rebuildIndex
 };

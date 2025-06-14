@@ -1,4 +1,4 @@
-import { getCacheAndIndexConfig, updateCacheAndIndexConfig } from '@/services/adminService';
+import { getCacheAndIndexConfig, updateCacheAndIndexConfig, rebuildIndex } from '@/services/adminService';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FiAlertCircle, FiDatabase, FiFolder, FiHardDrive, FiRefreshCw, FiSearch, FiZap } from 'react-icons/fi';
 import './CacheAndIndexSetting.scss';
@@ -203,13 +203,17 @@ const CacheAndIndexSetting: React.FC<CacheAndIndexSettingProps> = memo(({ onSave
         setRebuildSuccess(false);
 
         try {
-            // TODO: 这里应该调用重建索引的API
-            // 目前模拟一个异步操作
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // 调用重建索引API
+            const response = await rebuildIndex();
             
-            // 显示重建成功消息
-            setRebuildSuccess(true);
-            setTimeout(() => setRebuildSuccess(false), 3000);
+            if (response.code === 200) {
+                // 显示重建成功消息
+                setRebuildSuccess(true);
+                setTimeout(() => setRebuildSuccess(false), 3000);
+            } else {
+                // 显示后端返回的错误信息
+                setSubmitError(`重建索引失败: ${response.msg}`);
+            }
             
         } catch (error) {
             setSubmitError('重建索引时发生错误，请稍后再试');
