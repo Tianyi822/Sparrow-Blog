@@ -33,7 +33,7 @@ const Settings: React.FC = memo(() => {
         { id: 'log', label: '日志设置', icon: <FiCpu /> },
         { id: 'database', label: '数据库设置', icon: <FiDatabase /> },
         { id: 'oss', label: 'OSS设置', icon: <FiHardDrive /> },
-        { id: 'cache', label: '缓存设置', icon: <FiCpu /> },
+        { id: 'cache', label: '缓存与索引设置', icon: <FiCpu /> },
         { id: 'service', label: '服务设置', icon: <FiServer /> },
     ];
 
