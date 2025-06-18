@@ -1,0 +1,89 @@
+@use "@/style/variables" as *;
+@use "@/style/glass" as *;
+
+// 骨架屏动画
+@keyframes skeleton-loading {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba($white, 0.1) 25%,
+        rgba($white, 0.2) 50%,
+        rgba($white, 0.1) 75%
+    );
+    background-size: 200px 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: $border-radius-sm;
+    display: inline-block;
+}
+
+.friend-link-card-skeleton {
+    @extend .glass-subtle;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: $spacing-lg;
+    border-radius: $border-radius-md;
+    overflow: hidden;
+    border: 1px solid rgba($white, 0.1);
+    break-inside: avoid;
+    page-break-inside: avoid;
+
+    .skeleton-content {
+        padding: $spacing-md;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $spacing-sm;
+
+        .skeleton-avatar {
+            flex-shrink: 0;
+        }
+
+        .skeleton-name {
+            margin-top: $spacing-xs;
+        }
+
+        .skeleton-description {
+            margin: 2px 0;
+        }
+
+        .skeleton-category {
+            margin-top: $spacing-xs;
+        }
+    }
+}
+
+// 响应式骨架屏
+@media (max-width: 1024px) {
+    .friend-link-card-skeleton {
+        .skeleton-content {
+            padding: $spacing-sm;
+            
+            .skeleton-avatar {
+                width: 50px !important;
+                height: 50px !important;
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .friend-link-card-skeleton {
+        .skeleton-content {
+            padding: $spacing-xs;
+            
+            .skeleton-avatar {
+                width: 40px !important;
+                height: 40px !important;
+            }
+        }
+    }
+} 
