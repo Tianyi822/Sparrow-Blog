@@ -94,66 +94,191 @@
     }
 
     &-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: $spacing-lg;
+        column-count: 5;
+        column-gap: $spacing-lg;
         margin-top: $spacing-xl;
     }
 
     .friend-link-card {
-        @include card-style;
-        @extend .glass;
-        @include hover-lift;
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        margin-bottom: $spacing-lg;
+        break-inside: avoid;
+        page-break-inside: avoid;
+
+        .friend-link-card-link {
+            display: block;
+            text-decoration: none;
+        }
         
-        display: flex;
-        padding: $spacing-md;
-        text-decoration: none;
-        border: 1px solid rgba($white, 0.1);
+        .friend-card-3d {
+            @extend .glass;
+            position: relative;
+            border-radius: $border-radius-md;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+            transform: perspective(1000px) translate3d(0,0,0) rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
+            border: 1px solid rgba($white, 0.1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform;
+            
+            .card-glow {
+                position: absolute;
+                inset: 0;
+                z-index: 2;
+                pointer-events: none;
+                mix-blend-mode: soft-light;
+                transition: opacity 0.2s ease-out;
+                border-radius: inherit;
+                opacity: 0;
+                background: transparent;
+            }
+
+            .card-border-glow {
+                position: absolute;
+                inset: -2px;
+                z-index: 1;
+                pointer-events: none;
+                border-radius: calc(#{$border-radius-md} + 2px);
+                transition: opacity 0.2s ease-out;
+                mix-blend-mode: overlay;
+                opacity: 0;
+                background: transparent;
+            }
+        }
+
+        &:hover {
+            .friend-card-3d {
+                box-shadow: 0 20px 40px rgba($black, 0.3), 0 10px 20px rgba($black, 0.2);
+                border-color: rgba($white, 0.2);
+
+                .card-glow {
+                    opacity: 1;
+                }
+
+                .card-border-glow {
+                    opacity: 1;
+                    box-shadow: 0 0 30px 15px rgba($white, 0.1);
+                }
+
+                .friend-avatar {
+                    transform: scale(1.05);
+                    box-shadow: 0 8px 25px rgba($black, 0.3);
+                }
+
+                .friend-card-content {
+                    .friend-name {
+                        color: rgba($black, 0.9);
+                    }
+
+                    .friend-description {
+                        color: rgba($black, 0.7);
+                    }
+
+                    .friend-meta .friend-category {
+                        color: rgba($black, 0.8);
+                        background: rgba($white, 0.8);
+                    }
+                }
+            }
+        }
+
+        .friend-card-content {
+            padding: $spacing-md;
+            position: relative;
+            z-index: 3;
+            transition: all 0.3s ease;
+            @include flex-column($spacing-sm);
+        }
 
         .friend-avatar {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            margin-right: $spacing-md;
             object-fit: cover;
-            border: 2px solid rgba($white, 0.1);
-            box-shadow: $shadow-sm;
+            border: 2px solid rgba($white, 0.2);
+            box-shadow: 0 4px 15px rgba($black, 0.2);
+            transition: all 0.3s ease;
+            align-self: center;
+            flex-shrink: 0;
         }
 
         .friend-info {
-            flex: 1;
+            @include flex-column($spacing-xs);
+            text-align: center;
 
             .friend-name {
-                margin: 0 0 $spacing-sm;
-                font-size: $font-size-lg;
+                margin: 0;
+                font-size: $font-size-md;
                 font-weight: $font-weight-semibold;
                 color: rgba($white, 0.95);
+                line-height: $line-height-tight;
             }
 
             .friend-description {
-                margin: 0 0 $spacing-sm;
-                font-size: $font-size-sm;
-                color: rgba($white, 0.7);
-                line-height: $line-height-relaxed;
+                margin: 0;
+                font-size: $font-size-xs;
+                color: rgba($white, 0.75);
+                line-height: $line-height-base;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                line-clamp: 3;
+                -webkit-box-orient: vertical;
             }
+        }
+
+        .friend-meta {
+            margin-top: $spacing-xs;
+            display: flex;
+            justify-content: center;
 
             .friend-category {
                 @extend .glass-subtle;
-                
-                font-size: $font-size-xs;
-                color: rgba($white, 0.6);
-                padding: $spacing-xs $spacing-sm;
+                font-size: 10px;
+                color: rgba($white, 0.8);
+                padding: 4px 8px;
                 border-radius: $border-radius-pill;
-                display: inline-block;
+                border: 1px solid rgba($white, 0.1);
+            }
+        }
+    }
+
+    &-apply {
+        margin-top: $spacing-xxl;
+        @extend .glass-subtle;
+        border-radius: $border-radius-lg;
+        padding: $spacing-xl;
+        border: 1px solid rgba($white, 0.1);
+    }
+}
+
+// 响应式设计
+@include responsive-breakpoint(lg) {
+    .friend-link {
+        &-grid {
+            column-count: 4;
+            column-gap: $spacing-md;
+        }
+
+        .friend-link-card {
+            .friend-avatar {
+                width: 50px;
+                height: 50px;
+            }
+
+            .friend-card-content {
+                padding: $spacing-sm;
             }
         }
     }
 }
 
-// 响应式设计
 @include responsive-breakpoint(md) {
     .friend-link {
-        padding: $spacing-xxl $spacing-lg;
+        padding: $spacing-xl $spacing-lg;
 
         &-search {
             width: 100%;
@@ -162,18 +287,72 @@
         }
 
         &-grid {
-            gap: $spacing-md $spacing-lg;
+            column-count: 3;
+            column-gap: $spacing-md;
         }
 
         .friend-link-card {
             .friend-avatar {
-                width: 40px;
-                height: 40px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .friend-card-content {
+                padding: $spacing-sm;
+            }
+
+            .friend-info {
+                .friend-name {
+                    font-size: $font-size-sm;
+                }
+
+                .friend-description {
+                    font-size: 10px;
+                }
             }
         }
 
         &-categories {
             max-width: calc(100% + 2rem);
+        }
+    }
+}
+
+@include responsive-breakpoint(sm) {
+    .friend-link {
+        padding: $spacing-lg $spacing-md;
+
+        &-grid {
+            column-count: 2;
+            column-gap: $spacing-sm;
+        }
+
+        .friend-link-card {
+            .friend-card-content {
+                padding: $spacing-xs;
+            }
+
+            .friend-avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .friend-info {
+                .friend-name {
+                    font-size: $font-size-sm;
+                }
+
+                .friend-description {
+                    font-size: 10px;
+                    -webkit-line-clamp: 2;
+                    line-clamp: 2;
+                }
+            }
+
+            .friend-meta .friend-category {
+                font-size: 9px;
+                padding: 3px 6px;
+            }
         }
     }
 }
