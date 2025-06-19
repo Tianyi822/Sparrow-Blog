@@ -13,6 +13,7 @@ const Login = React.lazy(() => import("@/pages/Admin/Login"));
 const NotFound = React.lazy(() => import("@/pages/NotFound/NotFound"));
 const Edit = React.lazy(() => import("@/pages/Admin/Edit"));
 const Gallery = React.lazy(() => import("@/pages/Admin/Gallery"));
+const FriendLinks = React.lazy(() => import("@/pages/Admin/FriendLinks"));
 const Settings = React.lazy(() => import("@/pages/Admin/Settings"));
 const Waiting = React.lazy(() => import("@/pages/Waiting"));
 
@@ -194,6 +195,11 @@ const routes: RouteObject[] = [
                 path: "gallery",
                 element: withSuspense(Gallery),
                 loader: () => adminAuthLoader('gallery')
+            },
+            {
+                path: "friend-links",
+                element: withSuspense(FriendLinks),
+                loader: () => adminAuthLoader('friend-links')
             },
             {
                 path: "settings",

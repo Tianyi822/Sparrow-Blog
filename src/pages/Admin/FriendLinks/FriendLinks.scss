@@ -1,0 +1,1082 @@
+@use "sass:color";
+@use '@/style/mixins' as *;
+@use '@/style/variables' as *;
+
+// 动画定义
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.admin-friend-links {
+  height: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: $border-radius-lg;
+
+  // 加载和错误状态
+  .loading-container,
+  .error-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-medium;
+    @include glass-card-base;
+    background: rgba($white, 0.08);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: $border-width-thin solid rgba($white, 0.15);
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+    color: rgba($white, 0.8);
+    margin-bottom: $spacing-lg;
+  }
+
+  .error-container {
+    color: rgba($danger, 0.9);
+    background: rgba($danger, 0.1);
+    border-color: rgba($danger, 0.3);
+  }
+
+  // 搜索容器
+  .search-container {
+    flex-shrink: 0;
+    width: 100%;
+    margin-bottom: $spacing-lg;
+    padding: $spacing-lg;
+    @include glass-card-base;
+    background: rgba($white, 0.08);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: $border-width-thin solid rgba($white, 0.15);
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+    transition: $transition-base;
+
+    &:hover {
+      border-color: rgba($white, 0.25);
+      box-shadow: $shadow-lg;
+    }
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: $spacing-lg;
+
+    // 搜索输入框包装器
+    .search-input-wrapper {
+      position: relative;
+      margin-bottom: 0;
+      min-width: 200px;
+      flex: 1;
+
+      .search-icon {
+        position: absolute;
+        left: $spacing-md;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba($white, 0.6);
+        font-size: $font-size-md;
+        transition: $transition-base;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: $spacing-md $spacing-xl;
+        padding-left: 2.5rem;
+        @include glass-card-base;
+        background: rgba($white, 0.05);
+        backdrop-filter: blur(8px) saturate(180%);
+        -webkit-backdrop-filter: blur(8px) saturate(180%);
+        border: $border-width-thin solid rgba($white, 0.1);
+        border-radius: $border-radius-lg;
+        color: rgba($white, 0.95);
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        transition: $transition-base;
+
+        &::placeholder {
+          color: rgba($white, 0.5);
+          font-weight: $font-weight-normal;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: rgba($primary-200, 0.4);
+          background: rgba($white, 0.08);
+          box-shadow: 0 0 0 3px rgba($primary-300, 0.2);
+
+          + .search-icon {
+            color: rgba($primary-200, 0.8);
+          }
+        }
+      }
+
+      .clear-search {
+        position: absolute;
+        right: $spacing-md;
+        top: 50%;
+        transform: translateY(-50%);
+        @include glass-card-base;
+        background: rgba($white, 0.1);
+        border: $border-width-thin solid rgba($white, 0.2);
+        border-radius: $border-radius-circle;
+        color: rgba($white, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: $spacing-xs;
+        cursor: pointer;
+        transition: $transition-base;
+
+        &:hover {
+          background: rgba($danger, 0.2);
+          border-color: rgba($danger, 0.4);
+          color: $white;
+          transform: translateY(-50%) scale(1.1);
+        }
+      }
+    }
+
+    // 响应式布局
+    @media (max-width: 1100px) {
+      flex-wrap: wrap;
+
+      .search-input-wrapper {
+        width: 100%;
+        flex: 1 0 100%;
+      }
+    }
+  }
+
+  // 结果统计样式
+  .result-summary {
+    flex-shrink: 0;
+    width: 100%;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: rgba($white, 0.7);
+    text-align: left;
+    padding: 0 $spacing-sm;
+  }
+
+  // 表格容器
+  .friend-links-table-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    @include glass-card-base;
+    background: rgba($gray-900, 0.8);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: $border-width-thin solid rgba($white, 0.15);
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg, 0 0 30px rgba($black, 0.2);
+    width: 100%;
+    height: calc(100vh - 120px);
+    min-height: 680px;
+    max-height: 1800px;
+
+    // 自定义滚动条
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba($white, 0.05);
+      border-radius: $border-radius-sm;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba($primary-200, 0.4);
+      border-radius: $border-radius-sm;
+      transition: $transition-base;
+
+      &:hover {
+        background: rgba($primary-200, 0.6);
+      }
+    }
+
+    &::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    // 表格样式
+    .friend-links-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1000px;
+      table-layout: fixed;
+      border: $border-width-thin solid rgba($white, 0.1);
+
+      th,
+      td {
+        padding: $spacing-lg;
+        border-bottom: $border-width-thin solid rgba($white, 0.1);
+        border-right: $border-width-thin solid rgba($white, 0.05);
+        white-space: nowrap;
+        text-align: left;
+        vertical-align: middle;
+        transition: $transition-base;
+
+        &:last-child {
+          border-right: none;
+        }
+      }
+
+      // 列宽调整
+      th,
+      td {
+        &.index-column {
+          width: 70px;
+          text-align: center;
+        }
+
+        &.name-column {
+          min-width: 150px !important;
+          max-width: 200px !important;
+          width: 200px !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+
+        &.url-column {
+          min-width: 200px;
+          max-width: 250px;
+          width: 250px;
+        }
+
+        &.avatar-column {
+          min-width: 150px;
+          max-width: 180px;
+          width: 180px;
+        }
+
+        &.describe-column {
+          min-width: 150px;
+          max-width: 200px;
+          width: 200px;
+        }
+
+        &.status-column {
+          width: 80px !important;
+          min-width: 80px !important;
+          max-width: 80px !important;
+          text-align: center;
+        }
+
+        &.action-column {
+          width: 120px;
+          text-align: center;
+        }
+      }
+
+      // 表头
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        width: 100%;
+        isolation: isolate;
+
+        tr {
+          background: linear-gradient(135deg, 
+            rgba($white, 0.06), 
+            rgba($white, 0.04)) !important;
+
+          th {
+            background: linear-gradient(135deg, 
+              rgba($white, 0.06), 
+              rgba($white, 0.04)) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            font-weight: $font-weight-medium;
+            color: rgba($white, 0.85);
+            border-bottom: none;
+            box-shadow: 0 1px 6px rgba($black, 0.08);
+            text-align: left;
+            text-shadow: 0 1px 2px rgba($black, 0.15);
+
+            &::after {
+              display: none;
+            }
+          }
+        }
+      }
+
+      // 固定列
+      .fixed-column {
+        position: sticky;
+        z-index: 1;
+
+        &.index-column {
+          width: 70px;
+          left: 0;
+          text-align: center;
+          @include glass-card-base;
+          background: rgba($white, 0.04);
+          backdrop-filter: blur(16px) saturate(180%);
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+        }
+
+        &.name-column {
+          min-width: 150px !important;
+          max-width: 200px !important;
+          width: 200px !important;
+          left: 70px;
+          @include glass-card-base;
+          background: rgba($white, 0.04);
+          backdrop-filter: blur(16px) saturate(180%);
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+          overflow: hidden !important;
+
+          &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            background: rgba($white, 0.06);
+          }
+        }
+      }
+
+      // 固定表头单元格
+      th.fixed-column {
+        position: sticky;
+        z-index: 3;
+
+        &.index-column {
+          background: linear-gradient(135deg, 
+            rgba($white, 0.06), 
+            rgba($white, 0.04)) !important;
+          left: 0;
+          box-shadow: 2px 0 6px rgba($black, 0.08);
+        }
+
+        &.name-column {
+          background: linear-gradient(135deg, 
+            rgba($white, 0.06), 
+            rgba($white, 0.04)) !important;
+          left: 70px;
+        }
+      }
+
+      // 行样式
+      tbody tr {
+        transition: $transition-base;
+
+        &:hover {
+          background: rgba($white, 0.08);
+
+          td.fixed-column {
+            &.index-column {
+              background: rgba($primary-400, 0.9);
+            }
+
+            &.name-column {
+              background: rgba($primary-400, 0.9);
+            }
+          }
+        }
+      }
+
+      // 单元格内容样式
+      tbody td {
+        color: rgba($white, 0.9);
+        font-size: $font-size-sm;
+        font-weight: $font-weight-normal;
+
+        &.index-column {
+          font-weight: $font-weight-medium;
+          color: rgba($white, 0.7);
+        }
+
+        &.name-column {
+          .name-wrapper {
+            .friend-name {
+              font-size: $font-size-sm;
+              font-weight: $font-weight-medium;
+              max-width: 100%;
+              display: inline-block;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              box-sizing: border-box;
+              color: rgba($white, 0.95);
+              transition: $transition-base;
+            }
+          }
+        }
+
+        &.url-column {
+          a {
+            color: rgba($primary-300, 0.9);
+            text-decoration: none;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: $transition-base;
+
+            &:hover {
+              color: rgba($primary-200, 1);
+              text-decoration: underline;
+            }
+          }
+        }
+
+        &.avatar-column {
+          .avatar-url {
+            color: rgba($white, 0.6);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: $font-size-xs;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        &.describe-column {
+          .describe-text {
+            color: rgba($white, 0.7);
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        &.status-column {
+          .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: $spacing-xs $spacing-sm;
+            border-radius: $border-radius-pill;
+            font-size: $font-size-xs;
+            font-weight: $font-weight-semibold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: $transition-base;
+
+            &.public {
+              @include glass-card-base;
+              background: rgba($success, 0.2);
+              backdrop-filter: blur(8px) saturate(180%);
+              -webkit-backdrop-filter: blur(8px) saturate(180%);
+              border: $border-width-thin solid rgba($success, 0.4);
+              color: rgba($success, 1);
+              box-shadow: 0 2px 4px rgba($success, 0.2);
+            }
+
+            &.hidden {
+              @include glass-card-base;
+              background: rgba($danger, 0.2);
+              backdrop-filter: blur(8px) saturate(180%);
+              -webkit-backdrop-filter: blur(8px) saturate(180%);
+              border: $border-width-thin solid rgba($danger, 0.4);
+              color: rgba($danger, 1);
+              box-shadow: 0 2px 4px rgba($danger, 0.2);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 分页容器
+  .pagination-container {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm 0;
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: $spacing-sm;
+      @include glass-card-base;
+      background: rgba($white, 0.08);
+      backdrop-filter: blur(8px) saturate(180%);
+      -webkit-backdrop-filter: blur(8px) saturate(180%);
+      border: $border-width-thin solid rgba($white, 0.15);
+      border-radius: $border-radius-pill;
+      box-shadow: $shadow-md;
+
+      .pagination-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: $border-radius-circle;
+        border: none;
+        @include glass-card-base;
+        background: rgba($white, 0.1);
+        backdrop-filter: blur(8px) saturate(180%);
+        -webkit-backdrop-filter: blur(8px) saturate(180%);
+        color: rgba($white, 0.8);
+        font-size: $font-size-md;
+        cursor: pointer;
+        transition: $transition-base;
+
+        &:hover:not(:disabled) {
+          background: rgba($white, 0.2);
+          color: $white;
+          transform: scale(1.1);
+          box-shadow: $shadow-sm;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        &.prev {
+          margin-right: $spacing-sm;
+        }
+
+        &.next {
+          margin-left: $spacing-sm;
+        }
+      }
+
+      .pagination-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: rgba($white, 0.9);
+
+        .current-page {
+          font-weight: $font-weight-semibold;
+          min-width: 20px;
+          text-align: center;
+          color: $white;
+        }
+
+        .page-separator {
+          margin: 0 $spacing-xs;
+          color: rgba($white, 0.5);
+        }
+
+        .total-pages {
+          color: rgba($white, 0.7);
+          min-width: 20px;
+          text-align: center;
+        }
+      }
+    }
+
+    // 每页显示条数选择器
+    .page-size-selector {
+      position: relative;
+
+      .page-size-toggle {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        padding: $spacing-sm $spacing-lg;
+        @include glass-card-base;
+        background: rgba($white, 0.08);
+        backdrop-filter: blur(8px) saturate(180%);
+        -webkit-backdrop-filter: blur(8px) saturate(180%);
+        border: $border-width-thin solid rgba($white, 0.15);
+        color: rgba($white, 0.8);
+        border-radius: $border-radius-pill;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        cursor: pointer;
+        transition: $transition-base;
+
+        &:hover {
+          background: rgba($white, 0.15);
+          border-color: rgba($white, 0.25);
+          color: $white;
+          transform: translateY(-1px);
+          box-shadow: $shadow-sm;
+        }
+
+        svg {
+          font-size: $font-size-md;
+          transition: $transition-base;
+        }
+      }
+
+      .page-size-dropdown {
+        position: absolute;
+        right: 0;
+        top: auto;
+        bottom: calc(100% + 10px);
+        display: flex;
+        flex-direction: column;
+        min-width: 120px;
+        @include glass-card-base;
+        background: rgba($gray-800, 0.95);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: $border-width-thin solid rgba($white, 0.2);
+        border-radius: $border-radius-lg;
+        box-shadow: $shadow-lg, 0 0 30px rgba($black, 0.3);
+        z-index: 100;
+        overflow: hidden;
+
+        .page-size-option {
+          padding: $spacing-md $spacing-lg;
+          text-align: center;
+          background: transparent;
+          border: none;
+          color: rgba($white, 0.8);
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
+          cursor: pointer;
+          transition: $transition-base;
+          border-bottom: $border-width-thin solid rgba($white, 0.05);
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &:hover {
+            background: rgba($white, 0.08);
+            color: $white;
+          }
+
+          &.active {
+            background: rgba($primary-300, 0.2);
+            color: $white;
+            font-weight: $font-weight-semibold;
+            border-color: rgba($primary-200, 0.3);
+          }
+        }
+      }
+    }
+  }
+
+  // 操作按钮
+  .action-buttons {
+    display: flex;
+    gap: $spacing-xs;
+    justify-content: center;
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: $border-radius-sm;
+      @include glass-card-base;
+      background: rgba($white, 0.08);
+      backdrop-filter: blur(8px) saturate(180%);
+      -webkit-backdrop-filter: blur(8px) saturate(180%);
+      border: $border-width-thin solid rgba($white, 0.1);
+      color: rgba($white, 0.7);
+      transition: $transition-base;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba($white, 0.15);
+        border-color: rgba($white, 0.2);
+        color: rgba($white, 0.9);
+        transform: translateY(-1px) scale(1.05);
+        box-shadow: $shadow-sm;
+      }
+
+      &.toggle-status:hover {
+        color: $success;
+        background: rgba($success, 0.15);
+        border-color: rgba($success, 0.3);
+      }
+
+      &.edit:hover {
+        color: $info;
+        background: rgba($info, 0.15);
+        border-color: rgba($info, 0.3);
+      }
+
+      &.delete:hover {
+        color: $danger;
+        background: rgba($danger, 0.15);
+        border-color: rgba($danger, 0.3);
+      }
+    }
+  }
+
+  // 模态框样式
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($black, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: $spacing-xl;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    .modal-content {
+      @include glass-card-base;
+      background: rgba($gray-800, 0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: $border-width-thin solid rgba($white, 0.2);
+      border-radius: $border-radius-xl;
+      box-shadow: $shadow-lg, 0 0 40px rgba($black, 0.4);
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: fadeIn 0.3s ease-out;
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-xl;
+        border-bottom: $border-width-thin solid rgba($white, 0.1);
+
+        h2 {
+          margin: 0;
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+          color: rgba($white, 0.95);
+        }
+
+        .close-btn {
+          @include glass-card-base;
+          background: rgba($white, 0.1);
+          backdrop-filter: blur(8px) saturate(180%);
+          -webkit-backdrop-filter: blur(8px) saturate(180%);
+          border: $border-width-thin solid rgba($white, 0.2);
+          border-radius: $border-radius-circle;
+          color: rgba($white, 0.7);
+          cursor: pointer;
+          padding: $spacing-sm;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: $font-size-md;
+          transition: $transition-base;
+
+          &:hover {
+            background: rgba($danger, 0.2);
+            border-color: rgba($danger, 0.4);
+            color: $white;
+            transform: scale(1.1);
+          }
+        }
+      }
+
+      form {
+        padding: $spacing-xl;
+
+        .form-group {
+          margin-bottom: $spacing-lg;
+
+          label {
+            display: block;
+            margin-bottom: $spacing-sm;
+            font-weight: $font-weight-medium;
+            color: rgba($white, 0.9);
+            font-size: $font-size-sm;
+
+            &.checkbox-label {
+              display: flex;
+              align-items: center;
+              gap: $spacing-sm;
+              cursor: pointer;
+              font-weight: $font-weight-normal;
+
+              input[type="checkbox"] {
+                margin: 0;
+                width: 16px;
+                height: 16px;
+                accent-color: $primary-400;
+              }
+            }
+          }
+
+          input, textarea {
+            width: 100%;
+            padding: $spacing-md;
+            @include glass-card-base;
+            background: rgba($white, 0.05);
+            backdrop-filter: blur(8px) saturate(180%);
+            -webkit-backdrop-filter: blur(8px) saturate(180%);
+            border: $border-width-thin solid rgba($white, 0.1);
+            border-radius: $border-radius-md;
+            color: rgba($white, 0.95);
+            font-size: $font-size-sm;
+            font-family: inherit;
+            transition: $transition-base;
+
+            &::placeholder {
+              color: rgba($white, 0.5);
+            }
+
+            &:focus {
+              outline: none;
+              border-color: rgba($primary-200, 0.4);
+              background: rgba($white, 0.08);
+              box-shadow: 0 0 0 3px rgba($primary-300, 0.2);
+            }
+          }
+
+          textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+          }
+
+          input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+          }
+        }
+
+        .form-actions {
+          display: flex;
+          gap: $spacing-md;
+          justify-content: flex-end;
+          margin-top: $spacing-xl;
+          padding-top: $spacing-lg;
+          border-top: $border-width-thin solid rgba($white, 0.1);
+
+          button {
+            padding: $spacing-md $spacing-xl;
+            border: none;
+            border-radius: $border-radius-md;
+            cursor: pointer;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-medium;
+            transition: $transition-base;
+            min-width: 80px;
+
+            &[type="button"] {
+              @include glass-card-base;
+              background: rgba($white, 0.1);
+              backdrop-filter: blur(8px) saturate(180%);
+              -webkit-backdrop-filter: blur(8px) saturate(180%);
+              border: $border-width-thin solid rgba($white, 0.2);
+              color: rgba($white, 0.8);
+
+              &:hover {
+                background: rgba($white, 0.15);
+                border-color: rgba($white, 0.3);
+                color: $white;
+                transform: translateY(-1px);
+              }
+            }
+
+            &[type="submit"] {
+              @include glass-card-base;
+              background: rgba($primary-400, 0.8);
+              backdrop-filter: blur(8px) saturate(180%);
+              -webkit-backdrop-filter: blur(8px) saturate(180%);
+              border: $border-width-thin solid rgba($primary-300, 0.6);
+              color: $white;
+              box-shadow: 0 2px 4px rgba($primary-400, 0.3);
+
+              &:hover {
+                background: rgba($primary-300, 0.9);
+                border-color: rgba($primary-200, 0.8);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba($primary-400, 0.4);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 响应式样式优化
+@media (max-width: 1500px) {
+  .admin-friend-links {
+    .search-container {
+      padding: $spacing-md;
+    }
+
+    .friend-links-table-container {
+      height: calc(100vh - 130px);
+      min-height: 420px;
+    }
+
+    .friend-links-table {
+      min-width: 800px;
+
+      th,
+      td {
+        padding: $spacing-md $spacing-sm;
+
+        &.name-column {
+          min-width: 120px !important;
+          max-width: 150px !important;
+          width: 150px !important;
+        }
+
+        &.url-column {
+          min-width: 150px;
+          max-width: 180px;
+          width: 180px;
+        }
+
+        &.avatar-column {
+          min-width: 120px;
+          max-width: 140px;
+          width: 140px;
+        }
+
+        &.describe-column {
+          min-width: 120px;
+          max-width: 150px;
+          width: 150px;
+        }
+
+        &.status-column {
+          width: 70px !important;
+          min-width: 70px !important;
+          max-width: 70px !important;
+        }
+
+        &.index-column {
+          width: 60px;
+        }
+
+        &.action-column {
+          width: 100px;
+        }
+      }
+
+      .fixed-column {
+        &.index-column {
+          width: 60px;
+          left: 0;
+        }
+
+        &.name-column {
+          left: 60px;
+        }
+      }
+
+      th.fixed-column {
+        &.index-column {
+          width: 60px;
+        }
+
+        &.name-column {
+          left: 60px;
+        }
+      }
+    }
+
+    .action-buttons {
+      .action-btn {
+        width: 26px;
+        height: 26px;
+      }
+    }
+
+    .status-badge {
+      padding: $spacing-xs;
+      font-size: $font-size-xs;
+    }
+
+    .friend-name {
+      font-size: $font-size-sm;
+    }
+  }
+}
+
+// 超窄屏样式调整
+@media (max-width: 768px) {
+  .admin-friend-links {
+    .search-container {
+      padding: $spacing-md;
+
+      .search-input-wrapper {
+        width: 100%;
+        flex: 1 0 100%;
+      }
+    }
+
+    .pagination-container {
+      flex-direction: column;
+      gap: $spacing-md;
+
+      .pagination {
+        order: 1;
+      }
+
+      .page-size-selector {
+        order: 2;
+        align-self: center;
+      }
+    }
+
+    .modal-overlay {
+      padding: $spacing-md;
+
+      .modal-content {
+        .modal-header,
+        form {
+          padding: $spacing-lg;
+        }
+      }
+    }
+  }
+}
+
+// 中等屏幕样式调整
+@media (max-width: 1200px) {
+  .admin-friend-links {
+    .friend-links-table-container {
+      overflow-x: auto;
+    }
+  }
+} 

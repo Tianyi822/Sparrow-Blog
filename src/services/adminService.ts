@@ -925,6 +925,100 @@ export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
     });
 };
 
+// ===============================================================
+// 友链管理相关接口和函数
+// ===============================================================
+
+export interface FriendLinkItem {
+    friend_link_id: string;
+    friend_link_name: string;
+    friend_link_url: string;
+    friend_avatar_url: string;
+    friend_describe: string;
+    display: boolean;
+}
+
+export interface FriendLinksResponse {
+    code: number;
+    msg: string;
+    data: FriendLinkItem[];
+}
+
+export interface AddFriendLinkRequest {
+    friend_link_name: string;
+    friend_link_url: string;
+    friend_avatar_url: string;
+    friend_describe: string;
+    display: boolean;
+}
+
+export interface UpdateFriendLinkRequest {
+    friend_link_id: string;
+    friend_link_name: string;
+    friend_link_url: string;
+    friend_avatar_url: string;
+    friend_describe: string;
+}
+
+export interface ToggleDisplayResponse {
+    code: number;
+    msg: string;
+    data: {
+        display: boolean;
+    };
+}
+
+/**
+ * 获取所有友链列表
+ * @returns 友链列表数据
+ */
+export const getAllFriendLinks = async (): Promise<FriendLinksResponse> => {
+    return businessApiRequest<FriendLinksResponse>({
+        method: 'GET',
+        url: '/admin/friend-links/all'
+    });
+};
+
+/**
+ * 更新友链
+ * @param data 友链数据（包含friend_link_id）
+ * @returns 更新结果
+ */
+export const updateFriendLink = async (data: UpdateFriendLinkRequest): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'PUT',
+        url: '/admin/friend-links/update',
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
+/**
+ * 删除友链
+ * @param friendLinkId 友链ID
+ * @returns 删除结果
+ */
+export const deleteFriendLink = async (friendLinkId: string): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'DELETE',
+        url: `/admin/friend-links/${friendLinkId}`
+    });
+};
+
+/**
+ * 切换友链显示状态
+ * @param friendLinkId 友链ID
+ * @returns 切换结果，包含新的显示状态
+ */
+export const toggleFriendLinkDisplay = async (friendLinkId: string): Promise<ToggleDisplayResponse> => {
+    return businessApiRequest<ToggleDisplayResponse>({
+        method: 'PUT',
+        url: `/admin/friend-links/${friendLinkId}/display`
+    });
+};
+
 // 导出所有API函数
 export default {
     // 认证相关
@@ -966,5 +1060,11 @@ export default {
     updateUserImages,
     sendEmailVerificationCode,
     sendSMTPVerificationCode,
-    rebuildIndex
+    rebuildIndex,
+
+    // 友链相关
+    getAllFriendLinks,
+    updateFriendLink,
+    deleteFriendLink,
+    toggleFriendLinkDisplay
 };
