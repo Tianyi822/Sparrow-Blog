@@ -28,36 +28,26 @@ const randomImageApis = [
     'https://api.dicebear.com/7.x/shapes/svg'
 ];
 
-// 懒加载3D卡片组件
-const LazyFriendLinkCard: React.FC<{ 
+// 实际的友链卡片组件
+const FriendLinkCard: React.FC<{ 
     link: LinkItem; 
     onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: number) => void; 
     getRandomImage: (id: number) => string;
 }> = ({ link, onImageError, getRandomImage }) => {
     const { cardRef, glowRef, borderGlowRef } = use3DEffect();
-    const { elementRef, hasBeenVisible } = useLazyLoad({
-        rootMargin: '100px', // 提前100px开始加载
-        threshold: 0.1
-    });
-
-    // 如果还没有被观察到，显示骨架屏
-    if (!hasBeenVisible) {
-        return (
-            <div ref={elementRef}>
-                <FriendLinkCardSkeleton />
-            </div>
-        );
-    }
 
     return (
-        <div ref={elementRef} className="friend-link-card">
+        <div className="friend-link-card">
             <a
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="friend-link-card-link"
             >
-                <div className="friend-card-3d" ref={cardRef}>
+                <div 
+                    className="friend-card-3d" 
+                    ref={cardRef}
+                >
                     <div className="card-glow" ref={glowRef}></div>
                     <div className="card-border-glow" ref={borderGlowRef}></div>
                     <div className="friend-card-content">
@@ -78,6 +68,37 @@ const LazyFriendLinkCard: React.FC<{
                     </div>
                 </div>
             </a>
+        </div>
+    );
+};
+
+// 懒加载3D卡片组件
+const LazyFriendLinkCard: React.FC<{ 
+    link: LinkItem; 
+    onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: number) => void; 
+    getRandomImage: (id: number) => string;
+}> = ({ link, onImageError, getRandomImage }) => {
+    const { elementRef, hasBeenVisible } = useLazyLoad({
+        rootMargin: '100px', // 提前100px开始加载
+        threshold: 0.1
+    });
+
+    // 如果还没有被观察到，显示骨架屏
+    if (!hasBeenVisible) {
+        return (
+            <div ref={elementRef}>
+                <FriendLinkCardSkeleton />
+            </div>
+        );
+    }
+
+    return (
+        <div ref={elementRef}>
+            <FriendLinkCard 
+                link={link}
+                onImageError={onImageError}
+                getRandomImage={getRandomImage}
+            />
         </div>
     );
 };

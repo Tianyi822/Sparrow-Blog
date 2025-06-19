@@ -124,6 +124,12 @@
             perspective: 1000px;
             will-change: transform;
             
+            // 初始化CSS变量
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            --rotateX: 0deg;
+            --rotateY: 0deg;
+            
             .card-glow {
                 position: absolute;
                 inset: 0;
@@ -153,13 +159,28 @@
             .friend-card-3d {
                 box-shadow: 0 20px 40px rgba($black, 0.3), 0 10px 20px rgba($black, 0.2);
                 border-color: rgba($white, 0.2);
+                // 添加轻微的基础3D变换作为fallback
+                transform: perspective(1000px) translate3d(0,-2px,10px) rotateX(var(--rotateX, 2deg)) rotateY(var(--rotateY, 2deg)) scale(1.02);
 
                 .card-glow {
                     opacity: 1;
+                    background: radial-gradient(
+                        circle 500px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                        rgba($white, 0.25) 0%,
+                        rgba($white, 0.12) 45%,
+                        transparent 100%
+                    );
                 }
 
                 .card-border-glow {
                     opacity: 1;
+                    background: radial-gradient(
+                        circle 1000px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                        rgba($white, 1) 0%,
+                        rgba($white, 0.7) 20%,
+                        rgba($white, 0.3) 40%,
+                        transparent 65%
+                    );
                     box-shadow: 0 0 30px 15px rgba($white, 0.1);
                 }
 

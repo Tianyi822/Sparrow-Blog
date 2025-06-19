@@ -22,17 +22,13 @@ const use3DEffect = () => {
      */
     const resetCardStyle = useCallback(() => {
         const card = cardRef.current;
-        const glow = glowRef.current;
-        const borderGlow = borderGlowRef.current;
 
         if (card) {
             card.style.transform = 'perspective(1000px) translate3d(0,0,0) rotateX(0deg) rotateY(0deg)';
-        }
-        if (glow) {
-            glow.style.background = 'transparent';
-        }
-        if (borderGlow) {
-            borderGlow.style.background = 'transparent';
+            card.style.setProperty('--rotateX', '0deg');
+            card.style.setProperty('--rotateY', '0deg');
+            card.style.setProperty('--mouse-x', '50%');
+            card.style.setProperty('--mouse-y', '50%');
         }
     }, []);
 
@@ -41,7 +37,7 @@ const use3DEffect = () => {
      * 根据鼠标位置计算旋转角度和光晕效果
      */
     const updateCardTransform = useCallback(() => {
-        if (!lastMouseEvent.current || !cardRef.current || !glowRef.current || !borderGlowRef.current) return;
+        if (!lastMouseEvent.current || !cardRef.current) return;
 
         const now = Date.now();
         // 限制更新频率为每16ms一次（约60fps）
@@ -51,8 +47,6 @@ const use3DEffect = () => {
         }
 
         const card = cardRef.current;
-        const glow = glowRef.current;
-        const borderGlow = borderGlowRef.current;
         const e = lastMouseEvent.current;
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -62,41 +56,23 @@ const use3DEffect = () => {
         const rotateX = -20 * (0.5 - (y / rect.height));
         const rotateY = -20 * ((x / rect.width) - 0.5);
 
+        // 计算鼠标位置百分比
+        const mouseXPercent = (x / rect.width) * 100;
+        const mouseYPercent = (y / rect.height) * 100;
+
         // 使用CSS变量优化性能
         card.style.setProperty('--rotateX', `${rotateX}deg`);
         card.style.setProperty('--rotateY', `${rotateY}deg`);
+        card.style.setProperty('--mouse-x', `${mouseXPercent}%`);
+        card.style.setProperty('--mouse-y', `${mouseYPercent}%`);
+        
+        // 应用变换
         card.style.transform = `
             perspective(1000px) 
             translate3d(0,0,0) 
             rotateX(var(--rotateX)) 
             rotateY(var(--rotateY))
         `;
-
-        // 优化光晕渲染，确保位置值为整数以减少重绘
-        const glowX = Math.round(x);
-        const glowY = Math.round(y);
-
-        // 定义光晕渐变效果
-        const glowGradient = `radial-gradient(
-            circle 500px at ${glowX}px ${glowY}px, 
-            rgba(255, 255, 255, 0.25) 0%, 
-            rgba(255, 255, 255, 0.12) 45%, 
-            transparent 100%
-        )`;
-
-        const borderGlowGradient = `radial-gradient(
-            circle 1000px at ${glowX}px ${glowY}px, 
-            rgba(255, 255, 255, 1) 0%, 
-            rgba(255, 255, 255, 0.7) 20%, 
-            rgba(255, 255, 255, 0.3) 40%,
-            transparent 65%
-        )`;
-
-        // 使用CSS变量优化渐变更新
-        glow.style.setProperty('--gradient', glowGradient);
-        borderGlow.style.setProperty('--gradient', borderGlowGradient);
-        glow.style.background = 'var(--gradient)';
-        borderGlow.style.background = 'var(--gradient)';
 
         lastUpdate.current = now;
         frameRef.current = requestAnimationFrame(updateCardTransform);
