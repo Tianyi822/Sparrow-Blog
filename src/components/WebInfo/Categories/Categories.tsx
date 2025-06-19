@@ -23,7 +23,7 @@ const Categories: React.FC<CategoriesProps> = ({
     onCategoryClick,
     activeCategory
 }) => {
-    const { cardRef, borderGlowRef } = use3DEffect();
+    const { cardRef } = use3DEffect();
 
     // 计算每个分类的文章数量
     const categoriesWithCount = useMemo(() => {
@@ -73,7 +73,6 @@ const Categories: React.FC<CategoriesProps> = ({
 
     return (
         <div className={`categories ${className || ''}`} ref={cardRef}>
-            <div className="categories-border-glow" ref={borderGlowRef}/>
             <h3 className="categories-title">
                 <span className="categories-icon">📂</span>
                 分类

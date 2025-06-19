@@ -34,7 +34,7 @@ const FriendLinkCard: React.FC<{
     onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: number) => void; 
     getRandomImage: (id: number) => string;
 }> = ({ link, onImageError, getRandomImage }) => {
-    const { cardRef, glowRef, borderGlowRef } = use3DEffect();
+    const { cardRef } = use3DEffect();
 
     return (
         <div className="friend-link-card">
@@ -48,8 +48,8 @@ const FriendLinkCard: React.FC<{
                     className="friend-card-3d" 
                     ref={cardRef}
                 >
-                    <div className="card-glow" ref={glowRef}></div>
-                    <div className="card-border-glow" ref={borderGlowRef}></div>
+                    <div className="card-glow"></div>
+                    <div className="card-border-glow"></div>
                     <div className="friend-card-content">
                         <img 
                             src={link.avatar || getRandomImage(link.id)} 

@@ -2,15 +2,13 @@ import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * 3D效果自定义钩子
- * 为卡片元素添加基于鼠标位置的3D旋转和光晕效果
+ * 为卡片元素添加基于鼠标位置的3D旋转效果
  * 
  * @returns 包含元素引用的对象，用于绑定到DOM元素
  */
 const use3DEffect = () => {
     // DOM元素引用
     const cardRef = useRef<HTMLDivElement | null>(null);
-    const glowRef = useRef<HTMLDivElement | null>(null);
-    const borderGlowRef = useRef<HTMLDivElement | null>(null);
 
     // 动画相关引用
     const frameRef = useRef<number | null>(null);
@@ -27,14 +25,12 @@ const use3DEffect = () => {
             card.style.transform = 'perspective(1000px) translate3d(0,0,0) rotateX(0deg) rotateY(0deg)';
             card.style.setProperty('--rotateX', '0deg');
             card.style.setProperty('--rotateY', '0deg');
-            card.style.setProperty('--mouse-x', '50%');
-            card.style.setProperty('--mouse-y', '50%');
         }
     }, []);
 
     /**
      * 更新卡片变换效果
-     * 根据鼠标位置计算旋转角度和光晕效果
+     * 根据鼠标位置计算旋转角度
      */
     const updateCardTransform = useCallback(() => {
         if (!lastMouseEvent.current || !cardRef.current) return;
@@ -56,15 +52,9 @@ const use3DEffect = () => {
         const rotateX = -20 * (0.5 - (y / rect.height));
         const rotateY = -20 * ((x / rect.width) - 0.5);
 
-        // 计算鼠标位置百分比
-        const mouseXPercent = (x / rect.width) * 100;
-        const mouseYPercent = (y / rect.height) * 100;
-
         // 使用CSS变量优化性能
         card.style.setProperty('--rotateX', `${rotateX}deg`);
         card.style.setProperty('--rotateY', `${rotateY}deg`);
-        card.style.setProperty('--mouse-x', `${mouseXPercent}%`);
-        card.style.setProperty('--mouse-y', `${mouseYPercent}%`);
         
         // 应用变换
         card.style.transform = `
@@ -125,7 +115,7 @@ const use3DEffect = () => {
         };
     }, [handleMouseMove, handleMouseLeave]);
 
-    return { cardRef, glowRef, borderGlowRef };
+    return { cardRef };
 };
 
 export default use3DEffect;

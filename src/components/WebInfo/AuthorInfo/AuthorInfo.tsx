@@ -57,12 +57,10 @@ const AuthorInfo: React.FC<AuthorInfoProps> = memo(({
   className 
 }) => {
   // 使用3D效果hook
-  const { cardRef, borderGlowRef } = use3DEffect();
+  const { cardRef } = use3DEffect();
 
   return (
     <div className={`author-info-container ${className || ''}`} ref={cardRef}>
-      {/* 光晕效果元素 */}
-      <div className="author-info-border-glow" ref={borderGlowRef}></div>
 
       {/* 作者头像 */}
       {avatar && <img src={avatar} alt={name} className="author-info-avatar" />}

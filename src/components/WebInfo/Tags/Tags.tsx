@@ -30,7 +30,7 @@ const Tags: React.FC<TagsProps> = memo(({
     activeTag
 }) => {
     // 使用3D效果hook
-    const { cardRef, borderGlowRef } = use3DEffect();
+    const { cardRef } = use3DEffect();
 
     /**
      * 处理标签点击事件
@@ -44,7 +44,7 @@ const Tags: React.FC<TagsProps> = memo(({
     return (
         <div className={`tags ${className || ''}`} ref={cardRef}>
             {/* 光晕效果元素 */}
-            <div className="tags-border-glow" ref={borderGlowRef}/>
+            <div className="tags-border-glow" />
             
             {/* 标签标题 */}
             <h3 className="tags-title">
