@@ -45,7 +45,6 @@ const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, 
             style={{ cursor: blogId ? 'pointer' : 'default' }}
         >
             {/* 3D效果的光晕元素 */}
-            <div className="blog-card-glow" ref={glowRef} />
             <div className="blog-card-border-glow" ref={borderGlowRef} />
 
             {/* 置顶标记 */}

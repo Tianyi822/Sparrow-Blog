@@ -11,14 +11,18 @@ $mobile-padding: $spacing-md;
   
   // 将所有声明放在嵌套规则之前
   & {
+    position: relative;
     transform-style: preserve-3d;
     transform: perspective(1000px);
-    transition: $transition-base;
+    transition: all 0.3s ease-out;
     display: flex;
     flex-direction: column;
     gap: $spacing-xs * 3;
     padding: $spacing-lg;
     cursor: pointer;
+    background: rgba(255, 255, 255, 0.1); // 与AuthorInfo默认背景色一致
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
   
   // 嵌套规则放在后面
@@ -46,18 +50,26 @@ $mobile-padding: $spacing-md;
     color: var(--text-tertiary);
   }
 
-  .blog-card-glow,
   .blog-card-border-glow {
     position: absolute;
-    inset: 0;
-    border-radius: $border-radius-md;
+    inset: -15px;
+    border-radius: calc(#{$border-radius-md} + 15px);
     pointer-events: none;
-    z-index: 2;
-    transition: background $transition-base;
+    z-index: 1;
+    mix-blend-mode: normal;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    user-select: none;
   }
 
   &:hover {
-    @include glass-card-hover;
+    transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+    background: rgba(255, 255, 255, 0.7); // hover时背景变成高亮度白色
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      0 10px 20px rgba(0, 0, 0, 0.1),
+      0 6px 6px rgba(0, 0, 0, 0.1);
     
     & {
       .blog-card-title {
@@ -76,6 +88,13 @@ $mobile-padding: $spacing-md;
       .blog-card-tag {
         opacity: 1;
         color: rgba($white, 0.95);
+      }
+
+      .blog-card-border-glow {
+        box-shadow: 
+          0 0 30px 8px rgba(255, 255, 255, 0.6),
+          0 0 60px 15px rgba(255, 255, 255, 0.3);
+        opacity: 1;
       }
     }
   }

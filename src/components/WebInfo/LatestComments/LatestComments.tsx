@@ -22,11 +22,10 @@ const LATEST_COMMENTS: CommentItem[] = [
 ];
 
 const LatestComments: React.FC<LatestCommentsProps> = ({ className }) => {
-    const { cardRef, glowRef, borderGlowRef } = use3DEffect();
+    const { cardRef, borderGlowRef } = use3DEffect();
 
     return (
         <div className={`latest-comments ${className || ''}`} ref={cardRef}>
-            <div className="latest-comments-glow" ref={glowRef}/>
             <div className="latest-comments-border-glow" ref={borderGlowRef}/>
             <h3 className="latest-comments-title">
                 <span className="latest-comments-icon">💬</span>
