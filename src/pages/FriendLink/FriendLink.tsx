@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import use3DEffect from '@/hooks/use3DEffect';
-import useLazyLoad from '@/hooks/useLazyLoad';
 import { FriendLinkCardSkeleton } from '@/components/ui/skeleton';
+import { getFriendLinks, type FriendLink } from '@/services/webService';
 import Apply, { FormData } from './Apply/Apply';
 import './FriendLink.scss';
 
@@ -10,36 +10,27 @@ interface FriendLinkProps {
     className?: string;
 }
 
-interface LinkItem {
-    id: number;
-    avatar: string;
-    name: string;
-    description: string;
-    url: string;
-    category: string;
-}
+// 默认头像图片
+const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjgwIiByPSIzMCIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNTAgMTcwYzAtMzMuMTM3IDI2Ljg2My02MCA2MC02MGg0MGMzMy4xMzcgMCA2MCAyNi44NjMgNjAgNjB2MzBINTB2LTMweiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
 
-// 随机开源图片API列表
-const randomImageApis = [
-    'https://picsum.photos/200/200',
-    'https://source.unsplash.com/200x200/?portrait',
-    'https://api.dicebear.com/7.x/avataaars/svg',
-    'https://api.dicebear.com/7.x/bottts/svg',
-    'https://api.dicebear.com/7.x/shapes/svg'
-];
-
-// 实际的友链卡片组件
+// 友链卡片组件 - 参考Gallery的懒加载模式
 const FriendLinkCard: React.FC<{ 
-    link: LinkItem; 
-    onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: number) => void; 
-    getRandomImage: (id: number) => string;
-}> = ({ link, onImageError, getRandomImage }) => {
+    link: FriendLink; 
+    onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => void;
+}> = ({ link, onImageError }) => {
     const { cardRef } = use3DEffect();
+    // 添加图片加载状态跟踪，类似Gallery组件
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    // 处理图片加载完成
+    const handleImageLoad = useCallback(() => {
+        setImageLoaded(true);
+    }, []);
 
     return (
-        <div className="friend-link-card">
+        <div className={`friend-link-card ${imageLoaded ? 'loaded' : 'loading'}`}>
             <a
-                href={link.url}
+                href={link.friend_link_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="friend-link-card-link"
@@ -51,19 +42,21 @@ const FriendLinkCard: React.FC<{
                     <div className="card-glow"></div>
                     <div className="card-border-glow"></div>
                     <div className="friend-card-content">
+                        {!imageLoaded && <div className="image-placeholder"></div>}
                         <img 
-                            src={link.avatar || getRandomImage(link.id)} 
-                            alt={link.name} 
+                            src={link.friend_avatar_url || DEFAULT_AVATAR} 
+                            alt={link.friend_link_name} 
                             className="friend-avatar"
-                            onError={(e) => onImageError(e, link.id)}
+                            onLoad={handleImageLoad}
+                            onError={(e) => onImageError(e, link.friend_link_id)}
                             loading="lazy" // 图片懒加载
                         />
                         <div className="friend-info">
-                            <h3 className="friend-name">{link.name}</h3>
-                            <p className="friend-description">{link.description}</p>
+                            <h3 className="friend-name">{link.friend_link_name}</h3>
+                            <p className="friend-description">{link.friend_describe}</p>
                         </div>
                         <div className="friend-meta">
-                            <span className="friend-category">{link.category}</span>
+                            <span className="friend-category">友链</span>
                         </div>
                     </div>
                 </div>
@@ -72,219 +65,38 @@ const FriendLinkCard: React.FC<{
     );
 };
 
-// 懒加载3D卡片组件
-const LazyFriendLinkCard: React.FC<{ 
-    link: LinkItem; 
-    onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: number) => void; 
-    getRandomImage: (id: number) => string;
-}> = ({ link, onImageError, getRandomImage }) => {
-    const { elementRef, hasBeenVisible } = useLazyLoad({
-        rootMargin: '100px', // 提前100px开始加载
-        threshold: 0.1
-    });
-
-    // 如果还没有被观察到，显示骨架屏
-    if (!hasBeenVisible) {
-        return (
-            <div ref={elementRef}>
-                <FriendLinkCardSkeleton />
-            </div>
-        );
-    }
-
-    return (
-        <div ref={elementRef}>
-            <FriendLinkCard 
-                link={link}
-                onImageError={onImageError}
-                getRandomImage={getRandomImage}
-            />
-        </div>
-    );
-};
-
 const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
-    const [links] = useState<LinkItem[]>([
-        {
-            id: 1,
-            avatar: 'https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192355.webp',
-            name: 'TechMaster',
-            description: '专注于前端开发技术分享，React、Vue、Node.js技术深度解析',
-            url: 'https://example.com/blog1',
-            category: '技术博客'
-        },
-        {
-            id: 2,
-            avatar: 'https://easy-blog-test.oss-cn-guangzhou.aliyuncs.com/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240225192352.webp',
-            name: '生活美学家',
-            description: '记录生活点滴与思考，分享美食、旅行、读书心得',
-            url: 'https://example.com/blog2',
-            category: '生活博客'
-        },
-        {
-            id: 3,
-            avatar: '',
-            name: '设计师小张',
-            description: 'UI/UX设计师，分享设计心得与创意灵感，Figma使用技巧。专注用户体验设计，从用户研究到界面设计，从原型制作到交互设计，全流程设计经验分享。',
-            url: 'https://example.com/blog3',
-            category: '设计博客'
-        },
-        {
-            id: 4,
-            avatar: 'invalid-url',
-            name: '镜头下的世界',
-            description: '用镜头记录世界的美好瞬间，风光摄影与人像摄影技巧分享',
-            url: 'https://example.com/blog4',
-            category: '摄影博客'
-        },
-        {
-            id: 5,
-            avatar: '',
-            name: 'CodeNinja',
-            description: '全栈开发工程师，Python、Java、Go语言实战教程',
-            url: 'https://example.com/blog5',
-            category: '技术博客'
-        },
-        {
-            id: 6,
-            avatar: '',
-            name: '小清新日记',
-            description: '90后文艺青年，分享小清新生活方式和心情随笔',
-            url: 'https://example.com/blog6',
-            category: '生活博客'
-        },
-        {
-            id: 7,
-            avatar: '',
-            name: 'DesignStudio',
-            description: '品牌设计工作室，Logo设计、VI设计案例分享。服务过多家知名企业，擅长品牌形象设计、包装设计、网站设计等。',
-            url: 'https://example.com/blog7',
-            category: '设计博客'
-        },
-        {
-            id: 8,
-            avatar: '',
-            name: '街头摄影师',
-            description: '专注街头摄影，捕捉城市生活中的精彩瞬间',
-            url: 'https://example.com/blog8',
-            category: '摄影博客'
-        },
-        {
-            id: 9,
-            avatar: '',
-            name: 'AI探索者',
-            description: '人工智能技术研究，机器学习、深度学习前沿资讯',
-            url: 'https://example.com/blog9',
-            category: '技术博客'
-        },
-        {
-            id: 10,
-            avatar: '',
-            name: '咖啡与诗',
-            description: '慢生活倡导者，咖啡文化、诗歌创作与生活哲学',
-            url: 'https://example.com/blog10',
-            category: '生活博客'
-        },
-        {
-            id: 11,
-            avatar: '',
-            name: '像素艺术家',
-            description: '数字艺术创作者，插画设计、像素艺术教程分享',
-            url: 'https://example.com/blog11',
-            category: '设计博客'
-        },
-        {
-            id: 12,
-            avatar: '',
-            name: '旅行摄影日记',
-            description: '环球旅行摄影师，分享世界各地的美景与文化。足迹遍布五大洲，用镜头记录不同文化的魅力，分享旅行摄影技巧和装备推荐。',
-            url: 'https://example.com/blog12',
-            category: '摄影博客'
-        },
-        {
-            id: 13,
-            avatar: '',
-            name: 'DevOps工程师',
-            description: '云计算、容器化技术、CI/CD流程优化实践分享',
-            url: 'https://example.com/blog13',
-            category: '技术博客'
-        },
-        {
-            id: 14,
-            avatar: '',
-            name: '书香生活',
-            description: '阅读爱好者，好书推荐、读书笔记与思考感悟',
-            url: 'https://example.com/blog14',
-            category: '生活博客'
-        },
-        {
-            id: 15,
-            avatar: '',
-            name: '创意设计师',
-            description: '创意总监，品牌策划、广告设计、创意思维训练',
-            url: 'https://example.com/blog15',
-            category: '设计博客'
-        },
-        {
-            id: 16,
-            avatar: '',
-            name: '自然摄影师',
-            description: '野生动物摄影师，自然生态保护与摄影技巧分享',
-            url: 'https://example.com/blog16',
-            category: '摄影博客'
-        },
-        {
-            id: 17,
-            avatar: '',
-            name: '区块链开发者',
-            description: 'Web3开发工程师，智能合约、DeFi项目开发经验分享。深入研究以太坊、Solana等区块链技术，参与多个DeFi协议开发，分享Web3开发最佳实践。',
-            url: 'https://example.com/blog17',
-            category: '技术博客'
-        },
-        {
-            id: 18,
-            avatar: '',
-            name: '极简生活家',
-            description: '极简主义生活方式倡导者，断舍离与高效生活技巧',
-            url: 'https://example.com/blog18',
-            category: '生活博客'
-        },
-        {
-            id: 19,
-            avatar: '',
-            name: '交互设计师',
-            description: '用户体验设计师，交互设计原理与可用性测试方法',
-            url: 'https://example.com/blog19',
-            category: '设计博客'
-        },
-        {
-            id: 20,
-            avatar: '',
-            name: '婚礼摄影师',
-            description: '专业婚礼摄影师，记录爱情最美好的时刻',
-            url: 'https://example.com/blog20',
-            category: '摄影博客'
-        }
-    ]);
-
+    const [links, setLinks] = useState<FriendLink[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [selectedCategory, setSelectedCategory] = useState<string>('全部');
+    const [failedImages, setFailedImages] = useState<Set<string>>(new Set()); // 记录加载失败的图片ID，避免重复请求
 
-    // 获取随机开源图片
-    const getRandomImage = (id: number) => {
-        const index = id % randomImageApis.length;
-        return `${randomImageApis[index]}?seed=${id}`;
-    };
+    // 获取友链数据
+    useEffect(() => {
+        const fetchFriendLinks = async () => {
+            try {
+                setLoading(true);
+                const friendLinksData = await getFriendLinks();
+                if (friendLinksData) {
+                    // 只显示可见的友链
+                    const visibleLinks = friendLinksData.filter(link => link.display);
+                    setLinks(visibleLinks);
+                }
+            } catch (error) {	
+                console.error('获取友链数据失败:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // 获取所有分类
-    const categories = ['全部', ...new Set(links.map(link => link.category))];
+        fetchFriendLinks();
+    }, []);
 
     // 过滤链接
     const filteredLinks = links.filter(link => {
-        const matchesSearch = link.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            link.description.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === '全部' || link.category === selectedCategory;
-        return matchesSearch && matchesCategory;
+        const matchesSearch = link.friend_link_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            link.friend_describe.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesSearch;
     });
 
     // 处理友链申请提交
@@ -292,10 +104,13 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
         console.log('提交的友链申请数据:', formData);
     };
 
-    // 处理图片加载错误
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, linkId: number) => {
-        const img = e.target as HTMLImageElement;
-        img.src = getRandomImage(linkId);
+    // 处理图片加载错误，确保每个图片只处理一次错误
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => {
+        if (!failedImages.has(linkId)) {
+            const img = e.target as HTMLImageElement;
+            img.src = DEFAULT_AVATAR;
+            setFailedImages(prev => new Set(prev).add(linkId));
+        }
     };
 
     return (
@@ -308,30 +123,23 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="friend-link-search"
                 />
-                <div className="friend-link-categories">
-                    {categories.map(category => (
-                        <button
-                            key={category}
-                            className={classNames('category-button', {
-                                'active': category === selectedCategory
-                            })}
-                            onClick={() => setSelectedCategory(category)}
-                        >
-                            {category}
-                        </button>
-                    ))}
-                </div>
             </div>
             
             <div className="friend-link-grid">
-                {filteredLinks.map((link) => (
-                    <LazyFriendLinkCard
-                        key={link.id}
-                        link={link}
-                        onImageError={handleImageError}
-                        getRandomImage={getRandomImage}
-                    />
-                ))}
+                {loading ? (
+                    // 加载状态显示骨架屏
+                    Array.from({ length: 6 }).map((_, index) => (
+                        <FriendLinkCardSkeleton key={index} />
+                    ))
+                ) : (
+                    filteredLinks.map((link) => (
+                        <FriendLinkCard
+                            key={link.friend_link_id}
+                            link={link}
+                            onImageError={handleImageError}
+                        />
+                    ))
+                )}
             </div>
 
             <Apply

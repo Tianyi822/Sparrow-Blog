@@ -91,6 +91,21 @@ export interface SearchResponseData {
 type SearchResponse = ApiResponse<SearchResponseData>;
 
 /**
+ * 友链信息接口
+ */
+export interface FriendLink {
+    friend_link_id: string;       // 友链唯一标识ID
+    friend_link_name: string;     // 友链名称
+    friend_link_url: string;      // 友链URL
+    friend_avatar_url: string;    // 友链头像URL
+    friend_describe: string;      // 友链描述 
+    display: boolean;             // 是否显示
+}
+
+// 友链响应类型
+type FriendLinksResponse = ApiResponse<FriendLink[]>;
+
+/**
  * 获取用户基本信息以检查系统状态
  * 如果成功获取用户信息，表示系统已配置完成并在运行状态
  * 如果请求失败，表示系统可能尚未配置或需要初始化
@@ -244,11 +259,36 @@ export const getImageUrl = (imageId: string): string => {
     return `${import.meta.env.VITE_BUSINESS_SERVICE_URL}/web/img/get/${imageId}`;
 };
 
+/**
+ * 获取所有可见的友链
+ * 用于友链页面展示
+ * 
+ * @returns 友链列表，失败时返回null
+ */
+export const getFriendLinks = async (): Promise<FriendLink[] | null> => {
+    try {
+        const response = await businessApiRequest<FriendLinksResponse>({
+            method: 'GET',
+            url: '/web/friend-link/all'
+        });
+
+        if (response.code === 200 && response.data) {
+            return response.data;
+        }
+        return null;
+    } catch (error) {
+        // 保留此错误日志，对排查友链数据加载问题很重要
+        console.error('获取友链数据失败:', error);
+        return null;
+    }
+};
+
 export default {
     checkSystemStatus,
     getHomeData: getBasicData,
     getBlogContent,
     fetchMarkdownContent,
     searchBlogs,
+    getFriendLinks,
     getImageUrl
 };
