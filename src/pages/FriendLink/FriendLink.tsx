@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import { useState, useEffect, useCallback } from 'react';
-import use3DEffect from '@/hooks/use3DEffect';
 import { FriendLinkCardSkeleton } from '@/components/ui/skeleton';
 import { getFriendLinks, type FriendLink } from '@/services/webService';
+import SvgIcon, { About, Normal } from '@/components/SvgIcon/SvgIcon';
 import Apply, { FormData } from './Apply/Apply';
 import './FriendLink.scss';
 
@@ -10,15 +10,14 @@ interface FriendLinkProps {
     className?: string;
 }
 
-// 默认头像图片
-const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxjaXJjbGUgY3g9IjEwMCIgY3k9IjgwIiByPSIzMCIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNTAgMTcwYzAtMzMuMTM3IDI2Ljg2My02MCA2MC02MGg0MGMzMy4xMzcgMCA2MCAyNi44NjMgNjAgNjB2MzBINTB2LTMweiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+
 
 // 友链卡片组件 - 参考Gallery的懒加载模式
 const FriendLinkCard: React.FC<{ 
     link: FriendLink; 
     onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => void;
-}> = ({ link, onImageError }) => {
-    const { cardRef } = use3DEffect();
+    failedImages: Set<string>;
+}> = ({ link, onImageError, failedImages }) => {
     // 添加图片加载状态跟踪，类似Gallery组件
     const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -36,27 +35,33 @@ const FriendLinkCard: React.FC<{
                 className="friend-link-card-link"
             >
                 <div 
-                    className="friend-card-3d" 
-                    ref={cardRef}
+                    className="friend-card-3d"
                 >
-                    <div className="card-glow"></div>
-                    <div className="card-border-glow"></div>
                     <div className="friend-card-content">
-                        {!imageLoaded && <div className="image-placeholder"></div>}
-                        <img 
-                            src={link.friend_avatar_url || DEFAULT_AVATAR} 
-                            alt={link.friend_link_name} 
-                            className="friend-avatar"
-                            onLoad={handleImageLoad}
-                            onError={(e) => onImageError(e, link.friend_link_id)}
-                            loading="lazy" // 图片懒加载
-                        />
+                        {link.friend_avatar_url && !failedImages.has(link.friend_link_id) ? (
+                            <>
+                                {!imageLoaded && <div className="image-placeholder"></div>}
+                                <img 
+                                    src={link.friend_avatar_url} 
+                                    alt={link.friend_link_name} 
+                                    className="friend-avatar"
+                                    onLoad={handleImageLoad}
+                                    onError={(e) => onImageError(e, link.friend_link_id)}
+                                    loading="lazy"
+                                />
+                            </>
+                        ) : (
+                            <div className="friend-avatar friend-avatar-default">
+                                <SvgIcon 
+                                    name={About} 
+                                    size={Normal} 
+                                    color="white"
+                                />
+                            </div>
+                        )}
                         <div className="friend-info">
                             <h3 className="friend-name">{link.friend_link_name}</h3>
                             <p className="friend-description">{link.friend_describe}</p>
-                        </div>
-                        <div className="friend-meta">
-                            <span className="friend-category">友链</span>
                         </div>
                     </div>
                 </div>
@@ -105,10 +110,8 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
     };
 
     // 处理图片加载错误，确保每个图片只处理一次错误
-    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => {
+    const handleImageError = (_e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => {
         if (!failedImages.has(linkId)) {
-            const img = e.target as HTMLImageElement;
-            img.src = DEFAULT_AVATAR;
             setFailedImages(prev => new Set(prev).add(linkId));
         }
     };
@@ -137,6 +140,7 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
                             key={link.friend_link_id}
                             link={link}
                             onImageError={handleImageError}
+                            failedImages={failedImages}
                         />
                     ))
                 )}

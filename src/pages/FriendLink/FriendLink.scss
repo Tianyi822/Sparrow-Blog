@@ -4,28 +4,11 @@
 
 .friend-link {
     @include full-viewport;
-    padding: $spacing-xxl $spacing-xl;
-    max-width: 1200px;
+    padding: calc($spacing-xxl + 40px) $spacing-xl;
+    max-width: 1400px;
     margin: 0 auto;
     position: relative;
     color: $font-color-inverse;
-
-    // 鼠标跟踪光效
-    &::before {
-        content: '';
-        position: fixed;
-        width: 200px;
-        height: 200px;
-        pointer-events: none;
-        transform: translate(-50%, -50%);
-        z-index: 1;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    &:hover::before {
-        opacity: 1;
-    }
 
     &-header {
         margin-bottom: $spacing-xl;
@@ -40,24 +23,22 @@
     &-search {
         @include input-base;
         @extend .glass-subtle;
-        
+
         width: 100%;
         max-width: 600px;
         padding: $spacing-md $spacing-lg;
         border: 1px solid rgba($white, 0.1);
         color: rgba($white, 0.9);
-        transition: $transition-base;
-        appearance: none;
-        cursor: pointer;
+        transition: all 0.3s ease;
 
         &:focus {
             @include input-focus;
-            border-color: rgba($white, 0.2);
+            border-color: rgba($white, 0.3);
             box-shadow: 0 0 0 2px rgba($white, 0.1);
         }
 
         &:hover {
-            background-color: rgba($white, 0.15);
+            border-color: rgba($white, 0.2);
         }
     }
 
@@ -72,7 +53,7 @@
         .category-button {
             @include button-base;
             @extend .glass-subtle;
-            
+
             padding: $spacing-sm $spacing-md;
             border: 1px solid rgba($white, 0.1);
             color: rgba($white, 0.7);
@@ -94,145 +75,75 @@
     }
 
     &-grid {
-        column-count: 5;
-        column-gap: $spacing-lg;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: $spacing-lg;
         margin-top: $spacing-xl;
     }
 
     .friend-link-card {
         position: relative;
-        display: inline-block;
+        display: block;
         width: 100%;
-        margin-bottom: $spacing-lg;
-        break-inside: avoid;
-        page-break-inside: avoid;
 
         .friend-link-card-link {
             display: block;
             text-decoration: none;
         }
-        
+
         .friend-card-3d {
             @extend .glass;
-            position: relative;
             border-radius: $border-radius-md;
-            overflow: hidden;
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
-            transform: perspective(1000px) translate3d(0,0,0) rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
+            transition: all 0.3s ease;
             border: 1px solid rgba($white, 0.1);
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            will-change: transform;
-            
-            // 初始化CSS变量
-            --mouse-x: 50%;
-            --mouse-y: 50%;
-            --rotateX: 0deg;
-            --rotateY: 0deg;
-            
-            .card-glow {
-                position: absolute;
-                inset: 0;
-                z-index: 2;
-                pointer-events: none;
-                mix-blend-mode: soft-light;
-                transition: opacity 0.2s ease-out;
-                border-radius: inherit;
-                opacity: 0;
-                background: transparent;
-            }
-
-            .card-border-glow {
-                position: absolute;
-                inset: -2px;
-                z-index: 1;
-                pointer-events: none;
-                border-radius: calc(#{$border-radius-md} + 2px);
-                transition: opacity 0.2s ease-out;
-                mix-blend-mode: overlay;
-                opacity: 0;
-                background: transparent;
-            }
+            height: 120px;
+            display: flex;
+            align-items: center;
         }
 
         &:hover {
             .friend-card-3d {
-                box-shadow: 0 20px 40px rgba($black, 0.3), 0 10px 20px rgba($black, 0.2);
-                border-color: rgba($white, 0.2);
-                // 添加轻微的基础3D变换作为fallback
-                transform: perspective(1000px) translate3d(0,-2px,10px) rotateX(var(--rotateX, 2deg)) rotateY(var(--rotateY, 2deg)) scale(1.02);
-
-                .card-glow {
-                    opacity: 1;
-                    background: radial-gradient(
-                        circle 500px at var(--mouse-x, 50%) var(--mouse-y, 50%),
-                        rgba($white, 0.25) 0%,
-                        rgba($white, 0.12) 45%,
-                        transparent 100%
-                    );
-                }
-
-                .card-border-glow {
-                    opacity: 1;
-                    background: radial-gradient(
-                        circle 1000px at var(--mouse-x, 50%) var(--mouse-y, 50%),
-                        rgba($white, 1) 0%,
-                        rgba($white, 0.7) 20%,
-                        rgba($white, 0.3) 40%,
-                        transparent 65%
-                    );
-                    box-shadow: 0 0 30px 15px rgba($white, 0.1);
-                }
+                border-color: rgba($white, 0.3);
+                box-shadow: 0 8px 20px rgba($black, 0.2);
+                transform: translateY(-2px);
 
                 .friend-avatar {
-                    transform: scale(1.05);
-                    box-shadow: 0 8px 25px rgba($black, 0.3);
-                }
-
-                .friend-card-content {
-                    .friend-name {
-                        color: rgba($black, 0.9);
-                    }
-
-                    .friend-description {
-                        color: rgba($black, 0.7);
-                    }
-
-                    .friend-meta .friend-category {
-                        color: rgba($black, 0.8);
-                        background: rgba($white, 0.8);
-                    }
+                    filter: brightness(1.1);
                 }
             }
         }
 
         .friend-card-content {
-            padding: $spacing-md;
-            position: relative;
-            z-index: 3;
-            transition: all 0.3s ease;
-            @include flex-column($spacing-sm);
+            padding: $spacing-lg;
+            @include flex-align-center;
+            gap: $spacing-md;
+            width: 100%;
         }
 
         .friend-avatar {
             width: 60px;
             height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba($white, 0.2);
-            box-shadow: 0 4px 15px rgba($black, 0.2);
-            transition: all 0.3s ease;
-            align-self: center;
+            object-fit: contain;
+            transition: filter 0.3s ease;
             flex-shrink: 0;
+
+            &.friend-avatar-default {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba($white, 0.1);
+                border-radius: $border-radius-sm;
+            }
         }
 
         .friend-info {
             @include flex-column($spacing-xs);
-            text-align: center;
+            flex: 1;
+            text-align: left;
 
             .friend-name {
                 margin: 0;
-                font-size: $font-size-md;
+                font-size: $font-size-lg;
                 font-weight: $font-weight-semibold;
                 color: rgba($white, 0.95);
                 line-height: $line-height-tight;
@@ -240,29 +151,15 @@
 
             .friend-description {
                 margin: 0;
-                font-size: $font-size-xs;
+                font-size: $font-size-sm;
                 color: rgba($white, 0.75);
-                line-height: $line-height-base;
+                line-height: 1.4;
+                height: calc(1.4em * 2);
                 overflow: hidden;
                 display: -webkit-box;
-                -webkit-line-clamp: 3;
-                line-clamp: 3;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
                 -webkit-box-orient: vertical;
-            }
-        }
-
-        .friend-meta {
-            margin-top: $spacing-xs;
-            display: flex;
-            justify-content: center;
-
-            .friend-category {
-                @extend .glass-subtle;
-                font-size: 10px;
-                color: rgba($white, 0.8);
-                padding: 4px 8px;
-                border-radius: $border-radius-pill;
-                border: 1px solid rgba($white, 0.1);
             }
         }
     }
@@ -280,18 +177,34 @@
 @include responsive-breakpoint(lg) {
     .friend-link {
         &-grid {
-            column-count: 4;
-            column-gap: $spacing-md;
+            grid-template-columns: repeat(3, 1fr);
+            gap: $spacing-md;
         }
 
         .friend-link-card {
+            .friend-card-3d {
+                height: 100px;
+            }
+
+            .friend-card-content {
+                padding: $spacing-md;
+            }
+
             .friend-avatar {
                 width: 50px;
                 height: 50px;
             }
 
-            .friend-card-content {
-                padding: $spacing-sm;
+            .friend-info {
+                .friend-name {
+                    font-size: $font-size-md;
+                }
+
+                .friend-description {
+                    font-size: $font-size-xs;
+                    height: calc(1.3em * 2);
+                    line-height: 1.3;
+                }
             }
         }
     }
@@ -299,7 +212,7 @@
 
 @include responsive-breakpoint(md) {
     .friend-link {
-        padding: $spacing-xl $spacing-lg;
+        padding: calc($spacing-xl + 30px) $spacing-lg;
 
         &-search {
             width: 100%;
@@ -308,49 +221,59 @@
         }
 
         &-grid {
-            column-count: 3;
-            column-gap: $spacing-md;
+            grid-template-columns: repeat(2, 1fr);
+            gap: $spacing-md;
         }
 
         .friend-link-card {
-            .friend-avatar {
-                width: 50px;
-                height: 50px;
+            .friend-card-3d {
+                height: 90px;
             }
 
             .friend-card-content {
-                padding: $spacing-sm;
+                padding: $spacing-md;
+                gap: $spacing-sm;
+            }
+
+            .friend-avatar {
+                width: 45px;
+                height: 45px;
             }
 
             .friend-info {
                 .friend-name {
-                    font-size: $font-size-sm;
+                    font-size: $font-size-md;
                 }
 
                 .friend-description {
-                    font-size: 10px;
+                    font-size: $font-size-xs;
+                    height: calc(1.3em * 2);
+                    line-height: 1.3;
                 }
             }
         }
 
-        &-categories {
-            max-width: calc(100% + 2rem);
-        }
+
     }
 }
 
 @include responsive-breakpoint(sm) {
     .friend-link {
-        padding: $spacing-lg $spacing-md;
+        padding: calc($spacing-lg + 25px) $spacing-md;
 
         &-grid {
-            column-count: 2;
-            column-gap: $spacing-sm;
+            grid-template-columns: repeat(1, 1fr);
+            gap: $spacing-sm;
         }
 
         .friend-link-card {
+            .friend-card-3d {
+                height: 80px;
+            }
+
             .friend-card-content {
-                padding: $spacing-xs;
+                padding: $spacing-sm;
+                gap: $spacing-sm;
             }
 
             .friend-avatar {
@@ -364,15 +287,10 @@
                 }
 
                 .friend-description {
-                    font-size: 10px;
-                    -webkit-line-clamp: 2;
-                    line-clamp: 2;
+                    font-size: 11px;
+                    height: calc(1.2em * 2);
+                    line-height: 1.2;
                 }
-            }
-
-            .friend-meta .friend-category {
-                font-size: 9px;
-                padding: 3px 6px;
             }
         }
     }
