@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { FriendLinkCardSkeleton } from '@/components/ui/skeleton';
 import { getFriendLinks, type FriendLink } from '@/services/webService';
 import SvgIcon, { About, Normal } from '@/components/SvgIcon/SvgIcon';
-import Apply, { FormData } from './Apply/Apply';
+import ApplyModal, { FriendLinkFormData } from './Apply/ApplyModal';
 import './FriendLink.scss';
 
 interface FriendLinkProps {
@@ -75,6 +75,7 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [failedImages, setFailedImages] = useState<Set<string>>(new Set()); // 记录加载失败的图片ID，避免重复请求
+    const [isApplyModalOpen, setIsApplyModalOpen] = useState<boolean>(false);
 
     // 获取友链数据
     useEffect(() => {
@@ -105,8 +106,10 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
     });
 
     // 处理友链申请提交
-    const handleApplySubmit = (formData: FormData) => {
+    const handleApplySubmit = async (formData: FriendLinkFormData) => {
         console.log('提交的友链申请数据:', formData);
+        // 这里可以调用API提交数据
+        // await submitFriendLinkApplication(formData);
     };
 
     // 处理图片加载错误，确保每个图片只处理一次错误
@@ -119,13 +122,21 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
     return (
         <div className={classNames('friend-link', className)}>
             <div className="friend-link-header">
-                <input
-                    type="text"
-                    placeholder="搜索友链..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="friend-link-search"
-                />
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="搜索友链..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="friend-link-search"
+                    />
+                    <button
+                        className="apply-button"
+                        onClick={() => setIsApplyModalOpen(true)}
+                    >
+                        申请友链
+                    </button>
+                </div>
             </div>
             
             <div className="friend-link-grid">
@@ -146,8 +157,9 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
                 )}
             </div>
 
-            <Apply
-                className="friend-link-apply"
+            <ApplyModal
+                isOpen={isApplyModalOpen}
+                onClose={() => setIsApplyModalOpen(false)}
                 onSubmit={handleApplySubmit}
             />
         </div>

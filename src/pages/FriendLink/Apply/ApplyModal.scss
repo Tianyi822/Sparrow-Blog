@@ -1,0 +1,287 @@
+@use "@/style/variables" as *;
+@use "@/style/mixins" as *;
+@use "@/style/glass" as *;
+
+.apply-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($black, 0.75);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    z-index: 1050;
+    @include flex-center;
+    padding: $spacing-lg;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.apply-modal {
+    @extend .glass;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    border-radius: $border-radius-lg;
+    border: 1px solid rgba($white, 0.2);
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+}
+
+.apply-modal-header {
+    @include flex-align-center;
+    justify-content: space-between;
+    padding: $spacing-lg $spacing-xl;
+    border-bottom: 1px solid rgba($white, 0.1);
+}
+
+.apply-modal-title {
+    margin: 0;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: rgba($white, 0.95);
+}
+
+.apply-modal-close {
+    @include button-base;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba($white, 0.1);
+    border: 1px solid rgba($white, 0.2);
+    color: rgba($white, 0.7);
+    font-size: $font-size-lg;
+    @include flex-center;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba($white, 0.2);
+        color: rgba($white, 0.9);
+        transform: scale(1.05);
+    }
+}
+
+.apply-modal-form {
+    padding: $spacing-xl;
+    max-height: calc(90vh - 100px);
+    overflow-y: auto;
+    
+    // 自定义滚动条
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba($white, 0.05);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($white, 0.3);
+        border-radius: 4px;
+
+        &:hover {
+            background: rgba($white, 0.4);
+        }
+    }
+}
+
+.form-group {
+    margin-bottom: $spacing-lg;
+
+    &:last-of-type {
+        margin-bottom: $spacing-xl;
+    }
+
+    label {
+        display: block;
+        margin-bottom: $spacing-sm;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: rgba($white, 0.9);
+    }
+}
+
+.form-input,
+.form-textarea {
+    @include input-base;
+    @extend .glass-subtle;
+    
+    width: 100%;
+    padding: $spacing-md;
+    border: 1px solid rgba($white, 0.2);
+    border-radius: $border-radius-md;
+    color: rgba($white, 0.9);
+    font-size: $font-size-sm;
+    transition: all 0.3s ease;
+
+    &::placeholder {
+        color: rgba($white, 0.5);
+    }
+
+    &:focus {
+        @include input-focus;
+        border-color: rgba($primary-400, 0.6);
+        box-shadow: 0 0 0 2px rgba($primary-400, 0.2);
+        outline: none;
+    }
+
+    &.error {
+        border-color: rgba($danger, 0.6);
+        box-shadow: 0 0 0 2px rgba($danger, 0.1);
+    }
+
+    &:hover:not(:focus) {
+        border-color: rgba($white, 0.3);
+    }
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+    line-height: $line-height-base;
+}
+
+.error-message {
+    margin-top: $spacing-xs;
+    font-size: $font-size-xs;
+    color: rgba($danger, 0.9);
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+
+    &::before {
+        content: '⚠';
+        font-size: $font-size-sm;
+    }
+}
+
+.form-actions {
+    @include flex-align-center;
+    justify-content: flex-end;
+    gap: $spacing-md;
+    margin-top: $spacing-xl;
+    padding-top: $spacing-lg;
+    border-top: 1px solid rgba($white, 0.1);
+}
+
+.btn-cancel,
+.btn-submit {
+    @include button-base;
+    padding: $spacing-sm $spacing-lg;
+    border-radius: $border-radius-md;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    transition: all 0.3s ease;
+    min-width: 80px;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.btn-cancel {
+    background: rgba($white, 0.1);
+    border: 1px solid rgba($white, 0.2);
+    color: rgba($white, 0.7);
+
+    &:hover:not(:disabled) {
+        background: rgba($white, 0.15);
+        color: rgba($white, 0.9);
+    }
+}
+
+.btn-submit {
+    background: linear-gradient(45deg, $primary-400, $primary-400);
+    border: 1px solid $primary-400;
+    color: $white;
+
+    &:hover:not(:disabled) {
+        background: linear-gradient(45deg, $primary-400, darken($primary-400, 10%));
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba($primary-400, 0.3);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+}
+
+// 动画
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+// 响应式设计
+@include responsive-breakpoint(md) {
+    .apply-modal-overlay {
+        padding: $spacing-md;
+    }
+
+    .apply-modal {
+        max-width: 400px;
+    }
+
+    .apply-modal-header {
+        padding: $spacing-md $spacing-lg;
+    }
+
+    .apply-modal-form {
+        padding: $spacing-lg;
+    }
+
+    .form-group {
+        margin-bottom: $spacing-md;
+    }
+}
+
+@include responsive-breakpoint(sm) {
+    .apply-modal-overlay {
+        padding: $spacing-sm;
+    }
+
+    .apply-modal {
+        max-width: 100%;
+        max-height: 95vh;
+    }
+
+    .apply-modal-header {
+        padding: $spacing-sm $spacing-md;
+    }
+
+    .apply-modal-title {
+        font-size: $font-size-lg;
+    }
+
+    .apply-modal-form {
+        padding: $spacing-md;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: $spacing-sm;
+
+        .btn-cancel,
+        .btn-submit {
+            width: 100%;
+        }
+    }
+} 

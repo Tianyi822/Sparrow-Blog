@@ -15,17 +15,22 @@
         width: 100%;
         @include flex-column;
         align-items: center;
-        max-width: 600px;
+        max-width: 700px;
         margin-left: auto;
         margin-right: auto;
+    }
+
+    .search-container {
+        @include flex-align-center;
+        gap: $spacing-md;
+        width: 100%;
     }
 
     &-search {
         @include input-base;
         @extend .glass-subtle;
 
-        width: 100%;
-        max-width: 600px;
+        flex: 1;
         padding: $spacing-md $spacing-lg;
         border: 1px solid rgba($white, 0.1);
         color: rgba($white, 0.9);
@@ -39,6 +44,31 @@
 
         &:hover {
             border-color: rgba($white, 0.2);
+        }
+    }
+
+    .apply-button {
+        @include button-base;
+        @extend .glass-subtle;
+        
+        padding: $spacing-md $spacing-lg;
+        border: 1px solid rgba($white, 0.2);
+        color: rgba($white, 0.9);
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        border-radius: $border-radius-md;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+
+        &:hover {
+            background: rgba($white, 0.15);
+            border-color: rgba($white, 0.3);
+            color: rgba($white, 1);
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0);
         }
     }
 
@@ -164,13 +194,7 @@
         }
     }
 
-    &-apply {
-        margin-top: $spacing-xxl;
-        @extend .glass-subtle;
-        border-radius: $border-radius-lg;
-        padding: $spacing-xl;
-        border: 1px solid rgba($white, 0.1);
-    }
+
 }
 
 // 响应式设计
@@ -214,10 +238,13 @@
     .friend-link {
         padding: calc($spacing-xl + 30px) $spacing-lg;
 
-        &-search {
+        .search-container {
+            flex-direction: column;
+            gap: $spacing-sm;
+        }
+
+        .apply-button {
             width: 100%;
-            max-width: 100%;
-            margin: 0;
         }
 
         &-grid {
