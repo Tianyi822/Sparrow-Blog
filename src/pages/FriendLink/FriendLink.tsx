@@ -21,18 +21,22 @@ const FriendLinkCard = memo<FriendLinkCardProps>(({ link, onImageError, failedIm
     // 添加图片加载状态跟踪
     const [imageLoaded, setImageLoaded] = useState(false);
 
-    // 处理图片加载完成，优化性能
+    // 处理图片加载完成
     const handleImageLoad = useCallback(() => {
-        // 延迟状态更新，减少重渲染频率
-        setTimeout(() => {
-            setImageLoaded(true);
-        }, 50);
+        setImageLoaded(true);
     }, []);
 
     // 重置图片状态，当头像URL变化时
     useEffect(() => {
         if (link.friend_avatar_url && !failedImages.has(link.friend_link_id)) {
             setImageLoaded(false);
+            
+            // 添加一个备用的加载检查，确保图片最终能显示
+            const fallbackTimer = setTimeout(() => {
+                setImageLoaded(true);
+            }, 2000); // 2秒后强制显示图片
+            
+            return () => clearTimeout(fallbackTimer);
         } else {
             setImageLoaded(true); // 默认头像立即显示，无需等待加载
         }
@@ -52,8 +56,9 @@ const FriendLinkCard = memo<FriendLinkCardProps>(({ link, onImageError, failedIm
                         onError={(e) => onImageError(e, link.friend_link_id)}
                         loading="lazy"
                         style={{ 
-                            opacity: imageLoaded ? 1 : 0,
-                            transition: 'opacity 0.3s ease'
+                            opacity: imageLoaded ? 1 : 0.8,  // 显示图片时略微透明，加载完成后完全不透明
+                            transition: 'opacity 0.3s ease',
+                            display: 'block'  // 确保图片始终显示
                         }}
                     />
                 </div>
