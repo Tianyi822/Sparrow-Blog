@@ -121,26 +121,71 @@
             text-decoration: none;
         }
 
+        .friend-avatar-container {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+        }
+
+        .image-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            background: rgba($white, 0.1);
+            border-radius: $border-radius-sm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
         .friend-card-3d {
             @extend .glass;
             border-radius: $border-radius-md;
-            transition: all 0.3s ease;
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba($white, 0.1);
             height: 120px;
             display: flex;
             align-items: center;
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
+            contain: layout style paint;
+
+            &::before {
+                opacity: 0;
+            }
         }
 
         &:hover {
             .friend-card-3d {
-                border-color: rgba($white, 0.3);
-                box-shadow: 0 8px 20px rgba($black, 0.2);
-                transform: translateY(-2px);
+                transform: translate3d(0, -2px, 0);
 
-                .friend-avatar {
-                    filter: brightness(1.1);
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    border: 1px solid rgba($white, 0.3);
+                    border-radius: $border-radius-md;
+                    box-shadow: 0 8px 20px rgba($black, 0.2);
+                    pointer-events: none;
+                    transition: opacity 0.15s ease;
+                    opacity: 1;
                 }
             }
+
+            .friend-avatar:not(.friend-avatar-default) {
+                filter: brightness(1.1);
+            }
+        }
+
+        .friend-card-3d::before {
+            opacity: 0;
         }
 
         .friend-card-content {
@@ -153,8 +198,10 @@
         .friend-avatar {
             width: 60px;
             height: 60px;
-            object-fit: contain;
-            transition: filter 0.3s ease;
+            object-fit: cover;
+            border-radius: $border-radius-sm;
+            transform: translateZ(0);
+            transition: opacity 0.3s ease, filter 0.2s ease;
             flex-shrink: 0;
 
             &.friend-avatar-default {
@@ -162,7 +209,7 @@
                 align-items: center;
                 justify-content: center;
                 background: rgba($white, 0.1);
-                border-radius: $border-radius-sm;
+                object-fit: contain;
             }
         }
 
@@ -193,11 +240,19 @@
             }
         }
     }
-
-
 }
 
-// 响应式设计
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.4;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 0.8;
+    }
+}
+
 @include responsive-breakpoint(lg) {
     .friend-link {
         &-grid {
@@ -214,7 +269,9 @@
                 padding: $spacing-md;
             }
 
-            .friend-avatar {
+            .friend-avatar-container,
+            .friend-avatar,
+            .image-placeholder {
                 width: 50px;
                 height: 50px;
             }
@@ -262,7 +319,9 @@
                 gap: $spacing-sm;
             }
 
-            .friend-avatar {
+            .friend-avatar-container,
+            .friend-avatar,
+            .image-placeholder {
                 width: 45px;
                 height: 45px;
             }
@@ -279,8 +338,6 @@
                 }
             }
         }
-
-
     }
 }
 
@@ -303,7 +360,9 @@
                 gap: $spacing-sm;
             }
 
-            .friend-avatar {
+            .friend-avatar-container,
+            .friend-avatar,
+            .image-placeholder {
                 width: 40px;
                 height: 40px;
             }

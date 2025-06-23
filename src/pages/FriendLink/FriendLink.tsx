@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { FriendLinkCardSkeleton } from '@/components/ui/skeleton';
 import { getFriendLinks, applyFriendLink, type FriendLink, type FriendLinkApplicationData } from '@/services/webService';
 import SvgIcon, { About, Normal } from '@/components/SvgIcon/SvgIcon';
@@ -10,21 +10,66 @@ interface FriendLinkProps {
     className?: string;
 }
 
-
-
-// 友链卡片组件 - 参考Gallery的懒加载模式
-const FriendLinkCard: React.FC<{ 
-    link: FriendLink; 
+interface FriendLinkCardProps {
+    link: FriendLink;
     onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => void;
     failedImages: Set<string>;
-}> = ({ link, onImageError, failedImages }) => {
-    // 添加图片加载状态跟踪，类似Gallery组件
+}
+
+// 友链卡片组件 - 使用memo和懒加载优化性能
+const FriendLinkCard = memo<FriendLinkCardProps>(({ link, onImageError, failedImages }) => {
+    // 添加图片加载状态跟踪
     const [imageLoaded, setImageLoaded] = useState(false);
 
-    // 处理图片加载完成
+    // 处理图片加载完成，优化性能
     const handleImageLoad = useCallback(() => {
-        setImageLoaded(true);
+        // 延迟状态更新，减少重渲染频率
+        setTimeout(() => {
+            setImageLoaded(true);
+        }, 50);
     }, []);
+
+    // 重置图片状态，当头像URL变化时
+    useEffect(() => {
+        if (link.friend_avatar_url && !failedImages.has(link.friend_link_id)) {
+            setImageLoaded(false);
+        } else {
+            setImageLoaded(true); // 默认头像立即显示，无需等待加载
+        }
+    }, [link.friend_avatar_url, link.friend_link_id, failedImages]);
+
+    // 渲染头像
+    const renderAvatar = () => {
+        if (link.friend_avatar_url && !failedImages.has(link.friend_link_id)) {
+            return (
+                <div className="friend-avatar-container">
+                    {!imageLoaded && <div className="image-placeholder"></div>}
+                    <img 
+                        src={link.friend_avatar_url} 
+                        alt={link.friend_link_name} 
+                        className="friend-avatar"
+                        onLoad={handleImageLoad}
+                        onError={(e) => onImageError(e, link.friend_link_id)}
+                        loading="lazy"
+                        style={{ 
+                            opacity: imageLoaded ? 1 : 0,
+                            transition: 'opacity 0.3s ease'
+                        }}
+                    />
+                </div>
+            );
+        }
+        
+        return (
+            <div className="friend-avatar friend-avatar-default">
+                <SvgIcon 
+                    name={About} 
+                    size={Normal} 
+                    color="white"
+                />
+            </div>
+        );
+    };
 
     return (
         <div className={`friend-link-card ${imageLoaded ? 'loaded' : 'loading'}`}>
@@ -34,31 +79,9 @@ const FriendLinkCard: React.FC<{
                 rel="noopener noreferrer"
                 className="friend-link-card-link"
             >
-                <div 
-                    className="friend-card-3d"
-                >
+                <div className="friend-card-3d">
                     <div className="friend-card-content">
-                        {link.friend_avatar_url && !failedImages.has(link.friend_link_id) ? (
-                            <>
-                                {!imageLoaded && <div className="image-placeholder"></div>}
-                                <img 
-                                    src={link.friend_avatar_url} 
-                                    alt={link.friend_link_name} 
-                                    className="friend-avatar"
-                                    onLoad={handleImageLoad}
-                                    onError={(e) => onImageError(e, link.friend_link_id)}
-                                    loading="lazy"
-                                />
-                            </>
-                        ) : (
-                            <div className="friend-avatar friend-avatar-default">
-                                <SvgIcon 
-                                    name={About} 
-                                    size={Normal} 
-                                    color="white"
-                                />
-                            </div>
-                        )}
+                        {renderAvatar()}
                         <div className="friend-info">
                             <h3 className="friend-name">{link.friend_link_name}</h3>
                             <p className="friend-description">{link.friend_describe}</p>
@@ -68,16 +91,19 @@ const FriendLinkCard: React.FC<{
             </a>
         </div>
     );
-};
+});
+
+// 设置memo组件的displayName用于调试
+FriendLinkCard.displayName = 'FriendLinkCard';
 
 const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
     const [links, setLinks] = useState<FriendLink[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
     const [failedImages, setFailedImages] = useState<Set<string>>(new Set()); // 记录加载失败的图片ID，避免重复请求
     const [isApplyModalOpen, setIsApplyModalOpen] = useState<boolean>(false);
     const [applyResult, setApplyResult] = useState<{ type: 'success' | 'error', message: string } | null>(null);
-
 
     // 获取友链数据
     useEffect(() => {
@@ -100,12 +126,26 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
         fetchFriendLinks();
     }, []);
 
-    // 过滤链接
-    const filteredLinks = links.filter(link => {
-        const matchesSearch = link.friend_link_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            link.friend_describe.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesSearch;
-    });
+    // 防抖搜索，减少不必要的过滤计算
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+    // 使用useMemo优化搜索过滤性能，基于防抖后的搜索词
+    const filteredLinks = useMemo(() => {
+        if (!debouncedSearchTerm.trim()) return links;
+        
+        const searchLower = debouncedSearchTerm.toLowerCase();
+        return links.filter(link => {
+            const matchesName = link.friend_link_name.toLowerCase().includes(searchLower);
+            const matchesDesc = link.friend_describe.toLowerCase().includes(searchLower);
+            return matchesName || matchesDesc;
+        });
+    }, [links, debouncedSearchTerm]);
 
     // 处理友链申请提交
     const handleApplySubmit = async (formData: FriendLinkFormData) => {
@@ -152,11 +192,17 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
         }
     };
 
-    // 处理图片加载错误，确保每个图片只处理一次错误
-    const handleImageError = (_e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => {
-        if (!failedImages.has(linkId)) {
-            setFailedImages(prev => new Set(prev).add(linkId));
-        }
+    // 处理图片加载错误，使用useCallback优化性能
+    const handleImageError = useCallback((_e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => {
+        setFailedImages(prev => {
+            if (prev.has(linkId)) return prev;
+            return new Set(prev).add(linkId);
+        });
+    }, []);
+
+    const handleModalClose = () => {
+        setIsApplyModalOpen(false);
+        setApplyResult(null);
     };
 
     return (
@@ -181,28 +227,30 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
             
             <div className="friend-link-grid">
                 {loading ? (
-                    // 加载状态显示骨架屏
-                    Array.from({ length: 6 }).map((_, index) => (
-                        <FriendLinkCardSkeleton key={index} />
-                    ))
+                    // 加载状态显示骨架屏，使用Fragment减少DOM层级
+                    <>
+                        {Array.from({ length: 6 }, (_, index) => (
+                            <FriendLinkCardSkeleton key={`skeleton-${index}`} />
+                        ))}
+                    </>
                 ) : (
-                    filteredLinks.map((link) => (
-                        <FriendLinkCard
-                            key={link.friend_link_id}
-                            link={link}
-                            onImageError={handleImageError}
-                            failedImages={failedImages}
-                        />
-                    ))
+                    // 使用Fragment减少DOM层级
+                    <>
+                        {filteredLinks.map((link) => (
+                            <FriendLinkCard
+                                key={link.friend_link_id}
+                                link={link}
+                                onImageError={handleImageError}
+                                failedImages={failedImages}
+                            />
+                        ))}
+                    </>
                 )}
             </div>
 
             <ApplyModal
                 isOpen={isApplyModalOpen}
-                onClose={() => {
-                    setIsApplyModalOpen(false);
-                    setApplyResult(null);
-                }}
+                onClose={handleModalClose}
                 onSubmit={handleApplySubmit}
                 submitResult={applyResult}
             />
