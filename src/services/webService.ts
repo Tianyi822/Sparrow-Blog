@@ -283,6 +283,73 @@ export const getFriendLinks = async (): Promise<FriendLink[] | null> => {
     }
 };
 
+/**
+ * 友链申请表单数据接口
+ */
+export interface FriendLinkApplicationData {
+    friend_link_name: string;      // 友链名称
+    friend_link_url: string;       // 友链URL  
+    friend_avatar_url?: string;    // 友链头像URL(可选)
+    friend_describe?: string;      // 友链描述(可选)
+}
+
+/**
+ * 友链申请响应接口
+ */
+export interface FriendLinkApplicationResponse {
+    code: number;
+    msg: string;
+    data: null;
+}
+
+// 友链申请响应类型
+type FriendLinkApplyResponse = ApiResponse<null>;
+
+/**
+ * 申请友链
+ * 提交友链申请，等待管理员审核
+ * 
+ * @param applicationData 友链申请数据
+ * @returns 申请结果响应
+ */
+export const applyFriendLink = async (applicationData: FriendLinkApplicationData): Promise<FriendLinkApplicationResponse> => {
+    try {
+        const response = await businessApiRequest<FriendLinkApplyResponse>({
+            method: 'POST',
+            url: '/web/friend-link/apply',
+            data: applicationData
+        });
+
+        return {
+            code: response.code,
+            msg: response.msg || '友链申请成功，请等待管理员审核',
+            data: response.data
+        };
+    } catch (error) {
+        // 保留此错误日志，对排查友链申请问题很重要
+        console.error('友链申请失败:', error);
+        
+        // 如果是API错误响应，提取错误信息
+        if (error && typeof error === 'object' && 'response' in error) {
+            const apiError = error as { response?: { data?: { msg?: string; code?: number } } };
+            if (apiError.response?.data) {
+                return {
+                    code: apiError.response.data.code || 500,
+                    msg: apiError.response.data.msg || '友链申请失败，请稍后重试',
+                    data: null
+                };
+            }
+        }
+        
+        // 其他错误情况
+        return {
+            code: 500,
+            msg: error instanceof Error ? error.message : '友链申请失败，请稍后重试',
+            data: null
+        };
+    }
+};
+
 export default {
     checkSystemStatus,
     getHomeData: getBasicData,
@@ -290,5 +357,6 @@ export default {
     fetchMarkdownContent,
     searchBlogs,
     getFriendLinks,
-    getImageUrl
+    getImageUrl,
+    applyFriendLink
 };

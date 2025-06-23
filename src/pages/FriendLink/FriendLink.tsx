@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { useState, useEffect, useCallback } from 'react';
 import { FriendLinkCardSkeleton } from '@/components/ui/skeleton';
-import { getFriendLinks, type FriendLink } from '@/services/webService';
+import { getFriendLinks, applyFriendLink, type FriendLink, type FriendLinkApplicationData } from '@/services/webService';
 import SvgIcon, { About, Normal } from '@/components/SvgIcon/SvgIcon';
 import ApplyModal, { FriendLinkFormData } from './Apply/ApplyModal';
 import './FriendLink.scss';
@@ -76,6 +76,8 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [failedImages, setFailedImages] = useState<Set<string>>(new Set()); // 记录加载失败的图片ID，避免重复请求
     const [isApplyModalOpen, setIsApplyModalOpen] = useState<boolean>(false);
+    const [applyResult, setApplyResult] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
 
     // 获取友链数据
     useEffect(() => {
@@ -107,9 +109,47 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
 
     // 处理友链申请提交
     const handleApplySubmit = async (formData: FriendLinkFormData) => {
-        console.log('提交的友链申请数据:', formData);
-        // 这里可以调用API提交数据
-        // await submitFriendLinkApplication(formData);
+        try {
+            // 清除之前的结果
+            setApplyResult(null);
+            
+            // 转换表单数据为API所需格式
+            const applicationData: FriendLinkApplicationData = {
+                friend_link_name: formData.name,
+                friend_link_url: formData.url,
+                friend_avatar_url: formData.avatar || undefined,
+                friend_describe: formData.description || undefined
+            };
+
+            // 调用API提交友链申请
+            const result = await applyFriendLink(applicationData);
+            
+            if (result.code === 200) {
+                // 申请成功
+                setApplyResult({
+                    type: 'success',
+                    message: result.msg
+                });
+                
+                // 延迟关闭模态框，让用户看到成功消息
+                setTimeout(() => {
+                    setIsApplyModalOpen(false);
+                    setApplyResult(null);
+                }, 2000);
+            } else {
+                // 申请失败，显示错误信息
+                setApplyResult({
+                    type: 'error',
+                    message: result.msg
+                });
+            }
+        } catch (error) {
+            console.error('友链申请提交失败:', error);
+            setApplyResult({
+                type: 'error',
+                message: '网络错误，请稍后重试'
+            });
+        }
     };
 
     // 处理图片加载错误，确保每个图片只处理一次错误
@@ -159,8 +199,12 @@ const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
 
             <ApplyModal
                 isOpen={isApplyModalOpen}
-                onClose={() => setIsApplyModalOpen(false)}
+                onClose={() => {
+                    setIsApplyModalOpen(false);
+                    setApplyResult(null);
+                }}
                 onSubmit={handleApplySubmit}
+                submitResult={applyResult}
             />
         </div>
     );
