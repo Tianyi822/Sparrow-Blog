@@ -4,6 +4,7 @@ import Background from "@/components/Background/Background";
 import Navigator from "@/components/Navigator/Navigator";
 import Tools from "@/components/Tools/Tools";
 import ScrollBar from "@/components/ScrollBar/ScrollBar";
+import Comments from "@/components/Comments/Comments";
 import { BasicData, getBasicData, getImageUrl } from "@/services/webService";
 import "./BlogLayout.scss";
 
@@ -74,26 +75,41 @@ const BlogLayout: FC = () => {
     const [userName, setUserName] = useState<string>("BlogCard");
     const [bgImage, setBgImage] = useState<string>("");
     const [homeData, setHomeData] = useState<BasicData | null>(null);
+    const [commentsOpen, setCommentsOpen] = useState(false);
 
     // 检查是否在博客内容页
     const isBlogContentPage = location.pathname.startsWith('/blog/');
+    
+    // 从路径中提取博客ID
+    const blogId = isBlogContentPage ? location.pathname.split('/blog/')[1] : null;
 
     // 监听路由变化，自动更新导航索引
     useEffect(() => {
         const newIndex = getNavIndexFromPath(location.pathname);
-        if (newIndex !== navIndex) {
-            setNavIndex(newIndex);
-            // 只有非博客详情页才保存到localStorage
-            if (newIndex !== -1) {
-                saveNavIndex(newIndex);
-            }
+        setNavIndex(newIndex);
+        // 只有非博客详情页才保存到localStorage
+        if (newIndex !== -1) {
+            saveNavIndex(newIndex);
         }
-    }, [location.pathname, navIndex]);
+        
+        // 路由变化时关闭评论面板
+        setCommentsOpen(false);
+    }, [location.pathname]);
 
     // 导航索引变化时保存到localStorage
     const handleNavIndexChange = (newIndex: number): void => {
         setNavIndex(newIndex);
         saveNavIndex(newIndex);
+    };
+
+    // 处理评论按钮点击
+    const handleCommentsClick = (): void => {
+        setCommentsOpen(true);
+    };
+
+    // 处理评论面板关闭
+    const handleCommentsClose = (): void => {
+        setCommentsOpen(false);
     };
 
     useEffect(() => {
@@ -156,8 +172,22 @@ const BlogLayout: FC = () => {
             <div className="blog-content">
                 <Outlet context={contextValue} />
             </div>
-            <Tools className="app-tools" homeData={homeData} />
+            <Tools 
+                className="app-tools" 
+                homeData={homeData}
+                showCommentsButton={isBlogContentPage}
+                onCommentsClick={handleCommentsClick}
+            />
             <ScrollBar className="app-scroll-bar" />
+            
+            {/* 评论面板 */}
+            {isBlogContentPage && blogId && (
+                <Comments 
+                    blogId={blogId}
+                    isOpen={commentsOpen}
+                    onClose={handleCommentsClose}
+                />
+            )}
         </div>
     );
 };
