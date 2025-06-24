@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import './Tools.scss';
 import BackToTop from '@/components/Tools/BackToTop/BackToTop';
 import ICPFilingNumber from '@/components/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
+import CommentsButton from '@/components/Tools/CommentsButton/CommentsButton';
 import classNames from 'classnames';
 import { BasicData } from '@/services/webService';
 
@@ -13,16 +14,31 @@ interface ToolsProps {
     className?: string;
     /** 网站基础数据 */
     homeData?: BasicData | null;
+    /** 是否显示评论按钮 */
+    showCommentsButton?: boolean;
+    /** 评论按钮点击事件 */
+    onCommentsClick?: () => void;
+    /** 评论数量 */
+    commentsCount?: number;
 }
 
 /**
  * 工具组件
- * 包含返回顶部按钮和备案号显示等功能
+ * 包含返回顶部按钮、评论按钮和备案号显示等功能
  * 
  * @param className - 自定义类名
  * @param homeData - 网站基础数据，包含备案号等信息
+ * @param showCommentsButton - 是否显示评论按钮
+ * @param onCommentsClick - 评论按钮点击事件
+ * @param commentsCount - 评论数量
  */
-const Tools: React.FC<ToolsProps> = ({ className, homeData }) => {
+const Tools: React.FC<ToolsProps> = ({ 
+    className, 
+    homeData, 
+    showCommentsButton = false, 
+    onCommentsClick, 
+    commentsCount 
+}) => {
     // 状态定义
     const [isBackToTopVisible, setIsBackToTopVisible] = useState<boolean>(false); // 控制返回顶部按钮可见性
     const [isAnimating, setIsAnimating] = useState<boolean>(false); // 控制当前是否处于滚动动画中
@@ -128,6 +144,13 @@ const Tools: React.FC<ToolsProps> = ({ className, homeData }) => {
                 className={backToTopClass}
                 onClick={handleBackToTop}
             />
+            {showCommentsButton && onCommentsClick && (
+                <CommentsButton 
+                    className="tools-comments-button"
+                    onClick={onCommentsClick}
+                    commentsCount={commentsCount}
+                />
+            )}
             <ICPFilingNumber 
                 className="tools-website-record"
                 icpFilingNumber={homeData?.icp_filing_number}

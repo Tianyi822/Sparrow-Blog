@@ -12,6 +12,11 @@
     gap: $spacing-sm;  /* 组件之间的间距 */
     align-items: flex-end;  /* 让子元素靠右对齐 */
 
+    /* 评论按钮 */
+    .tools-comments-button {
+        // 样式已在 CommentsButton.scss 中定义
+    }
+
     /* 返回顶部按钮 */
     .tools-back-to-top {
         opacity: 0;
