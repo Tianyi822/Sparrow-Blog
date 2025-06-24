@@ -12,11 +12,6 @@ export const SERVICE_URLS = {
     BUSINESS: import.meta.env.VITE_BUSINESS_SERVICE_URL || 'http://localhost:8080',
 };
 
-// 调试：打印环境变量
-console.log('环境变量 VITE_BUSINESS_SERVICE_URL:', import.meta.env.VITE_BUSINESS_SERVICE_URL);
-console.log('实际使用的API URL:', SERVICE_URLS.BUSINESS);
-console.log('所有环境变量:', import.meta.env);
-
 // 创建axios实例
 export const businessApi = axios.create({
     baseURL: SERVICE_URLS.BUSINESS,

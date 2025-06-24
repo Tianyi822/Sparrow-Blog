@@ -375,23 +375,18 @@ export const getBlogComments = async (blogId: string): Promise<Comment[] | null>
  */
 export const addComment = async (commentData: AddCommentData): Promise<Comment | null> => {
     try {
-        console.log('发送添加评论请求:', commentData); // 调试日志
         const response = await businessApiRequest<CommentResponse>({
             method: 'POST',
-            url: '/web/comment/',
+            url: '/web/comment',
             data: commentData
         });
 
-        console.log('添加评论API响应:', response); // 调试日志
-        
         if (response.code === 200 && response.data) {
             return response.data;
         }
-        
-        console.error('添加评论失败: 响应码', response.code, '消息:', response.msg);
         return null;
     } catch (error) {
-        console.error('添加评论请求异常:', error);
+        console.error('添加评论失败:', error);
         return null;
     }
 };
@@ -405,23 +400,18 @@ export const addComment = async (commentData: AddCommentData): Promise<Comment |
  */
 export const replyComment = async (replyData: ReplyCommentData): Promise<Comment | null> => {
     try {
-        console.log('发送回复评论请求:', replyData); // 调试日志
         const response = await businessApiRequest<CommentResponse>({
             method: 'POST',
             url: '/web/comment/reply',
             data: replyData
         });
 
-        console.log('回复评论API响应:', response); // 调试日志
-        
         if (response.code === 200 && response.data) {
             return response.data;
         }
-        
-        console.error('回复评论失败: 响应码', response.code, '消息:', response.msg);
         return null;
     } catch (error) {
-        console.error('回复评论请求异常:', error);
+        console.error('回复评论失败:', error);
         return null;
     }
 };

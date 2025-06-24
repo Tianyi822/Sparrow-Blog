@@ -112,17 +112,11 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
                 content: newComment.trim()
             };
 
-            console.log('提交评论数据:', commentData); // 调试日志
             const result = await addComment(commentData);
-            console.log('评论提交结果:', result); // 调试日志
-            
             if (result) {
                 await fetchComments();
                 setNewComment('');
                 setNewCommentEmail('');
-                console.log('评论提交成功'); // 调试日志
-            } else {
-                console.error('评论提交失败: API返回null');
             }
         } catch (error) {
             console.error('提交评论失败:', error);
@@ -147,18 +141,12 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
                 content: replyContent.trim()
             };
 
-            console.log('提交回复数据:', replyData); // 调试日志
             const result = await replyComment(replyData);
-            console.log('回复提交结果:', result); // 调试日志
-            
             if (result) {
                 await fetchComments();
                 setReplyContent('');
                 setReplyEmail('');
                 setReplyingTo(null);
-                console.log('回复提交成功'); // 调试日志
-            } else {
-                console.error('回复提交失败: API返回null');
             }
         } catch (error) {
             console.error('提交回复失败:', error);
