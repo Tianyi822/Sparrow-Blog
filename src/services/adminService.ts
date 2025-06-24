@@ -926,6 +926,65 @@ export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
 };
 
 // ===============================================================
+// ===============================================================
+// 评论管理相关接口和函数
+// ===============================================================
+
+export interface CommentItem {
+    comment_id: string;
+    commenter_email: string;
+    blog_title: string;
+    content: string;
+    create_time: string;
+}
+
+export interface CommentsResponse {
+    code: number;
+    msg: string;
+    data: CommentItem[];
+}
+
+/**
+ * 获取所有评论列表
+ * @returns 评论列表数据
+ */
+export const getAllComments = async (): Promise<CommentsResponse> => {
+    return businessApiRequest<CommentsResponse>({
+        method: 'GET',
+        url: '/admin/comments/all'
+    });
+};
+
+/**
+ * 删除评论
+ * @param commentId 评论ID
+ * @returns 删除结果
+ */
+export const deleteComment = async (commentId: string): Promise<ApiResponse<null>> => {
+    return businessApiRequest<ApiResponse<null>>({
+        method: 'DELETE',
+        url: `/admin/comments/${commentId}`
+    });
+};
+
+/**
+ * 编辑评论内容
+ * @param commentId 评论ID
+ * @param content 新的评论内容
+ * @returns 编辑结果，包含更新后的评论数据
+ */
+export const updateComment = async (commentId: string, content: string): Promise<ApiResponse<CommentItem>> => {
+    return businessApiRequest<ApiResponse<CommentItem>>({
+        method: 'PUT',
+        url: `/admin/comments/${commentId}/content`,
+        data: { content },
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
+// ===============================================================
 // 友链管理相关接口和函数
 // ===============================================================
 
@@ -1061,6 +1120,11 @@ export default {
     sendEmailVerificationCode,
     sendSMTPVerificationCode,
     rebuildIndex,
+
+    // 评论相关
+    getAllComments,
+    deleteComment,
+    updateComment,
 
     // 友链相关
     getAllFriendLinks,

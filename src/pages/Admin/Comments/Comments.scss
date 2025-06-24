@@ -1,0 +1,877 @@
+@use "sass:color";
+@use '@/style/mixins' as *;
+@use '@/style/variables' as *;
+
+// 动画定义
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.admin-comments {
+  height: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: $border-radius-lg;
+
+  // 加载和错误状态
+  .loading-container,
+  .error-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-medium;
+    @include glass-card-base;
+    background: rgba($white, 0.08);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: $border-width-thin solid rgba($white, 0.15);
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+    color: rgba($white, 0.8);
+    margin-bottom: $spacing-lg;
+  }
+
+  .error-container {
+    color: rgba($danger, 0.9);
+    background: rgba($danger, 0.1);
+    border-color: rgba($danger, 0.3);
+  }
+
+  // 搜索容器
+  .search-container {
+    flex-shrink: 0;
+    width: 100%;
+    margin-bottom: $spacing-lg;
+    padding: $spacing-lg;
+    @include glass-card-base;
+    background: rgba($white, 0.08);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: $border-width-thin solid rgba($white, 0.15);
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+    transition: $transition-base;
+
+    &:hover {
+      border-color: rgba($white, 0.25);
+      box-shadow: $shadow-lg;
+    }
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: $spacing-lg;
+
+    // 搜索输入框包装器
+    .search-input-wrapper {
+      position: relative;
+      margin-bottom: 0;
+      min-width: 200px;
+      flex: 1;
+
+      .search-icon {
+        position: absolute;
+        left: $spacing-md;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba($white, 0.6);
+        font-size: $font-size-md;
+        transition: $transition-base;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: $spacing-md $spacing-xl;
+        padding-left: 2.5rem;
+        @include glass-card-base;
+        background: rgba($white, 0.05);
+        backdrop-filter: blur(8px) saturate(180%);
+        -webkit-backdrop-filter: blur(8px) saturate(180%);
+        border: $border-width-thin solid rgba($white, 0.1);
+        border-radius: $border-radius-lg;
+        color: rgba($white, 0.95);
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        transition: $transition-base;
+
+        &::placeholder {
+          color: rgba($white, 0.5);
+          font-weight: $font-weight-normal;
+        }
+
+        &:focus {
+          outline: none;
+          border-color: rgba($primary-200, 0.4);
+          background: rgba($white, 0.08);
+          box-shadow: 0 0 0 3px rgba($primary-300, 0.2);
+
+          + .search-icon {
+            color: rgba($primary-200, 0.8);
+          }
+        }
+      }
+
+      .clear-search {
+        position: absolute;
+        right: $spacing-md;
+        top: 50%;
+        transform: translateY(-50%);
+        @include glass-card-base;
+        background: rgba($white, 0.1);
+        border: $border-width-thin solid rgba($white, 0.2);
+        border-radius: $border-radius-circle;
+        color: rgba($white, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: $spacing-xs;
+        cursor: pointer;
+        transition: $transition-base;
+
+        &:hover {
+          background: rgba($danger, 0.2);
+          border-color: rgba($danger, 0.4);
+          color: $white;
+          transform: translateY(-50%) scale(1.1);
+        }
+      }
+    }
+
+    // 响应式布局
+    @media (max-width: 1100px) {
+      flex-wrap: wrap;
+
+      .search-input-wrapper {
+        width: 100%;
+        flex: 1 0 100%;
+      }
+    }
+  }
+
+  // 结果统计样式
+  .result-summary {
+    flex-shrink: 0;
+    width: 100%;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: rgba($white, 0.7);
+    text-align: left;
+    padding: 0 $spacing-sm;
+  }
+
+  // 表格容器
+  .comments-table-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    @include glass-card-base;
+    background: rgba($gray-900, 0.8);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: $border-width-thin solid rgba($white, 0.15);
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-lg;
+    margin-bottom: $spacing-lg;
+
+    // 表格样式
+    .comments-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: $font-size-sm;
+      color: rgba($white, 0.9);
+      min-width: 1000px;
+
+      // 表头样式
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+
+        th {
+          background: rgba($white, 0.1);
+          backdrop-filter: blur(16px) saturate(180%);
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+          color: rgba($white, 0.95);
+          font-weight: $font-weight-semibold;
+          font-size: $font-size-sm;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          padding: $spacing-lg;
+          text-align: left;
+          border-bottom: $border-width-medium solid rgba($white, 0.2);
+          position: relative;
+          white-space: nowrap;
+
+          &.fixed-column {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            background: rgba($white, 0.12);
+
+            &::after {
+              content: '';
+              position: absolute;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              width: 1px;
+              background: rgba($white, 0.15);
+            }
+          }
+
+          &.index-column {
+            width: 60px;
+            text-align: center;
+          }
+
+          &.content-column {
+            left: 60px;
+            width: 200px;
+            max-width: 200px;
+          }
+
+          &.email-column {
+            width: 200px;
+          }
+
+          &.blog-column {
+            width: 200px;
+          }
+
+          &.time-column {
+            width: 180px;
+          }
+
+          &.action-column {
+            width: 120px;
+            text-align: center;
+          }
+        }
+      }
+
+      // 表格主体样式
+      tbody {
+        tr {
+          transition: $transition-base;
+          border-bottom: $border-width-thin solid rgba($white, 0.05);
+
+          &:hover {
+            background: rgba($white, 0.06);
+
+            td.fixed-column {
+              background: rgba($white, 0.08);
+            }
+          }
+
+
+
+          td {
+            padding: $spacing-lg;
+            color: rgba($white, 0.85);
+            vertical-align: top;
+            position: relative;
+
+            &.fixed-column {
+              position: sticky;
+              left: 0;
+              z-index: 1;
+              background: rgba($gray-900, 0.8);
+
+              &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 1px;
+                background: rgba($white, 0.1);
+              }
+            }
+
+            &.index-column {
+              text-align: center;
+              font-weight: $font-weight-medium;
+              color: rgba($white, 0.6);
+            }
+
+            &.content-column {
+              left: 60px;
+              width: 200px;
+              max-width: 200px;
+
+              .content-wrapper {
+                display: flex;
+                align-items: center;
+                gap: $spacing-sm;
+              }
+
+              .comment-content {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: rgba($white, 0.9);
+                font-size: $font-size-sm;
+              }
+            }
+
+            &.email-column {
+              .email-info {
+                display: flex;
+                align-items: center;
+                gap: $spacing-xs;
+
+                .email-icon {
+                  color: rgba($primary-200, 0.8);
+                  font-size: $font-size-sm;
+                  flex-shrink: 0;
+                }
+
+                .email-text {
+                  color: rgba($white, 0.8);
+                  font-size: $font-size-sm;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                }
+              }
+            }
+
+            &.blog-column {
+              .blog-title {
+                color: rgba($info, 0.9);
+                font-size: $font-size-sm;
+                font-weight: $font-weight-medium;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: block;
+                max-width: 100%;
+              }
+            }
+
+
+
+            &.time-column {
+              .time-info {
+                display: flex;
+                align-items: center;
+                gap: $spacing-xs;
+
+                .time-icon {
+                  color: rgba($white, 0.5);
+                  font-size: $font-size-sm;
+                  flex-shrink: 0;
+                }
+
+                                 .time-text {
+                   color: rgba($white, 0.7);
+                   font-size: $font-size-sm;
+                   font-family: $font-family-monospace;
+                 }
+              }
+            }
+
+            &.action-column {
+              text-align: center;
+
+              .action-buttons {
+                display: flex;
+                justify-content: center;
+                gap: $spacing-xs;
+
+                .action-btn {
+                  @include glass-card-base;
+                  background: rgba($white, 0.06);
+                  border: $border-width-thin solid rgba($white, 0.1);
+                  color: rgba($white, 0.8);
+                  padding: $spacing-xs;
+                  border-radius: $border-radius-sm;
+                  cursor: pointer;
+                  transition: $transition-base;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: $font-size-sm;
+
+                  &:hover {
+                    background: rgba($white, 0.12);
+                    color: $white;
+                    transform: translateY(-1px);
+                    box-shadow: $shadow-sm;
+                  }
+
+                  &.edit {
+                    &:hover {
+                      background: rgba($primary-300, 0.2);
+                      border-color: rgba($primary-200, 0.4);
+                      color: $white;
+                    }
+                  }
+
+                  &.delete {
+                    &:hover {
+                      background: rgba($danger, 0.2);
+                      border-color: rgba($danger, 0.4);
+                      color: $white;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 分页容器
+  .pagination-container {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md;
+    @include glass-card-base;
+    background: rgba($white, 0.08);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: $border-width-thin solid rgba($white, 0.15);
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+
+    // 分页按钮组
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+
+      .pagination-btn {
+        @include glass-card-base;
+        background: rgba($white, 0.08);
+        border: $border-width-thin solid rgba($white, 0.15);
+        color: rgba($white, 0.8);
+        padding: $spacing-sm;
+        border-radius: $border-radius-md;
+        cursor: pointer;
+        transition: $transition-base;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-md;
+
+        &:hover:not(:disabled) {
+          background: rgba($primary-300, 0.2);
+          border-color: rgba($primary-200, 0.4);
+          color: $white;
+          transform: translateY(-1px);
+          box-shadow: $shadow-sm;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          background: rgba($white, 0.03);
+        }
+      }
+
+      // 分页信息
+      .pagination-info {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: rgba($white, 0.8);
+
+        .current-page {
+          color: rgba($primary-200, 0.9);
+          font-weight: $font-weight-bold;
+        }
+
+        .page-separator {
+          color: rgba($white, 0.5);
+        }
+
+        .total-pages {
+          color: rgba($white, 0.7);
+        }
+      }
+    }
+
+    // 每页条数选择器
+    .page-size-selector {
+      position: relative;
+
+      .page-size-toggle {
+        @include glass-card-base;
+        background: rgba($white, 0.08);
+        border: $border-width-thin solid rgba($white, 0.15);
+        color: rgba($white, 0.8);
+        padding: $spacing-sm $spacing-md;
+        border-radius: $border-radius-md;
+        cursor: pointer;
+        transition: $transition-base;
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+
+        &:hover {
+          background: rgba($white, 0.12);
+          border-color: rgba($white, 0.25);
+          color: $white;
+        }
+
+        span {
+          white-space: nowrap;
+        }
+      }
+
+      .page-size-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: $spacing-xs;
+        @include glass-card-base;
+        background: rgba($gray-900, 0.9);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: $border-width-thin solid rgba($white, 0.2);
+        border-radius: $border-radius-md;
+        box-shadow: $shadow-lg;
+        z-index: 10;
+        animation: fadeIn 0.2s ease-out;
+
+        .page-size-option {
+          width: 100%;
+          padding: $spacing-sm $spacing-md;
+          background: transparent;
+          border: none;
+          color: rgba($white, 0.8);
+          cursor: pointer;
+          transition: $transition-base;
+          text-align: left;
+          font-size: $font-size-sm;
+          white-space: nowrap;
+
+          &:hover {
+            background: rgba($white, 0.1);
+            color: $white;
+          }
+
+          &.active {
+            background: rgba($primary-300, 0.2);
+            color: rgba($primary-200, 0.9);
+            font-weight: $font-weight-medium;
+          }
+
+          &:first-child {
+            border-radius: $border-radius-md $border-radius-md 0 0;
+          }
+
+          &:last-child {
+            border-radius: 0 0 $border-radius-md $border-radius-md;
+          }
+        }
+      }
+    }
+  }
+
+  // 响应式设计
+  @media (max-width: $breakpoint-lg) {
+    .comments-table-container {
+      .comments-table {
+        font-size: $font-size-sm;
+
+        th, td {
+          padding: $spacing-md $spacing-sm;
+        }
+
+        .content-column {
+          width: 180px;
+          max-width: 180px;
+        }
+      }
+    }
+
+    .pagination-container {
+      flex-direction: column;
+      gap: $spacing-md;
+      align-items: stretch;
+
+      .pagination {
+        justify-content: center;
+      }
+
+      .page-size-selector {
+        align-self: center;
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    .comments-table-container {
+      .comments-table {
+        min-width: 700px;
+
+        .content-column {
+          min-width: 150px;
+          max-width: 180px;
+        }
+
+        .email-column {
+          width: 150px;
+        }
+
+        .time-column {
+          width: 120px;
+
+          .time-text {
+            font-size: $font-size-sm;
+          }
+        }
+      }
+    }
+  }
+
+  // 编辑模态框样式
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($black, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+
+    .modal-content {
+      @include glass-card-base;
+      background: rgba($gray-900, 0.95);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: $border-width-thin solid rgba($white, 0.2);
+      border-radius: $border-radius-lg;
+      box-shadow: $shadow-lg;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: fadeIn 0.3s ease-out;
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-lg $spacing-xl;
+        border-bottom: $border-width-thin solid rgba($white, 0.1);
+
+        h2 {
+          margin: 0;
+          color: rgba($white, 0.95);
+          font-size: $font-size-lg;
+          font-weight: $font-weight-semibold;
+        }
+
+        .close-btn {
+          @include glass-card-base;
+          background: rgba($white, 0.08);
+          border: $border-width-thin solid rgba($white, 0.15);
+          color: rgba($white, 0.8);
+          padding: $spacing-sm;
+          border-radius: $border-radius-md;
+          cursor: pointer;
+          transition: $transition-base;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: $font-size-md;
+
+          &:hover {
+            background: rgba($danger, 0.2);
+            border-color: rgba($danger, 0.4);
+            color: $white;
+            transform: scale(1.05);
+          }
+        }
+      }
+
+      .comment-details {
+        padding: $spacing-xl;
+
+        .detail-item {
+          display: flex;
+          align-items: flex-start;
+          margin-bottom: $spacing-md;
+          gap: $spacing-md;
+
+          &.full-width {
+            flex-direction: column;
+            align-items: stretch;
+            gap: $spacing-sm;
+          }
+
+          label {
+            font-weight: $font-weight-semibold;
+            color: rgba($white, 0.8);
+            font-size: $font-size-sm;
+            min-width: 120px;
+            flex-shrink: 0;
+          }
+
+          .detail-value {
+            color: rgba($white, 0.95);
+            font-size: $font-size-sm;
+            word-break: break-word;
+          }
+
+          .content-display {
+            @include glass-card-base;
+            background: rgba($white, 0.05);
+            border: $border-width-thin solid rgba($white, 0.1);
+            border-radius: $border-radius-md;
+            padding: $spacing-md;
+            color: rgba($white, 0.9);
+            font-size: $font-size-sm;
+            line-height: 1.6;
+            word-break: break-word;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+          }
+
+          .content-edit-textarea {
+            @include glass-card-base;
+            background: rgba($white, 0.05);
+            border: $border-width-thin solid rgba($white, 0.15);
+            border-radius: $border-radius-md;
+            padding: $spacing-md;
+            color: rgba($white, 0.9);
+            font-size: $font-size-sm;
+            line-height: 1.6;
+            word-break: break-word;
+            width: 100%;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+            transition: $transition-base;
+
+            &:focus {
+              outline: none;
+              border-color: rgba($primary-300, 0.5);
+              background: rgba($white, 0.08);
+              box-shadow: 0 0 0 2px rgba($primary-300, 0.2);
+            }
+
+            &:disabled {
+              opacity: 0.6;
+              cursor: not-allowed;
+            }
+
+            &::placeholder {
+              color: rgba($white, 0.4);
+            }
+          }
+        }
+      }
+
+      .modal-actions {
+        padding: $spacing-lg $spacing-xl;
+        border-top: $border-width-thin solid rgba($white, 0.1);
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-md;
+
+        button {
+          @include glass-card-base;
+          padding: $spacing-sm $spacing-lg;
+          border-radius: $border-radius-md;
+          cursor: pointer;
+          transition: $transition-base;
+          font-size: $font-size-sm;
+          font-weight: $font-weight-medium;
+          border: $border-width-thin solid;
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+          }
+
+          &.cancel-btn {
+            background: rgba($white, 0.08);
+            border-color: rgba($white, 0.15);
+            color: rgba($white, 0.8);
+
+            &:hover:not(:disabled) {
+              background: rgba($danger, 0.15);
+              border-color: rgba($danger, 0.3);
+              color: rgba($danger, 0.9);
+              transform: translateY(-1px);
+              box-shadow: $shadow-sm;
+            }
+          }
+
+          &.save-btn {
+            background: rgba($success, 0.15);
+            border-color: rgba($success, 0.3);
+            color: rgba($success, 0.9);
+
+            &:hover:not(:disabled) {
+              background: rgba($success, 0.25);
+              border-color: rgba($success, 0.4);
+              color: $white;
+              transform: translateY(-1px);
+              box-shadow: $shadow-sm;
+            }
+
+            &:disabled {
+              background: rgba($white, 0.05);
+              border-color: rgba($white, 0.1);
+              color: rgba($white, 0.4);
+            }
+          }
+        }
+      }
+    }
+  }
+} 
