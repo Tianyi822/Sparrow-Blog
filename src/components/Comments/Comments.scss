@@ -1,0 +1,537 @@
+@use '@/style/mixins' as *;
+@use '@/style/variables' as *;
+
+.comments-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 650px;
+    z-index: 1000;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &.open {
+        pointer-events: auto;
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.comments-overlay {
+    display: none; // 移除遮罩层
+}
+
+.comments-container {
+    width: 100%;
+    height: 100%;
+    
+    @include glass-card;
+    border-radius: 0;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    position: relative;
+
+    @include glass-glow;
+
+    &-glow {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: radial-gradient(
+            circle at 20% 50%,
+            rgba($primary-400, 0.1),
+            transparent 70%
+        );
+        mix-blend-mode: soft-light;
+        border-radius: inherit;
+    }
+
+    &-border-glow {
+        position: absolute;
+        inset: -1px;
+        z-index: 0;
+        pointer-events: none;
+        background: linear-gradient(
+            135deg,
+            rgba($primary-400, 0.2),
+            transparent 30%,
+            transparent 70%,
+            rgba($primary-400, 0.1)
+        );
+        border-radius: inherit;
+        mix-blend-mode: overlay;
+    }
+}
+
+.comments-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-xl $spacing-lg;
+    border-bottom: 1px solid rgba($white, 0.1);
+    position: relative;
+    z-index: 5;
+
+    .comments-title {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        color: $white;
+
+        .title-icon {
+            font-size: $font-size-lg;
+            color: $primary-400;
+        }
+
+        h3 {
+            font-size: $font-size-lg;
+            font-weight: $font-weight-semibold;
+            margin: 0;
+        }
+    }
+
+    .close-btn {
+        background: rgba($white, 0.1);
+        border: 1px solid rgba($white, 0.2);
+        border-radius: $border-radius-circle;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba($white, 0.7);
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: rgba($white, 0.2);
+            color: $white;
+            transform: scale(1.1);
+        }
+    }
+}
+
+.comments-content {
+    height: calc(100% - 80px);
+    overflow-y: auto;
+    padding: $spacing-lg;
+    position: relative;
+    z-index: 5;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($white, 0.2);
+        border-radius: 3px;
+        
+        &:hover {
+            background: rgba($white, 0.3);
+        }
+    }
+}
+
+.comments-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xl;
+    color: rgba($white, 0.8);
+
+    .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid rgba($primary-400, 0.2);
+        border-top: 3px solid $primary-400;
+        border-radius: $border-radius-circle;
+        animation: spin 1s linear infinite;
+        margin-bottom: $spacing-md;
+    }
+
+    span {
+        font-size: $font-size-sm;
+        color: rgba($white, 0.7);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.add-comment-form,
+.reply-form {
+    @include glass-card;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-lg;
+    border-radius: $border-radius-lg;
+    position: relative;
+
+    &-glow {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: radial-gradient(
+            circle at 50% 50%,
+            rgba($primary-400, 0.05),
+            transparent 70%
+        );
+        border-radius: inherit;
+        mix-blend-mode: soft-light;
+    }
+
+    &-border-glow {
+        position: absolute;
+        inset: -1px;
+        z-index: 0;
+        pointer-events: none;
+        background: linear-gradient(
+            135deg,
+            rgba($primary-400, 0.2),
+            transparent 50%
+        );
+        border-radius: inherit;
+        mix-blend-mode: overlay;
+    }
+
+    .form-group {
+        margin-bottom: $spacing-md;
+        position: relative;
+        z-index: 5;
+
+        input,
+        textarea {
+            width: 100%;
+            background: rgba($white, 0.05);
+            border: 1px solid rgba($white, 0.1);
+            border-radius: $border-radius-md;
+            padding: $spacing-sm $spacing-md;
+            color: rgba($white, 0.9);
+            font-size: $font-size-sm;
+            font-family: $font-family-base;
+            resize: vertical;
+            transition: all 0.2s ease;
+
+            &::placeholder {
+                color: rgba($white, 0.5);
+            }
+
+            &:focus {
+                outline: none;
+                border-color: rgba($primary-400, 0.5);
+                background: rgba($white, 0.1);
+                box-shadow: 0 0 0 3px rgba($primary-400, 0.1);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        }
+
+        textarea {
+            min-height: 80px;
+            line-height: $line-height-base;
+        }
+    }
+
+    .form-actions {
+        display: flex;
+        gap: $spacing-sm;
+        justify-content: flex-end;
+        position: relative;
+        z-index: 5;
+    }
+
+    .submit-btn,
+    button[type="submit"],
+    button[type="button"] {
+        background: rgba($primary-400, 0.2);
+        border: 1px solid rgba($primary-400, 0.3);
+        color: $white;
+        padding: $spacing-sm $spacing-md;
+        border-radius: $border-radius-md;
+        cursor: pointer;
+        font-size: $font-size-sm;
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+            background: rgba($primary-400, 0.3);
+            border-color: rgba($primary-400, 0.5);
+            transform: translateY(-1px);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .send-icon {
+            font-size: $font-size-xs;
+        }
+    }
+
+    button[type="button"] {
+        background: rgba($white, 0.1);
+        border-color: rgba($white, 0.2);
+        color: rgba($white, 0.8);
+
+        &:hover:not(:disabled) {
+            background: rgba($white, 0.2);
+            border-color: rgba($white, 0.3);
+        }
+    }
+}
+
+.reply-form {
+    margin-top: $spacing-md;
+    margin-left: $spacing-lg;
+    background: rgba($white, 0.02);
+}
+
+.comments-list {
+    .comment-item {
+        @include glass-card;
+        padding: $spacing-md;
+        margin-bottom: $spacing-md;
+        border-radius: $border-radius-lg;
+        position: relative;
+        transition: all 0.2s ease;
+
+        .comment-glow {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: radial-gradient(
+                circle at 50% 50%,
+                rgba($primary-400, 0.03),
+                transparent 70%
+            );
+            border-radius: inherit;
+            mix-blend-mode: soft-light;
+            transition: all 0.2s ease;
+        }
+
+        .comment-border-glow {
+            position: absolute;
+            inset: -1px;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(
+                135deg,
+                rgba($primary-400, 0.1),
+                transparent 50%
+            );
+            border-radius: inherit;
+            mix-blend-mode: overlay;
+            transition: all 0.2s ease;
+        }
+
+        &:hover {
+            .comment-glow {
+                background: radial-gradient(
+                    circle at 50% 50%,
+                    rgba($primary-400, 0.08),
+                    transparent 70%
+                );
+            }
+
+            .comment-border-glow {
+                background: linear-gradient(
+                    135deg,
+                    rgba($primary-400, 0.2),
+                    transparent 50%
+                );
+            }
+        }
+
+        &.sub-comment {
+            margin-left: $spacing-lg;
+            margin-top: $spacing-sm;
+            background: rgba($white, 0.02);
+            border-left: 2px solid rgba($primary-400, 0.3);
+        }
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-sm;
+        position: relative;
+        z-index: 5;
+
+        .comment-author {
+            display: flex;
+            align-items: center;
+            gap: $spacing-xs;
+            color: rgba($white, 0.8);
+            font-size: $font-size-sm;
+
+            .author-icon {
+                color: $primary-400;
+                font-size: $font-size-sm;
+            }
+
+            .author-email {
+                font-weight: $font-weight-medium;
+            }
+        }
+
+        .comment-time {
+            display: flex;
+            align-items: center;
+            gap: $spacing-xs;
+            color: rgba($white, 0.6);
+            font-size: $font-size-xs;
+
+            .time-icon {
+                font-size: $font-size-xs;
+            }
+        }
+    }
+
+    .comment-content {
+        color: rgba($white, 0.9);
+        line-height: $line-height-base;
+        margin-bottom: $spacing-sm;
+        position: relative;
+        z-index: 5;
+        word-wrap: break-word;
+    }
+
+    .comment-actions {
+        display: flex;
+        gap: $spacing-sm;
+        position: relative;
+        z-index: 5;
+
+        .reply-btn {
+            background: rgba($white, 0.1);
+            border: 1px solid rgba($white, 0.2);
+            color: rgba($white, 0.7);
+            padding: $spacing-xs $spacing-sm;
+            border-radius: $border-radius-sm;
+            cursor: pointer;
+            font-size: $font-size-xs;
+            display: flex;
+            align-items: center;
+            gap: $spacing-xs;
+            transition: all 0.2s ease;
+
+            &:hover:not(:disabled) {
+                background: rgba($white, 0.2);
+                border-color: rgba($white, 0.3);
+                color: $white;
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            .reply-icon {
+                font-size: $font-size-xs;
+            }
+        }
+    }
+
+    .sub-comments {
+        margin-top: $spacing-md;
+        border-left: 1px solid rgba($white, 0.1);
+        padding-left: $spacing-md;
+    }
+}
+
+.no-comments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xl;
+    text-align: center;
+    color: rgba($white, 0.6);
+
+    .no-comments-icon {
+        font-size: $font-size-xxl;
+        margin-bottom: $spacing-md;
+        color: rgba($white, 0.4);
+    }
+
+    p {
+        margin: 0;
+        font-size: $font-size-sm;
+    }
+}
+
+// 响应式设计
+@media (max-width: $breakpoint-lg) {
+    .comments-panel {
+        width: 580px;
+    }
+}
+
+@media (max-width: $breakpoint-md) {
+    .comments-panel {
+        width: 100%;
+    }
+
+    .comments-content {
+        padding: $spacing-md;
+    }
+
+    .add-comment-form,
+    .reply-form {
+        padding: $spacing-md;
+    }
+
+    .comment-item {
+        padding: $spacing-sm;
+
+        &.sub-comment {
+            margin-left: $spacing-md;
+        }
+    }
+
+    .sub-comments {
+        padding-left: $spacing-sm;
+    }
+}
+
+@media (max-width: $breakpoint-sm) {
+    .comments-header {
+        padding: $spacing-md;
+    }
+
+    .comments-content {
+        padding: $spacing-sm;
+    }
+
+    .add-comment-form,
+    .reply-form {
+        padding: $spacing-sm;
+    }
+} 
