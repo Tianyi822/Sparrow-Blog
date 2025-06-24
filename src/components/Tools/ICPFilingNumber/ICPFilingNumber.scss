@@ -59,7 +59,7 @@
         margin-left: $spacing-xs;
         white-space: nowrap;
         color: $white;
-        font-size: $font-size-xs + 0.1rem;
+        font-size: $font-size-xs;
         line-height: 36px;
         opacity: 0;
         pointer-events: none;
@@ -75,7 +75,7 @@
     &.expanded {
         width: auto;
         min-width: 36px;
-        max-width: 400px;
+        max-width: 500px; /* 增加最大宽度，确保长备案号能完全显示 */
         padding: 0;
         .record-text {
             opacity: 1;
