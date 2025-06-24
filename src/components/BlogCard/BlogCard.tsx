@@ -1,5 +1,6 @@
 import './BlogCard.scss';
 import use3DEffect from '@/hooks/use3DEffect';
+import React from "react";
 
 /**
  * 博客卡片组件属性接口
@@ -22,7 +23,7 @@ interface BlogCardProps {
  */
 const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, tags, image, description, className, blogId }) => {
     // 使用3D效果自定义Hook
-    const { cardRef, glowRef, borderGlowRef } = use3DEffect();
+    const { cardRef } = use3DEffect();
     // 判断是否为置顶博客
     const isTop = className?.includes('top');
 
@@ -45,7 +46,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, 
             style={{ cursor: blogId ? 'pointer' : 'default' }}
         >
             {/* 3D效果的光晕元素 */}
-            <div className="blog-card-border-glow" ref={borderGlowRef} />
+            <div className="blog-card-border-glow" />
 
             {/* 置顶标记 */}
             {isTop && (

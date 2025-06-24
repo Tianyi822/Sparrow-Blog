@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "@/style/variables" as *;
 @use "@/style/mixins" as *;
 @use "@/style/glass" as *;
@@ -248,7 +249,7 @@
     color: $white;
 
     &:hover:not(:disabled) {
-        background: linear-gradient(45deg, $primary-400, darken($primary-400, 10%));
+        background: linear-gradient(45deg, $primary-400, color.scale($primary-400, $lightness: -10%));
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba($primary-400, 0.3);
     }

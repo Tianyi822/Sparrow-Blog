@@ -236,12 +236,14 @@
     
     // 使用项目的卡片样式
     @include card-style;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     
-    // 苹果百叶窗动画效果
-    animation: blindsSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-    transform-origin: top;
+    & {
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      // 苹果百叶窗动画效果
+      animation: blindsSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+      transform-origin: top;
+    }
     
     // 添加发光组件
     .search-result-glow {
@@ -268,7 +270,10 @@
     &:hover {
         // 使用项目的毛玻璃悬停效果
         @include glass-card-hover;
-        border-color: rgba($primary-400, 0.3);
+        
+        & {
+            border-color: rgba($primary-400, 0.3);
+        }
         
         .search-result-glow {
             background: radial-gradient(

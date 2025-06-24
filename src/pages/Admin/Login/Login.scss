@@ -17,10 +17,12 @@
     @extend .glass-strong;
     @include card-style;
     
-    max-width: 400px;
-    width: 100%;
-    padding: $spacing-xl;
-    position: relative;
+    & {
+      max-width: 400px;
+      width: 100%;
+      padding: $spacing-xl;
+      position: relative;
+    }
     
     @include hover-lift;
 
