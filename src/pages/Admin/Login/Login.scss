@@ -1,11 +1,11 @@
-@use "@/style/variables" as *;
-@use "@/style/mixins" as *;
-@use "@/style/glass" as *;
+@use "@/style/variables"as *;
+@use "@/style/mixins"as *;
+@use "@/style/glass"as *;
 
 .login-container {
   @include full-viewport;
   @include flex-center;
-  
+
   background: linear-gradient(135deg, $primary-500 0%, $gray-900 100%);
   background-attachment: fixed;
   padding: $spacing-xl;
@@ -16,14 +16,14 @@
   .login-card {
     @extend .glass-strong;
     @include card-style;
-    
+
     & {
       max-width: 400px;
       width: 100%;
       padding: $spacing-xl;
       position: relative;
     }
-    
+
     @include hover-lift;
 
     // 登录卡片发光效果
@@ -31,11 +31,10 @@
       content: '';
       position: absolute;
       inset: -1px;
-      background: linear-gradient(45deg, 
-        rgba($primary-400, 0.3), 
-        rgba($white, 0.1), 
-        rgba($primary-400, 0.3)
-      );
+      background: linear-gradient(45deg,
+          rgba($primary-400, 0.3),
+          rgba($white, 0.1),
+          rgba($primary-400, 0.3));
       border-radius: $border-radius-lg;
       z-index: -1;
       filter: blur(8px);
@@ -97,13 +96,13 @@
       input {
         @include input-base;
         @extend .glass-subtle;
-        
+
         width: 100%;
         height: 36px;
         padding: 0 $spacing-md;
         color: rgba($white, 0.9);
         border: 1px solid rgba($white, 0.1);
-        
+
         &:focus {
           @include input-focus;
           border-color: rgba($white, 0.3);
@@ -146,7 +145,7 @@
         .verify-code-button {
           @include button-base;
           @extend .glass-subtle;
-          
+
           height: 36px;
           padding: 0 $spacing-md;
           font-size: $font-size-sm;
@@ -163,7 +162,7 @@
     .login-button {
       @include button-primary;
       @extend .glass-subtle;
-      
+
       width: 100%;
       height: 42px;
       margin-top: $spacing-sm !important;
@@ -179,7 +178,7 @@
     .submit-error-container {
       @extend .glass-subtle;
       @include error-container;
-      
+
       margin-top: $spacing-lg;
       background-color: rgba($danger, 0.15);
       border: 1px solid rgba($danger, 0.3);

@@ -9,6 +9,7 @@
 
 // 基础毛玻璃 hover 效果，不包含动画
 @mixin glass-card-hover-base {
+
   .title,
   h3,
   h4,
@@ -251,17 +252,19 @@
 
 // 响应式设计 mixins
 @mixin responsive-breakpoint($size) {
-  @if $size == sm {
+  @if $size==sm {
     @media (max-width: 480px) {
       @content;
     }
   }
-  @if $size == md {
+
+  @if $size==md {
     @media (max-width: 768px) {
       @content;
     }
   }
-  @if $size == lg {
+
+  @if $size==lg {
     @media (max-width: 1024px) {
       @content;
     }
