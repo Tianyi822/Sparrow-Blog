@@ -72,20 +72,34 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
         }
     }, []);
 
+    // 排序评论（按最新时间排序）
+    const sortCommentsByTime = useCallback((comments: Comment[]): Comment[] => {
+        return comments
+            .sort((a, b) => new Date(b.create_time).getTime() - new Date(a.create_time).getTime())
+            .map(comment => ({
+                ...comment,
+                sub_comments: comment.sub_comments 
+                    ? comment.sub_comments.sort((a, b) => new Date(b.create_time).getTime() - new Date(a.create_time).getTime())
+                    : []
+            }));
+    }, []);
+
     // 获取评论数据
     const fetchComments = useCallback(async () => {
         try {
             setLoading(true);
             const data = await getBlogComments(blogId);
             if (data) {
-                setComments(data);
+                // 对评论数据进行排序
+                const sortedComments = sortCommentsByTime(data);
+                setComments(sortedComments);
             }
         } catch (error) {
             console.error('获取评论失败:', error);
         } finally {
             setLoading(false);
         }
-    }, [blogId]);
+    }, [blogId, sortCommentsByTime]);
 
     // 当面板打开时获取评论
     useEffect(() => {
