@@ -284,6 +284,43 @@ export const getFriendLinks = async (): Promise<FriendLink[] | null> => {
 };
 
 /**
+ * 评论信息接口
+ */
+export interface Comment {
+    comment_id: string;           // 评论ID
+    commenter_email: string;      // 评论者邮箱
+    blog_title: string;           // 博客标题
+    content: string;              // 评论内容
+    create_time: string;          // 创建时间
+    origin_post_id?: string;      // 原始评论ID（回复时使用）
+    reply_to_comment_id?: string; // 回复的评论ID
+    sub_comments?: Comment[];     // 子评论列表
+}
+
+/**
+ * 添加评论请求数据接口
+ */
+export interface AddCommentData {
+    commenter_email: string;      // 评论者邮箱
+    blog_id: string;              // 博客ID
+    content: string;              // 评论内容
+}
+
+/**
+ * 回复评论请求数据接口
+ */
+export interface ReplyCommentData {
+    commenter_email: string;      // 回复者邮箱
+    blog_id: string;              // 博客ID
+    reply_to_comment_id: string;  // 回复的评论ID
+    content: string;              // 回复内容
+}
+
+// 评论响应类型
+type CommentsResponse = ApiResponse<Comment[]>;
+type CommentResponse = ApiResponse<Comment>;
+
+/**
  * 友链申请表单数据接口
  */
 export interface FriendLinkApplicationData {
@@ -304,6 +341,90 @@ export interface FriendLinkApplicationResponse {
 
 // 友链申请响应类型
 type FriendLinkApplyResponse = ApiResponse<null>;
+
+/**
+ * 获取博客评论
+ * 根据博客ID获取所有评论及其回复
+ * 
+ * @param blogId 博客ID
+ * @returns 评论列表，失败时返回null
+ */
+export const getBlogComments = async (blogId: string): Promise<Comment[] | null> => {
+    try {
+        const response = await businessApiRequest<CommentsResponse>({
+            method: 'GET',
+            url: `/web/comment/${blogId}`
+        });
+
+        if (response.code === 200 && response.data) {
+            return response.data;
+        }
+        return null;
+    } catch (error) {
+        console.error('获取评论失败:', error);
+        return null;
+    }
+};
+
+/**
+ * 添加评论
+ * 为指定博客添加新评论
+ * 
+ * @param commentData 评论数据
+ * @returns 新添加的评论数据，失败时返回null
+ */
+export const addComment = async (commentData: AddCommentData): Promise<Comment | null> => {
+    try {
+        console.log('发送添加评论请求:', commentData); // 调试日志
+        const response = await businessApiRequest<CommentResponse>({
+            method: 'POST',
+            url: '/web/comment/',
+            data: commentData
+        });
+
+        console.log('添加评论API响应:', response); // 调试日志
+        
+        if (response.code === 200 && response.data) {
+            return response.data;
+        }
+        
+        console.error('添加评论失败: 响应码', response.code, '消息:', response.msg);
+        return null;
+    } catch (error) {
+        console.error('添加评论请求异常:', error);
+        return null;
+    }
+};
+
+/**
+ * 回复评论
+ * 回复指定的评论
+ * 
+ * @param replyData 回复数据
+ * @returns 新添加的回复数据，失败时返回null
+ */
+export const replyComment = async (replyData: ReplyCommentData): Promise<Comment | null> => {
+    try {
+        console.log('发送回复评论请求:', replyData); // 调试日志
+        const response = await businessApiRequest<CommentResponse>({
+            method: 'POST',
+            url: '/web/comment/reply',
+            data: replyData
+        });
+
+        console.log('回复评论API响应:', response); // 调试日志
+        
+        if (response.code === 200 && response.data) {
+            return response.data;
+        }
+        
+        console.error('回复评论失败: 响应码', response.code, '消息:', response.msg);
+        return null;
+    } catch (error) {
+        console.error('回复评论请求异常:', error);
+        return null;
+    }
+};
 
 /**
  * 申请友链
@@ -358,5 +479,8 @@ export default {
     searchBlogs,
     getFriendLinks,
     getImageUrl,
-    applyFriendLink
+    applyFriendLink,
+    getBlogComments,
+    addComment,
+    replyComment
 };
