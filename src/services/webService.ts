@@ -89,7 +89,7 @@ export interface Comment {
     content: string;
     create_time: string;
     origin_post_id?: string;
-    reply_to_comment_id?: string;
+    reply_to_commenter?: string;
     sub_comments?: Comment[];
 }
 

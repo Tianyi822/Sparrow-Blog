@@ -392,12 +392,28 @@
             font-size: $font-size-sm;
 
             .author-icon {
-                color: $primary-400;
+                color: rgba($white, 0.8);
                 font-size: $font-size-sm;
             }
 
             .author-email {
                 font-weight: $font-weight-medium;
+                font-size: $font-size-sm;
+            }
+
+            .reply-to {
+                display: flex;
+                align-items: center;
+                gap: $spacing-xs;
+                margin-left: $spacing-sm;
+                color: rgba($white, 0.8);
+                font-size: $font-size-sm;
+                font-weight: $font-weight-normal;
+
+                .reply-to-icon {
+                    font-size: $font-size-sm;
+                    color: rgba($white, 0.8);
+                }
             }
         }
 
@@ -406,10 +422,10 @@
             align-items: center;
             gap: $spacing-xs;
             color: rgba($white, 0.6);
-            font-size: $font-size-xs;
+            font-size: $font-size-sm;
 
             .time-icon {
-                font-size: $font-size-xs;
+                font-size: $font-size-sm;
             }
         }
     }

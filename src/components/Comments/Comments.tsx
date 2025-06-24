@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { FiSend, FiCornerUpLeft, FiClock, FiUser, FiMessageSquare, FiX } from 'react-icons/fi';
+import { FiSend, FiCornerUpLeft, FiClock, FiUser, FiMessageSquare, FiX, FiArrowRight } from 'react-icons/fi';
 import { Comment, AddCommentData, ReplyCommentData, getBlogComments, addComment, replyComment } from '@/services/webService';
 import './Comments.scss';
 
@@ -18,6 +18,24 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
     const [replyContent, setReplyContent] = useState('');
     const [replyEmail, setReplyEmail] = useState('');
     const [submitting, setSubmitting] = useState(false);
+
+    // 提取用户名（邮箱@符号前面的部分）
+    const extractUsername = useCallback((email: string) => {
+        if (!email) return '';
+        const atIndex = email.indexOf('@');
+        return atIndex > 0 ? email.substring(0, atIndex) : email;
+    }, []);
+
+    // 计算总评论数（包括所有子评论）
+    const getTotalCommentsCount = useCallback((comments: Comment[]): number => {
+        return comments.reduce((total, comment) => {
+            let count = 1; // 主评论本身
+            if (comment.sub_comments && comment.sub_comments.length > 0) {
+                count += comment.sub_comments.length; // 子评论数量
+            }
+            return total + count;
+        }, 0);
+    }, []);
 
     // 格式化日期
     const formatDate = useCallback((dateString: string) => {
@@ -174,24 +192,31 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
         <div key={comment.comment_id} className={`comment-item ${isSubComment ? 'sub-comment' : ''}`}>
             <div className="comment-glow" />
             <div className="comment-border-glow" />
-            
+
             <div className="comment-header">
                 <div className="comment-author">
                     <FiUser className="author-icon" />
-                    <span className="author-email">{comment.commenter_email}</span>
+                    <span className="author-email">{extractUsername(comment.commenter_email)}</span>
+                    {/* 显示回复对象 */}
+                    {isSubComment && comment.reply_to_commenter && (
+                        <span className="reply-to">
+                            <FiArrowRight className="reply-to-icon" />
+                            回复 @{extractUsername(comment.reply_to_commenter)}
+                        </span>
+                    )}
                 </div>
                 <div className="comment-time">
                     <FiClock className="time-icon" />
                     <span>{formatDate(comment.create_time)}</span>
                 </div>
             </div>
-            
+
             <div className="comment-content">
                 {comment.content}
             </div>
-            
+
             <div className="comment-actions">
-                <button 
+                <button
                     className="reply-btn"
                     onClick={() => handleStartReply(comment.comment_id)}
                     disabled={replyingTo === comment.comment_id}
@@ -206,7 +231,7 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
                 <form className="reply-form" onSubmit={handleSubmitReply}>
                     <div className="reply-form-glow" />
                     <div className="reply-form-border-glow" />
-                    
+
                     <div className="form-group">
                         <input
                             type="email"
@@ -246,18 +271,18 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
                 </div>
             )}
         </div>
-    ), [formatDate, handleStartReply, replyingTo, replyEmail, replyContent, submitting, handleSubmitReply, handleCancelReply]);
+    ), [formatDate, extractUsername, handleStartReply, replyingTo, replyEmail, replyContent, submitting, handleSubmitReply, handleCancelReply]);
 
     return (
         <div className={`comments-panel ${isOpen ? 'open' : ''}`}>
             <div className="comments-container">
                 <div className="comments-container-glow" />
                 <div className="comments-container-border-glow" />
-                
+
                 <div className="comments-header">
                     <div className="comments-title">
                         <FiMessageSquare className="title-icon" />
-                        <h3>评论区 {!loading && `(${comments.length})`}</h3>
+                        <h3>评论区 {!loading && `(${getTotalCommentsCount(comments)})`}</h3>
                     </div>
                     <button className="close-btn" onClick={onClose}>
                         <FiX />
@@ -276,7 +301,7 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
                             <form className="add-comment-form" onSubmit={handleSubmitComment}>
                                 <div className="add-comment-form-glow" />
                                 <div className="add-comment-form-border-glow" />
-                                
+
                                 <div className="form-group">
                                     <input
                                         type="email"
@@ -297,8 +322,8 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
                                         rows={4}
                                     />
                                 </div>
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     className="submit-btn"
                                     disabled={submitting || !newComment.trim() || !newCommentEmail.trim()}
                                 >
