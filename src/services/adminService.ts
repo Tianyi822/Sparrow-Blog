@@ -933,9 +933,12 @@ export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
 export interface CommentItem {
     comment_id: string;
     commenter_email: string;
+    blog_id: string;
     blog_title: string;
     content: string;
     create_time: string;
+    origin_post_id?: string;
+    reply_to_commenter?: string;
 }
 
 export interface CommentsResponse {

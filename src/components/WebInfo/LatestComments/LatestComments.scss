@@ -58,11 +58,20 @@
 
         // 评论项目
         .comment-item {
-            cursor: pointer;
             transition: var.$transition-base;
             border-radius: var.$border-radius-sm;
             padding: var.$spacing-xs;
             margin: calc(-1 * var.$spacing-xs);
+
+            &.clickable {
+                cursor: pointer;
+                
+                &:hover {
+                    transform: translateX(6px);
+                    background: rgba(255, 255, 255, 0.15);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                }
+            }
 
             // 评论内容
             .comment-content {
@@ -77,21 +86,56 @@
             .comment-meta {
                 display: flex;
                 justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: var.$spacing-xs;
                 font-size: var.$font-size-xs;
                 color: rgba(255, 255, 255, 0.8);
                 transition: var.$transition-base;
+
+                .comment-commenter {
+                    font-weight: 500;
+                    color: rgba(255, 255, 255, 0.9);
+                }
+
+                .comment-article {
+                    flex: 1;
+                    text-align: center;
+                    font-style: italic;
+                }
+
+                .comment-date {
+                    font-size: var.$font-size-xs - 0.05rem;
+                    opacity: 0.8;
+                }
             }
 
-            &:hover {
-                transform: translateX(4px);
-                background: rgba(255, 255, 255, 0.1);
+            // 通用悬停样式（非可点击项）
+            &:not(.clickable):hover {
+                transform: translateX(2px);
+                background: rgba(255, 255, 255, 0.05);
+            }
 
+            // 可点击项的悬停样式会覆盖通用样式
+            &.clickable:hover {
                 .comment-content {
                     color: rgba(26, 38, 52, 0.95);
                 }
 
                 .comment-meta {
                     color: rgba(44, 62, 80, 0.9);
+
+                    .comment-commenter {
+                        color: rgba(26, 38, 52, 0.95);
+                    }
+
+                    .comment-article {
+                        color: rgba(44, 62, 80, 0.8);
+                    }
+
+                    .comment-date {
+                        color: rgba(44, 62, 80, 0.7);
+                    }
                 }
             }
         }

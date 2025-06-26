@@ -85,6 +85,7 @@ export interface SearchResponseData {
 export interface Comment {
     comment_id: string;
     commenter_email: string;
+    blog_id: string;
     blog_title: string;
     content: string;
     create_time: string;
@@ -330,6 +331,23 @@ export const replyComment = async (replyData: ReplyCommentData): Promise<Comment
         return handleApiResponse(response, '回复评论');
     } catch (error) {
         handleError('回复评论', error);
+        return null;
+    }
+};
+
+/**
+ * 获取最新评论
+ */
+export const getLatestComments = async (): Promise<Comment[] | null> => {
+    try {
+        const response = await businessApiRequest<CommentsResponse>({
+            method: 'GET',
+            url: '/web/comment/latest'
+        });
+
+        return handleApiResponse(response, '获取最新评论');
+    } catch (error) {
+        handleError('获取最新评论', error);
         return null;
     }
 };
