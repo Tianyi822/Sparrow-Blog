@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "build:prod": "tsc -b && vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "tsc -b && vite build --mode production && vite preview",
     "start": "tsc -b && vite build --mode production && vite start"
   },
   "dependencies": {
