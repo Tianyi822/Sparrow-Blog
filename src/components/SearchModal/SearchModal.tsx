@@ -52,6 +52,25 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                 setIsEmpty(true);
             } finally {
                 setIsLoading(false);
+
+                // 确保搜索结果中的mark标签样式正确
+                setTimeout(() => {
+                    const searchModal = document.querySelector('.search-modal');
+                    if (searchModal) {
+                        const markElements = searchModal.querySelectorAll('mark');
+                        markElements.forEach((mark) => {
+                            const element = mark as HTMLElement;
+                            element.style.setProperty('background', 'rgba(52, 152, 219, 0.5)', 'important');
+                            element.style.setProperty('background-color', 'rgba(52, 152, 219, 0.5)', 'important');
+                            element.style.setProperty('color', 'rgba(255, 255, 255, 0.95)', 'important');
+                            element.style.setProperty('padding', '2px 6px', 'important');
+                            element.style.setProperty('border-radius', '0.25rem', 'important');
+                            element.style.setProperty('font-weight', '700', 'important');
+                            element.style.setProperty('border', '1px solid rgba(52, 152, 219, 0.3)', 'important');
+                            element.style.setProperty('box-shadow', '0 1px 2px rgba(52, 152, 219, 0.2)', 'important');
+                        });
+                    }
+                }, 100);
             }
         }, 500); // 500ms防抖延迟
     }, []);
@@ -99,13 +118,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         if (isOpen) {
             // 保存当前滚动位置
             const scrollY = window.scrollY;
-            
+
             // 禁用body滚动
             document.body.style.overflow = 'hidden';
             document.body.style.position = 'fixed';
             document.body.style.top = `-${scrollY}px`;
             document.body.style.width = '100%';
-            
+
             // 禁用document上的滚动事件
             const preventScroll = (e: Event) => {
                 e.preventDefault();
@@ -115,12 +134,47 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
             document.addEventListener('wheel', preventScroll, { passive: false });
             document.addEventListener('touchmove', preventScroll, { passive: false });
             document.addEventListener('scroll', preventScroll, { passive: false });
-            
+
             // 延迟聚焦，确保模态框完全打开
             if (searchInputRef.current) {
                 setTimeout(() => {
                     searchInputRef.current?.focus();
                 }, 100);
+            }
+
+            // 确保SearchModal内的mark标签样式正确应用
+            const ensureMarkStyles = () => {
+                const searchModal = document.querySelector('.search-modal');
+                if (searchModal) {
+                    const markElements = searchModal.querySelectorAll('mark');
+                    markElements.forEach((mark) => {
+                        const element = mark as HTMLElement;
+                        element.style.setProperty('background', 'rgba(52, 152, 219, 0.5)', 'important');
+                        element.style.setProperty('background-color', 'rgba(52, 152, 219, 0.5)', 'important');
+                        element.style.setProperty('color', 'rgba(255, 255, 255, 0.95)', 'important');
+                        element.style.setProperty('padding', '2px 6px', 'important');
+                        element.style.setProperty('border-radius', '0.25rem', 'important');
+                        element.style.setProperty('font-weight', '700', 'important');
+                        element.style.setProperty('border', '1px solid rgba(52, 152, 219, 0.3)', 'important');
+                        element.style.setProperty('box-shadow', '0 1px 2px rgba(52, 152, 219, 0.2)', 'important');
+                    });
+                }
+            };
+
+            // 初始应用样式
+            setTimeout(ensureMarkStyles, 50);
+
+            // 监听DOM变化，确保新添加的mark元素也能正确应用样式
+            const observer = new MutationObserver(() => {
+                ensureMarkStyles();
+            });
+
+            const searchModalElement = document.querySelector('.search-modal');
+            if (searchModalElement) {
+                observer.observe(searchModalElement, {
+                    childList: true,
+                    subtree: true
+                });
             }
 
             return () => {
@@ -129,14 +183,17 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                 document.body.style.position = '';
                 document.body.style.top = '';
                 document.body.style.width = '';
-                
+
                 // 恢复滚动位置
                 window.scrollTo(0, scrollY);
-                
+
                 // 移除事件监听
                 document.removeEventListener('wheel', preventScroll);
                 document.removeEventListener('touchmove', preventScroll);
                 document.removeEventListener('scroll', preventScroll);
+
+                // 清理MutationObserver
+                observer.disconnect();
             };
         }
     }, [isOpen]);
@@ -202,21 +259,21 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     const handleSearchBodyScroll = (e: React.WheelEvent<HTMLDivElement>) => {
         const target = e.currentTarget;
         const { scrollTop, scrollHeight, clientHeight } = target;
-        
+
         // 如果内容不需要滚动（内容高度小于等于容器高度），完全阻止滚动
         if (scrollHeight <= clientHeight) {
             e.preventDefault();
             e.stopPropagation();
             return;
         }
-        
+
         // 向上滚动且已经到顶部时，阻止事件传播
         if (e.deltaY < 0 && scrollTop === 0) {
             e.preventDefault();
             e.stopPropagation();
             return;
         }
-        
+
         // 向下滚动且已经到底部时，阻止事件传播
         if (e.deltaY > 0 && scrollTop + clientHeight >= scrollHeight) {
             e.preventDefault();
@@ -231,13 +288,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div 
-            className="search-modal-backdrop" 
+        <div
+            className="search-modal-backdrop"
             onClick={handleBackdropClick}
             onWheel={handleBackdropWheelEvent}
             onTouchMove={handleBackdropTouchMove}
         >
-            <div 
+            <div
                 className="search-modal"
                 onWheel={handleModalWheelEvent}
                 onTouchMove={handleModalTouchMove}
@@ -246,8 +303,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                     <div className="search-input-container">
                         <div className="search-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-                                <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
+                                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+                                <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" />
                             </svg>
                         </div>
                         <input
@@ -261,15 +318,15 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                         {searchQuery && (
                             <button className="clear-button" onClick={clearSearch}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2"/>
-                                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2"/>
+                                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" />
+                                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" />
                                 </svg>
                             </button>
                         )}
                     </div>
                 </div>
 
-                <div 
+                <div
                     className="search-modal-body"
                     onWheel={handleSearchBodyScroll}
                 >
@@ -284,8 +341,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                         <div className="search-empty">
                             <div className="empty-icon">
                                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-                                    <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
+                                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+                                    <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" />
                                 </svg>
                             </div>
                             <p>未找到相关结果</p>
@@ -296,8 +353,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                     {!isLoading && !isEmpty && searchResults.length > 0 && (
                         <div className="search-results">
                             {searchResults.map((item, index) => (
-                                <div 
-                                    key={item.id} 
+                                <div
+                                    key={item.id}
                                     className="search-result-item"
                                     style={{ animationDelay: `${index * 50}ms` }}
                                     onClick={() => handleResultClick(item)}
@@ -305,27 +362,27 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                                     {/* 添加发光效果组件 */}
                                     <div className="search-result-glow"></div>
                                     <div className="search-result-border-glow"></div>
-                                    
+
                                     <div className="result-image">
                                         {item.img_id && (
-                                            <img 
-                                                src={getImageUrl(item.img_id)} 
+                                            <img
+                                                src={getImageUrl(item.img_id)}
                                                 alt={item.title}
                                                 loading="lazy"
                                             />
                                         )}
                                     </div>
                                     <div className="result-content">
-                                        <h3 
+                                        <h3
                                             className="result-title"
-                                            dangerouslySetInnerHTML={{ 
-                                                __html: item.highlights.Title?.[0] || item.title 
+                                            dangerouslySetInnerHTML={{
+                                                __html: item.highlights.Title?.[0] || item.title
                                             }}
                                         />
-                                        <div 
+                                        <div
                                             className="result-snippet"
-                                            dangerouslySetInnerHTML={{ 
-                                                __html: item.highlights.Content?.[0] || '' 
+                                            dangerouslySetInnerHTML={{
+                                                __html: item.highlights.Content?.[0] || ''
                                             }}
                                         />
                                     </div>
@@ -338,8 +395,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                         <div className="search-placeholder">
                             <div className="placeholder-icon">
                                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.5"/>
-                                    <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.5"/>
+                                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.5" />
+                                    <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.5" />
                                 </svg>
                             </div>
                             <h3>搜索博客内容</h3>

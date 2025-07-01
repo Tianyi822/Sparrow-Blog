@@ -76,16 +76,16 @@ html {
   user-select: none;
 }
 
-// 重置mark标签默认样式并应用更亮的强调色
+// 重置mark标签默认样式并应用项目主题色
 mark {
-  background: rgba(52, 152, 219, 0.5) !important;
-  background-color: rgba(52, 152, 219, 0.5) !important;
-  color: rgba(255, 255, 255, 0.95) !important;
+  background: rgba($primary-300, 0.5) !important;
+  background-color: rgba($primary-300, 0.5) !important;
+  color: rgba($white, 0.95) !important;
   padding: 2px 6px !important;
-  border-radius: 0.25rem !important;
-  font-weight: 700 !important;
-  border: 1px solid rgba(52, 152, 219, 0.3) !important;
-  box-shadow: 0 1px 2px rgba(52, 152, 219, 0.2) !important;
+  border-radius: $border-radius-sm !important;
+  font-weight: $font-weight-bold !important;
+  border: 1px solid rgba($primary-300, 0.3) !important;
+  box-shadow: 0 1px 2px rgba($primary-300, 0.2) !important;
 }
 
 // 容器样式

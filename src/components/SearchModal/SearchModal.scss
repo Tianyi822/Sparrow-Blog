@@ -65,8 +65,11 @@
     max-width: 700px;
     max-height: 80vh;
 
-    // 使用项目的毛玻璃样式
-    @extend .glass-strong;
+    // 直接应用毛玻璃效果，避免@extend在生产环境的问题
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 
     border-radius: $border-radius-xl;
     box-shadow: $shadow-lg;
@@ -95,8 +98,13 @@
     display: flex;
     align-items: center;
 
-    // 使用项目的毛玻璃卡片样式
-    @include glass-card-base;
+    // 直接应用毛玻璃卡片样式
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+
     border-radius: $border-radius-lg;
     padding: 0 $spacing-md;
     transition: $transition-base;
@@ -242,16 +250,23 @@
     padding: $spacing-lg;
     margin-bottom: $spacing-sm;
 
-    // 使用项目的卡片样式
-    @include card-style;
+    // 直接应用卡片样式
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
 
-    & {
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        // 苹果百叶窗动画效果
-        animation: blindsSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-        transform-origin: top;
-    }
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    // 苹果百叶窗动画效果
+    animation: blindsSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    transform-origin: top;
 
     // 添加发光组件
     .search-result-glow {
@@ -276,12 +291,12 @@
     }
 
     &:hover {
-        // 使用项目的毛玻璃悬停效果
-        @include glass-card-hover;
-
-        & {
-            border-color: rgba($primary-400, 0.3);
-        }
+        // 直接应用毛玻璃悬停效果
+        transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+        box-shadow:
+            0 10px 20px rgba(0, 0, 0, 0.1),
+            0 6px 6px rgba(0, 0, 0, 0.1);
+        border-color: rgba($primary-400, 0.3);
 
         .search-result-glow {
             background: radial-gradient(circle at 50% 50%,
@@ -336,17 +351,7 @@
     margin: 0 0 $spacing-sm 0;
     line-height: $line-height-tight;
 
-    // 高亮样式
-    :global(mark) {
-        background: rgba($primary-300, 0.5) !important;
-        background-color: rgba($primary-300, 0.5) !important;
-        color: rgba($white, 0.95) !important;
-        padding: 2px 6px !important;
-        border-radius: $border-radius-sm !important;
-        font-weight: $font-weight-bold !important;
-        border: 1px solid rgba($primary-300, 0.3) !important;
-        box-shadow: 0 1px 2px rgba($primary-300, 0.2) !important;
-    }
+    // 高亮样式在.search-modal作用域中统一处理
 }
 
 .result-snippet {
@@ -361,27 +366,22 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 
-    // 高亮样式
-    :global(mark) {
-        background: rgba($primary-300, 0.4) !important;
-        background-color: rgba($primary-300, 0.4) !important;
-        color: rgba($white, 0.95) !important;
-        padding: 1px 4px !important;
-        border-radius: $border-radius-sm !important;
-        font-weight: $font-weight-medium !important;
-        border: 1px solid rgba($primary-300, 0.25) !important;
-        box-shadow: 0 1px 1px rgba($primary-300, 0.15) !important;
-    }
-
+    // 高亮样式在.search-modal作用域中统一处理
     // 去除可能的图片标签样式
-    :global(img) {
+    img {
         display: none;
     }
 }
 
-// 全局mark标签样式覆盖，确保在搜索模态框中生效
+// SearchModal内部的mark标签高亮样式 - 使用最高特异性
 .search-modal {
-    mark {
+
+    // 使用复合选择器确保最高特异性
+    &.search-modal mark,
+    & mark,
+    & .search-result-item mark,
+    & .result-title mark,
+    & .result-content mark {
         background: rgba($primary-300, 0.5) !important;
         background-color: rgba($primary-300, 0.5) !important;
         color: rgba($white, 0.95) !important;
@@ -392,29 +392,8 @@
         box-shadow: 0 1px 2px rgba($primary-300, 0.2) !important;
     }
 
-    .search-result-item mark {
-        background: rgba($primary-300, 0.5) !important;
-        background-color: rgba($primary-300, 0.5) !important;
-        color: rgba($white, 0.95) !important;
-        padding: 2px 6px !important;
-        border-radius: $border-radius-sm !important;
-        font-weight: $font-weight-bold !important;
-        border: 1px solid rgba($primary-300, 0.3) !important;
-        box-shadow: 0 1px 2px rgba($primary-300, 0.2) !important;
-    }
-
-    .result-title mark {
-        background: rgba($primary-300, 0.5) !important;
-        background-color: rgba($primary-300, 0.5) !important;
-        color: rgba($white, 0.95) !important;
-        padding: 2px 6px !important;
-        border-radius: $border-radius-sm !important;
-        font-weight: $font-weight-bold !important;
-        border: 1px solid rgba($primary-300, 0.3) !important;
-        box-shadow: 0 1px 2px rgba($primary-300, 0.2) !important;
-    }
-
-    .result-snippet mark {
+    &.search-modal .result-snippet mark,
+    & .result-snippet mark {
         background: rgba($primary-300, 0.4) !important;
         background-color: rgba($primary-300, 0.4) !important;
         color: rgba($white, 0.95) !important;
