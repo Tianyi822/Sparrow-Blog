@@ -3,14 +3,37 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
 import svgr from 'vite-plugin-svgr';
+import { readFileSync, writeFileSync } from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+// 创建404.html插件，用于对象存储部署
+const create404Plugin = () => {
+  return {
+    name: 'create-404-html',
+    closeBundle() {
+      // 在构建完成后，使用专门的404模板
+      const templatePath = path.resolve(__dirname, 'public/404-template.html');
+      const notFoundPath = path.resolve(__dirname, 'dist/404.html');
+      
+      try {
+        const templateContent = readFileSync(templatePath, 'utf-8');
+        writeFileSync(notFoundPath, templateContent);
+        console.log('✓ 404.html created with custom NotFound styling for object storage deployment');
+      } catch (error) {
+        console.error('Error creating 404.html:', error);
+      }
+    }
+  };
+};
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   // 加载环境变量
   loadEnv(mode, process.cwd(), '');
   return {
+    // 配置基础路径，使用绝对路径确保子路由正常工作
+    base: '/',
     plugins: [
       react(),
       svgr({
@@ -18,6 +41,7 @@ export default defineConfig(({ mode }) => {
           icon: true,
         },
       }),
+      create404Plugin(),
     ],
     resolve: {
       alias: {
@@ -61,6 +85,12 @@ export default defineConfig(({ mode }) => {
       minify: 'terser',
       // 确保CSS正确提取和压缩
       cssCodeSplit: true,
+      // 确保输出目录正确
+      outDir: 'dist',
+      // 确保所有资源使用相对路径
+      assetsDir: 'assets',
+      // 复制public目录下的文件到输出目录
+      copyPublicDir: true,
       terserOptions: {
         compress: {
           drop_console: true, // 删除console.log

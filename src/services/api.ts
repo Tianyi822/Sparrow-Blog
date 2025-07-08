@@ -7,9 +7,29 @@ export interface ApiResponse<T = unknown> {
     data: T;
 }
 
-// 服务地址配置
+// 智能服务地址配置
+const getBusinessServiceUrl = (): string => {
+    // 优先使用环境变量
+    if (import.meta.env.VITE_BUSINESS_SERVICE_URL) {
+        return import.meta.env.VITE_BUSINESS_SERVICE_URL;
+    }
+    
+    // 在浏览器环境中，本地开发环境回退处理
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        
+        // 本地开发环境
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:2233';
+        }
+    }
+    
+    // 如果没有配置环境变量，抛出错误提示
+    throw new Error('VITE_BUSINESS_SERVICE_URL environment variable is not defined. Please check your .env file.');
+};
+
 export const SERVICE_URLS = {
-    BUSINESS: import.meta.env.VITE_BUSINESS_SERVICE_URL || 'http://localhost:8080',
+    BUSINESS: getBusinessServiceUrl(),
 };
 
 // 创建axios实例

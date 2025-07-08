@@ -1,6 +1,12 @@
-# Netlify redirects for SPA routing
+# SPA路由重定向规则
+# 适用于Netlify、Vercel等平台以及对象存储的SPA部署
+
 # 所有非API请求都回退到index.html，支持前端路由
 /*    /index.html   200
 
 # API请求不进行重定向
-/api/*  /api/:splat  200 
+/api/*  /api/:splat  200
+
+# 对象存储特定配置
+# 404错误页面回退到index.html（用于对象存储部署）
+/404.html  /index.html  200 
