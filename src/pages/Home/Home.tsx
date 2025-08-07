@@ -1,13 +1,13 @@
-import BlogCard from '@/components/BlogCard/BlogCard';
+import BlogCardLazy from '@/components/BlogCard/BlogCardLazy';
 import Clock from '@/components/Home/Clock';
 import Introduction from "@/components/Home/Introduction";
 import Pagination from '@/components/Home/Pagination';
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import WebInfo from '@/components/WebInfo/WebInfo.tsx';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
+import { BlogCategory, BlogTag } from '@/services/adminService';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./Home.scss";
-import { BlogCategory, BlogTag } from '@/services/adminService';
 
 /**
  * 从API获取的博客信息接口
@@ -56,7 +56,7 @@ const Home: React.FC = () => {
     const [activeTagId, setActiveTagId] = useState<string | null>(null);
     const [activeFilterName, setActiveFilterName] = useState<string | null>(null);
     const [filterType, setFilterType] = useState<'category' | 'tag' | null>(null);
-    const {homeData, getImageUrl} = useBlogLayoutContext();
+    const { homeData, getImageUrl } = useBlogLayoutContext();
     const BLOGS_PER_PAGE = 8; // 每页显示8条博客
 
     // 获取用户头像URL
@@ -228,14 +228,14 @@ const Home: React.FC = () => {
             const offsetTop = mainSection.offsetTop;
             // 计算滚动目标位置，留出一些顶部空间
             const targetScrollTop = Math.max(0, offsetTop - 50);
-            
+
             console.log('Scroll Debug Info:');
             console.log('offsetTop:', offsetTop);
             console.log('targetScrollTop:', targetScrollTop);
             console.log('Document height:', document.documentElement.scrollHeight);
             console.log('Window height:', window.innerHeight);
             console.log('Max scrollable distance:', document.documentElement.scrollHeight - window.innerHeight);
-            
+
             window.scrollTo({
                 top: targetScrollTop,
                 behavior: 'smooth'
@@ -299,7 +299,7 @@ const Home: React.FC = () => {
                         <div className="active-filter">
                             <div className="filter-info">
                                 当前显示: <span
-                                className="filter-type">{filterType === 'category' ? '分类' : '标签'}</span>
+                                    className="filter-type">{filterType === 'category' ? '分类' : '标签'}</span>
                                 <span className="filter-name">{activeFilterName}</span>
                             </div>
                             <button className="clear-filter" onClick={handleClearFilter}>清除筛选</button>
@@ -309,9 +309,9 @@ const Home: React.FC = () => {
                         {currentPageBlogs.length > 0 ? (
                             currentPageBlogs.map((blog, index) => {
                                 // 避免属性重复
-                                const {blogId, ...otherProps} = blog;
+                                const { blogId, ...otherProps } = blog;
                                 return (
-                                    <BlogCard
+                                    <BlogCardLazy
                                         key={index}
                                         className={`${index % 2 === 0 ? 'even' : 'odd'} ${blog.isTop ? 'top' : ''}`}
                                         blogId={blogId}

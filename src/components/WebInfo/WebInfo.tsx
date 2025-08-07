@@ -1,9 +1,9 @@
 import AuthorInfo from '@/components/WebInfo/AuthorInfo/AuthorInfo';
-import LatestArticles from '@/components/WebInfo/LatestArticles/LatestArticles';
-import LatestComments from '@/components/WebInfo/LatestComments/LatestComments';
+import LatestArticlesLazy from '@/components/WebInfo/LatestArticles/LatestArticlesLazy';
+import LatestCommentsLazy from '@/components/WebInfo/LatestComments/LatestCommentsLazy';
 import Categories from '@/components/WebInfo/Categories/Categories';
 import './WebInfo.scss';
-import Tags from './Tags/Tags';
+import TagsLazy from './Tags/TagsLazy';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { BlogCategory, BlogTag } from '@/services/adminService';
 import { useMemo } from 'react';
@@ -92,8 +92,8 @@ const WebInfo: React.FC<WebContentProps> = ({
                 stats={stats}
                 social={socialLinks}
             />
-            <LatestArticles className="web-content-latest-articles" />
-            <LatestComments className="web-content-latest-comments"/>
+            <LatestArticlesLazy className="web-content-latest-articles" />
+            <LatestCommentsLazy className="web-content-latest-comments"/>
             <Categories 
                 className="web-content-categories"
                 categories={homeData?.categories || []}
@@ -101,7 +101,7 @@ const WebInfo: React.FC<WebContentProps> = ({
                 onCategoryClick={onCategoryClick}
                 activeCategory={activeCategoryId}
             />
-            <Tags 
+            <TagsLazy 
                 className="web-content-tags"
                 tags={homeData?.tags || []}
                 onTagClick={onTagClick}
