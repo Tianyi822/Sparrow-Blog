@@ -16,6 +16,34 @@
     position: relative;
     transition: background $transition-base, box-shadow $transition-base, width 0.3s cubic-bezier(0.4,0,0.2,1);
 
+    /* 移动端响应式样式 */
+    @media (max-width: 900px) {
+        width: 32px;
+        height: 32px;
+        
+        .record-text {
+            font-size: $font-size-xs;
+        }
+        
+        .record-icon {
+            font-size: $font-size-sm;
+        }
+    }
+    
+    /* 超小屏幕样式调整 */
+    @media (max-width: 370px) {
+        width: 28px;
+        height: 28px;
+        
+        .record-text {
+            font-size: $font-size-xs * 0.9;
+        }
+        
+        .record-icon {
+            font-size: $font-size-xs;
+        }
+    }
+
     /* 图标容器 */
     .icon-container {
         display: flex;

@@ -22,18 +22,6 @@
         opacity: 0;
         visibility: hidden;
         transition: opacity $transition-base, visibility $transition-base;
-        @include glass-card-base; /* 使用基础毛玻璃效果 */
-        width: 36px;
-        height: 36px;
-        border-radius: $border-radius-md;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-
-        &:hover {
-            @include glass-card-hover-base;
-        }
 
         /* 可见状态 */
         &.visible {
@@ -53,10 +41,22 @@
         /* 移除所有覆盖样式，让 ICPFilingNumber 组件内部的样式完全生效 */
     }
 
-    /* 移除窄屏隐藏的媒体查询 */
-    /* @media screen and (max-width: 768px) {
-        display: none;
-    } */
+    /* 移动端响应式样式 - 缩小组件并向右侧吸附 */
+    @media (max-width: 900px) {
+        right: $spacing-xs;
+        left: auto;
+        bottom: $spacing-md;
+        gap: $spacing-xs;
+        /* 在移动端将Tools组件向右侧吸附，缩小间距 */
+    }
+    
+    /* 超小屏幕样式调整 */
+    @media (max-width: 370px) {
+        right: $spacing-xs * 0.5;
+        bottom: $spacing-sm;
+        gap: $spacing-xs * 0.5;
+        /* 在超小屏幕上保持右侧吸附并减小间距 */
+    }
 }
 
 /* 上浮动画 */

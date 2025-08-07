@@ -183,6 +183,18 @@
     right: var.$spacing-md;
     bottom: var.$spacing-md;
     z-index: 100;
+
+    // 移动端响应式调整
+    @media (max-width: 900px) {
+      right: var.$spacing-sm;
+      bottom: var.$spacing-sm;
+    }
+
+    // 超小屏幕调整
+    @media (max-width: 370px) {
+      right: var.$spacing-xs;
+      bottom: var.$spacing-xs;
+    }
   }
 
   // 滚动条样式，从App.scss移动过来
