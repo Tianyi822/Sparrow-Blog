@@ -1,7 +1,6 @@
 import './Categories.scss';
 import use3DEffect from '@/hooks/use3DEffect';
-import { BlogCategory } from '@/services/adminService';
-import { BlogInfo } from '@/services/webService';
+import { BlogCategory, BlogInfo } from '@/types';
 import { useMemo } from 'react';
 
 interface CategoriesProps {

@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { FriendLinkCardSkeleton } from '@/components/ui/skeleton';
-import { getFriendLinks, applyFriendLink, type FriendLink, type FriendLinkApplicationData } from '@/services/webService';
+import { getFriendLinks, applyFriendLink } from '@/services/webService';
+import type { FriendLink as FriendLinkType, FriendLinkApplicationData } from '@/types';
 import SvgIcon, { About, Normal } from '@/components/SvgIcon/SvgIcon';
 import ApplyModal, { FriendLinkFormData } from './Apply/ApplyModal';
 import './FriendLink.scss';
@@ -11,7 +12,7 @@ interface FriendLinkProps {
 }
 
 interface FriendLinkCardProps {
-    link: FriendLink;
+    link: FriendLinkType;
     onImageError: (e: React.SyntheticEvent<HTMLImageElement>, linkId: string) => void;
     failedImages: Set<string>;
 }
@@ -102,7 +103,7 @@ const FriendLinkCard = memo<FriendLinkCardProps>(({ link, onImageError, failedIm
 FriendLinkCard.displayName = 'FriendLinkCard';
 
 const FriendLink: React.FC<FriendLinkProps> = ({ className }) => {
-    const [links, setLinks] = useState<FriendLink[]>([]);
+    const [links, setLinks] = useState<FriendLinkType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');

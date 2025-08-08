@@ -5,7 +5,7 @@ import Pagination from '@/components/Home/Pagination';
 import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import WebInfo from '@/components/WebInfo/WebInfo.tsx';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
-import { BlogCategory, BlogTag } from '@/services/adminService';
+import { BlogCategory, BlogTag } from '@/types';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./Home.scss";
 

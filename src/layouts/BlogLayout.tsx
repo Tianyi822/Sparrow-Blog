@@ -5,7 +5,8 @@ import Navigator from "@/components/Navigator/Navigator";
 import Tools from "@/components/Tools/Tools";
 import ScrollBar from "@/components/ScrollBar/ScrollBar";
 import Comments from "@/components/Comments/Comments";
-import { BasicData, getBasicData, getImageUrl } from "@/services/webService";
+import { getBasicData, getImageUrl } from "@/services/webService";
+import { BasicData } from "@/types";
 import "./BlogLayout.scss";
 
 // 导航索引缓存键

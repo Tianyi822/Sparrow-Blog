@@ -1,35 +1,9 @@
 import axios from 'axios';
 import { businessApiRequest } from './api';
+import { FileType, ContentType, PreSignUrlResponse } from '../types';
 
-/**
- * 文件类型常量枚举
- * 用于指定上传文件的类型，在API请求中使用
- */
-export const FileType = {
-    MARKDOWN: "markdown", // Markdown文本文件类型
-    WEBP: "webp",        // WebP图片文件类型
-};
-
-/**
- * 内容类型常量枚举
- * 用于指定HTTP请求中的Content-Type头
- */
-export const ContentType = {
-    MARKDOWN: "text/markdown", // Markdown文本的MIME类型
-    WEBP: "image/webp",        // WebP图片的MIME类型
-}
-
-/**
- * 预签名URL响应接口
- * 定义从服务器获取OSS预签名URL的响应格式
- */
-export interface PreSignUrlResponse {
-    code: number;           // 响应状态码
-    msg: string;            // 响应消息
-    data: {
-        pre_sign_put_url: string; // 用于上传的预签名URL
-    };
-}
+// 重新导出常量以保持向后兼容性
+export { FileType, ContentType };
 
 /**
  * 获取OSS预签名URL

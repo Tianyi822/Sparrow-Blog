@@ -10,7 +10,8 @@ import {
   FiCalendar,
   FiEdit
 } from 'react-icons/fi';
-import { CommentItem, getAllComments, deleteComment, updateComment } from '@/services/adminService';
+import { getAllComments, deleteComment, updateComment } from '@/services/adminService';
+import { CommentItem } from '@/types';
 import './Comments.scss';
 
 // 可选的每页条数选项
@@ -417,4 +418,4 @@ const Comments: React.FC = memo(() => {
   );
 });
 
-export default Comments; 
+export default Comments;

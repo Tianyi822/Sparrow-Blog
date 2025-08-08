@@ -1,7 +1,8 @@
 import './LatestComments.scss';
 import use3DEffect from '@/hooks/use3DEffect';
 import { useEffect, useState } from 'react';
-import { getLatestComments, Comment } from '@/services/webService';
+import { getLatestComments } from '@/services/webService';
+import { Comment } from '@/types';
 
 interface LatestCommentsProps {
     className?: string;

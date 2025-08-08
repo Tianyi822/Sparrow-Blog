@@ -1,136 +1,20 @@
-import { BlogCategory, BlogTag } from './adminService';
-import { ApiResponse, businessApiRequest } from './api';
-
-// ========================================
-// 类型定义 - Type Definitions
-// ========================================
-
-/**
- * 博客文章信息接口
- */
-export interface BlogInfo {
-    blog_id: string;
-    blog_title: string;
-    blog_image_id: string;
-    blog_brief: string;
-    category_id: string;
-    category: BlogCategory;
-    tags: BlogTag[];
-    blog_state: boolean;
-    blog_words_num: number;
-    blog_is_top: boolean;
-    create_time: string;
-    update_time: string;
-}
-
-/**
- * 博客内容数据接口
- */
-export interface BlogContentData {
-    blog_data: {
-        blog_id: string;
-        blog_title: string;
-        blog_image_id: string;
-        blog_brief: string;
-        category: BlogCategory;
-        tags: BlogTag[];
-        blog_state: boolean;
-        blog_words_num: number;
-        blog_is_top: boolean;
-        create_time: string;
-        update_time: string;
-    };
-    pre_sign_url: string;
-}
-
-/**
- * 主页数据接口
- */
-export interface BasicData {
-    avatar_image: string;
-    background_image: string;
-    blogs: BlogInfo[];
-    categories: BlogCategory[];
-    icp_filing_number?: string;
-    tags: BlogTag[];
-    type_writer_content: string[];
-    user_email: string;
-    user_github_address: string;
-    user_hobbies: string[];
-    user_name: string;
-    web_logo: string;
-}
-
-/**
- * 搜索相关接口
- */
-export interface SearchResultItem {
-    id: string;
-    img_id: string;
-    title: string;
-    highlights: {
-        Content: string[];
-        Title: string[];
-    };
-}
-
-export interface SearchResponseData {
-    results: SearchResultItem[];
-    time_ms: number;
-}
-
-/**
- * 评论相关接口
- */
-export interface Comment {
-    comment_id: string;
-    commenter_email: string;
-    blog_id: string;
-    blog_title: string;
-    content: string;
-    create_time: string;
-    origin_post_id?: string;
-    reply_to_commenter?: string;
-    sub_comments?: Comment[];
-}
-
-export interface AddCommentData {
-    commenter_email: string;
-    blog_id: string;
-    content: string;
-}
-
-export interface ReplyCommentData {
-    commenter_email: string;
-    blog_id: string;
-    reply_to_comment_id: string;
-    content: string;
-}
-
-/**
- * 友链相关接口
- */
-export interface FriendLink {
-    friend_link_id: string;
-    friend_link_name: string;
-    friend_link_url: string;
-    friend_avatar_url: string;
-    friend_describe: string;
-    display: boolean;
-}
-
-export interface FriendLinkApplicationData {
-    friend_link_name: string;
-    friend_link_url: string;
-    friend_avatar_url?: string;
-    friend_describe?: string;
-}
-
-export interface FriendLinkApplicationResponse {
-    code: number;
-    msg: string;
-    data: null;
-}
+import { businessApiRequest } from './api';
+import { ApiResponse } from '../types';
+import {
+    BlogCategory,
+    BlogTag,
+    BlogInfo,
+    BlogContentData,
+    BasicData,
+    SearchResultItem,
+    SearchResponseData,
+    Comment,
+    AddCommentData,
+    ReplyCommentData,
+    FriendLink,
+    FriendLinkApplicationData,
+    FriendLinkApplicationResponse
+} from '../types';
 
 // 响应类型定义
 type BlogContentResponse = ApiResponse<BlogContentData>;

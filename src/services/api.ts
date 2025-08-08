@@ -1,11 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-
-// API响应类型定义
-export interface ApiResponse<T = unknown> {
-    code: number;
-    msg?: string;    // 错误消息或成功提示
-    data: T;
-}
+import { ApiResponse } from '../types';
 
 // 智能服务地址配置
 const getBusinessServiceUrl = (): string => {

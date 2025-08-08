@@ -1,34 +1,55 @@
 import { businessApiRequest } from './api';
-import { ApiResponse } from './api.ts';
+import {
+    ApiResponse,
+    VerificationCodeRequest,
+    LoginRequest,
+    LoginResponse,
+    UserInfoResponse,
+    BlogTag,
+    BlogCategory,
+    BlogItem,
+    BlogInfo,
+    BlogContentData,
+    BlogListResponse,
+    TagsAndCategoriesResponse,
+    UploadToOSSResponse,
+    UpdateOrAddBlogRequest,
+    BlogDataResponse,
+    BlogContentResponse,
+    BasicData,
+    BasicDataResponse,
+    BlogStats,
+    GalleryImage,
+    GalleryImagesResponse,
+    CheckImageNameResponse,
+    AddImagesRequest,
+    AddImagesResponse,
+    RenameImageRequest,
+    PreSignUrlResponse,
+    UserConfig,
+    UserConfigResponse,
+    ServerConfig,
+    ServerConfigResponse,
+    LoggerConfig,
+    LoggerConfigResponse,
+    MySQLConfig,
+    MySQLConfigResponse,
+    OSSConfig,
+    OSSConfigResponse,
+    CacheAndIndexConfig,
+    CacheAndIndexConfigResponse,
+    CommentItem,
+    CommentsResponse,
+    FriendLinkItem,
+    FriendLinksResponse,
+    AddFriendLinkRequest,
+    UpdateFriendLinkRequest,
+    ToggleDisplayResponse
+} from '../types';
 
 // ===============================================================
 // 认证相关接口和函数
 // ===============================================================
-
-// 验证码请求数据接口
-export interface VerificationCodeRequest {
-    user_email: string;
-}
-
-// 登录请求数据接口
-export interface LoginRequest {
-    user_email: string;
-    verification_code: string;
-}
-
-// 登录响应数据接口
-export interface LoginResponse {
-    token: string;
-}
-
-// 用户信息响应接口
-export interface UserInfoResponse {
-    code: number;
-    msg: string;
-    data: {
-        user_name: string;
-    };
-}
 
 /**
  * 发送验证码
@@ -89,95 +110,6 @@ export const getUserInfo = async (): Promise<UserInfoResponse> => {
 // ===============================================================
 // 博客相关接口和函数
 // ===============================================================
-
-export interface BlogTag {
-    tag_id: string;
-    tag_name: string;
-}
-
-export interface BlogCategory {
-    category_id: string;
-    category_name: string;
-}
-
-export interface BlogItem {
-    blog_id: string;
-    blog_title: string;
-    category: BlogCategory;
-    tags: BlogTag[];
-    blog_state: boolean;
-    blog_words_num: number;
-    blog_is_top: boolean;
-    create_time: string;
-    update_time: string;
-}
-
-export interface BlogListResponse {
-    code: number;
-    msg: string;
-    data: BlogItem[];
-}
-
-export interface TagsAndCategoriesResponse {
-    code: number;
-    msg: string;
-    data: {
-        categories: BlogCategory[];
-        tags: BlogTag[];
-    };
-}
-
-export interface UploadToOSSResponse {
-    code: number;
-    msg: string;
-    data: {
-        blog_id: string;
-        presign_url: string;
-    };
-}
-
-export interface UpdateOrAddBlogRequest {
-    blog_id: string;
-    blog_title: string;
-    blog_brief: string;
-    category_id: string;
-    category: {
-        category_name: string;
-    };
-    tags: Array<{
-        tag_id?: string;
-        tag_name: string;
-    }>;
-    blog_state: boolean;
-    blog_words_num: number;
-    blog_is_top: boolean;
-    blog_content?: string;
-    blog_image_id?: string;
-}
-
-// 博客数据接口
-export interface BlogDataResponse {
-    code: number;
-    msg: string;
-    data: {
-        blog_data: {
-            blog_id: string;
-            blog_title: string;
-            blog_brief: string;
-            category_id: string;
-            category: BlogCategory;
-            tags: BlogTag[];
-            blog_words_num: number;
-            create_time: string;
-            update_time: string;
-            blog_is_top?: boolean;
-            blog_state?: boolean;
-            blog_image?: GalleryImage;
-            blog_image_id?: string;
-        };
-        content_url: string;
-    };
-}
 
 /**
  * 获取所有博客列表
@@ -268,51 +200,6 @@ export const getBlogDataForEdit = async (blogId: string): Promise<BlogDataRespon
 // ===============================================================
 // 图库相关接口和函数
 // ===============================================================
-
-export interface GalleryImage {
-    img_id: string;
-    img_name: string;
-    img_type: string;
-    create_time: string;
-}
-
-export interface GalleryImagesResponse {
-    code: number;
-    msg: string;
-    data: GalleryImage[];
-}
-
-export interface CheckImageNameResponse {
-    code: number;
-    msg: string;
-    data: boolean;
-}
-
-export interface AddImagesRequest {
-    imgs: Array<{
-        img_name: string;
-        img_type: string;
-    }>;
-}
-
-export interface AddImagesResponse {
-    code: number;
-    msg: string;
-    data: null;
-}
-
-export interface RenameImageRequest {
-    img_id: string;
-    img_name: string;
-}
-
-export interface PreSignUrlResponse {
-    code: number;
-    msg: string;
-    data: {
-        pre_sign_put_url: string;
-    };
-}
 
 /**
  * 获取所有图片
@@ -408,24 +295,6 @@ export const getImageUrl = (imgId: string): string => {
 // ===============================================================
 // 用户配置相关接口和函数
 // ===============================================================
-
-export interface UserConfig {
-    user_name: string;
-    user_email: string;
-    avatar_image: string;
-    web_logo: string;
-    background_image: string;
-    user_github_address?: string;
-    user_hobbies?: string[];
-    type_writer_content?: string[];
-    icp_filing_number?: string;
-}
-
-export interface UserConfigResponse {
-    code: number;
-    msg: string;
-    data: UserConfig;
-}
 
 /**
  * 获取用户配置信息
@@ -531,22 +400,6 @@ export const updateUserImages = async (
 // 服务器配置相关接口和函数
 // ===============================================================
 
-export interface ServerConfig {
-    port: number;
-    token_expire_duration: number;
-    cors_origins: string[];
-    token_key?: string;
-    smtp_account?: string;
-    smtp_address?: string;
-    smtp_port?: number;
-}
-
-export interface ServerConfigResponse {
-    code: number;
-    msg: string;
-    data: ServerConfig;
-}
-
 /**
  * 获取服务器配置信息
  * @returns 服务器配置数据
@@ -643,21 +496,6 @@ export const sendSMTPVerificationCode = async (
 // 日志配置相关接口和函数
 // ===============================================================
 
-export interface LoggerConfig {
-    level: string;
-    dir_path: string;
-    max_size: number;
-    max_backups: number;
-    max_age: number;
-    compress: boolean;
-}
-
-export interface LoggerConfigResponse {
-    code: number;
-    msg: string;
-    data: LoggerConfig;
-}
-
 /**
  * 获取日志配置信息
  * @returns 日志配置数据
@@ -709,22 +547,6 @@ export const updateLoggerConfig = async (
 // ===============================================================
 // 数据库配置相关接口和函数
 // ===============================================================
-
-export interface MySQLConfig {
-    database: string;
-    host: string;
-    max_idle: number;
-    max_open: number;
-    port: number;
-    user: string;
-    password?: string;
-}
-
-export interface MySQLConfigResponse {
-    code: number;
-    msg: string;
-    data: MySQLConfig;
-}
 
 /**
  * 获取MySQL数据库配置信息
@@ -781,22 +603,6 @@ export const updateMySQLConfig = async (
 // OSS配置相关接口和函数
 // ===============================================================
 
-export interface OSSConfig {
-    endpoint: string;
-    region: string;
-    bucket: string;
-    image_oss_path: string;
-    blog_oss_path: string;
-    access_key_id?: string;
-    access_key_secret?: string;
-}
-
-export interface OSSConfigResponse {
-    code: number;
-    msg: string;
-    data: OSSConfig;
-}
-
 /**
  * 获取OSS配置信息
  * @returns OSS配置数据
@@ -851,20 +657,6 @@ export const updateOSSConfig = async (
 // ===============================================================
 // 缓存和索引配置相关接口和函数
 // ===============================================================
-
-export interface CacheAndIndexConfig {
-    enable_aof: boolean;
-    aof_dir_path: string;
-    aof_mix_size: number;
-    aof_compress: boolean;
-    index_path: string;
-}
-
-export interface CacheAndIndexConfigResponse {
-    code: number;
-    msg: string;
-    data: CacheAndIndexConfig;
-}
 
 /**
  * 获取缓存和索引配置信息
@@ -930,23 +722,6 @@ export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
 // 评论管理相关接口和函数
 // ===============================================================
 
-export interface CommentItem {
-    comment_id: string;
-    commenter_email: string;
-    blog_id: string;
-    blog_title: string;
-    content: string;
-    create_time: string;
-    origin_post_id?: string;
-    reply_to_commenter?: string;
-}
-
-export interface CommentsResponse {
-    code: number;
-    msg: string;
-    data: CommentItem[];
-}
-
 /**
  * 获取所有评论列表
  * @returns 评论列表数据
@@ -990,45 +765,6 @@ export const updateComment = async (commentId: string, content: string): Promise
 // ===============================================================
 // 友链管理相关接口和函数
 // ===============================================================
-
-export interface FriendLinkItem {
-    friend_link_id: string;
-    friend_link_name: string;
-    friend_link_url: string;
-    friend_avatar_url: string;
-    friend_describe: string;
-    display: boolean;
-}
-
-export interface FriendLinksResponse {
-    code: number;
-    msg: string;
-    data: FriendLinkItem[];
-}
-
-export interface AddFriendLinkRequest {
-    friend_link_name: string;
-    friend_link_url: string;
-    friend_avatar_url: string;
-    friend_describe: string;
-    display: boolean;
-}
-
-export interface UpdateFriendLinkRequest {
-    friend_link_id: string;
-    friend_link_name: string;
-    friend_link_url: string;
-    friend_avatar_url: string;
-    friend_describe: string;
-}
-
-export interface ToggleDisplayResponse {
-    code: number;
-    msg: string;
-    data: {
-        display: boolean;
-    };
-}
 
 /**
  * 获取所有友链列表

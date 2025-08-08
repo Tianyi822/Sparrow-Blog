@@ -4,7 +4,7 @@ import BackToTop from '@/components/Tools/BackToTop/BackToTop';
 import ICPFilingNumber from '@/components/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
 import CommentsButton from '@/components/Tools/CommentsButton/CommentsButton';
 import classNames from 'classnames';
-import { BasicData } from '@/services/webService';
+import { BasicData } from '@/types';
 
 /**
  * 工具组件属性接口

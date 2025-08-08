@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { FiSend, FiCornerUpLeft, FiClock, FiUser, FiMessageSquare, FiX, FiArrowRight } from 'react-icons/fi';
-import { Comment, AddCommentData, ReplyCommentData, getBlogComments, addComment, replyComment } from '@/services/webService';
+import { getBlogComments, addComment, replyComment } from '@/services/webService';
+import { Comment, AddCommentData, ReplyCommentData } from '@/types';
 import './Comments.scss';
 
 interface CommentsProps {
@@ -365,4 +366,4 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
     );
 };
 
-export default Comments; 
+export default Comments;

@@ -1,7 +1,8 @@
 import Background from "@/components/Background/Background";
 import { CodeBlock } from '@/components/ui/code-block';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
-import { BlogContentData, fetchMarkdownContent, getBlogContent } from '@/services/webService';
+import { fetchMarkdownContent, getBlogContent } from '@/services/webService';
+import { BlogContentData } from '@/types';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { FiCalendar, FiClock, FiX } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
@@ -374,4 +375,4 @@ const BlogContent: React.FC = memo(() => {
     );
 });
 
-export default BlogContent; 
+export default BlogContent;

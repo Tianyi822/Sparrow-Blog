@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { getImageUrl, searchBlogs, SearchResultItem } from '@/services/webService';
+import { getImageUrl, searchBlogs } from '@/services/webService';
+import { SearchResultItem } from '@/types';
 import './SearchModal.scss';
 
 interface SearchModalProps {
@@ -409,4 +410,4 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     );
 };
 
-export default SearchModal; 
+export default SearchModal;

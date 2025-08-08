@@ -10,7 +10,8 @@ import {
   FiChevronRight,
   FiSettings
 } from 'react-icons/fi';
-import { FriendLinkItem, getAllFriendLinks, updateFriendLink, deleteFriendLink, toggleFriendLinkDisplay } from '@/services/adminService';
+import { getAllFriendLinks, updateFriendLink, deleteFriendLink, toggleFriendLinkDisplay } from '@/services/adminService';
+import { FriendLinkItem } from '@/types';
 import './FriendLinks.scss';
 
 // 可选的每页条数选项
@@ -452,4 +453,4 @@ const FriendLinks: React.FC = memo(() => {
   );
 });
 
-export default FriendLinks; 
+export default FriendLinks;
