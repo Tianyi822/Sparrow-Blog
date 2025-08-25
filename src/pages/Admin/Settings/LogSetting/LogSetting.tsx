@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, memo } from 'react';
 import { FiFile, FiCpu, FiAlertCircle, FiType, FiLayers, FiClock, FiArchive } from 'react-icons/fi';
 import './LogSetting.scss';
 import { getLoggerConfig, updateLoggerConfig } from '@/services/adminService';
+import { LOG_LEVELS, DEFAULT_VALUES } from '@/constants';
 
 // 组件属性接口
 interface LogConfigProps {
@@ -11,8 +12,8 @@ interface LogConfigProps {
 const LogSetting: React.FC<LogConfigProps> = memo(({ onSaveSuccess }) => {
     // 表单状态
     const [formData, setFormData] = useState({
-        logLevel: 'info',
-        logFileDir: '/var/log/h2blog',
+        logLevel: DEFAULT_VALUES.LOG_LEVEL as 'info',
+        logFileDir: DEFAULT_VALUES.LOG_FILE_DIR as '/var/log/h2blog',
         logMaxDays: '30',
         logMaxSize: '10',
         logMaxFiles: '5',
@@ -39,8 +40,8 @@ const LogSetting: React.FC<LogConfigProps> = memo(({ onSaveSuccess }) => {
 
                     // 设置表单数据
                     setFormData({
-                        logLevel: level.toLowerCase(),
-                        logFileDir: dir_path || '',
+                        logLevel: level.toLowerCase() as 'info',
+                        logFileDir: (dir_path || '') as '/var/log/h2blog',
                         logMaxDays: max_age.toString(),
                         logMaxSize: max_size.toString(),
                         logMaxFiles: max_backups.toString(),
@@ -214,10 +215,10 @@ const LogSetting: React.FC<LogConfigProps> = memo(({ onSaveSuccess }) => {
                             onChange={handleInputChange}
                             className={errors.logLevel ? 'has-error' : ''}
                         >
-                            <option value="debug">DEBUG</option>
-                            <option value="info">INFO</option>
-                            <option value="warn">WARN</option>
-                            <option value="error">ERROR</option>
+                            <option value={LOG_LEVELS.DEBUG}>DEBUG</option>
+                            <option value={LOG_LEVELS.INFO}>INFO</option>
+                            <option value={LOG_LEVELS.WARN}>WARN</option>
+                            <option value={LOG_LEVELS.ERROR}>ERROR</option>
                         </select>
                         {errors.logLevel && <div className="error-message">{errors.logLevel}</div>}
                     </div>
@@ -318,4 +319,4 @@ const LogSetting: React.FC<LogConfigProps> = memo(({ onSaveSuccess }) => {
     );
 });
 
-export default LogSetting; 
+export default LogSetting;

@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 import { checkSystemStatus } from "@/services/webService";
+import { WEB_ROUTES, ADMIN_ROUTES, NOT_FOUND_ROUTE } from "@/constants";
 
 // 懒加载组件
 const Home = React.lazy(() => import("@/pages/Home"));
@@ -141,7 +142,7 @@ const adminAuthLoader = async (routeName: string) => {
 // 定义路由配置
 const routes: RouteObject[] = [
     {
-        path: "/",
+        path: WEB_ROUTES.HOME,
         element: withSuspense(BlogLayout),
         loader: () => checkSystemStatusLoader('blog-layout'),
         children: [
@@ -150,17 +151,17 @@ const routes: RouteObject[] = [
                 element: withSuspense(Home)
             },
             {
-                path: "blog/:blogId",
+                path: WEB_ROUTES.BLOG_DETAIL,
                 element: withSuspense(BlogContent)
             },
             {
-                path: "friends",
+                path: WEB_ROUTES.FRIENDS,
                 element: withSuspense(FriendLink)
             }
         ]
     },
     {
-        path: "/waiting",
+        path: WEB_ROUTES.WAITING,
         element: withSuspense(Waiting),
         loader: () => {
             console.log('等待页面: 直接加载，不检查系统状态');
@@ -168,7 +169,7 @@ const routes: RouteObject[] = [
         }
     },
     {
-        path: "/admin",
+        path: ADMIN_ROUTES.ROOT,
         element: withSuspense(AdminLayout),
         loader: adminLoader,
         children: [
@@ -178,37 +179,37 @@ const routes: RouteObject[] = [
                 loader: () => adminAuthLoader('posts')
             },
             {
-                path: "login",
+                path: ADMIN_ROUTES.LOGIN,
                 element: withSuspense(Login),
                 loader: loginLoader
             },
             {
-                path: "posts",
+                path: ADMIN_ROUTES.POSTS,
                 element: withSuspense(Posts),
                 loader: () => adminAuthLoader('posts')
             },
             {
-                path: "edit",
+                path: ADMIN_ROUTES.EDIT,
                 element: withSuspense(Edit),
                 loader: () => adminAuthLoader('edit')
             },
             {
-                path: "gallery",
+                path: ADMIN_ROUTES.GALLERY,
                 element: withSuspense(Gallery),
                 loader: () => adminAuthLoader('gallery')
             },
             {
-                path: "friend-links",
+                path: ADMIN_ROUTES.FRIEND_LINKS,
                 element: withSuspense(FriendLinks),
                 loader: () => adminAuthLoader('friend-links')
             },
             {
-                path: "comments",
+                path: ADMIN_ROUTES.COMMENTS,
                 element: withSuspense(Comments),
                 loader: () => adminAuthLoader('comments')
             },
             {
-                path: "settings",
+                path: ADMIN_ROUTES.SETTINGS,
                 element: withSuspense(Settings),
                 loader: () => adminAuthLoader('settings')
             }
@@ -216,7 +217,7 @@ const routes: RouteObject[] = [
     },
     // 404 路由也需要检查系统状态
     {
-        path: "*",
+        path: NOT_FOUND_ROUTE,
         element: withSuspense(NotFound),
         loader: () => checkSystemStatusLoader('not-found')
     }

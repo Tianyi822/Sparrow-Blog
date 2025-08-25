@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { businessApiRequest } from './api';
 import { FileType, ContentType, PreSignUrlResponse } from '../types';
+import { TIMEOUTS } from '../constants';
 
 // 重新导出常量以保持向后兼容性
 export { FileType, ContentType };
@@ -34,7 +35,7 @@ export const uploadToOSS = async (presignUrl: string, content: string | Blob | A
         headers: {
             'Content-Type': contentType
         },
-        timeout: 10000 // 10秒超时
+        timeout: TIMEOUTS.OSS_UPLOAD // 10秒超时
     });
 
     return response.status === 200;

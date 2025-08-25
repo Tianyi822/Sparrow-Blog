@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { WEB_ROUTES } from '../../constants';
 import "./Navigator.scss"
 import SvgIcon, {
     Normal,
@@ -132,8 +133,8 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
      */
     const navItems = useMemo(() => [
         { name: '搜索', path: '', label: '搜索', icon: Search, onClick: handleSearch },
-        { name: '首页', path: '/', label: '首页', icon: Home },
-        { name: '友链', path: '/friends', label: '友链', icon: FriendLink },
+        { name: '首页', path: WEB_ROUTES.HOME, label: '首页', icon: Home },
+        { name: '友链', path: WEB_ROUTES.FRIENDS, label: '友链', icon: FriendLink },
         { name: '后台管理', path: '', label: '后台管理', icon: Category, onClick: handleAdminClick },
     ], [handleSearch, handleAdminClick]);
 
@@ -160,7 +161,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
      */
     const handleBrandClick = useCallback(() => {
         // 导航到首页
-        navigate('/');
+        navigate(WEB_ROUTES.HOME);
         // 设置激活索引为首页(索引1)
         if (setIndex) {
             setIndex(1);

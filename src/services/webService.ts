@@ -1,5 +1,6 @@
 import { businessApiRequest } from './api';
 import { ApiResponse } from '../types';
+import { WEB_API_ENDPOINTS } from '../constants';
 import {
     BlogCategory,
     BlogTag,
@@ -58,7 +59,7 @@ export const checkSystemStatus = async (): Promise<{ isRuntime: boolean; errorMe
     try {
         const response = await businessApiRequest<ApiResponse<null>>({
             method: 'GET',
-            url: '/web/sys/status'
+            url: WEB_API_ENDPOINTS.SYSTEM.STATUS
         });
 
         return {
@@ -84,7 +85,7 @@ export const getBasicData = async (): Promise<BasicData | null> => {
     try {
         const response = await businessApiRequest<BasicDataResponse>({
             method: 'GET',
-            url: '/web/basic-data'
+            url: WEB_API_ENDPOINTS.DATA.BASIC_DATA
         });
 
         return handleApiResponse(response, '获取主页数据');
@@ -101,7 +102,7 @@ export const getBlogContent = async (blogId: string): Promise<BlogContentData | 
     try {
         const response = await businessApiRequest<BlogContentResponse>({
             method: 'GET',
-            url: `/web/blog/${blogId}`
+            url: WEB_API_ENDPOINTS.DATA.BLOG_CONTENT(blogId)
         });
 
         return handleApiResponse(response, '获取博客内容');
@@ -140,7 +141,7 @@ export const searchBlogs = async (query: string): Promise<SearchResponseData | n
     try {
         const response = await businessApiRequest<SearchResponse>({
             method: 'GET',
-            url: `/web/search/${encodeURIComponent(query)}`
+            url: WEB_API_ENDPOINTS.SEARCH.BLOGS(query)
         });
 
         return handleApiResponse(response, '搜索博客');
@@ -190,7 +191,7 @@ export const addComment = async (commentData: AddCommentData): Promise<Comment |
     try {
         const response = await businessApiRequest<CommentResponse>({
             method: 'POST',
-            url: '/web/comment',
+            url: WEB_API_ENDPOINTS.COMMENTS.ADD,
             data: commentData
         });
 
@@ -208,7 +209,7 @@ export const replyComment = async (replyData: ReplyCommentData): Promise<Comment
     try {
         const response = await businessApiRequest<CommentResponse>({
             method: 'POST',
-            url: '/web/comment/reply',
+            url: WEB_API_ENDPOINTS.COMMENTS.REPLY,
             data: replyData
         });
 
@@ -226,7 +227,7 @@ export const getLatestComments = async (): Promise<Comment[] | null> => {
     try {
         const response = await businessApiRequest<CommentsResponse>({
             method: 'GET',
-            url: '/web/comment/latest'
+            url: WEB_API_ENDPOINTS.COMMENTS.LATEST
         });
 
         return handleApiResponse(response, '获取最新评论');
@@ -247,7 +248,7 @@ export const getFriendLinks = async (): Promise<FriendLink[] | null> => {
     try {
         const response = await businessApiRequest<FriendLinksResponse>({
             method: 'GET',
-            url: '/web/friend-link/all'
+            url: WEB_API_ENDPOINTS.FRIEND_LINKS.ALL
         });
 
         return handleApiResponse(response, '获取友链数据');
@@ -264,7 +265,7 @@ export const applyFriendLink = async (applicationData: FriendLinkApplicationData
     try {
         const response = await businessApiRequest<FriendLinkApplyResponse>({
             method: 'POST',
-            url: '/web/friend-link/apply',
+            url: WEB_API_ENDPOINTS.FRIEND_LINKS.APPLY,
             data: applicationData
         });
 

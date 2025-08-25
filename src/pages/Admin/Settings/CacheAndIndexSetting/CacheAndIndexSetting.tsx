@@ -1,6 +1,7 @@
 import { getCacheAndIndexConfig, updateCacheAndIndexConfig, rebuildIndex } from '@/services/adminService';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FiAlertCircle, FiDatabase, FiFolder, FiHardDrive, FiRefreshCw, FiSearch, FiZap } from 'react-icons/fi';
+import { DEFAULT_VALUES } from '@/constants';
 import './CacheAndIndexSetting.scss';
 
 // 缓存和索引表单数据接口
@@ -25,10 +26,10 @@ interface CacheAndIndexSettingProps {
 const CacheAndIndexSetting: React.FC<CacheAndIndexSettingProps> = memo(({ onSaveSuccess }) => {
     const [formData, setFormData] = useState<CacheAndIndexFormData>({
         aofEnabled: true,
-        aofPath: '',
+        aofPath: DEFAULT_VALUES.AOF_PATH,
         aofMaxSize: '1',
         compressEnabled: true,
-        indexPath: ''
+        indexPath: DEFAULT_VALUES.INDEX_PATH
     });
 
     const [errors, setErrors] = useState<ValidationErrors>({});
@@ -407,4 +408,4 @@ const CacheAndIndexSetting: React.FC<CacheAndIndexSettingProps> = memo(({ onSave
 
 CacheAndIndexSetting.displayName = 'CacheAndIndexSetting';
 
-export default CacheAndIndexSetting; 
+export default CacheAndIndexSetting;

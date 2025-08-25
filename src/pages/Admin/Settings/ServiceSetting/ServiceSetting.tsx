@@ -3,7 +3,8 @@ import { FiServer, FiGlobe, FiClock, FiAlertCircle, FiPlus, FiX, FiKey, FiRefres
 import './ServiceSetting.scss';
 import { getServerConfig, sendSMTPVerificationCode } from '@/services/adminService';
 import { businessApiRequest } from '@/services/api';
-import { ApiResponse } from '@/services/api.ts';
+import { ApiResponse } from '@/types';
+import { CHARSET, VALIDATION } from '@/constants';
 
 // 组件属性接口
 interface ServiceConfigProps {
@@ -156,8 +157,8 @@ const ServiceSetting: React.FC<ServiceConfigProps> = memo(({ onSaveSuccess }) =>
 
     // 生成随机令牌密钥
     const generateRandomTokenKey = useCallback(() => {
-        const length = 32;
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const length = VALIDATION.TOKEN_KEY_LENGTH;
+        const chars = CHARSET.TOKEN_CHARS;
         let result = '';
 
         // 确保生成的字符串恰好是32个字符
@@ -267,17 +268,17 @@ const ServiceSetting: React.FC<ServiceConfigProps> = memo(({ onSaveSuccess }) =>
 
                 // 确保tokenKey为确切的32个字符
                 let tokenKeyToSend = formData.tokenKey;
-                if (tokenKeyToSend && tokenKeyToSend.length !== 32) {
+                if (tokenKeyToSend && tokenKeyToSend.length !== VALIDATION.TOKEN_KEY_LENGTH) {
                     // 如果长度不足32，则填充到32个字符
-                    if (tokenKeyToSend.length < 32) {
-                        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                        while (tokenKeyToSend.length < 32) {
+                    if (tokenKeyToSend.length < VALIDATION.TOKEN_KEY_LENGTH) {
+                        const chars = CHARSET.TOKEN_CHARS;
+                        while (tokenKeyToSend.length < VALIDATION.TOKEN_KEY_LENGTH) {
                             tokenKeyToSend += chars.charAt(Math.floor(Math.random() * chars.length));
                         }
                     }
                     // 如果长度超过32，则截断到32个字符
-                    else if (tokenKeyToSend.length > 32) {
-                        tokenKeyToSend = tokenKeyToSend.substring(0, 32);
+                    else if (tokenKeyToSend.length > VALIDATION.TOKEN_KEY_LENGTH) {
+                        tokenKeyToSend = tokenKeyToSend.substring(0, VALIDATION.TOKEN_KEY_LENGTH);
                     }
                 }
 
@@ -585,4 +586,4 @@ const ServiceSetting: React.FC<ServiceConfigProps> = memo(({ onSaveSuccess }) =>
     );
 });
 
-export default ServiceSetting; 
+export default ServiceSetting;

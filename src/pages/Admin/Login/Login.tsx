@@ -6,6 +6,7 @@ import {
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FiLock, FiMail } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { STORAGE_KEYS, ADMIN_ROUTES } from '../../../constants';
 import './Login.scss';
 
 // 登录表单数据接口
@@ -19,8 +20,7 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-// 本地存储键名
-const COUNTDOWN_END_TIME_KEY = 'verify_code_end_time';
+
 
 const Login: React.FC = memo(() => {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ const Login: React.FC = memo(() => {
 
   // 初始化时从localStorage恢复倒计时状态
   useEffect(() => {
-    const endTimeStr = localStorage.getItem(COUNTDOWN_END_TIME_KEY);
+    const endTimeStr = localStorage.getItem(STORAGE_KEYS.VERIFY_CODE_END_TIME);
     if (endTimeStr) {
       const endTime = parseInt(endTimeStr, 10);
       const now = Date.now();
@@ -71,7 +71,7 @@ const Login: React.FC = memo(() => {
         setCountdown(remainingSeconds);
       } else {
         // 倒计时已结束，清除存储
-        localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
+        localStorage.removeItem(STORAGE_KEYS.VERIFY_CODE_END_TIME);
       }
     }
   }, []);
@@ -80,13 +80,13 @@ const Login: React.FC = memo(() => {
   useEffect(() => {
     if (countdown <= 0) {
       // 倒计时结束，清除存储
-      localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
+      localStorage.removeItem(STORAGE_KEYS.VERIFY_CODE_END_TIME);
       return;
     }
 
     // 保存结束时间到localStorage (当前时间 + 剩余秒数)
     const endTime = Date.now() + countdown * 1000;
-    localStorage.setItem(COUNTDOWN_END_TIME_KEY, endTime.toString());
+    localStorage.setItem(STORAGE_KEYS.VERIFY_CODE_END_TIME, endTime.toString());
 
     const timer = setTimeout(() => {
       setCountdown(countdown - 1);
@@ -189,10 +189,10 @@ const Login: React.FC = memo(() => {
       // 登录成功直接跳转到管理后台
       if (response.code === 200) {
         // 清除倒计时状态
-        localStorage.removeItem(COUNTDOWN_END_TIME_KEY);
+        localStorage.removeItem(STORAGE_KEYS.VERIFY_CODE_END_TIME);
 
         // 跳转到管理页面
-        navigate('/admin');
+        navigate(ADMIN_ROUTES.ROOT);
       } else {
         setSubmitError(response.msg || '登录失败，请稍后再试');
       }

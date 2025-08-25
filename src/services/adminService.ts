@@ -46,6 +46,7 @@ import {
     UpdateFriendLinkRequest,
     ToggleDisplayResponse
 } from '../types';
+import { ADMIN_API_ENDPOINTS, STORAGE_KEYS } from '../constants';
 
 // ===============================================================
 // 认证相关接口和函数
@@ -59,7 +60,7 @@ import {
 export const sendVerificationCode = async (data: VerificationCodeRequest): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'POST',
-        url: '/admin/login/verification-code',
+        url: ADMIN_API_ENDPOINTS.AUTH.VERIFICATION_CODE,
         data,
         headers: {
             'Content-Type': 'application/json'
@@ -76,7 +77,7 @@ export const loginWithVerificationCode = async (data: LoginRequest): Promise<Api
     try {
         const response = await businessApiRequest<ApiResponse<LoginResponse>>({
             method: 'POST',
-            url: '/admin/login',
+            url: ADMIN_API_ENDPOINTS.AUTH.LOGIN,
             data,
             headers: {
                 'Content-Type': 'application/json'
@@ -85,7 +86,7 @@ export const loginWithVerificationCode = async (data: LoginRequest): Promise<Api
 
         // 如果登录成功且返回了token，则存储到localStorage
         if (response.code === 200 && response.data && response.data.token) {
-            localStorage.setItem('auth_token', response.data.token);
+            localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.data.token);
             console.log('Token已保存到localStorage');
         }
 
@@ -103,7 +104,7 @@ export const loginWithVerificationCode = async (data: LoginRequest): Promise<Api
 export const getUserInfo = async (): Promise<UserInfoResponse> => {
     return businessApiRequest<UserInfoResponse>({
         method: 'GET',
-        url: '/admin/login/user-info'
+        url: ADMIN_API_ENDPOINTS.AUTH.USER_INFO
     });
 };
 
@@ -118,7 +119,7 @@ export const getUserInfo = async (): Promise<UserInfoResponse> => {
 export const getAllBlogs = async (): Promise<BlogListResponse> => {
     return businessApiRequest<BlogListResponse>({
         method: 'GET',
-        url: '/admin/posts/all-blogs'
+        url: ADMIN_API_ENDPOINTS.POSTS.ALL_BLOGS
     });
 };
 
@@ -130,7 +131,7 @@ export const getAllBlogs = async (): Promise<BlogListResponse> => {
 export const changeBlogState = async (blogId: string): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'GET',
-        url: `/admin/posts/change-blog-state/${blogId}`
+        url: ADMIN_API_ENDPOINTS.POSTS.CHANGE_BLOG_STATE(blogId)
     });
 };
 
@@ -142,7 +143,7 @@ export const changeBlogState = async (blogId: string): Promise<ApiResponse<null>
 export const setBlogTop = async (blogId: string): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'GET',
-        url: `/admin/posts/set-top/${blogId}`
+        url: ADMIN_API_ENDPOINTS.POSTS.SET_TOP(blogId)
     });
 };
 
@@ -154,7 +155,7 @@ export const setBlogTop = async (blogId: string): Promise<ApiResponse<null>> => 
 export const deleteBlog = async (blogId: string): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'DELETE',
-        url: `/admin/posts/delete/${blogId}`
+        url: ADMIN_API_ENDPOINTS.POSTS.DELETE_BLOG(blogId)
     });
 };
 
@@ -165,7 +166,7 @@ export const deleteBlog = async (blogId: string): Promise<ApiResponse<null>> => 
 export const getAllTagsAndCategories = async (): Promise<TagsAndCategoriesResponse> => {
     return businessApiRequest<TagsAndCategoriesResponse>({
         method: 'GET',
-        url: '/admin/edit/all-tags-categories'
+        url: ADMIN_API_ENDPOINTS.EDIT.ALL_TAGS_CATEGORIES
     });
 };
 
@@ -177,7 +178,7 @@ export const getAllTagsAndCategories = async (): Promise<TagsAndCategoriesRespon
 export const updateOrAddBlog = async (data: UpdateOrAddBlogRequest): Promise<UploadToOSSResponse> => {
     return businessApiRequest<UploadToOSSResponse>({
         method: 'POST',
-        url: '/admin/edit/update-or-add-blog',
+        url: ADMIN_API_ENDPOINTS.EDIT.UPDATE_OR_ADD_BLOG,
         data,
         headers: {
             'Content-Type': 'application/json'
@@ -193,7 +194,7 @@ export const updateOrAddBlog = async (data: UpdateOrAddBlogRequest): Promise<Upl
 export const getBlogDataForEdit = async (blogId: string): Promise<BlogDataResponse> => {
     return businessApiRequest<BlogDataResponse>({
         method: 'GET',
-        url: `/admin/edit/blog-data/${blogId}`
+        url: ADMIN_API_ENDPOINTS.EDIT.BLOG_DATA(blogId)
     });
 };
 
@@ -208,7 +209,7 @@ export const getBlogDataForEdit = async (blogId: string): Promise<BlogDataRespon
 export const getAllGalleryImages = async (): Promise<GalleryImagesResponse> => {
     return businessApiRequest<GalleryImagesResponse>({
         method: 'GET',
-        url: '/admin/gallery/all-imgs'
+        url: ADMIN_API_ENDPOINTS.GALLERY.ALL_IMGS
     });
 };
 
@@ -221,7 +222,7 @@ export const getAllGalleryImages = async (): Promise<GalleryImagesResponse> => {
 export const renameGalleryImage = async (imageId: string, data: RenameImageRequest): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: `/admin/gallery/${imageId}`,
+        url: ADMIN_API_ENDPOINTS.GALLERY.RENAME_IMG(imageId),
         data,
         headers: {
             'Content-Type': 'application/json'
@@ -237,7 +238,7 @@ export const renameGalleryImage = async (imageId: string, data: RenameImageReque
 export const deleteGalleryImage = async (imageId: string): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'DELETE',
-        url: `/admin/gallery/${imageId}`
+        url: ADMIN_API_ENDPOINTS.GALLERY.DELETE_IMG(imageId)
     });
 };
 
@@ -250,7 +251,7 @@ export const deleteGalleryImage = async (imageId: string): Promise<ApiResponse<n
 export const getPreSignUrl = async (fileName: string, fileType: string): Promise<PreSignUrlResponse> => {
     return businessApiRequest<PreSignUrlResponse>({
         method: 'GET',
-        url: `/admin/oss/pre_sign_url/${fileName}/type/${fileType}`
+        url: ADMIN_API_ENDPOINTS.OSS.PRE_SIGN_URL(fileName, fileType)
     });
 };
 
@@ -262,7 +263,7 @@ export const getPreSignUrl = async (fileName: string, fileType: string): Promise
 export const addGalleryImages = async (data: AddImagesRequest): Promise<AddImagesResponse> => {
     return businessApiRequest<AddImagesResponse>({
         method: 'POST',
-        url: '/admin/gallery/add',
+        url: ADMIN_API_ENDPOINTS.GALLERY.ADD_IMG,
         data,
         headers: {
             'Content-Type': 'application/json'
@@ -278,7 +279,7 @@ export const addGalleryImages = async (data: AddImagesRequest): Promise<AddImage
 export const checkImageNameExistence = async (imageName: string): Promise<CheckImageNameResponse> => {
     return businessApiRequest<CheckImageNameResponse>({
         method: 'GET',
-        url: `/admin/gallery/is-exist/${encodeURIComponent(imageName)}`
+        url: ADMIN_API_ENDPOINTS.GALLERY.CHECK_IMG_NAME(imageName)
     });
 };
 
@@ -303,7 +304,7 @@ export const getImageUrl = (imgId: string): string => {
 export const getUserConfig = async (): Promise<UserConfigResponse> => {
     return businessApiRequest<UserConfigResponse>({
         method: 'GET',
-        url: '/admin/setting/user/config'
+        url: ADMIN_API_ENDPOINTS.SETTINGS.USER.CONFIG
     });
 };
 
@@ -341,7 +342,7 @@ export const updateUserConfig = async (
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/user/config',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.USER.CONFIG,
         data: requestData,
         headers: {
             'Content-Type': 'application/json'
@@ -357,7 +358,7 @@ export const updateUserConfig = async (
 export const sendEmailVerificationCode = async (email: string): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'POST',
-        url: '/admin/setting/user/verify-new-email',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.USER.VERIFY_NEW_EMAIL,
         data: { 'user.user_email': email },
         headers: {
             'Content-Type': 'application/json'
@@ -388,7 +389,7 @@ export const updateUserImages = async (
     // 使用完整路径并允许重定向
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/user/visual',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.USER.VISUAL,
         data: requestData,
         headers: {
             'Content-Type': 'application/json'
@@ -407,7 +408,7 @@ export const updateUserImages = async (
 export const getServerConfig = async (): Promise<ServerConfigResponse> => {
     return businessApiRequest<ServerConfigResponse>({
         method: 'GET',
-        url: '/admin/setting/server/config'
+        url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.CONFIG
     });
 };
 
@@ -455,7 +456,7 @@ export const updateServerConfig = async (
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/server/config',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.CONFIG,
         data: requestData,
         headers: {
             'Content-Type': 'application/json'
@@ -479,7 +480,7 @@ export const sendSMTPVerificationCode = async (
 ): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'POST',
-        url: '/admin/setting/user/verify-new-smtp-config',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.VERIFY_SMTP,
         data: {
             'server.smtp_account': smtpAccount,
             'server.smtp_address': smtpAddress,
@@ -503,7 +504,7 @@ export const sendSMTPVerificationCode = async (
 export const getLoggerConfig = async (): Promise<LoggerConfigResponse> => {
     return businessApiRequest<LoggerConfigResponse>({
         method: 'GET',
-        url: '/admin/setting/logger/config'
+        url: ADMIN_API_ENDPOINTS.SETTINGS.LOGGER.CONFIG
     });
 };
 
@@ -536,7 +537,7 @@ export const updateLoggerConfig = async (
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/logger/config',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.LOGGER.CONFIG,
         data: requestData,
         headers: {
             'Content-Type': 'application/json'
@@ -555,7 +556,7 @@ export const updateLoggerConfig = async (
 export const getMySQLConfig = async (): Promise<MySQLConfigResponse> => {
     return businessApiRequest<MySQLConfigResponse>({
         method: 'GET',
-        url: '/admin/setting/mysql/config'
+        url: ADMIN_API_ENDPOINTS.SETTINGS.MYSQL.CONFIG
     });
 };
 
@@ -591,7 +592,7 @@ export const updateMySQLConfig = async (
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/mysql/config',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.MYSQL.CONFIG,
         data: requestData,
         headers: {
             'Content-Type': 'application/json'
@@ -610,7 +611,7 @@ export const updateMySQLConfig = async (
 export const getOSSConfig = async (): Promise<OSSConfigResponse> => {
     return businessApiRequest<OSSConfigResponse>({
         method: 'GET',
-        url: '/admin/setting/oss/config'
+        url: ADMIN_API_ENDPOINTS.SETTINGS.OSS.CONFIG
     });
 };
 
@@ -646,7 +647,7 @@ export const updateOSSConfig = async (
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/oss/config',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.OSS.CONFIG,
         data: requestData,
         headers: {
             'Content-Type': 'application/json'
@@ -665,7 +666,7 @@ export const updateOSSConfig = async (
 export const getCacheAndIndexConfig = async (): Promise<CacheAndIndexConfigResponse> => {
     return businessApiRequest<CacheAndIndexConfigResponse>({
         method: 'GET',
-        url: '/admin/setting/cache-index/config'
+        url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.CONFIG
     });
 };
 
@@ -695,7 +696,7 @@ export const updateCacheAndIndexConfig = async (
 
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/cache-index/config',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.CONFIG,
         data: requestData,
         headers: {
             'Content-Type': 'application/json'
@@ -710,7 +711,7 @@ export const updateCacheAndIndexConfig = async (
 export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/setting/cache-index/rebuild-index',
+        url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.REBUILD_INDEX,
         headers: {
             'Content-Type': 'application/json'
         }
@@ -729,7 +730,7 @@ export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
 export const getAllComments = async (): Promise<CommentsResponse> => {
     return businessApiRequest<CommentsResponse>({
         method: 'GET',
-        url: '/admin/comments/all'
+        url: ADMIN_API_ENDPOINTS.COMMENTS.ALL
     });
 };
 
@@ -741,7 +742,7 @@ export const getAllComments = async (): Promise<CommentsResponse> => {
 export const deleteComment = async (commentId: string): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'DELETE',
-        url: `/admin/comments/${commentId}`
+        url: ADMIN_API_ENDPOINTS.COMMENTS.DELETE(commentId)
     });
 };
 
@@ -754,7 +755,7 @@ export const deleteComment = async (commentId: string): Promise<ApiResponse<null
 export const updateComment = async (commentId: string, content: string): Promise<ApiResponse<CommentItem>> => {
     return businessApiRequest<ApiResponse<CommentItem>>({
         method: 'PUT',
-        url: `/admin/comments/${commentId}/content`,
+        url: ADMIN_API_ENDPOINTS.COMMENTS.UPDATE_CONTENT(commentId),
         data: { content },
         headers: {
             'Content-Type': 'application/json'
@@ -773,7 +774,7 @@ export const updateComment = async (commentId: string, content: string): Promise
 export const getAllFriendLinks = async (): Promise<FriendLinksResponse> => {
     return businessApiRequest<FriendLinksResponse>({
         method: 'GET',
-        url: '/admin/friend-links/all'
+        url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.ALL
     });
 };
 
@@ -785,7 +786,7 @@ export const getAllFriendLinks = async (): Promise<FriendLinksResponse> => {
 export const updateFriendLink = async (data: UpdateFriendLinkRequest): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'PUT',
-        url: '/admin/friend-links/update',
+        url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.UPDATE,
         data,
         headers: {
             'Content-Type': 'application/json'
@@ -801,7 +802,7 @@ export const updateFriendLink = async (data: UpdateFriendLinkRequest): Promise<A
 export const deleteFriendLink = async (friendLinkId: string): Promise<ApiResponse<null>> => {
     return businessApiRequest<ApiResponse<null>>({
         method: 'DELETE',
-        url: `/admin/friend-links/${friendLinkId}`
+        url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.DELETE(friendLinkId)
     });
 };
 
@@ -813,7 +814,7 @@ export const deleteFriendLink = async (friendLinkId: string): Promise<ApiRespons
 export const toggleFriendLinkDisplay = async (friendLinkId: string): Promise<ToggleDisplayResponse> => {
     return businessApiRequest<ToggleDisplayResponse>({
         method: 'PUT',
-        url: `/admin/friend-links/${friendLinkId}/display`
+        url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.TOGGLE_DISPLAY(friendLinkId)
     });
 };
 

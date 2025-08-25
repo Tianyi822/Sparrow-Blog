@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { BREAKPOINTS } from '../constants';
 
 /**
  * 媒体查询自定义钩子
@@ -7,7 +8,7 @@ import { useEffect, useState } from 'react';
  * @param query - CSS媒体查询字符串
  * @returns 是否匹配媒体查询条件
  */
-const useMediaQuery = (query: string): boolean => {
+const useMediaQuery = (query: string = BREAKPOINTS.MOBILE): boolean => {
     // 初始状态检查
     const getMatches = (query: string): boolean => {
         // 服务端渲染时返回false
