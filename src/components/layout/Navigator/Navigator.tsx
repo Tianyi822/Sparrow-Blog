@@ -11,6 +11,7 @@ import SvgIcon, {
 } from "@/components/common/SvgIcon/SvgIcon";
 import classNames from "classnames";
 import SearchModal from '@/components/business/SearchModal/SearchModal';
+import { useUIStore } from '@/stores';
 
 /**
  * 导航项接口定义
@@ -44,8 +45,8 @@ interface NavigatorProps {
 const Navigator: React.FC<NavigatorProps> = (props) => {
     const { index, setIndex, className, userName } = props
     const navigate = useNavigate();
+    const { searchModalOpen, setSearchModalOpen } = useUIStore();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [scrollDirection, setScrollDirection] = useState('none');
     const [isAtTop, setIsAtTop] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -54,7 +55,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     useEffect(() => {
         const handleScroll = () => {
             // 如果搜索模态框打开，不处理滚动事件
-            if (isSearchOpen) return;
+            if (searchModalOpen) return;
             
             const currentScrollY = window.scrollY;
 
@@ -74,12 +75,12 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
         };
 
         // 只在搜索模态框关闭时监听滚动
-        if (!isSearchOpen) {
+        if (!searchModalOpen) {
             window.addEventListener('scroll', handleScroll, { passive: true });
         }
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY, isSearchOpen]);
+    }, [lastScrollY, searchModalOpen]);
 
     // 添加点击外部关闭菜单的处理函数
     useEffect(() => {
@@ -108,16 +109,16 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
      */
     const handleSearch = useCallback(() => {
         // 打开搜索模态框
-        setIsSearchOpen(true);
+        setSearchModalOpen(true);
         setIsMenuOpen(false);
-    }, []);
+    }, [setSearchModalOpen]);
 
     /**
      * 关闭搜索模态框
      */
     const handleCloseSearch = useCallback(() => {
-        setIsSearchOpen(false);
-    }, []);
+        setSearchModalOpen(false);
+    }, [setSearchModalOpen]);
 
     /**
      * 处理后台管理按钮点击
@@ -232,7 +233,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
             
             {/* 搜索模态框 */}
             <SearchModal 
-                isOpen={isSearchOpen} 
+                isOpen={searchModalOpen} 
                 onClose={handleCloseSearch} 
             />
         </>
