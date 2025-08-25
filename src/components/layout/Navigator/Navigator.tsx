@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { WEB_ROUTES } from '../../constants';
+import { WEB_ROUTES } from '../../../constants';
 import "./Navigator.scss"
 import SvgIcon, {
     Normal,
@@ -8,9 +8,9 @@ import SvgIcon, {
     Home,
     FriendLink,
     Category
-} from "@/components/SvgIcon/SvgIcon";
+} from "@/components/common/SvgIcon/SvgIcon";
 import classNames from "classnames";
-import SearchModal from '@/components/SearchModal/SearchModal';
+import SearchModal from '@/components/business/SearchModal/SearchModal';
 
 /**
  * 导航项接口定义

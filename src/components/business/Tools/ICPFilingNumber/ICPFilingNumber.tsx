@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import './ICPFilingNumber.scss';
-import SvgIcon, { WebsiteRecord as WebsiteRecordIcon, Small } from '@/components/SvgIcon/SvgIcon';
+import SvgIcon, { WebsiteRecord as WebsiteRecordIcon, Small } from '@/components/common/SvgIcon/SvgIcon';
 import classNames from 'classnames';
 
 interface ICPFilingNumberProps {

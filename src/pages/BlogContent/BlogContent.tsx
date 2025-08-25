@@ -1,5 +1,5 @@
-import Background from "@/components/Background/Background";
-import { CodeBlock } from '@/components/ui/code-block';
+import Background from "@/components/layout/Background/Background";
+import { CodeBlock } from '@/components/common/ui/code-block';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { fetchMarkdownContent, getBlogContent } from '@/services/webService';
 import { BlogContentData } from '@/types';

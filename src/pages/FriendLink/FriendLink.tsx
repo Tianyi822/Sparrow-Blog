@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
-import { FriendLinkCardSkeleton } from '@/components/ui/skeleton';
+import { FriendLinkCardSkeleton } from '@/components/common/ui/skeleton';
 import { getFriendLinks, applyFriendLink } from '@/services/webService';
 import type { FriendLink as FriendLinkType, FriendLinkApplicationData } from '@/types';
-import SvgIcon, { About, Normal } from '@/components/SvgIcon/SvgIcon';
+import SvgIcon, { About, Normal } from '@/components/common/SvgIcon/SvgIcon';
 import ApplyModal, { FriendLinkFormData } from './Apply/ApplyModal';
 
 import './FriendLink.scss';

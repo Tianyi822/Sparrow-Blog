@@ -1,10 +1,10 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { FC, useEffect, useState } from "react";
-import Background from "@/components/Background/Background";
-import Navigator from "@/components/Navigator/Navigator";
-import Tools from "@/components/Tools/Tools";
-import ScrollBar from "@/components/ScrollBar/ScrollBar";
-import Comments from "@/components/Comments/Comments";
+import Background from "@/components/layout/Background/Background";
+import Navigator from "@/components/layout/Navigator/Navigator";
+import Tools from "@/components/business/Tools/Tools";
+import ScrollBar from "@/components/common/ScrollBar/ScrollBar";
+import Comments from "@/components/business/Comments/Comments";
 import { getBasicData, getImageUrl } from "@/services/webService";
 import { BasicData } from "@/types";
 import { localStorage } from "@/utils";

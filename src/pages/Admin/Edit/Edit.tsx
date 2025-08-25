@@ -19,7 +19,7 @@ import { jsonStorage } from '@/utils';
 import './Edit.scss';
 
 // 懒加载ImageSelectorModal组件
-const ImageSelectorModal = React.lazy(() => import('@/components/ImageSelectorModal'));
+const ImageSelectorModal = React.lazy(() => import('@/components/business/ImageSelectorModal'));
 
 // 图片选择器的加载指示器
 const ImageSelectorLoading = () => (

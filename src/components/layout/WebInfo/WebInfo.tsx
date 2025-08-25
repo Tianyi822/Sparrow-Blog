@@ -1,7 +1,7 @@
-import AuthorInfo from '@/components/WebInfo/AuthorInfo/AuthorInfo';
-import LatestArticlesLazy from '@/components/WebInfo/LatestArticles/LatestArticlesLazy';
-import LatestCommentsLazy from '@/components/WebInfo/LatestComments/LatestCommentsLazy';
-import Categories from '@/components/WebInfo/Categories/Categories';
+import AuthorInfo from '@/components/layout/WebInfo/AuthorInfo/AuthorInfo';
+import LatestArticlesLazy from '@/components/layout/WebInfo/LatestArticles/LatestArticlesLazy';
+import LatestCommentsLazy from '@/components/layout/WebInfo/LatestComments/LatestCommentsLazy';
+import Categories from '@/components/layout/WebInfo/Categories/Categories';
 import './WebInfo.scss';
 import TagsLazy from './Tags/TagsLazy';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';

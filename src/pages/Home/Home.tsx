@@ -1,9 +1,9 @@
-import BlogCardLazy from '@/components/BlogCard/BlogCardLazy';
-import Clock from '@/components/Home/Clock';
-import Introduction from "@/components/Home/Introduction";
-import Pagination from '@/components/Home/Pagination';
-import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
-import WebInfo from '@/components/WebInfo/WebInfo.tsx';
+import BlogCardLazy from '@/components/business/BlogCard/BlogCardLazy';
+import Clock from '@/components/business/Home/Clock';
+import Introduction from "@/components/business/Home/Introduction";
+import Pagination from '@/components/business/Home/Pagination';
+import SvgIcon, { DownArrow, Large } from "@/components/common/SvgIcon/SvgIcon";
+import WebInfo from '@/components/layout/WebInfo/WebInfo.tsx';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { BlogCategory, BlogTag } from '@/types';
 

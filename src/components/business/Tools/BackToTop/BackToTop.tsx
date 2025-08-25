@@ -1,5 +1,5 @@
 import './BackToTop.scss';
-import SvgIcon, { DownArrow, Normal } from '@/components/SvgIcon/SvgIcon';
+import SvgIcon, { DownArrow, Normal } from '@/components/common/SvgIcon/SvgIcon';
 import classNames from "classnames";
 
 interface BackToTopProps {

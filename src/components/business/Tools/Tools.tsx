@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import './Tools.scss';
-import BackToTop from '@/components/Tools/BackToTop/BackToTop';
-import ICPFilingNumber from '@/components/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
-import CommentsButton from '@/components/Tools/CommentsButton/CommentsButton';
+import BackToTop from '@/components/business/Tools/BackToTop/BackToTop';
+import ICPFilingNumber from '@/components/business/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
+import CommentsButton from '@/components/business/Tools/CommentsButton/CommentsButton';
 import classNames from 'classnames';
 import { BasicData } from '@/types';
 
