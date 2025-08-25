@@ -15,7 +15,7 @@ export const useBlogStore = create<BlogStore>()(
     error: null,
 
     // 操作
-    fetchArticles: async (params = {}) => {
+    fetchArticles: async () => {
       set({ isLoading: true, error: null });
       try {
         // 这里应该调用实际的 API
