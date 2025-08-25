@@ -42,7 +42,6 @@ const FriendLinkCard = memo<FriendLinkCardProps>(({ link, onImageError, failedIm
         } else {
             setImageLoaded(true); // 默认头像立即显示，无需等待加载
         }
-        return undefined; // 明确返回undefined
     }, [link.friend_avatar_url, link.friend_link_id, failedImages]);
 
     // 渲染头像

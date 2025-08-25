@@ -1,7 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { localStorage } from '@/utils';
-import { validateApiResponse } from '@/types/schemas';
-import { z } from 'zod';
 
 // 智能服务地址配置
 const getBusinessServiceUrl = (): string => {
@@ -115,23 +113,6 @@ export const handleApiResponse = <T>(response: AxiosResponse): T => {
     return response.data;
 };
 
-// 带有运行时类型验证的API响应处理函数
-export const handleValidatedApiResponse = <T>(
-    response: AxiosResponse,
-    schema: z.ZodSchema<T>
-): T => {
-    const data = response.data;
-    const validation = validateApiResponse(schema, data);
-    
-    if (!validation.success) {
-        console.error('API响应类型验证失败:', validation.error);
-        console.error('原始响应数据:', data);
-        throw new Error(`API响应类型验证失败: ${validation.error}`);
-    }
-    
-    return validation.data;
-};
-
 
 
 // 业务服务请求函数
@@ -163,47 +144,12 @@ export const request = async <T>(config: AxiosRequestConfig): Promise<T> => {
     return businessApiRequest<T>(config);
 };
 
-// 带有运行时类型验证的业务服务请求函数
-export const validatedBusinessApiRequest = async <T>(
-    config: AxiosRequestConfig,
-    schema: z.ZodSchema<T>
-): Promise<T> => {
-    try {
-        const response = await businessApi(config);
-        return handleValidatedApiResponse<T>(response, schema);
-    } catch (error) {
-        // 保留错误日志，对调试很重要
-        console.error('业务服务请求失败:', error);
-
-        // 检查是否是axios错误并且有响应
-        if (axios.isAxiosError(error) && error.response && error.response.data) {
-            // 如果响应数据符合ApiResponse格式，尝试验证并返回
-            const errorResponse = error.response.data;
-            if (typeof errorResponse === 'object' && 'code' in errorResponse && 'msg' in errorResponse) {
-                try {
-                    const validation = validateApiResponse(schema, errorResponse);
-                    if (validation.success) {
-                        return validation.data;
-                    }
-                } catch {
-                    // 验证失败，继续抛出原始错误
-                }
-            }
-        }
-
-        // 其他错误情况抛出异常
-        throw error;
-    }
-};
-
 // 兼容旧代码，默认使用业务服务
 export const apiRequest = businessApiRequest;
 
 export default {
     businessApi,
     businessApiRequest,
-    validatedBusinessApiRequest,
     apiRequest,
-    request,
-    handleValidatedApiResponse
+    request
 };

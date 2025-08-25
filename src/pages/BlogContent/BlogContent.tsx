@@ -27,7 +27,7 @@ const BlogContent: React.FC = memo(() => {
     
     // 使用 Zustand 状态管理图片缩放
     const { 
-        // imageModalOpen, // 暂时注释掉未使用的变量 
+        imageModalOpen, 
         imageModalData, 
         openImageModal, 
         closeImageModal,

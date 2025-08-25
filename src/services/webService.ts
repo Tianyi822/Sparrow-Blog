@@ -1,13 +1,6 @@
-import { businessApiRequest, validatedBusinessApiRequest } from './api';
+import { businessApiRequest } from './api';
 import { ApiResponse } from '../types';
 import { WEB_API_ENDPOINTS } from '../constants';
-import {
-    BasicDataResponseSchema,
-    BlogContentResponseSchema,
-    SearchResponseSchema,
-    CommentsResponseSchema,
-    FriendLinksResponseSchema
-} from '../types/schemas';
 import {
     BlogContentData,
     BasicData,
@@ -20,7 +13,13 @@ import {
     FriendLinkApplicationResponse
 } from '../types';
 
-// 注意：类型定义已移至 schemas.ts 文件中
+// 响应类型定义
+type BlogContentResponse = ApiResponse<BlogContentData>;
+type BasicDataResponse = ApiResponse<BasicData>;
+type SearchResponse = ApiResponse<SearchResponseData>;
+type CommentsResponse = ApiResponse<Comment[]>;
+type CommentResponse = ApiResponse<Comment>;
+type FriendLinksResponse = ApiResponse<FriendLink[]>;
 type FriendLinkApplyResponse = ApiResponse<null>;
 
 // ========================================
@@ -76,14 +75,14 @@ export const checkSystemStatus = async (): Promise<{ isRuntime: boolean; errorMe
 // ========================================
 
 /**
- * 获取主页基础数据（带类型验证）
+ * 获取主页基础数据
  */
 export const getBasicData = async (): Promise<BasicData | null> => {
     try {
-        const response = await validatedBusinessApiRequest({
+        const response = await businessApiRequest<BasicDataResponse>({
             method: 'GET',
             url: WEB_API_ENDPOINTS.DATA.BASIC_DATA
-        }, BasicDataResponseSchema);
+        });
 
         return handleApiResponse(response, '获取主页数据');
     } catch (error) {
@@ -93,14 +92,15 @@ export const getBasicData = async (): Promise<BasicData | null> => {
 };
 
 /**
- * 获取博客内容（带类型验证）
+ * 获取博客内容
  */
 export const getBlogContent = async (blogId: string): Promise<BlogContentData | null> => {
     try {
-        const response = await validatedBusinessApiRequest({
+        const response = await businessApiRequest<BlogContentResponse>({
             method: 'GET',
             url: WEB_API_ENDPOINTS.DATA.BLOG_CONTENT(blogId)
-        }, BlogContentResponseSchema);
+        });
+
         return handleApiResponse(response, '获取博客内容');
     } catch (error) {
         handleError('获取博客内容', error);
@@ -131,14 +131,15 @@ export const fetchMarkdownContent = async (url: string): Promise<string> => {
 };
 
 /**
- * 搜索博客（带类型验证）
+ * 搜索博客
  */
 export const searchBlogs = async (query: string): Promise<SearchResponseData | null> => {
     try {
-        const response = await validatedBusinessApiRequest({
+        const response = await businessApiRequest<SearchResponse>({
             method: 'GET',
             url: WEB_API_ENDPOINTS.SEARCH.BLOGS(query)
-        }, SearchResponseSchema);
+        });
+
         return handleApiResponse(response, '搜索博客');
     } catch (error) {
         handleError('搜索博客', error);
@@ -163,14 +164,14 @@ export const getImageUrl = (imageId: string): string => {
 // ========================================
 
 /**
- * 获取博客评论（带类型验证）
+ * 获取博客评论
  */
 export const getBlogComments = async (blogId: string): Promise<Comment[] | null> => {
     try {
-        const response = await validatedBusinessApiRequest({
+        const response = await businessApiRequest<CommentsResponse>({
             method: 'GET',
             url: `/web/comment/${blogId}`
-        }, CommentsResponseSchema);
+        });
 
         return handleApiResponse(response, '获取评论');
     } catch (error) {
@@ -180,18 +181,17 @@ export const getBlogComments = async (blogId: string): Promise<Comment[] | null>
 };
 
 /**
- * 添加评论（带类型验证）
+ * 添加评论
  */
 export const addComment = async (commentData: AddCommentData): Promise<Comment | null> => {
     try {
-        const response = await validatedBusinessApiRequest({
+        const response = await businessApiRequest<CommentResponse>({
             method: 'POST',
             url: WEB_API_ENDPOINTS.COMMENTS.ADD,
             data: commentData
-        }, CommentsResponseSchema);
+        });
 
-        const result = handleApiResponse(response, '添加评论');
-        return result && result.length > 0 ? result[0] : null;
+        return handleApiResponse(response, '添加评论');
     } catch (error) {
         handleError('添加评论', error);
         return null;
@@ -199,18 +199,17 @@ export const addComment = async (commentData: AddCommentData): Promise<Comment |
 };
 
 /**
- * 回复评论（带类型验证）
+ * 回复评论
  */
 export const replyComment = async (replyData: ReplyCommentData): Promise<Comment | null> => {
     try {
-        const response = await validatedBusinessApiRequest({
+        const response = await businessApiRequest<CommentResponse>({
             method: 'POST',
             url: WEB_API_ENDPOINTS.COMMENTS.REPLY,
             data: replyData
-        }, CommentsResponseSchema);
+        });
 
-        const result = handleApiResponse(response, '回复评论');
-        return result && result.length > 0 ? result[0] : null;
+        return handleApiResponse(response, '回复评论');
     } catch (error) {
         handleError('回复评论', error);
         return null;
@@ -218,14 +217,14 @@ export const replyComment = async (replyData: ReplyCommentData): Promise<Comment
 };
 
 /**
- * 获取最新评论（带类型验证）
+ * 获取最新评论
  */
 export const getLatestComments = async (): Promise<Comment[] | null> => {
     try {
-        const response = await validatedBusinessApiRequest({
+        const response = await businessApiRequest<CommentsResponse>({
             method: 'GET',
             url: WEB_API_ENDPOINTS.COMMENTS.LATEST
-        }, CommentsResponseSchema);
+        });
 
         return handleApiResponse(response, '获取最新评论');
     } catch (error) {
@@ -239,17 +238,18 @@ export const getLatestComments = async (): Promise<Comment[] | null> => {
 // ========================================
 
 /**
- * 获取友链列表（带类型验证）
+ * 获取友链列表
  */
 export const getFriendLinks = async (): Promise<FriendLink[] | null> => {
     try {
-        const response = await validatedBusinessApiRequest({
+        const response = await businessApiRequest<FriendLinksResponse>({
             method: 'GET',
             url: WEB_API_ENDPOINTS.FRIEND_LINKS.ALL
-        }, FriendLinksResponseSchema);
-        return handleApiResponse(response, '获取友链列表');
+        });
+
+        return handleApiResponse(response, '获取友链数据');
     } catch (error) {
-        handleError('获取友链列表', error);
+        handleError('获取友链数据', error);
         return null;
     }
 };

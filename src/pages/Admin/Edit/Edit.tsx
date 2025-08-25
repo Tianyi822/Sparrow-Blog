@@ -407,7 +407,6 @@ const Edit: React.FC = () => {
                 e.returnValue = message; // 保留以兼容旧浏览器
                 return message; // 返回值用于现代浏览器
             }
-            return undefined; // 明确返回undefined
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
