@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import { useNavigate, useParams } from 'react-router-dom';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
+import { useUIStore } from '@/stores';
 import './BlogContent.scss';
 
 const BlogContent: React.FC = memo(() => {
@@ -23,16 +24,15 @@ const BlogContent: React.FC = memo(() => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [backgroundImage, setBackgroundImage] = useState<string>('');
-    const [zoomedImage, setZoomedImage] = useState<string | null>(null);
-    const [isZooming, setIsZooming] = useState(false);
-    const [isClosing, setIsClosing] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
-    const [imagePosition, setImagePosition] = useState<{
-        top: number;
-        left: number;
-        width: number;
-        height: number;
-    } | null>(null);
+    
+    // 使用 Zustand 状态管理图片缩放
+    const { 
+        imageModalOpen, 
+        imageModalData, 
+        openImageModal, 
+        closeImageModal,
+        setImageModalData 
+    } = useUIStore();
 
     const zoomOverlayRef = useRef<HTMLDivElement>(null);
     const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -94,15 +94,18 @@ const BlogContent: React.FC = memo(() => {
         fetchBlogData();
     }, [blogId, getImageUrl]);
 
-    // 设置图片放大可见性
+    // 监听 imageModalData 变化，控制动画
     useEffect(() => {
-        if (zoomedImage && !isClosing) {
+        if (imageModalData && !imageModalData.isClosing) {
             // 使用 requestAnimationFrame 确保在下一个绘制帧设置可见性
             requestAnimationFrame(() => {
-                setIsVisible(true);
+                setImageModalData({
+                    ...imageModalData,
+                    isVisible: true
+                });
             });
         }
-    }, [zoomedImage, isClosing]);
+    }, [imageModalData, setImageModalData]);
 
     // 使用统一的日期格式化工具函数
 
@@ -111,28 +114,23 @@ const BlogContent: React.FC = memo(() => {
         const imgElement = event.currentTarget;
         const rect = imgElement.getBoundingClientRect();
 
-        // 保存原始图片的位置和尺寸
-        setImagePosition({
+        // 打开图片模态框
+        openImageModal(src, {
             top: rect.top,
             left: rect.left,
             width: rect.width,
             height: rect.height
         });
 
-        setZoomedImage(src);
-        setIsZooming(true);
-        setIsClosing(false);
-
         // 防止页面滚动
         document.body.style.overflow = 'hidden';
-    }, []);
+    }, [openImageModal]);
 
     // 关闭放大的图片
     const closeZoomedImage = useCallback(() => {
-        if (isClosing) return; // 防止重复关闭
+        if (!imageModalData || imageModalData.isClosing) return; // 防止重复关闭
 
-        setIsClosing(true);
-        setIsVisible(false);
+        closeImageModal();
 
         // 清除之前的定时器
         if (closeTimeoutRef.current) {
@@ -141,15 +139,12 @@ const BlogContent: React.FC = memo(() => {
 
         // 添加关闭动画的时间 (确保比CSS动画时间稍长一点)
         closeTimeoutRef.current = setTimeout(() => {
-            setZoomedImage(null);
-            setIsZooming(false);
-            setIsClosing(false);
-            setImagePosition(null);
+            setImageModalData(null);
 
             // 恢复页面滚动
             document.body.style.overflow = '';
         }, 350); // 稍微比CSS动画时间(300ms)长一点，确保动画完成
-    }, [isClosing]);
+    }, [closeImageModal, setImageModalData, imageModalData]);
 
     // 图片渲染器 - 处理Markdown中的图片
     const renderImage = useCallback((props: React.ComponentPropsWithoutRef<'img'>) => {
@@ -191,15 +186,15 @@ const BlogContent: React.FC = memo(() => {
 
     // 计算图片缩放动画的样式
     const getZoomAnimationStyle = useCallback(() => {
-        if (!imagePosition) return {};
+        if (!imageModalData?.position) return {};
         return {};
-    }, [imagePosition]);
+    }, [imageModalData]);
 
     // 获取放大图片的样式
     const getZoomedImageStyle = useCallback(() => {
-        if (!imagePosition) return {};
+        if (!imageModalData?.position) return {};
         return {};
-    }, [imagePosition]);
+    }, [imageModalData]);
 
     // 加载中状态
     if (loading) {
@@ -317,15 +312,15 @@ const BlogContent: React.FC = memo(() => {
             </div>
 
             {/* 图片放大查看层 */}
-            {zoomedImage && (
+            {imageModalData && (
                 <div
                     ref={zoomOverlayRef}
-                    className={`image-zoom-overlay ${isVisible ? 'visible' : ''} ${isClosing ? 'closing' : ''} ${isZooming ? 'zooming' : ''}`}
+                    className={`image-zoom-overlay ${imageModalData.isVisible ? 'visible' : ''} ${imageModalData.isClosing ? 'closing' : ''} ${imageModalData.isZooming ? 'zooming' : ''}`}
                     onClick={closeZoomedImage}
                     style={getZoomAnimationStyle()}
                 >
                     <div
-                        className={`image-zoom-container ${isVisible ? 'visible' : ''} ${isClosing ? 'closing' : ''} ${isZooming ? 'zooming' : ''}`}
+                        className={`image-zoom-container ${imageModalData.isVisible ? 'visible' : ''} ${imageModalData.isClosing ? 'closing' : ''} ${imageModalData.isZooming ? 'zooming' : ''}`}
                         style={getZoomedImageStyle()}
                     >
                         <button className="image-zoom-close" onClick={(e) => {
@@ -335,9 +330,9 @@ const BlogContent: React.FC = memo(() => {
                             <FiX />
                         </button>
                         <img
-                            src={zoomedImage}
+                            src={imageModalData.src}
                             alt="放大的图片"
-                            className={`image-zoom-content ${isVisible ? 'visible' : ''} ${isClosing ? 'closing' : ''} ${isZooming ? 'zooming' : ''}`}
+                            className={`image-zoom-content ${imageModalData.isVisible ? 'visible' : ''} ${imageModalData.isClosing ? 'closing' : ''} ${imageModalData.isZooming ? 'zooming' : ''}`}
                             onClick={(e) => e.stopPropagation()}
                         />
                     </div>
