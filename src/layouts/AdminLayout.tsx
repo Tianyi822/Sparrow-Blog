@@ -4,7 +4,7 @@ import { ApiResponse } from '@/types';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FiChevronLeft, FiChevronRight, FiEdit, FiFileText, FiImage, FiLogOut, FiMessageCircle, FiSettings, FiUsers } from 'react-icons/fi';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { localStorage } from '@/utils';
+// import { localStorage } from '@/utils'; // 暂时注释掉未使用的导入
 import { useUserStore, useUIStore } from '@/stores';
 import './AdminLayout.scss';
 import { LayoutContext } from './LayoutContext';

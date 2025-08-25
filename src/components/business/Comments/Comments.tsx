@@ -96,6 +96,7 @@ const Comments: React.FC<CommentsProps> = ({ blogId, isOpen, onClose }) => {
                 document.removeEventListener('keydown', handleEscape);
             };
         }
+        return undefined; // 明确返回undefined
     }, [isOpen, onClose]);
 
     // 提交新评论

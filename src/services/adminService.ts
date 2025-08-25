@@ -1,4 +1,4 @@
-import { businessApiRequest } from './api';
+import { businessApiRequest, validatedBusinessApiRequest } from './api';
 import {
     ApiResponse,
     VerificationCodeRequest,
@@ -29,6 +29,14 @@ import {
     UpdateFriendLinkRequest,
     ToggleDisplayResponse
 } from '../types';
+import {
+    BlogListResponseSchema,
+    UserConfigResponseSchema,
+    LoginApiResponseSchema,
+    UserInfoResponseSchema,
+    CommentsResponseSchema,
+    FriendLinksResponseSchema
+} from '../types/schemas';
 import { ADMIN_API_ENDPOINTS, STORAGE_KEYS } from '../constants';
 import { localStorage, numberFormat } from '../utils';
 
@@ -53,20 +61,20 @@ export const sendVerificationCode = async (data: VerificationCodeRequest): Promi
 };
 
 /**
- * 验证码登录
+ * 验证码登录（带类型验证）
  * @param data 登录请求数据
  * @returns 登录结果
  */
 export const loginWithVerificationCode = async (data: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
     try {
-        const response = await businessApiRequest<ApiResponse<LoginResponse>>({
+        const response = await validatedBusinessApiRequest({
             method: 'POST',
             url: ADMIN_API_ENDPOINTS.AUTH.LOGIN,
             data,
             headers: {
                 'Content-Type': 'application/json'
             }
-        });
+        }, LoginApiResponseSchema);
 
         // 如果登录成功且返回了token，则存储到localStorage
         if (response.code === 200 && response.data && response.data.token) {
@@ -82,14 +90,14 @@ export const loginWithVerificationCode = async (data: LoginRequest): Promise<Api
 };
 
 /**
- * 获取登录页用户信息
+ * 获取登录页用户信息（带类型验证）
  * @returns 用户信息数据
  */
 export const getUserInfo = async (): Promise<UserInfoResponse> => {
-    return businessApiRequest<UserInfoResponse>({
+    return validatedBusinessApiRequest({
         method: 'GET',
         url: ADMIN_API_ENDPOINTS.AUTH.USER_INFO
-    });
+    }, UserInfoResponseSchema);
 };
 
 // ===============================================================
@@ -97,14 +105,14 @@ export const getUserInfo = async (): Promise<UserInfoResponse> => {
 // ===============================================================
 
 /**
- * 获取所有博客列表
+ * 获取所有博客列表（带类型验证）
  * @returns 博客列表数据
  */
 export const getAllBlogs = async (): Promise<BlogListResponse> => {
-    return businessApiRequest<BlogListResponse>({
+    return validatedBusinessApiRequest({
         method: 'GET',
         url: ADMIN_API_ENDPOINTS.POSTS.ALL_BLOGS
-    });
+    }, BlogListResponseSchema);
 };
 
 /**
@@ -282,14 +290,14 @@ export const getImageUrl = (imgId: string): string => {
 // ===============================================================
 
 /**
- * 获取用户配置信息
+ * 获取用户配置信息（带类型验证）
  * @returns 用户配置数据
  */
 export const getUserConfig = async (): Promise<UserConfigResponse> => {
-    return businessApiRequest<UserConfigResponse>({
+    return validatedBusinessApiRequest({
         method: 'GET',
         url: ADMIN_API_ENDPOINTS.SETTINGS.USER.CONFIG
-    });
+    }, UserConfigResponseSchema);
 };
 
 /**
@@ -708,14 +716,14 @@ export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
 // ===============================================================
 
 /**
- * 获取所有评论列表
+ * 获取所有评论列表（带类型验证）
  * @returns 评论列表数据
  */
 export const getAllComments = async (): Promise<CommentsResponse> => {
-    return businessApiRequest<CommentsResponse>({
+    return validatedBusinessApiRequest({
         method: 'GET',
         url: ADMIN_API_ENDPOINTS.COMMENTS.ALL
-    });
+    }, CommentsResponseSchema);
 };
 
 /**
@@ -752,14 +760,14 @@ export const updateComment = async (commentId: string, content: string): Promise
 // ===============================================================
 
 /**
- * 获取所有友链列表
+ * 获取所有友链列表（带类型验证）
  * @returns 友链列表数据
  */
 export const getAllFriendLinks = async (): Promise<FriendLinksResponse> => {
-    return businessApiRequest<FriendLinksResponse>({
+    return validatedBusinessApiRequest({
         method: 'GET',
         url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.ALL
-    });
+    }, FriendLinksResponseSchema);
 };
 
 /**

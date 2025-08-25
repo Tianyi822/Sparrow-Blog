@@ -670,6 +670,7 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
                 window.scrollTo(0, scrollY);
             };
         }
+        return undefined; // 明确返回undefined
     }, [isOpen]);
 
     /**

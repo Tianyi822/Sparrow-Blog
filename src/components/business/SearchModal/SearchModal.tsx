@@ -197,6 +197,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                 observer.disconnect();
             };
         }
+        return undefined; // 明确返回undefined
     }, [isOpen]);
 
     // 清理防抖定时器
