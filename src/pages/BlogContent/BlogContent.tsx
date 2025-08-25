@@ -3,6 +3,7 @@ import { CodeBlock } from '@/components/ui/code-block';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { fetchMarkdownContent, getBlogContent } from '@/services/webService';
 import { BlogContentData } from '@/types';
+import { formatDate } from '@/utils';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { FiCalendar, FiClock, FiX } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
@@ -103,36 +104,7 @@ const BlogContent: React.FC = memo(() => {
         }
     }, [zoomedImage, isClosing]);
 
-    // 格式化日期显示
-    const formatDate = useCallback((dateString: string) => {
-        if (!dateString || dateString === '0001-01-01T00:00:00Z') {
-            return '未知日期';
-        }
-
-        try {
-            // 处理ISO 8601格式的日期字符串（带时区信息）
-            const date = new Date(dateString);
-
-            // 检查日期是否有效
-            if (isNaN(date.getTime())) {
-                return '日期格式错误';
-            }
-
-            // 使用更完整的格式化方法，包含日期和时间
-            const year = date.getFullYear();
-            const month = date.getMonth() + 1;
-            const day = date.getDate();
-            const hour = date.getHours();
-            const minute = date.getMinutes();
-
-            // 补零函数
-            const pad = (num: number) => num.toString().padStart(2, '0');
-
-            return `${year}年${pad(month)}月${pad(day)}日 ${pad(hour)}:${pad(minute)}`;
-        } catch {
-            return '日期格式错误';
-        }
-    }, []);
+    // 使用统一的日期格式化工具函数
 
     // 处理图片点击放大事件
     const handleImageClick = useCallback((event: React.MouseEvent<HTMLImageElement>, src: string) => {

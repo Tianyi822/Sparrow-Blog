@@ -3,9 +3,9 @@ import {
     deleteGalleryImage,
     getAllGalleryImages,
     getImageUrl,
-    renameGalleryImage,
-    RenameImageRequest
+    renameGalleryImage
 } from '@/services/adminService';
+import { RenameImageRequest } from '@/types';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { FiCode, FiEdit, FiFileText, FiPlus, FiSearch, FiTrash2, FiLoader } from 'react-icons/fi';
 import './Gallery.scss';

@@ -7,6 +7,7 @@ import {
     FiServer,
     FiUser
 } from 'react-icons/fi';
+import { localStorage } from '@/utils';
 import CacheAndIndexSetting from './CacheAndIndexSetting';
 import DatabaseSetting from './DatabaseSetting';
 import LogSetting from './LogSetting';

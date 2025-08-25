@@ -5,21 +5,11 @@ import {
     LoginRequest,
     LoginResponse,
     UserInfoResponse,
-    BlogTag,
-    BlogCategory,
-    BlogItem,
-    BlogInfo,
-    BlogContentData,
     BlogListResponse,
     TagsAndCategoriesResponse,
     UploadToOSSResponse,
     UpdateOrAddBlogRequest,
     BlogDataResponse,
-    BlogContentResponse,
-    BasicData,
-    BasicDataResponse,
-    BlogStats,
-    GalleryImage,
     GalleryImagesResponse,
     CheckImageNameResponse,
     AddImagesRequest,
@@ -28,25 +18,19 @@ import {
     PreSignUrlResponse,
     UserConfig,
     UserConfigResponse,
-    ServerConfig,
     ServerConfigResponse,
-    LoggerConfig,
     LoggerConfigResponse,
-    MySQLConfig,
     MySQLConfigResponse,
-    OSSConfig,
     OSSConfigResponse,
-    CacheAndIndexConfig,
     CacheAndIndexConfigResponse,
     CommentItem,
     CommentsResponse,
-    FriendLinkItem,
     FriendLinksResponse,
-    AddFriendLinkRequest,
     UpdateFriendLinkRequest,
     ToggleDisplayResponse
 } from '../types';
 import { ADMIN_API_ENDPOINTS, STORAGE_KEYS } from '../constants';
+import { localStorage, numberFormat } from '../utils';
 
 // ===============================================================
 // 认证相关接口和函数
@@ -689,7 +673,7 @@ export const updateCacheAndIndexConfig = async (
     const requestData: Record<string, boolean | string | number> = {
         'cache.aof.enable': enableAOF,
         'cache.aof.path': aofPath,
-        'cache.aof.max_size': aofMaxSize.toString(),
+        'cache.aof.max_size': numberFormat.toString(aofMaxSize),
         'cache.aof.compress': aofCompress,
         'search_engine.index_path': indexPath
     };

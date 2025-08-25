@@ -3,6 +3,7 @@ import use3DEffect from '@/hooks/use3DEffect';
 import { useEffect, useState } from 'react';
 import { getLatestComments } from '@/services/webService';
 import { Comment } from '@/types';
+import { formatDate } from '@/utils';
 
 interface LatestCommentsProps {
     className?: string;
@@ -18,15 +19,7 @@ const LatestComments: React.FC<LatestCommentsProps> = ({ className }) => {
         return email.split('@')[0];
     };
 
-    // 格式化时间
-    const formatDate = (dateString: string): string => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        });
-    };
+
 
     // 处理评论点击，跳转到对应博客页面
     const handleCommentClick = (blogId: string) => {

@@ -5,7 +5,7 @@ import { getFriendLinks, applyFriendLink } from '@/services/webService';
 import type { FriendLink as FriendLinkType, FriendLinkApplicationData } from '@/types';
 import SvgIcon, { About, Normal } from '@/components/SvgIcon/SvgIcon';
 import ApplyModal, { FriendLinkFormData } from './Apply/ApplyModal';
-import { INFO_MESSAGES, ERROR_MESSAGES } from '@/constants';
+
 import './FriendLink.scss';
 
 interface FriendLinkProps {

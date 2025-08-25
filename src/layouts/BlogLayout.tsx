@@ -7,6 +7,7 @@ import ScrollBar from "@/components/ScrollBar/ScrollBar";
 import Comments from "@/components/Comments/Comments";
 import { getBasicData, getImageUrl } from "@/services/webService";
 import { BasicData } from "@/types";
+import { localStorage } from "@/utils";
 import "./BlogLayout.scss";
 
 // 导航索引缓存键

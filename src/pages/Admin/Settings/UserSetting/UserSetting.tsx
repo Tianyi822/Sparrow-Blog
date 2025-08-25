@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback, memo, Suspense } from 'react';
 import { FiUser, FiMail, FiAlertCircle, FiUpload, FiImage, FiSave, FiGithub, FiCode, FiType, FiPlus, FiLock, FiSend, FiLoader } from 'react-icons/fi';
 import './UserSetting.scss';
 import type { ImageUsageType } from '@/components/ImageSelectorModal/ImageSelectorModal';
-import { GalleryImage, getImageUrl, UserConfig } from '@/services/adminService';
+import { getImageUrl } from '@/services/adminService';
 import { getUserConfig, updateUserConfig, updateUserImages, sendEmailVerificationCode } from '@/services/adminService';
+import { UserConfig, GalleryImage } from '@/types';
 
 // 懒加载ImageSelectorModal组件
 const ImageSelectorModal = React.lazy(() => import('@/components/ImageSelectorModal'));

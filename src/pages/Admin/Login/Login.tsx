@@ -7,6 +7,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FiLock, FiMail } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { STORAGE_KEYS, ADMIN_ROUTES } from '../../../constants';
+import { localStorage } from '@/utils';
 import './Login.scss';
 
 // 登录表单数据接口

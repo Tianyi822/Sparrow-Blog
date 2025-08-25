@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { FiLoader, FiPlus, FiX, FiCheckCircle, FiUploadCloud, FiUser, FiImage, FiLayout } from 'react-icons/fi';
-import { GalleryImage, getAllGalleryImages, addGalleryImages, AddImagesRequest, getImageUrl } from '@/services/adminService';
+import { getAllGalleryImages, addGalleryImages, getImageUrl } from '@/services/adminService';
+import { GalleryImage, AddImagesRequest } from '@/types';
 import { getPreSignUrl, uploadToOSS, FileType, ContentType } from '@/services/ossService';
 import imageCompression from 'browser-image-compression';
 import "./ImageSelectorModal.scss"
@@ -833,4 +834,4 @@ const ImageSelectorModal: React.FC<ImageSelectorModalProps> = ({
     return createPortal(modalContent, document.body);
 };
 
-export default ImageSelectorModal; 
+export default ImageSelectorModal;

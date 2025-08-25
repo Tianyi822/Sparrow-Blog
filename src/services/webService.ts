@@ -2,12 +2,8 @@ import { businessApiRequest } from './api';
 import { ApiResponse } from '../types';
 import { WEB_API_ENDPOINTS } from '../constants';
 import {
-    BlogCategory,
-    BlogTag,
-    BlogInfo,
     BlogContentData,
     BasicData,
-    SearchResultItem,
     SearchResponseData,
     Comment,
     AddCommentData,

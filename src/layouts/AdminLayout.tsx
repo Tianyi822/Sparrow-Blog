@@ -1,8 +1,10 @@
 import { getUserConfig } from '@/services/adminService';
-import { ApiResponse, businessApiRequest } from '@/services/api';
+import { businessApiRequest } from '@/services/api';
+import { ApiResponse } from '@/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiEdit, FiFileText, FiImage, FiLogOut, FiMessageCircle, FiSettings, FiUsers } from 'react-icons/fi';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { localStorage } from '@/utils';
 import './AdminLayout.scss';
 import { LayoutContext } from './LayoutContext';
 
@@ -189,4 +191,4 @@ const AdminLayout: React.FC = () => {
   );
 };
 
-export default AdminLayout; 
+export default AdminLayout;

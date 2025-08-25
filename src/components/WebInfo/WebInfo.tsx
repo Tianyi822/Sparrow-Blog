@@ -5,7 +5,7 @@ import Categories from '@/components/WebInfo/Categories/Categories';
 import './WebInfo.scss';
 import TagsLazy from './Tags/TagsLazy';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
-import { BlogCategory, BlogTag } from '@/services/adminService';
+import { BlogCategory, BlogTag } from '@/types';
 import { useMemo } from 'react';
 
 /**

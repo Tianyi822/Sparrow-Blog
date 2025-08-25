@@ -1,18 +1,21 @@
 import React, { useCallback, useEffect, useRef, useState, Suspense } from 'react';
 import {
-    BlogCategory,
-    BlogTag,
-    GalleryImage,
-    UpdateOrAddBlogRequest,
     getAllTagsAndCategories,
     getBlogDataForEdit,
     getImageUrl,
     updateOrAddBlog
 } from '@/services/adminService';
+import {
+    BlogCategory,
+    BlogTag,
+    GalleryImage,
+    UpdateOrAddBlogRequest
+} from '@/types';
 import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
 import { marked } from 'marked';
 import { FiAlertCircle, FiArrowUp, FiEye, FiImage, FiLoader, FiPlus, FiSave, FiX } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { jsonStorage } from '@/utils';
 import './Edit.scss';
 
 // 懒加载ImageSelectorModal组件
@@ -190,7 +193,7 @@ const Edit: React.FC = () => {
         }
 
         try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify(draftData));
+            jsonStorage.setItem(CACHE_KEY, draftData);
 
             // 更新最后保存时间
             setLastSavedTime(new Date().toLocaleTimeString());
@@ -230,18 +233,16 @@ const Edit: React.FC = () => {
      */
     const loadDraftFromCache = useCallback((): BlogDraft | null => {
         try {
-            const cachedData = localStorage.getItem(CACHE_KEY);
-            if (!cachedData) {
+            const draftData = jsonStorage.getItem<BlogDraft>(CACHE_KEY);
+            if (!draftData) {
                 return null;
             }
-
-            const draftData = JSON.parse(cachedData) as BlogDraft;
 
             // 检查缓存是否过期（24小时）
             const now = Date.now();
             if (now - draftData.lastSaved > CACHE_EXPIRATION) {
                 // 缓存已过期，清除并返回null
-                localStorage.removeItem(CACHE_KEY);
+                jsonStorage.removeItem(CACHE_KEY);
                 return null;
             }
 
@@ -259,7 +260,7 @@ const Edit: React.FC = () => {
      */
     const clearCache = useCallback(() => {
         try {
-            localStorage.removeItem(CACHE_KEY);
+            jsonStorage.removeItem(CACHE_KEY);
             setShowCachePrompt(false);
             setLastSavedTime('');
         } catch (error) {

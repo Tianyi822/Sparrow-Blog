@@ -6,6 +6,7 @@ import SvgIcon, { DownArrow, Large } from "@/components/SvgIcon/SvgIcon";
 import WebInfo from '@/components/WebInfo/WebInfo.tsx';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { BlogCategory, BlogTag } from '@/types';
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "./Home.scss";
 
@@ -75,8 +76,8 @@ const Home: React.FC = () => {
                 const formattedBlogs: BlogData[] = displayBlogs.map((blog: BlogInfo) => {
                     // 安全地访问可能为空的属性
                     const categoryId = blog.category && blog.category.category_id
-                        ? blog.category.category_id.toString()
-                        : '';
+                         ? blog.category.category_id.toString()
+                         : '';
                     const categoryName = blog.category && blog.category.category_name
                         ? blog.category.category_name
                         : '';

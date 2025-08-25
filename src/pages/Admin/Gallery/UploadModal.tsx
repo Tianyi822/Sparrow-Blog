@@ -1,4 +1,5 @@
-import { addGalleryImages, AddImagesRequest } from '@/services/adminService';
+import { addGalleryImages } from '@/services/adminService';
+import { AddImagesRequest } from '@/types';
 import { ContentType, FileType, getPreSignUrl, uploadToOSS } from '@/services/ossService';
 import imageCompression from 'browser-image-compression';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -597,4 +598,4 @@ const UploadModal: React.FC<UploadModalProps> = React.memo(({ visible, onClose, 
     );
 });
 
-export default UploadModal; 
+export default UploadModal;

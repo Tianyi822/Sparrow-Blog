@@ -1,5 +1,7 @@
-import { BlogItem, changeBlogState, deleteBlog, getAllBlogs, setBlogTop } from '@/services/adminService';
+import { changeBlogState, deleteBlog, getAllBlogs, setBlogTop } from '@/services/adminService';
+import { BlogItem } from '@/types';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { formatDateTime } from '@/utils';
 import {
     FiArrowUp,
     FiChevronLeft,
@@ -18,16 +20,7 @@ import './Posts.scss';
 // 可选的每页条数选项
 const pageSizeOptions = [25, 50, 75, 100];
 
-// 格式化日期时间函数
-const formatDateTime = (dateStr: string): string => {
-    const date = new Date(dateStr);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
-};
+// 使用统一的日期格式化工具函数
 
 const Posts: React.FC = memo(() => {
     const [posts, setPosts] = useState<BlogItem[]>([]);
@@ -78,7 +71,7 @@ const Posts: React.FC = memo(() => {
         if (!posts.length) return [];
         const tagSet = new Set<string>();
         posts.forEach(post => {
-            post.tags.forEach(tag => {
+            post.tags.forEach((tag: any) => {
                 tagSet.add(tag.tag_name);
             });
         });
@@ -95,7 +88,7 @@ const Posts: React.FC = memo(() => {
             const categoryMatch = selectedCategory ? post.category.category_name === selectedCategory : true;
 
             // 标签筛选
-            const tagMatch = selectedTag ? post.tags.some(tag => tag.tag_name === selectedTag) : true;
+            const tagMatch = selectedTag ? post.tags.some((tag: any) => tag.tag_name === selectedTag) : true;
 
             return titleMatch && categoryMatch && tagMatch;
         });
@@ -468,12 +461,12 @@ const Posts: React.FC = memo(() => {
                                             {post.tags.length === 0 ? (
                                                 <span className="no-tags">-</span>
                                             ) : post.tags.length <= getTagDisplayCount() ? (
-                                                post.tags.map(tag => (
+                                                post.tags.map((tag: any) => (
                                                     <span key={tag.tag_id} className="tag-badge" title={tag.tag_name}>{tag.tag_name}</span>
                                                 ))
                                             ) : (
                                                 <>
-                                                    {getTagLimitCount() > 0 && post.tags.slice(0, getTagLimitCount()).map(tag => (
+                                                    {getTagLimitCount() > 0 && post.tags.slice(0, getTagLimitCount()).map((tag: any) => (
                                                         <span key={tag.tag_id} className="tag-badge" title={tag.tag_name}>{tag.tag_name}</span>
                                                     ))}
                                                     <span
@@ -542,7 +535,7 @@ const Posts: React.FC = memo(() => {
                         left: `${popupPosition.left}px`
                     }}
                 >
-                    {posts.find(post => post.blog_id === activeTagPopup)?.tags.slice(getTagLimitCount()).map(tag => (
+                    {posts.find(post => post.blog_id === activeTagPopup)?.tags.slice(getTagLimitCount()).map((tag: any) => (
                         <span key={tag.tag_id} className="popup-tag">{tag.tag_name}</span>
                     ))}
                 </div>
@@ -551,4 +544,4 @@ const Posts: React.FC = memo(() => {
     );
 });
 
-export default Posts; 
+export default Posts;

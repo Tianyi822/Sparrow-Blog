@@ -1,6 +1,6 @@
 import './Tags.scss';
 import use3DEffect from '@/hooks/use3DEffect';
-import { BlogTag } from '@/services/adminService';
+import { BlogTag } from '@/types';
 import { memo, useCallback } from 'react';
 
 /**

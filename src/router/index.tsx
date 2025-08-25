@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 import { checkSystemStatus } from "@/services/webService";
 import { WEB_ROUTES, ADMIN_ROUTES, NOT_FOUND_ROUTE } from "@/constants";
+import { localStorage } from "@/utils";
 
 // 懒加载组件
 const Home = React.lazy(() => import("@/pages/Home"));

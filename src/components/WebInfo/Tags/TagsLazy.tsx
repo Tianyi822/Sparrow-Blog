@@ -4,7 +4,7 @@ import { useIsMobile } from '@/hooks/useMediaQuery';
 // 动态导入Tags组件
 const TagsComponent = lazy(() => import('./Tags'));
 
-import { BlogTag } from '@/services/adminService';
+import { BlogTag } from '@/types';
 
 // Tags的props类型
 interface TagsProps {

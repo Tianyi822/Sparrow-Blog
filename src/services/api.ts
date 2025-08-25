@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ApiResponse } from '../types';
+import { localStorage } from '@/utils';
 
 // 智能服务地址配置
 const getBusinessServiceUrl = (): string => {
