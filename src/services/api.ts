@@ -7,17 +7,17 @@ const getBusinessServiceUrl = (): string => {
     if (import.meta.env.VITE_BUSINESS_SERVICE_URL) {
         return import.meta.env.VITE_BUSINESS_SERVICE_URL;
     }
-    
+
     // 在浏览器环境中，本地开发环境回退处理
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
-        
+
         // 本地开发环境
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             return 'http://localhost:2233';
         }
     }
-    
+
     // 如果没有配置环境变量，抛出错误提示
     throw new Error('VITE_BUSINESS_SERVICE_URL environment variable is not defined. Please check your .env file.');
 };
@@ -65,7 +65,7 @@ const setupInterceptors = (api: typeof businessApi) => {
         (error: AxiosError) => {
             // 处理不同的错误状态码
             if (error.response) {
-                const { status } = error.response;
+                const {status} = error.response;
 
                 // 处理认证错误
                 if (status === 401) {
@@ -114,7 +114,6 @@ export const handleApiResponse = <T>(response: AxiosResponse): T => {
 };
 
 
-
 // 业务服务请求函数
 export const businessApiRequest = async <T>(config: AxiosRequestConfig): Promise<T> => {
     try {
@@ -146,10 +145,3 @@ export const request = async <T>(config: AxiosRequestConfig): Promise<T> => {
 
 // 兼容旧代码，默认使用业务服务
 export const apiRequest = businessApiRequest;
-
-export default {
-    businessApi,
-    businessApiRequest,
-    apiRequest,
-    request
-};
