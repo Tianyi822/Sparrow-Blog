@@ -170,6 +170,110 @@
         }
       }
 
+      /* 数学公式相关样式 - 开始 */
+      .katex-display {
+        margin: var.$spacing-lg 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.15);
+        padding: var.$spacing-md;
+        border-radius: var.$border-radius-md;
+        border: 1px solid rgba(var.$white, 0.1);
+        
+        .katex {
+          color: var.$white !important;
+          font-size: 1.1em;
+        }
+        
+        &::-webkit-scrollbar {
+          height: 6px;
+        }
+        
+        &::-webkit-scrollbar-track {
+          background: rgba(var.$white, 0.1);
+          border-radius: var.$border-radius-sm;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+          background: rgba(var.$white, 0.3);
+          border-radius: var.$border-radius-sm;
+          
+          &:hover {
+            background: rgba(var.$white, 0.4);
+          }
+        }
+      }
+
+      .katex {
+        color: var.$white !important;
+        font-size: 1em;
+        
+        .katex-html {
+          color: var.$white !important;
+        }
+        
+        .mord, .mop, .mrel, .mbin, .mpunct, .mopen, .mclose {
+          color: var.$white !important;
+        }
+        
+        .accent-body {
+          color: var.$white !important;
+        }
+        
+        .mfrac > span {
+          border-color: rgba(var.$white, 0.8) !important;
+        }
+        
+        .sqrt > .sqrt-line {
+          border-color: rgba(var.$white, 0.8) !important;
+        }
+        
+        .mtable .arraycolsep {
+          color: var.$white !important;
+        }
+        
+        .rule {
+          border-color: rgba(var.$white, 0.8) !important;
+        }
+      }
+      
+      /* 内联数学公式样式 */
+      .katex-inline {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 0.1rem 0.3rem;
+        border-radius: var.$border-radius-sm;
+        
+        .katex {
+          color: var.$white !important;
+        }
+      }
+      
+      /* 矩阵和数组样式 */
+      .katex .mtable {
+        .col-align-c {
+          text-align: center;
+        }
+        
+        .col-align-l {
+          text-align: left;
+        }
+        
+        .col-align-r {
+          text-align: right;
+        }
+        
+        .arraycolsep {
+          width: 0.5em;
+        }
+        
+        .vertical-separator {
+          border-color: rgba(var.$white, 0.6) !important;
+        }
+      }
+      
+      /* 数学公式相关样式 - 结束 */
+
       /* 代码块相关样式 - 开始 */
       .code-block-wrapper {
         margin: var.$spacing-lg 0;
@@ -648,6 +752,28 @@
               padding-left: var.$spacing-md;
             }
           }
+        }
+        
+        // 移动端数学公式样式优化
+        .katex-display {
+          margin: var.$spacing-md 0;
+          padding: var.$spacing-sm;
+          font-size: 0.9em;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          
+          &::-webkit-scrollbar {
+            height: 6px;
+          }
+          
+          .katex {
+            font-size: 0.95em;
+            min-width: max-content;
+          }
+        }
+        
+        .katex {
+          font-size: 0.9em;
         }
 
         ul li {
