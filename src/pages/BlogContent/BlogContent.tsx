@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import { useNavigate, useParams } from 'react-router-dom';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 import { useUIStore } from '@/stores';
 import './BlogContent.scss';
 
@@ -304,6 +305,7 @@ const BlogContent: React.FC = memo(() => {
                                     code: renderCodeBlock,
                                     img: renderImage
                                 }}
+                                remarkPlugins={[remarkGfm]}
                                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
                             />
                         )}

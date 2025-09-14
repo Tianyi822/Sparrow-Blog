@@ -335,18 +335,59 @@
         border-collapse: collapse;
         width: 100%;
         margin: var.$spacing-lg 0;
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: var.$border-radius-md;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
         th, td {
-          border: 1px solid rgba(var.$white, 0.1);
-          padding: var.$spacing-sm;
+          border: 1px solid rgba(var.$white, 0.15);
+          padding: var.$spacing-md var.$spacing-lg;
+          text-align: left;
+          vertical-align: top;
+          color: rgba(var.$white, 0.9);
         }
 
         th {
-          background: rgba(0, 0, 0, 0.2);
+          background: rgba(0, 0, 0, 0.35);
+          color: var.$white;
+          font-weight: 600;
+          font-size: var.$font-size-sm + 0.1rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          border-bottom: 2px solid rgba(var.$white, 0.2);
         }
 
-        tr:nth-child(even) {
-          background: rgba(0, 0, 0, 0.1);
+        tbody tr {
+          transition: background-color 0.2s ease;
+
+          &:nth-child(even) {
+            background: rgba(0, 0, 0, 0.1);
+          }
+
+          &:hover {
+            background: rgba(var.$white, 0.05);
+          }
+        }
+
+        // 表格内的代码样式
+        code {
+          background: rgba(0, 0, 0, 0.3);
+          padding: 0.2rem 0.4rem;
+          border-radius: var.$border-radius-sm;
+          font-size: 0.9em;
+          color: #82b4ff;
+        }
+
+        // 表格内的链接样式
+        a {
+          color: #82b4ff;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+            color: #a0c4ff;
+          }
         }
       }
     }
@@ -424,6 +465,47 @@
 
     &-article {
       padding: var.$spacing-lg;
+      
+      .markdown-content {
+        // 移动端表格样式优化
+        table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+          margin: var.$spacing-md 0;
+          border-radius: var.$border-radius-sm;
+          -webkit-overflow-scrolling: touch;
+          
+          &::-webkit-scrollbar {
+            height: 8px;
+          }
+          
+          &::-webkit-scrollbar-track {
+            background: rgba(var.$white, 0.1);
+            border-radius: var.$border-radius-sm;
+          }
+          
+          &::-webkit-scrollbar-thumb {
+            background: rgba(var.$white, 0.3);
+            border-radius: var.$border-radius-sm;
+            
+            &:hover {
+              background: rgba(var.$white, 0.4);
+            }
+          }
+
+          th, td {
+            padding: var.$spacing-sm;
+            font-size: var.$font-size-sm;
+            min-width: 100px;
+          }
+
+          th {
+            font-size: var.$font-size-xs + 0.1rem;
+            white-space: nowrap;
+          }
+        }
+      }
     }
   }
 }
