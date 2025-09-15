@@ -4,7 +4,6 @@ import { ApiResponse } from '@/types';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FiChevronLeft, FiChevronRight, FiEdit, FiFileText, FiImage, FiLogOut, FiMessageCircle, FiSettings, FiUsers } from 'react-icons/fi';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { localStorage } from '@/utils';
 import { useUserStore, useUIStore } from '@/stores';
 import './AdminLayout.scss';
 import { LayoutContext } from './LayoutContext';
