@@ -490,7 +490,12 @@
                 
                 // 提取主脚本文件
                 const scriptMatch = html.match(/src="(\/assets\/index-[^"]+\.js)"/);
-                const scriptSrc = scriptMatch ? scriptMatch[1] : '/assets/index-eDU-Mn_9.js';
+                const scriptSrc = scriptMatch ? scriptMatch[1] : null;
+                
+                if (!scriptSrc) {
+                    console.error('无法从index.html中提取主脚本文件路径');
+                    return;
+                }
                 
                 // 提取CSS文件
                 const cssMatches = html.match(/href="(\/assets\/[^"]+\.css)"/g);

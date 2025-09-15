@@ -83,7 +83,7 @@ export default defineConfig(({ mode }) => {
     build: {
       // 启用Terser压缩
       minify: 'terser',
-      // 确保CSS正确提取和压缩
+      // 启用CSS代码分割，但保持简单
       cssCodeSplit: true,
       // 确保输出目录正确
       outDir: 'dist',
@@ -91,6 +91,8 @@ export default defineConfig(({ mode }) => {
       assetsDir: 'assets',
       // 复制public目录下的文件到输出目录
       copyPublicDir: true,
+      // 设置合理的chunk大小警告阈值
+      chunkSizeWarningLimit: 1000,
       terserOptions: {
         compress: {
           drop_console: true, // 删除console.log
@@ -107,311 +109,158 @@ export default defineConfig(({ mode }) => {
       },
       rollupOptions: {
         output: {
-          // 设置chunk文件名格式
-          chunkFileNames: 'assets/[name]-[hash].js',
+          // 设置稳定的文件名格式，确保hash值一致性
+          chunkFileNames: (chunkInfo) => {
+            // 为不同类型的chunk使用不同的命名策略
+            const facadeModuleId = chunkInfo.facadeModuleId;
+            if (facadeModuleId) {
+              // 如果是页面组件，使用页面名称
+              if (facadeModuleId.includes('/pages/')) {
+                const pageName = facadeModuleId.match(/\/pages\/([^\/]+)/)?.[1]?.toLowerCase();
+                if (pageName) {
+                  return `assets/page-${pageName}-[hash].js`;
+                }
+              }
+              // 如果是组件，使用组件前缀
+              if (facadeModuleId.includes('/components/')) {
+                return `assets/components-[hash].js`;
+              }
+            }
+            // 默认chunk命名
+            return `assets/[name]-[hash].js`;
+          },
           entryFileNames: 'assets/[name]-[hash].js',
-          assetFileNames: 'assets/[name]-[hash].[ext]',
+          assetFileNames: (assetInfo) => {
+            // 为不同类型的资源使用不同的命名策略
+            const name = assetInfo.name || '';
+            if (name.endsWith('.css')) {
+              return 'assets/[name]-[hash].css';
+            }
+            if (name.match(/\.(png|jpe?g|gif|svg|webp|ico)$/)) {
+              return 'assets/images/[name]-[hash].[ext]';
+            }
+            if (name.match(/\.(woff2?|eot|ttf|otf)$/)) {
+              return 'assets/fonts/[name]-[hash].[ext]';
+            }
+            return 'assets/[name]-[hash].[ext]';
+          },
+          // 简化的代码分割策略 - 只分割必要的大块
           manualChunks: (id) => {
-            // React核心库 - 进一步细分
-            if (id.includes('node_modules/react/') && !id.includes('react-dom')) {
-              return 'react-core';
+            // 1. React核心库 - 稳定且经常使用
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+              return 'react-vendor';
             }
-            if (id.includes('node_modules/react-dom')) {
-              return 'react-dom';
+            
+            // 2. React Router - 路由相关
+            if (id.includes('node_modules/react-router')) {
+              return 'router-vendor';
             }
-            if (id.includes('node_modules/react-router-dom') || id.includes('node_modules/react-router')) {
-              return 'react-router';
+            
+            // 3. UI组件库 - 图标和UI组件
+            if (id.includes('node_modules/react-icons') || 
+                id.includes('node_modules/@mui/')) {
+              return 'ui-vendor';
             }
-
-            // UI相关库细分
-            if (id.includes('node_modules/react-icons')) {
-              return 'react-icons';
-            }
-
-            // Markdown相关库
+            
+            // 4. Markdown相关 - 内容渲染核心
             if (id.includes('node_modules/marked') ||
-              id.includes('node_modules/react-syntax-highlighter') ||
-              id.includes('node_modules/react-markdown') ||
-              id.includes('node_modules/rehype-raw') ||
-              id.includes('node_modules/rehype-sanitize')) {
+                id.includes('node_modules/react-markdown') ||
+                id.includes('node_modules/react-syntax-highlighter') ||
+                id.includes('node_modules/highlight.js') ||
+                id.includes('node_modules/rehype') ||
+                id.includes('node_modules/remark') ||
+                id.includes('node_modules/unified') ||
+                id.includes('node_modules/refractor') ||
+                id.includes('node_modules/prismjs') ||
+                id.includes('node_modules/lowlight')) {
               return 'markdown-vendor';
             }
-
-            // 图片处理库
-            if (id.includes('node_modules/browser-image-compression')) {
-              return 'image-vendor';
+            
+            // 5. 数学公式渲染
+            if (id.includes('node_modules/katex')) {
+              return 'math-vendor';
             }
-
-            // 样式相关库 - 只分割node_modules中的样式库，不分割项目源码中的样式文件
-            if (id.includes('node_modules/sass') ||
-              id.includes('node_modules/postcss')) {
-              return 'styles-vendor';
-            }
-
-            // 工具库分组 - 进一步细分
-            if (id.includes('node_modules/lodash')) {
-              return 'lodash-vendor';
-            }
-            if (id.includes('node_modules/date-fns')) {
-              return 'date-vendor';
-            }
+            
+            // 6. HTTP请求库
             if (id.includes('node_modules/axios')) {
               return 'http-vendor';
             }
-
-            // 代码高亮相关库
-            if (id.includes('highlight.js') ||
-              id.includes('prismjs') ||
-              id.includes('codemirror')) {
-              return 'syntax-vendor';
+            
+            // 7. 图片处理
+            if (id.includes('node_modules/browser-image-compression')) {
+              return 'image-vendor';
             }
-
-            // 动画相关库
-            if (id.includes('node_modules/framer-motion') ||
-              id.includes('node_modules/lottie') ||
-              id.includes('node_modules/gsap')) {
-              return 'animation-vendor';
-            }
-
-            // 表单相关库
-            if (id.includes('node_modules/formik') ||
-              id.includes('node_modules/yup') ||
-              id.includes('node_modules/react-hook-form')) {
-              return 'form-vendor';
-            }
-
-            // 状态管理相关库
-            if (id.includes('node_modules/redux') ||
-              id.includes('node_modules/zustand') ||
-              id.includes('node_modules/mobx')) {
+            
+            // 8. 状态管理
+            if (id.includes('node_modules/zustand')) {
               return 'state-vendor';
             }
-
-            // 国际化相关库
-            if (id.includes('node_modules/i18next') ||
-              id.includes('node_modules/react-i18next')) {
-              return 'i18n-vendor';
+            
+            // 9. 工具库 - 常用工具
+            if (id.includes('node_modules/lodash') ||
+                id.includes('node_modules/date-fns') ||
+                id.includes('node_modules/classnames') ||
+                id.includes('node_modules/dompurify') ||
+                id.includes('node_modules/zod')) {
+              return 'utils-vendor';
             }
-
-            // 测试相关库（通常不会在生产构建中）
-            if (id.includes('node_modules/jest') ||
-              id.includes('node_modules/testing-library') ||
-              id.includes('node_modules/vitest')) {
-              return 'test-vendor';
+            
+            // 10. 阿里云OSS
+            if (id.includes('node_modules/ali-oss')) {
+              return 'oss-vendor';
             }
-
-            // 开发工具相关库（通常不会在生产构建中）
-            if (id.includes('node_modules/@types/') ||
-              id.includes('node_modules/typescript') ||
-              id.includes('node_modules/eslint')) {
-              return 'dev-vendor';
+            
+            // 11. 其他第三方库统一打包
+            if (id.includes('node_modules/')) {
+              return 'vendor';
             }
-
-            // polyfill相关库
-            if (id.includes('node_modules/core-js') ||
-              id.includes('node_modules/regenerator-runtime') ||
-              id.includes('node_modules/@babel/runtime')) {
-              return 'polyfill-vendor';
+            
+            // 12. 应用代码按功能模块分割
+            
+            // 管理后台相关页面
+            if (id.includes('/pages/Admin/')) {
+              return 'admin-pages';
             }
-
-            // 将大的组件库单独分块
-            if (id.includes('ImageSelectorModal')) {
-              return 'image-selector';
+            
+            // 前台页面
+            if (id.includes('/pages/Home/') || 
+                id.includes('/pages/BlogContent/') ||
+                id.includes('/pages/FriendLink/')) {
+              return 'frontend-pages';
             }
-
-            // 前台页面分块
-            if (id.includes('/pages/Home/')) {
-              return 'home-page';
-            }
-            if (id.includes('/pages/BlogContent/')) {
-              return 'blog-content-page';
-            }
-            if (id.includes('/pages/FriendLink/')) {
-              return 'friend-link-page';
-            }
-            if (id.includes('/pages/NotFound/') || id.includes('/pages/Waiting/')) {
+            
+            // 其他页面（404、等待页等）
+            if (id.includes('/pages/')) {
               return 'misc-pages';
             }
-
-            // 管理后台页面分块 - 进一步细分
-            if (id.includes('/pages/Admin/Login/')) {
-              return 'admin-login-page';
+            
+            // 组件库
+            if (id.includes('/components/')) {
+              return 'components';
             }
-            if (id.includes('/pages/Admin/Edit/')) {
-              return 'admin-edit-page';
-            }
-            if (id.includes('/pages/Admin/Posts/')) {
-              return 'admin-posts-page';
-            }
-            if (id.includes('/pages/Admin/Gallery/')) {
-              return 'admin-gallery-page';
-            }
-            if (id.includes('/pages/Admin/Comments/')) {
-              return 'admin-comments-page';
-            }
-            if (id.includes('/pages/Admin/FriendLinks/')) {
-              return 'admin-friendlinks-page';
-            }
-
-            // 管理后台设置页面进一步细分
-            if (id.includes('/pages/Admin/Settings/UserSetting/')) {
-              return 'admin-user-settings';
-            }
-            if (id.includes('/pages/Admin/Settings/ServerSetting/') ||
-              id.includes('/pages/Admin/Settings/DatabaseSetting/')) {
-              return 'admin-server-settings';
-            }
-            if (id.includes('/pages/Admin/Settings/')) {
-              return 'admin-other-settings';
-            }
-
-            // 布局组件分块
+            
+            // 布局组件
             if (id.includes('/layouts/')) {
               return 'layouts';
             }
-
-            // 通用组件分块
-            if (id.includes('/components/')) {
-              // 将SearchModal和Navigator保持在主components chunk中，避免CSS加载顺序问题
-              return 'components';
-            }
-
-            // 服务层分块
+            
+            // 服务层
             if (id.includes('/services/')) {
               return 'services';
             }
-
-            // 剩余的第三方库按字母顺序分组，确保每组不会太大
-            if (id.includes('node_modules')) {
-              const packageName = id.split('node_modules/')[1].split('/')[0];
-
-              // 特别大的库单独处理
-              if (packageName.includes('plotly') ||
-                packageName.includes('plotly.js')) {
-                return 'plotly-vendor';
-              }
-              if (packageName.includes('monaco-editor')) {
-                return 'monaco-vendor';
-              }
-              if (packageName.includes('pdf') ||
-                packageName.includes('pdfjs')) {
-                return 'pdf-vendor';
-              }
-              if (packageName.includes('three') ||
-                packageName.includes('threejs')) {
-                return 'three-vendor';
-              }
-              // React相关的大型库单独处理
-              if (packageName.includes('react-syntax-highlighter')) {
-                return 'syntax-highlighter-vendor';
-              }
-              if (packageName.includes('react-markdown')) {
-                return 'react-markdown-vendor';
-              }
-
-              // 对refractor进行更细粒度的分割
-              if (packageName.includes('refractor')) {
-                // 根据文件路径进一步分割refractor
-                if (id.includes('refractor/lang/')) {
-                  // 按语言分组，每组包含一些语言
-                  const langMatch = id.match(/refractor\/lang\/([a-z]+)/);
-                  if (langMatch) {
-                    const lang = langMatch[1];
-                    // 按字母顺序分组语言文件
-                    if (lang.match(/^[a-f]/)) {
-                      return 'refractor-lang-a-f';
-                    } else if (lang.match(/^[g-m]/)) {
-                      return 'refractor-lang-g-m';
-                    } else if (lang.match(/^[n-s]/)) {
-                      return 'refractor-lang-n-s';
-                    } else {
-                      return 'refractor-lang-t-z';
-                    }
-                  }
-                }
-                return 'refractor-core';
-              }
-
-              if (packageName.includes('prism-react-renderer')) {
-                return 'prism-renderer-vendor';
-              }
-              if (packageName.includes('prismjs') || packageName.includes('prism')) {
-                return 'prism-vendor';
-              }
-              if (packageName.includes('lowlight')) {
-                return 'lowlight-vendor';
-              }
-              if (packageName.includes('unified') ||
-                packageName.includes('remark') ||
-                packageName.includes('rehype')) {
-                return 'unified-vendor';
-              }
-
-              // A-C开头的包
-              if (packageName.match(/^[a-c]/i)) {
-                return 'vendor-a-c';
-              }
-              // D开头的包
-              if (packageName.match(/^d/i)) {
-                return 'vendor-d';
-              }
-              // E-F开头的包
-              if (packageName.match(/^[e-f]/i)) {
-                return 'vendor-e-f';
-              }
-              // G-H开头的包
-              if (packageName.match(/^[g-h]/i)) {
-                return 'vendor-g-h';
-              }
-              // I-J开头的包
-              if (packageName.match(/^[i-j]/i)) {
-                return 'vendor-i-j';
-              }
-              // K-L开头的包
-              if (packageName.match(/^[k-l]/i)) {
-                return 'vendor-k-l';
-              }
-              // M开头的包
-              if (packageName.match(/^m/i)) {
-                return 'vendor-m';
-              }
-              // N开头的包
-              if (packageName.match(/^n/i)) {
-                return 'vendor-n';
-              }
-              // O-P开头的包
-              if (packageName.match(/^[o-p]/i)) {
-                return 'vendor-o-p';
-              }
-              // Q开头的包
-              if (packageName.match(/^q/i)) {
-                return 'vendor-q';
-              }
-              // R开头的包（除了已经单独处理的react相关包）
-              if (packageName.match(/^r/i)) {
-                return 'vendor-r';
-              }
-              // S开头的包
-              if (packageName.match(/^s/i)) {
-                return 'vendor-s';
-              }
-              // T-U开头的包
-              if (packageName.match(/^[t-u]/i)) {
-                return 'vendor-t-u';
-              }
-              // V-Z开头的包
-              if (packageName.match(/^[v-z]/i)) {
-                return 'vendor-v-z';
-              }
-
-              // 默认vendor
-              return 'vendor-misc';
+            
+            // 工具函数和常量
+            if (id.includes('/utils/') || 
+                id.includes('/constants/') ||
+                id.includes('/hooks/')) {
+              return 'app-utils';
             }
+            
+            // 默认不分割，保持在主bundle中
+            return undefined;
           }
         }
-      },
-      // 设置更严格的chunk大小警告阈值
-      chunkSizeWarningLimit: 512
+      }
     }
   }
 })
