@@ -1,0 +1,293 @@
+@use '@/style/mixins' as *;
+@use '@/style/variables' as *;
+
+/* 模态框遮罩层 */
+.toc-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 1500;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: $spacing-xl;
+    backdrop-filter: blur(0);
+    transition: background-color 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+                backdrop-filter 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    opacity: 0;
+    visibility: hidden;
+
+    &.visible {
+        opacity: 1;
+        visibility: visible;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+    }
+}
+
+/* 模态框主体 */
+.toc-modal {
+    @include glass-card;
+    width: 320px;
+    max-height: calc(100vh - 6rem);
+    border-radius: $border-radius-lg;
+    position: relative;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+
+    @include glass-glow;
+
+    &.visible {
+        transform: translateX(0);
+    }
+
+    @media (max-width: 768px) {
+        width: calc(100vw - 3rem);
+        max-width: 300px;
+    }
+
+    @media (max-width: 480px) {
+        width: calc(100vw - 2rem);
+        margin-top: $spacing-xl;
+    }
+}
+
+/* 模态框头部 */
+.toc-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-lg;
+    border-bottom: 1px solid rgba($white, 0.1);
+    position: relative;
+    z-index: 10;
+
+    .toc-modal-title {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        
+        .toc-title-icon {
+            font-size: $font-size-lg;
+            color: #2196F3;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: $font-size-lg;
+            font-weight: $font-weight-semibold;
+            color: $white;
+        }
+    }
+
+    .toc-modal-close {
+        background: transparent;
+        border: none;
+        color: rgba($white, 0.7);
+        cursor: pointer;
+        padding: $spacing-xs;
+        border-radius: $border-radius-sm;
+        transition: all $transition-base;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-lg;
+
+        &:hover {
+            background: rgba($white, 0.1);
+            color: $white;
+        }
+    }
+}
+
+/* 模态框内容区域 */
+.toc-modal-content {
+    padding: $spacing-md $spacing-lg $spacing-lg;
+    overflow-y: auto;
+    max-height: calc(100vh - 8rem - 60px);
+    position: relative;
+    z-index: 5;
+
+    /* 自定义滚动条 */
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba($white, 0.05);
+        border-radius: $border-radius-sm;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($white, 0.2);
+        border-radius: $border-radius-sm;
+
+        &:hover {
+            background: rgba($white, 0.3);
+        }
+    }
+}
+
+/* 目录导航 */
+.toc-nav {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+}
+
+/* 目录项通用样式 */
+.toc-item {
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-md;
+    cursor: pointer;
+    transition: all $transition-base;
+    color: rgba($white, 0.8);
+    font-size: $font-size-sm;
+    line-height: $line-height-base;
+    position: relative;
+    border-left: 2px solid transparent;
+
+    &:hover {
+        background: rgba($white, 0.08);
+        color: $white;
+        transform: translateX(2px);
+    }
+
+    &.active {
+        background: rgba(33, 150, 243, 0.15);
+        color: #82b4ff;
+        border-left-color: #2196F3;
+        
+        &::before {
+            content: '';
+            position: absolute;
+            left: -2px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background: linear-gradient(180deg, #2196F3, #82b4ff);
+            border-radius: 0 $border-radius-sm $border-radius-sm 0;
+        }
+    }
+
+    .toc-item-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* 不同层级标题的缩进和样式 */
+.toc-level-1 {
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-md;
+    margin-left: 0;
+}
+
+.toc-level-2 {
+    font-weight: $font-weight-medium;
+    margin-left: $spacing-md;
+}
+
+.toc-level-3 {
+    margin-left: $spacing-lg;
+    font-size: $font-size-xs + 0.1rem;
+}
+
+.toc-level-4 {
+    margin-left: $spacing-xl;
+    font-size: $font-size-xs;
+    opacity: 0.9;
+}
+
+.toc-level-5 {
+    margin-left: $spacing-xl + $spacing-sm;
+    font-size: $font-size-xs;
+    opacity: 0.85;
+}
+
+.toc-level-6 {
+    margin-left: $spacing-xl + $spacing-md;
+    font-size: $font-size-xs - 0.05rem;
+    opacity: 0.8;
+}
+
+/* 空状态样式 */
+.toc-empty {
+    text-align: center;
+    padding: $spacing-xl $spacing-md;
+    color: rgba($white, 0.6);
+
+    p {
+        margin: 0 0 $spacing-sm 0;
+        font-size: $font-size-md;
+        font-weight: $font-weight-medium;
+    }
+
+    .toc-empty-hint {
+        font-size: $font-size-sm;
+        line-height: $line-height-loose;
+        opacity: 0.8;
+    }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .toc-modal-overlay {
+        padding: $spacing-lg;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .toc-modal {
+        width: 100%;
+        max-width: none;
+        max-height: 80vh;
+        
+        &.visible {
+            transform: translateY(0);
+        }
+    }
+
+    .toc-modal-header {
+        padding: $spacing-md $spacing-lg;
+        
+        .toc-modal-title h3 {
+            font-size: $font-size-md;
+        }
+    }
+
+    .toc-modal-content {
+        padding: $spacing-sm $spacing-md $spacing-md;
+    }
+
+    .toc-item {
+        padding: $spacing-sm;
+        font-size: $font-size-xs + 0.1rem;
+    }
+
+    .toc-level-1 {
+        font-size: $font-size-sm;
+    }
+
+    .toc-level-2 {
+        margin-left: $spacing-sm;
+    }
+
+    .toc-level-3 {
+        margin-left: $spacing-md;
+    }
+
+    .toc-level-4 {
+        margin-left: $spacing-lg;
+    }
+
+    .toc-level-5, .toc-level-6 {
+        margin-left: $spacing-xl;
+    }
+}

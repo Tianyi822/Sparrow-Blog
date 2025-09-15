@@ -8,6 +8,7 @@ import Comments from "@/components/business/Comments/Comments";
 import { getBasicData, getImageUrl } from "@/services/webService";
 import { BasicData } from "@/types";
 import { localStorage } from "@/utils";
+import type { TOCItem } from "@/components/business/Tools/TOCModal/TOCModal";
 import "./BlogLayout.scss";
 
 // 导航索引缓存键
@@ -78,6 +79,7 @@ const BlogLayout: FC = () => {
     const [bgImage, setBgImage] = useState<string>("");
     const [homeData, setHomeData] = useState<BasicData | null>(null);
     const [commentsOpen, setCommentsOpen] = useState(false);
+    const [tocItems, setTocItems] = useState<TOCItem[]>([]);
 
     // 检查是否在博客内容页
     const isBlogContentPage = location.pathname.startsWith('/blog/');
@@ -94,8 +96,9 @@ const BlogLayout: FC = () => {
             saveNavIndex(newIndex);
         }
         
-        // 路由变化时关闭评论面板
+        // 路由变化时关闭评论面板并清空目录
         setCommentsOpen(false);
+        setTocItems([]);
     }, [location.pathname]);
 
     // 导航索引变化时保存到localStorage
@@ -159,7 +162,9 @@ const BlogLayout: FC = () => {
     // 准备传递给子组件的上下文数据
     const contextValue = {
         homeData,
-        getImageUrl
+        getImageUrl,
+        tocItems,
+        setTocItems
     };
 
     return (
@@ -179,6 +184,8 @@ const BlogLayout: FC = () => {
                 homeData={homeData}
                 showCommentsButton={isBlogContentPage}
                 onCommentsClick={handleCommentsClick}
+                showTOCButton={isBlogContentPage}
+                tocItems={tocItems}
             />
             <ScrollBar className="app-scroll-bar" />
             

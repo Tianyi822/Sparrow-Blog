@@ -1,26 +1,29 @@
-import Background from "@/components/layout/Background/Background";
+import { useState, useEffect, useCallback, useRef, memo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeKatex from 'rehype-katex';
+import { FiX, FiCalendar, FiClock } from 'react-icons/fi';
+import React from 'react';
+import 'katex/dist/katex.min.css';
+import Background from '@/components/layout/Background/Background';
 import { CodeBlock } from '@/components/common/ui/code-block';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { fetchMarkdownContent, getBlogContent } from '@/services/webService';
 import { BlogContentData } from '@/types';
-import { formatDate } from '@/utils';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { FiCalendar, FiClock, FiX } from 'react-icons/fi';
-import ReactMarkdown from 'react-markdown';
-import { useNavigate, useParams } from 'react-router-dom';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
+import { formatDateTime } from '@/utils';
 import { useUIStore } from '@/stores';
+import Comments from '@/components/business/Comments/Comments';
+import type { TOCItem } from '@/components/business/Tools/TOCModal/TOCModal';
 import './BlogContent.scss';
 
 const BlogContent: React.FC = memo(() => {
     const { blogId } = useParams<{ blogId: string }>();
     const navigate = useNavigate();
-    const { getImageUrl } = useBlogLayoutContext();
+    const { getImageUrl, setTocItems, tocItems } = useBlogLayoutContext();
 
     // 状态管理
     const [blogData, setBlogData] = useState<BlogContentData | null>(null);
@@ -28,6 +31,7 @@ const BlogContent: React.FC = memo(() => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [backgroundImage, setBackgroundImage] = useState<string>('');
+    const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     
     // 使用 Zustand 状态管理图片缩放
     const { 
@@ -39,15 +43,45 @@ const BlogContent: React.FC = memo(() => {
 
     const zoomOverlayRef = useRef<HTMLDivElement>(null);
     const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const articleContentRef = useRef<HTMLDivElement>(null);
 
-    // 清除关闭定时器
-    useEffect(() => {
-        return () => {
-            if (closeTimeoutRef.current) {
-                clearTimeout(closeTimeoutRef.current);
-            }
-        };
+    /**
+     * 从Markdown内容中提取目录
+     * 使用正则表达式匹配标题，并生成唯一的锚点ID
+     * @param markdown - Markdown内容
+     * @returns 目录项数组
+     */
+    const extractTOCFromMarkdown = useCallback((markdown: string): TOCItem[] => {
+        const tocItems: TOCItem[] = [];
+        // 使用正则表达式匹配所有标题
+        const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+        let match;
+
+        while ((match = headingRegex.exec(markdown)) !== null) {
+            const level = match[1].length; // # 的数量就是标题级别
+            const text = match[2].trim();
+            
+            // 生成唯一的锚点ID
+            const anchorId = `heading-${level}-${text.replace(/\s+/g, '-').toLowerCase().replace(/[^\w\-]/g, '')}`;
+            
+            tocItems.push({
+                id: `toc-${Date.now()}-${tocItems.length}`, // 生成唯一ID
+                level,
+                text,
+                anchorId
+            });
+        }
+
+        return tocItems;
     }, []);
+
+    // 更新Markdown内容时同时提取目录
+    useEffect(() => {
+        if (markdownContent) {
+            const toc = extractTOCFromMarkdown(markdownContent);
+            setTocItems?.(toc);
+        }
+    }, [markdownContent, extractTOCFromMarkdown, setTocItems]);
 
     // 获取博客数据
     useEffect(() => {
@@ -149,6 +183,16 @@ const BlogContent: React.FC = memo(() => {
         }, 350); // 稍微比CSS动画时间(300ms)长一点，确保动画完成
     }, [closeImageModal, setImageModalData, imageModalData]);
 
+    // 处理评论按钮点击事件
+    const handleCommentsClick = useCallback(() => {
+        setIsCommentsOpen(true);
+    }, []);
+
+    // 关闭评论面板
+    const handleCommentsClose = useCallback(() => {
+        setIsCommentsOpen(false);
+    }, []);
+
     // 图片渲染器 - 处理Markdown中的图片
     const renderImage = useCallback((props: React.ComponentPropsWithoutRef<'img'>) => {
         const { src, alt } = props;
@@ -186,6 +230,27 @@ const BlogContent: React.FC = memo(() => {
 
         return <code className={className}>{children}</code>;
     }, []);
+
+    // 标题渲染器 - 为每个标题添加ID，支持目录跳转
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const renderHeading = useCallback((props: any) => {
+        const { level, children } = props;
+        const headingText = String(children);
+        
+        // 查找对应的TOC项目，获取anchorId
+        const tocItem = tocItems?.find((item: TOCItem) => 
+            item.level === level && item.text === headingText
+        );
+        
+        const anchorId = tocItem?.anchorId || `heading-${level}-${headingText.replace(/\s+/g, '-').toLowerCase()}`;
+        
+        // 使用React.createElement动态创建标题元素
+        return React.createElement(
+            `h${level}`,
+            { id: anchorId },
+            children
+        );
+    }, [tocItems]);
 
     // 计算图片缩放动画的样式
     const getZoomAnimationStyle = useCallback(() => {
@@ -257,13 +322,13 @@ const BlogContent: React.FC = memo(() => {
                     <div className="blog-content-page-header-meta">
                         <div className="blog-content-page-header-meta-item">
                             <FiCalendar className="icon" />
-                            <span>创建于 {formatDate(create_time)}</span>
+                            <span>创建于 {formatDateTime(create_time)}</span>
                         </div>
 
                         {update_time && update_time !== '0001-01-01T00:00:00Z' && (
                             <div className="blog-content-page-header-meta-item">
                                 <FiCalendar className="icon" />
-                                <span>更新于 {formatDate(update_time)}</span>
+                                <span>更新于 {formatDateTime(update_time)}</span>
                             </div>
                         )}
 
@@ -299,13 +364,19 @@ const BlogContent: React.FC = memo(() => {
                     <div className="blog-content-page-article-glow" />
                     <div className="blog-content-page-article-border-glow" />
 
-                    <div className="markdown-content">
+                    <div className="markdown-content" ref={articleContentRef}>
                         {markdownContent && (
                             <ReactMarkdown
                                 children={markdownContent}
                                 components={{
                                     code: renderCodeBlock,
-                                    img: renderImage
+                                    img: renderImage,
+                                    h1: renderHeading,
+                                    h2: renderHeading,
+                                    h3: renderHeading,
+                                    h4: renderHeading,
+                                    h5: renderHeading,
+                                    h6: renderHeading
                                 }}
                                 remarkPlugins={[remarkGfm, remarkMath]}
                                 rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeKatex]}
@@ -314,6 +385,15 @@ const BlogContent: React.FC = memo(() => {
                     </div>
                 </article>
             </div>
+
+            {/* 评论系统 */}
+            {blogId && (
+                <Comments 
+                    blogId={blogId}
+                    isOpen={isCommentsOpen}
+                    onClose={handleCommentsClose}
+                />
+            )}
 
             {/* 图片放大查看层 */}
             {imageModalData && (

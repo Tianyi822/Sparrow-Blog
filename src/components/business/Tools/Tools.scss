@@ -9,16 +9,22 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;  /* 组件之间的间距 */
+    gap: $spacing-md;  /* 组件之间的间距 */
     align-items: flex-end;  /* 让子元素靠右对齐 */
 
-    /* 评论按钮 */
+    /* 评论按钮样式已在 CommentsButton.scss 中定义 */
     .tools-comments-button {
-        // 样式已在 CommentsButton.scss 中定义
+        flex-shrink: 0; /* 防止按钮被压缩 */
+    }
+
+    /* 目录按钮样式已在 TOCButton.scss 中定义 */
+    .tools-toc-button {
+        flex-shrink: 0; /* 防止按钮被压缩 */
     }
 
     /* 返回顶部按钮 */
     .tools-back-to-top {
+        flex-shrink: 0; /* 防止按钮被压缩 */
         opacity: 0;
         visibility: hidden;
         transition: opacity $transition-base, visibility $transition-base;
@@ -36,9 +42,9 @@
         }
     }
 
-    /* 网站备案信息 */
+    /* 网站备案信息样式在 ICPFilingNumber 组件内部定义 */
     .tools-website-record {
-        /* 移除所有覆盖样式，让 ICPFilingNumber 组件内部的样式完全生效 */
+        flex-shrink: 0; /* 防止组件被压缩 */
     }
 
     /* 移动端响应式样式 - 缩小组件并向右侧吸附 */
@@ -46,7 +52,7 @@
         right: $spacing-xs;
         left: auto;
         bottom: $spacing-md;
-        gap: $spacing-xs;
+        gap: $spacing-sm; /* 移动端使用较小间距 */
         /* 在移动端将Tools组件向右侧吸附，缩小间距 */
     }
     

@@ -3,6 +3,8 @@ import './Tools.scss';
 import BackToTop from '@/components/business/Tools/BackToTop/BackToTop';
 import ICPFilingNumber from '@/components/business/Tools/ICPFilingNumber/ICPFilingNumber.tsx';
 import CommentsButton from '@/components/business/Tools/CommentsButton/CommentsButton';
+import TOCButton from '@/components/business/Tools/TOCButton';
+import TOCModal, { type TOCItem } from '@/components/business/Tools/TOCModal';
 import classNames from 'classnames';
 import { BasicData } from '@/types';
 
@@ -20,28 +22,37 @@ interface ToolsProps {
     onCommentsClick?: () => void;
     /** 评论数量 */
     commentsCount?: number;
+    /** 是否显示目录按钮 */
+    showTOCButton?: boolean;
+    /** 目录数据 */
+    tocItems?: TOCItem[];
 }
 
 /**
  * 工具组件
- * 包含返回顶部按钮、评论按钮和备案号显示等功能
+ * 包含返回顶部按钮、评论按钮、目录按钮和备案号显示等功能
  * 
  * @param className - 自定义类名
  * @param homeData - 网站基础数据，包含备案号等信息
  * @param showCommentsButton - 是否显示评论按钮
  * @param onCommentsClick - 评论按钮点击事件
  * @param commentsCount - 评论数量
+ * @param showTOCButton - 是否显示目录按钮
+ * @param tocItems - 目录数据
  */
 const Tools: React.FC<ToolsProps> = ({ 
     className, 
     homeData, 
     showCommentsButton = false, 
     onCommentsClick, 
-    commentsCount 
+    commentsCount,
+    showTOCButton = false,
+    tocItems = []
 }) => {
     // 状态定义
     const [isBackToTopVisible, setIsBackToTopVisible] = useState<boolean>(false); // 控制返回顶部按钮可见性
     const [isAnimating, setIsAnimating] = useState<boolean>(false); // 控制当前是否处于滚动动画中
+    const [isTOCModalOpen, setIsTOCModalOpen] = useState<boolean>(false); // 控制目录模态框可见性
     
     // 引用定时器，便于清除
     const scrollCheckIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -112,6 +123,21 @@ const Tools: React.FC<ToolsProps> = ({
         }, 5000);
     }, []);
 
+    /**
+     * 处理目录按钮点击事件
+     * 打开或关闭目录模态框
+     */
+    const handleTOCClick = useCallback(() => {
+        setIsTOCModalOpen(true);
+    }, []);
+
+    /**
+     * 关闭目录模态框
+     */
+    const handleTOCClose = useCallback(() => {
+        setIsTOCModalOpen(false);
+    }, []);
+
     // 组件卸载时清除所有定时器
     useEffect(() => {
         return () => {
@@ -139,23 +165,41 @@ const Tools: React.FC<ToolsProps> = ({
     const toolsContainerClass = useMemo(() => classNames('tools', className), [className]);
 
     return (
-        <div className={toolsContainerClass}>
-            <BackToTop 
-                className={backToTopClass}
-                onClick={handleBackToTop}
-            />
-            {showCommentsButton && onCommentsClick && (
-                <CommentsButton 
-                    className="tools-comments-button"
-                    onClick={onCommentsClick}
-                    commentsCount={commentsCount}
+        <>
+            <div className={toolsContainerClass}>
+                <BackToTop 
+                    className={backToTopClass}
+                    onClick={handleBackToTop}
+                />
+                {showCommentsButton && onCommentsClick && (
+                    <CommentsButton 
+                        className="tools-comments-button"
+                        onClick={onCommentsClick}
+                        commentsCount={commentsCount}
+                    />
+                )}
+                {showTOCButton && (
+                    <TOCButton 
+                        className="tools-toc-button"
+                        onClick={handleTOCClick}
+                        disabled={tocItems.length === 0}
+                    />
+                )}
+                <ICPFilingNumber 
+                    className="tools-website-record"
+                    icpFilingNumber={homeData?.icp_filing_number}
+                />
+            </div>
+            
+            {/* 目录模态框 */}
+            {showTOCButton && (
+                <TOCModal 
+                    isOpen={isTOCModalOpen}
+                    onClose={handleTOCClose}
+                    tocItems={tocItems}
                 />
             )}
-            <ICPFilingNumber 
-                className="tools-website-record"
-                icpFilingNumber={homeData?.icp_filing_number}
-            />
-        </div>
+        </>
     );
 };
 
