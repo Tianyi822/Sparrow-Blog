@@ -1,29 +1,28 @@
-import { useState, useEffect, useCallback, useRef, memo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
-import rehypeKatex from 'rehype-katex';
-import { FiX, FiCalendar, FiClock } from 'react-icons/fi';
-import React from 'react';
-import 'katex/dist/katex.min.css';
-import Background from '@/components/layout/Background/Background';
-import { CodeBlock } from '@/components/common/ui/code-block';
-import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
-import { fetchMarkdownContent, getBlogContent } from '@/services/webService';
-import { BlogContentData } from '@/types';
-import { formatDateTime } from '@/utils';
-import { useUIStore } from '@/stores';
 import Comments from '@/components/business/Comments/Comments';
 import type { TOCItem } from '@/components/business/Tools/TOCModal/TOCModal';
+import { CodeBlock } from '@/components/common/ui/code-block';
+import Background from '@/components/layout/Background/Background';
+import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
+import { fetchMarkdownContent, getBlogContent } from '@/services/webService';
+import { useUIStore } from '@/stores';
+import { BlogContentData } from '@/types';
+import { formatDateTime } from '@/utils';
+import 'katex/dist/katex.min.css';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { FiCalendar, FiClock, FiX } from 'react-icons/fi';
+import ReactMarkdown from 'react-markdown';
+import { useNavigate, useParams } from 'react-router-dom';
+import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 import './BlogContent.scss';
 
 const BlogContent: React.FC = memo(() => {
     const { blogId } = useParams<{ blogId: string }>();
     const navigate = useNavigate();
-    const { getImageUrl, setTocItems, tocItems } = useBlogLayoutContext();
+    const { getImageUrl, setTocItems } = useBlogLayoutContext();
 
     // 状态管理
     const [blogData, setBlogData] = useState<BlogContentData | null>(null);
@@ -32,13 +31,13 @@ const BlogContent: React.FC = memo(() => {
     const [error, setError] = useState<string | null>(null);
     const [backgroundImage, setBackgroundImage] = useState<string>('');
     const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-    
+
     // 使用 Zustand 状态管理图片缩放
-    const { 
-        imageModalData, 
-        openImageModal, 
+    const {
+        imageModalData,
+        openImageModal,
         closeImageModal,
-        setImageModalData 
+        setImageModalData
     } = useUIStore();
 
     const zoomOverlayRef = useRef<HTMLDivElement>(null);
@@ -47,30 +46,62 @@ const BlogContent: React.FC = memo(() => {
 
     /**
      * 从Markdown内容中提取目录
-     * 使用正则表达式匹配标题，并生成唯一的锚点ID
+     * 正确处理代码块，避免将代码中的内容误识别为标题
      * @param markdown - Markdown内容
      * @returns 目录项数组
      */
     const extractTOCFromMarkdown = useCallback((markdown: string): TOCItem[] => {
         const tocItems: TOCItem[] = [];
-        // 使用正则表达式匹配所有标题
-        const headingRegex = /^(#{1,6})\s+(.+)$/gm;
-        let match;
 
-        while ((match = headingRegex.exec(markdown)) !== null) {
-            const level = match[1].length; // # 的数量就是标题级别
-            const text = match[2].trim();
-            
-            // 生成唯一的锚点ID
-            const anchorId = `heading-${level}-${text.replace(/\s+/g, '-').toLowerCase().replace(/[^\w\-]/g, '')}`;
-            
-            tocItems.push({
-                id: `toc-${Date.now()}-${tocItems.length}`, // 生成唯一ID
-                level,
-                text,
-                anchorId
-            });
-        }
+        // 首先移除代码块内容，避免代码块中的#被误识别为标题
+        let processedMarkdown = markdown;
+
+        // 移除围栏代码块 (```)
+        processedMarkdown = processedMarkdown.replace(/```[\s\S]*?```/g, '');
+
+        // 移除行内代码 (`code`)
+        processedMarkdown = processedMarkdown.replace(/`[^`]*`/g, '');
+
+        // 移除HTML注释
+        processedMarkdown = processedMarkdown.replace(/<!--[\s\S]*?-->/g, '');
+
+        // 分割成行，只处理真正的标题行
+        const lines = processedMarkdown.split('\n');
+
+        lines.forEach((line, index) => {
+            // 匹配标题：行首是#，后面跟空格，然后是标题内容
+            const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+
+            if (headingMatch) {
+                const level = headingMatch[1].length;
+                const text = headingMatch[2].trim();
+
+                // 清理标题文本，移除markdown语法
+                const cleanText = text
+                    .replace(/\*\*(.*?)\*\*/g, '$1') // 移除粗体
+                    .replace(/\*(.*?)\*/g, '$1')     // 移除斜体
+                    .replace(/`(.*?)`/g, '$1')       // 移除行内代码
+                    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // 移除链接，保留文本
+                    .trim();
+
+                if (cleanText) {
+                    // 生成URL友好的锚点ID
+                    const anchorId = `heading-${cleanText
+                        .toLowerCase()
+                        .replace(/[^\w\s\u4e00-\u9fff]/g, '') // 保留字母、数字、空格和中文
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-')
+                        .replace(/^-|-$/g, '')}`;
+
+                    tocItems.push({
+                        id: `toc-${index}-${tocItems.length}`,
+                        level,
+                        text: cleanText,
+                        anchorId
+                    });
+                }
+            }
+        });
 
         return tocItems;
     }, []);
@@ -82,6 +113,43 @@ const BlogContent: React.FC = memo(() => {
             setTocItems?.(toc);
         }
     }, [markdownContent, extractTOCFromMarkdown, setTocItems]);
+
+    // 平滑滚动到指定锚点的函数
+    const scrollToHeading = useCallback((anchorId: string) => {
+        const element = document.getElementById(anchorId);
+        if (element) {
+            const yOffset = -80; // 顶部导航栏高度偏移
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+            window.scrollTo({
+                top: y,
+                behavior: 'smooth'
+            });
+        }
+    }, []);
+
+    // 监听hash变化，支持URL直接跳转到标题
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                // 延迟执行，确保页面内容已经渲染
+                setTimeout(() => {
+                    scrollToHeading(hash);
+                }, 100);
+            }
+        };
+
+        // 页面加载时检查hash
+        handleHashChange();
+
+        // 监听hash变化
+        window.addEventListener('hashchange', handleHashChange);
+
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, [scrollToHeading]);
 
     // 获取博客数据
     useEffect(() => {
@@ -183,10 +251,7 @@ const BlogContent: React.FC = memo(() => {
         }, 350); // 稍微比CSS动画时间(300ms)长一点，确保动画完成
     }, [closeImageModal, setImageModalData, imageModalData]);
 
-    // 处理评论按钮点击事件
-    const handleCommentsClick = useCallback(() => {
-        setIsCommentsOpen(true);
-    }, []);
+
 
     // 关闭评论面板
     const handleCommentsClose = useCallback(() => {
@@ -236,21 +301,58 @@ const BlogContent: React.FC = memo(() => {
     const renderHeading = useCallback((props: any) => {
         const { level, children } = props;
         const headingText = String(children);
-        
-        // 查找对应的TOC项目，获取anchorId
-        const tocItem = tocItems?.find((item: TOCItem) => 
-            item.level === level && item.text === headingText
-        );
-        
-        const anchorId = tocItem?.anchorId || `heading-${level}-${headingText.replace(/\s+/g, '-').toLowerCase()}`;
-        
+
+        // 清理标题文本，保持与目录提取逻辑一致
+        const cleanText = headingText
+            .replace(/\*\*(.*?)\*\*/g, '$1') // 移除粗体
+            .replace(/\*(.*?)\*/g, '$1')     // 移除斜体
+            .replace(/`(.*?)`/g, '$1')       // 移除行内代码
+            .replace(/\[(.*?)\]\(.*?\)/g, '$1') // 移除链接，保留文本
+            .trim();
+
+        // 生成与目录中一致的锚点ID
+        const anchorId = `heading-${cleanText
+            .toLowerCase()
+            .replace(/[^\w\s\u4e00-\u9fff]/g, '') // 保留字母、数字、空格和中文
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')}`;
+
+        // 处理标题点击事件 - 复制链接到剪贴板
+        const handleHeadingClick = (e: React.MouseEvent) => {
+            // 只有点击前面的#号时才复制链接
+            const target = e.target as HTMLElement;
+            if (target.tagName.toLowerCase().startsWith('h') ||
+                (e.clientX - target.getBoundingClientRect().left < 30)) {
+
+                const url = `${window.location.origin}${window.location.pathname}#${anchorId}`;
+
+                // 尝试使用现代的 Clipboard API
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        console.log('标题链接已复制到剪贴板');
+                    }).catch(() => {
+                        console.log('复制失败');
+                    });
+                } else {
+                    // 降级处理：直接更新 URL hash
+                    window.location.hash = anchorId;
+                }
+            }
+        };
+
         // 使用React.createElement动态创建标题元素
         return React.createElement(
             `h${level}`,
-            { id: anchorId },
+            {
+                id: anchorId,
+                className: `markdown-heading markdown-heading-h${level}`,
+                'data-heading-level': level,
+                onClick: handleHeadingClick
+            },
             children
         );
-    }, [tocItems]);
+    }, []);
 
     // 计算图片缩放动画的样式
     const getZoomAnimationStyle = useCallback(() => {
@@ -371,12 +473,12 @@ const BlogContent: React.FC = memo(() => {
                                 components={{
                                     code: renderCodeBlock,
                                     img: renderImage,
-                                    h1: renderHeading,
-                                    h2: renderHeading,
-                                    h3: renderHeading,
-                                    h4: renderHeading,
-                                    h5: renderHeading,
-                                    h6: renderHeading
+                                    h1: (props) => renderHeading({ ...props, level: 1 }),
+                                    h2: (props) => renderHeading({ ...props, level: 2 }),
+                                    h3: (props) => renderHeading({ ...props, level: 3 }),
+                                    h4: (props) => renderHeading({ ...props, level: 4 }),
+                                    h5: (props) => renderHeading({ ...props, level: 5 }),
+                                    h6: (props) => renderHeading({ ...props, level: 6 })
                                 }}
                                 remarkPlugins={[remarkGfm, remarkMath]}
                                 rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeKatex]}
@@ -388,7 +490,7 @@ const BlogContent: React.FC = memo(() => {
 
             {/* 评论系统 */}
             {blogId && (
-                <Comments 
+                <Comments
                     blogId={blogId}
                     isOpen={isCommentsOpen}
                     onClose={handleCommentsClose}

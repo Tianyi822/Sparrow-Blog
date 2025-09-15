@@ -118,29 +118,191 @@
       color: rgba(var.$white, 0.9);
       line-height: var.$line-height-loose;
 
-      /* Markdown样式 */
-      h1, h2, h3, h4, h5, h6 {
-        margin-top: var.$spacing-xl;
-        margin-bottom: var.$spacing-md;
-        color: var.$white;
-      }
-
-      h1 {
-        font-size: var.$font-size-xxl;
-        border-bottom: 1px solid rgba(var.$white, 0.1);
+      /* Markdown标题样式 - 修复选择器 */
+      h1,
+      .markdown-heading-h1 {
+        font-size: var.$font-size-xxl !important;
+        font-weight: 700 !important;
+        border-bottom: 2px solid rgba(var.$white, 0.2);
         padding-bottom: var.$spacing-sm;
+        margin-top: var.$spacing-xxl !important;
+        margin-bottom: var.$spacing-lg !important;
+        color: var.$white !important;
+        position: relative;
+        scroll-margin-top: 80px;
+        
+        &::after {
+          height: 3px;
+          background: linear-gradient(90deg, #82b4ff, #a0c4ff, #82b4ff);
+        }
       }
 
-      h2 {
-        font-size: var.$font-size-xl + 0.2rem;
+      h2,
+      .markdown-heading-h2 {
+        font-size: calc(var.$font-size-xl + 0.2rem) !important;
+        font-weight: 600 !important;
+        margin-top: calc(var.$spacing-xl + var.$spacing-md) !important;
+        margin-bottom: var.$spacing-md !important;
+        color: var.$white !important;
+        position: relative;
+        scroll-margin-top: 80px;
+        
+        &::after {
+          height: 2px;
+          background: linear-gradient(90deg, #82b4ff, #a0c4ff);
+        }
       }
 
-      h3 {
-        font-size: var.$font-size-xl - 0.1rem;
+      h3,
+      .markdown-heading-h3 {
+        font-size: calc(var.$font-size-xl - 0.1rem) !important;
+        font-weight: 600 !important;
+        margin-top: var.$spacing-xl !important;
+        margin-bottom: var.$spacing-md !important;
+        color: var.$white !important;
+        position: relative;
+        scroll-margin-top: 80px;
+        
+        &::after {
+          height: 2px;
+          background: linear-gradient(90deg, #82b4ff, #c4d4ff);
+        }
       }
 
-      h4 {
-        font-size: var.$font-size-lg;
+      h4,
+      .markdown-heading-h4 {
+        font-size: var.$font-size-lg !important;
+        font-weight: 500 !important;
+        margin-top: calc(var.$spacing-lg + var.$spacing-md) !important;
+        margin-bottom: var.$spacing-md !important;
+        color: var.$white !important;
+        position: relative;
+        scroll-margin-top: 80px;
+        
+        &::after {
+          height: 1px;
+          background: rgba(#82b4ff, 0.6);
+        }
+      }
+      
+      h5,
+      .markdown-heading-h5 {
+        font-size: var.$font-size-md !important;
+        font-weight: 500 !important;
+        margin-top: var.$spacing-lg !important;
+        margin-bottom: var.$spacing-md !important;
+        color: var.$white !important;
+        position: relative;
+        scroll-margin-top: 80px;
+        
+        &::after {
+          height: 1px;
+          background: rgba(#82b4ff, 0.4);
+        }
+      }
+      
+      h6,
+      .markdown-heading-h6 {
+        font-size: calc(var.$font-size-sm + 0.1rem) !important;
+        font-weight: 400 !important;
+        margin-top: var.$spacing-lg !important;
+        margin-bottom: var.$spacing-md !important;
+        color: rgba(var.$white, 0.9) !important;
+        position: relative;
+        scroll-margin-top: 80px;
+        
+        &::after {
+          height: 1px;
+          background: rgba(#82b4ff, 0.3);
+        }
+      }
+      
+      /* 所有标题的通用交互效果 */
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .markdown-heading-h1,
+      .markdown-heading-h2,
+      .markdown-heading-h3,
+      .markdown-heading-h4,
+      .markdown-heading-h5,
+      .markdown-heading-h6 {
+        cursor: pointer;
+        
+        /* 悬停时显示锚点链接 */
+        &:hover::before {
+          content: '#';
+          position: absolute;
+          left: -1.5em;
+          color: rgba(var.$white, 0.4);
+          font-weight: normal;
+          cursor: pointer;
+          transition: color 0.2s ease;
+        }
+        
+        &:hover::before:hover {
+          color: rgba(var.$white, 0.8);
+        }
+        
+        /* 为标题添加渐变下划线 */
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: linear-gradient(90deg, #82b4ff, #a0c4ff);
+          transition: width 0.3s ease;
+        }
+        
+        &:hover::after {
+          width: 100%;
+        }
+      }
+      
+      /* 标题目标高亮效果 - 当通过URL hash跳转时 */
+      h1:target,
+      h2:target,
+      h3:target,
+      h4:target,
+      h5:target,
+      h6:target,
+      .markdown-heading-h1:target,
+      .markdown-heading-h2:target,
+      .markdown-heading-h3:target,
+      .markdown-heading-h4:target,
+      .markdown-heading-h5:target,
+      .markdown-heading-h6:target {
+        animation: highlight-heading 2s ease-out;
+        
+        &::after {
+          width: 100%;
+          animation: highlight-underline 2s ease-out;
+        }
+      }
+      
+      @keyframes highlight-heading {
+        0% {
+          background-color: rgba(130, 180, 255, 0.2);
+          transform: scale(1.02);
+        }
+        100% {
+          background-color: transparent;
+          transform: scale(1);
+        }
+      }
+      
+      @keyframes highlight-underline {
+        0% {
+          box-shadow: 0 2px 10px rgba(130, 180, 255, 0.6);
+        }
+        100% {
+          box-shadow: none;
+        }
       }
 
       p {
@@ -775,6 +937,74 @@
         .katex {
           font-size: 0.9em;
         }
+        
+        // 移动端标题样式优化
+        .markdown-content h1,
+        .markdown-content .markdown-heading-h1 {
+          font-size: calc(var.$font-size-xl + 0.3rem) !important;
+          font-weight: 700 !important;
+          margin-top: var.$spacing-xl !important;
+          scroll-margin-top: 60px !important;
+        }
+        
+        .markdown-content h2,
+        .markdown-content .markdown-heading-h2 {
+          font-size: calc(var.$font-size-lg + 0.2rem) !important;
+          font-weight: 600 !important;
+          margin-top: calc(var.$spacing-lg + var.$spacing-sm) !important;
+          scroll-margin-top: 60px !important;
+        }
+        
+        .markdown-content h3,
+        .markdown-content .markdown-heading-h3 {
+          font-size: var.$font-size-lg !important;
+          font-weight: 600 !important;
+          margin-top: var.$spacing-lg !important;
+          scroll-margin-top: 60px !important;
+        }
+        
+        .markdown-content h4,
+        .markdown-content .markdown-heading-h4 {
+          font-size: calc(var.$font-size-md + 0.1rem) !important;
+          font-weight: 500 !important;
+          margin-top: calc(var.$spacing-md + var.$spacing-sm) !important;
+          scroll-margin-top: 60px !important;
+        }
+        
+        .markdown-content h5,
+        .markdown-content .markdown-heading-h5 {
+          font-size: var.$font-size-md !important;
+          font-weight: 500 !important;
+          margin-top: var.$spacing-md !important;
+          scroll-margin-top: 60px !important;
+        }
+        
+        .markdown-content h6,
+        .markdown-content .markdown-heading-h6 {
+          font-size: calc(var.$font-size-sm + 0.1rem) !important;
+          font-weight: 400 !important;
+          margin-top: var.$spacing-md !important;
+          color: rgba(var.$white, 0.85) !important;
+          scroll-margin-top: 60px !important;
+        }
+        
+        /* 移动端标题通用交互效果 */
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4,
+        .markdown-content h5,
+        .markdown-content h6,
+        .markdown-content .markdown-heading-h1,
+        .markdown-content .markdown-heading-h2,
+        .markdown-content .markdown-heading-h3,
+        .markdown-content .markdown-heading-h4,
+        .markdown-content .markdown-heading-h5,
+        .markdown-content .markdown-heading-h6 {
+          &:hover::before {
+            left: -1em; /* 移动端缩小间距 */
+          }
+        }
 
         ul li {
           &::before {
@@ -1026,4 +1256,4 @@
 .hljs-meta,
 .hljs-meta-string {
   text-shadow: none !important;
-} 
+}
