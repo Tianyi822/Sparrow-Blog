@@ -49,6 +49,7 @@ const AdminLayout: React.FC = () => {
         }
       } catch (error) {
         // 错误已记录，避免向控制台输出
+        console.error('获取用户信息失败:', error);
       }
     };
 
@@ -77,7 +78,7 @@ const AdminLayout: React.FC = () => {
         alert('退出登录失败: ' + response.msg);
       }
     } catch (error) {
-      alert('退出登录请求失败，请稍后重试');
+      alert('退出登录请求失败，请稍后重试: ' + error);
 
       // 即使请求失败，也使用 store 的 logout 方法清除状态
       userLogout();
