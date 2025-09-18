@@ -1,6 +1,22 @@
 @use '@/style/variables'as *;
 @use '@/style/mixins'as *;
-@use '@/style/glass';
+
+// 确保SearchModal样式不被外部干扰 - 移除对glass的依赖
+.search-modal-backdrop * {
+    box-sizing: border-box;
+}
+
+// 重置可能干扰的全局样式
+.search-modal {
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    
+    input, button {
+        font-family: inherit;
+    }
+}
 
 // 苹果风格百叶窗动画关键帧
 @keyframes blindsSlideIn {
@@ -65,14 +81,14 @@
     max-width: 700px;
     max-height: 80vh;
 
-    // 直接应用毛玻璃效果，避免@extend在生产环境的问题
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(24px) saturate(200%);
-    -webkit-backdrop-filter: blur(24px) saturate(200%);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    // 直接内联毛玻璃样式，避免@extend问题
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(24px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
 
-    border-radius: $border-radius-xl;
-    box-shadow: $shadow-lg;
+    border-radius: 16px !important; // 直接使用数值
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
     overflow: hidden;
     animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
@@ -82,77 +98,130 @@
     // 确保容器不会滚动
     position: relative;
     touch-action: pan-y; // 只允许垂直滚动
+    
+    // 防止被其他样式干扰
+    isolation: isolate;
 }
 
 .search-modal-header {
-    display: flex;
-    align-items: center;
-    padding: $spacing-lg $spacing-xl;
-    border-bottom: 1px solid rgba($white, 0.1);
-    background: rgba($white, 0.05);
+    position: relative;
+    padding: 24px 32px; // 直接使用数值
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 5;
+    
+    // 防止内容溢出
+    overflow: hidden;
+    
+    // 确保最小高度
+    min-height: 80px;
+    box-sizing: border-box;
 }
 
-.search-input-container {
-    flex: 1;
-    position: relative;
-    display: flex;
-    align-items: center;
+// 移除 search-input-container 样式，将其转移到 search-input
 
-    // 直接应用毛玻璃卡片样式
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 2px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
-
-    border-radius: $border-radius-lg;
-    padding: 0 $spacing-md;
-    transition: $transition-base;
-
-    &:focus-within {
-        border-color: rgba($primary-400, 0.5);
-        box-shadow: 0 0 0 3px rgba($primary-400, 0.1);
-        background: rgba($white, 0.15);
+.search-icon {
+    position: absolute !important;
+    left: 48px !important; // 32px(header padding) + 16px(desired offset) = 48px
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    z-index: 11 !important; // 确保在输入框之上
+    pointer-events: none !important; // 防止阻挡输入框点击
+    
+    svg {
+        width: 20px !important;
+        height: 20px !important;
+        display: block !important;
     }
 }
 
-.search-icon {
-    color: rgba($white, 0.6);
-    display: flex;
-    align-items: center;
-    margin-right: $spacing-sm;
-}
-
 .search-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    padding: $spacing-md 0;
-    font-size: $font-size-md;
-    color: rgba($white, 0.95);
-    font-family: $font-family-base;
+    width: 100% !important;
+    min-height: 56px !important;
+    height: 56px !important;
+    border: none !important;
+    outline: none !important;
+    
+    // 转移原来 search-input-container 的样式
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03) !important;
+    border-radius: 12px !important;
+    
+    // 调整padding以容纳图标和按钮
+    padding: 0 48px 0 48px !important; // 左右留出空间给图标和按钮
+    font-size: 16px !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-family: inherit !important;
+    line-height: 1.5 !important;
+    
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+    
+    &:focus {
+        border-color: rgba(52, 152, 219, 0.5) !important;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    // 防止自动填充样式干扰
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+        -webkit-text-fill-color: rgba(255, 255, 255, 0.95) !important;
+        background-color: transparent !important;
+        background: transparent !important;
+    }
 
     &::placeholder {
-        color: rgba($white, 0.5);
+        color: rgba(255, 255, 255, 0.5) !important;
+        opacity: 1 !important; // 确保placeholder可见
     }
 }
 
 .clear-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: $spacing-sm;
-    color: rgba($white, 0.6);
-    display: flex;
-    align-items: center;
-    border-radius: $border-radius-sm;
-    transition: $transition-base;
+    position: absolute !important;
+    right: 48px !important; // 32px(header padding) + 16px(desired offset) = 48px
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 8px !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 4px !important;
+    transition: all 0.3s ease !important;
+    width: 32px !important;
+    height: 32px !important;
+    z-index: 11 !important; // 确保在输入框之上
 
     &:hover {
-        color: rgba($white, 0.9);
-        background: rgba($white, 0.1);
-        transform: scale(1.1);
+        color: rgba(255, 255, 255, 0.9) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        transform: scale(1.1) !important;
+    }
+    
+    &:focus {
+        outline: 2px solid rgba(52, 152, 219, 0.5) !important;
+        outline-offset: 2px !important;
+    }
+    
+    svg {
+        width: 16px !important;
+        height: 16px !important;
+        display: block !important;
     }
 }
 
@@ -246,27 +315,30 @@
 .search-result-item {
     display: flex;
     align-items: flex-start;
-    gap: $spacing-md;
-    padding: $spacing-lg;
-    margin-bottom: $spacing-sm;
+    gap: 16px; // 直接使用数值
+    padding: 24px; // 直接使用数值
+    margin-bottom: 8px; // 直接使用数值
 
-    // 直接应用卡片样式
+    // 直接内联卡片样式，不依赖@extend
     position: relative;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     box-shadow:
         0 4px 6px rgba(0, 0, 0, 0.1),
-        0 1px 3px rgba(0, 0, 0, 0.08);
+        0 1px 3px rgba(0, 0, 0, 0.08) !important;
     overflow: hidden;
 
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     // 苹果百叶窗动画效果
     animation: blindsSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     transform-origin: top;
+    
+    // 防止被其他样式干扰
+    isolation: isolate;
 
     // 添加发光组件
     .search-result-glow {
@@ -292,29 +364,29 @@
 
     &:hover {
         // 直接应用毛玻璃悬停效果
-        transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+        transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02) !important;
         box-shadow:
             0 10px 20px rgba(0, 0, 0, 0.1),
-            0 6px 6px rgba(0, 0, 0, 0.1);
-        border-color: rgba($primary-400, 0.3);
+            0 6px 6px rgba(0, 0, 0, 0.1) !important;
+        border-color: rgba(52, 152, 219, 0.3) !important;
 
         .search-result-glow {
             background: radial-gradient(circle at 50% 50%,
-                    rgba($primary-400, 0.3),
+                    rgba(52, 152, 219, 0.3),
                     transparent 80%);
         }
 
         .search-result-border-glow {
             background: radial-gradient(circle at 50% 50%,
-                    rgba($primary-400, 0.5),
+                    rgba(52, 152, 219, 0.5),
                     transparent 40%);
-            box-shadow: 0 0 20px 5px rgba($primary-400, 0.1);
+            box-shadow: 0 0 20px 5px rgba(52, 152, 219, 0.1);
         }
     }
 
     &:active {
-        transform: perspective(1000px) rotateX(1deg) rotateY(1deg) scale(0.98);
-        transition-duration: 0.1s;
+        transform: perspective(1000px) rotateX(1deg) rotateY(1deg) scale(0.98) !important;
+        transition-duration: 0.1s !important;
     }
 }
 
@@ -419,6 +491,11 @@
 
     .search-modal-header {
         padding: $spacing-md;
+        min-height: 70px;
+    }
+    
+    .search-input-container {
+        min-height: 44px;
     }
 
     .search-result-item {
@@ -448,6 +525,17 @@
 
     .search-modal-header {
         padding: $spacing-sm $spacing-md;
+        min-height: 60px;
+    }
+    
+    .search-input-container {
+        min-height: 40px;
+        padding: 0 $spacing-sm;
+    }
+    
+    .search-input {
+        font-size: $font-size-sm;
+        padding: $spacing-sm 0;
     }
 
     .search-results {
@@ -461,5 +549,21 @@
     .result-image {
         width: 40px;
         height: 40px;
+    }
+    
+    .clear-button {
+        width: 28px;
+        height: 28px;
+        padding: $spacing-xs;
+    }
+    
+    .search-icon {
+        width: 18px;
+        height: 18px;
+        
+        svg {
+            width: 18px;
+            height: 18px;
+        }
     }
 }
