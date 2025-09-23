@@ -13,8 +13,6 @@ $mobile-padding: $spacing-md;
   // 将所有声明放在嵌套规则之前
   & {
     position: relative;
-    transform-style: preserve-3d;
-    transform: perspective(1000px);
     transition: all 0.3s ease-out;
     display: flex;
     flex-direction: column;
@@ -47,7 +45,7 @@ $mobile-padding: $spacing-md;
   
   // 嵌套规则放在后面
   &:hover {
-    transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+    // 移除3D变换效果
   }
   
   .blog-title {
@@ -83,7 +81,6 @@ $mobile-padding: $spacing-md;
   }
 
   &:hover {
-    transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
     /* 流体玻璃悬停效果 */
     background: 
       linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),

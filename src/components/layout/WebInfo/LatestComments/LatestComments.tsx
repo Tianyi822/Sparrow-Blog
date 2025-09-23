@@ -1,5 +1,4 @@
 import './LatestComments.scss';
-import use3DEffect from '@/hooks/use3DEffect';
 import { useEffect, useState } from 'react';
 import { getLatestComments } from '@/services/webService';
 import { Comment } from '@/types';
@@ -10,7 +9,6 @@ interface LatestCommentsProps {
 }
 
 const LatestComments: React.FC<LatestCommentsProps> = ({ className }) => {
-    const { cardRef } = use3DEffect();
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -47,7 +45,7 @@ const LatestComments: React.FC<LatestCommentsProps> = ({ className }) => {
     }, []);
 
     return (
-        <div className={`latest-comments ${className || ''}`} ref={cardRef}>
+        <div className={`latest-comments ${className || ''}`}>
             <div className="latest-comments-border-glow" />
             <h3 className="latest-comments-title">
                 <span className="latest-comments-icon">💬</span>

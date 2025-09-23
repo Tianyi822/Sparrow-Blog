@@ -1,5 +1,4 @@
 import './LatestArticles.scss';
-import use3DEffect from '@/hooks/use3DEffect';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { useMemo } from 'react';
 
@@ -8,7 +7,6 @@ interface LatestArticlesProps {
 }
 
 const LatestArticles: React.FC<LatestArticlesProps> = ({className}) => {
-    const { cardRef } = use3DEffect();
     const { homeData, getImageUrl } = useBlogLayoutContext();
 
     // 获取最新的5篇文章
@@ -37,7 +35,7 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({className}) => {
     };
 
     return (
-        <div className={`latest-articles ${className || ''}`} ref={cardRef}>
+        <div className={`latest-articles ${className || ''}`}>
             <div className="latest-articles-border-glow" />
             <h3 className="latest-articles-title">
                 <span className="latest-articles-icon">🕒</span>

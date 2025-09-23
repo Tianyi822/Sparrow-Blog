@@ -1,5 +1,4 @@
 import './BlogCard.scss';
-import use3DEffect from '@/hooks/use3DEffect';
 import React from "react";
 
 /**
@@ -19,11 +18,9 @@ interface BlogCardProps {
 
 /**
  * 博客卡片组件
- * 展示博客信息的卡片，支持3D悬停效果，点击跳转到博客详情
+ * 展示博客信息的卡片，点击跳转到博客详情
  */
 const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, tags, image, description, className, blogId }) => {
-    // 使用3D效果自定义Hook
-    const { cardRef } = use3DEffect();
     // 判断是否为置顶博客
     const isTop = className?.includes('top');
 
@@ -41,11 +38,10 @@ const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, 
     return (
         <article
             className={`blog-card ${className || ''}`}
-            ref={cardRef}
             onClick={handleCardClick}
             style={{ cursor: blogId ? 'pointer' : 'default' }}
         >
-            {/* 3D效果的光晕元素 */}
+            {/* 光晕元素 */}
             <div className="blog-card-border-glow" />
 
             {/* 置顶标记 */}

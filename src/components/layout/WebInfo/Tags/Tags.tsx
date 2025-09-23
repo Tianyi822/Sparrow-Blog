@@ -1,5 +1,4 @@
 import './Tags.scss';
-import use3DEffect from '@/hooks/use3DEffect';
 import { BlogTag } from '@/types';
 import { memo, useCallback } from 'react';
 
@@ -21,7 +20,6 @@ interface TagsProps {
  * 标签云组件
  * 
  * 显示博客标签列表，支持点击筛选和高亮显示当前选中标签
- * 支持3D悬浮效果
  */
 const Tags: React.FC<TagsProps> = memo(({
     className, 
@@ -29,8 +27,6 @@ const Tags: React.FC<TagsProps> = memo(({
     onTagClick,
     activeTag
 }) => {
-    // 使用3D效果hook
-    const { cardRef } = use3DEffect();
 
     /**
      * 处理标签点击事件
@@ -42,7 +38,7 @@ const Tags: React.FC<TagsProps> = memo(({
     }, [onTagClick]);
 
     return (
-        <div className={`tags ${className || ''}`} ref={cardRef}>
+        <div className={`tags ${className || ''}`}>
             {/* 光晕效果元素 */}
             <div className="tags-border-glow" />
             

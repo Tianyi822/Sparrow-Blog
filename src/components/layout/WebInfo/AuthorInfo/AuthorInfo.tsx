@@ -1,5 +1,4 @@
 import './AuthorInfo.scss';
-import use3DEffect from '@/hooks/use3DEffect';
 import { memo } from 'react';
 
 /**
@@ -46,7 +45,6 @@ interface AuthorInfoProps {
  * 作者信息组件
  * 
  * 显示博客作者信息，包括头像、名称、简介、统计数据和社交媒体链接
- * 支持3D悬浮效果
  */
 const AuthorInfo: React.FC<AuthorInfoProps> = memo(({ 
   name, 
@@ -56,11 +54,9 @@ const AuthorInfo: React.FC<AuthorInfoProps> = memo(({
   social, 
   className 
 }) => {
-  // 使用3D效果hook
-  const { cardRef } = use3DEffect();
 
   return (
-    <div className={`author-info-container ${className || ''}`} ref={cardRef}>
+    <div className={`author-info-container ${className || ''}`}>
 
       {/* 作者头像 */}
       {avatar && <img src={avatar} alt={name} className="author-info-avatar" />}

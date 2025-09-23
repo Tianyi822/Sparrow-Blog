@@ -28,10 +28,7 @@
 // 完整的毛玻璃效果，包含动画
 @mixin glass-card {
   @include glass-card-base;
-  transform-style: preserve-3d;
-  perspective: 1000px;
   isolation: isolate;
-  transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
   will-change: transform;
   transition: transform 0.2s ease-out;
 }
@@ -101,7 +98,7 @@
 
 // 卡片悬停效果
 @mixin glass-card-hover {
-  transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
+  // 移除3D变换效果
   box-shadow:
     0 10px 20px rgba(0, 0, 0, 0.1),
     0 6px 6px rgba(0, 0, 0, 0.1);

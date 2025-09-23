@@ -1,5 +1,4 @@
 import './Categories.scss';
-import use3DEffect from '@/hooks/use3DEffect';
 import { BlogCategory, BlogInfo } from '@/types';
 import { useMemo } from 'react';
 
@@ -22,8 +21,6 @@ const Categories: React.FC<CategoriesProps> = ({
     onCategoryClick,
     activeCategory
 }) => {
-    const { cardRef } = use3DEffect();
-
     // 计算每个分类的文章数量
     const categoriesWithCount = useMemo(() => {
         console.log('Total blogs passed to Categories:', blogCounts.length);
@@ -71,7 +68,7 @@ const Categories: React.FC<CategoriesProps> = ({
     };
 
     return (
-        <div className={`categories ${className || ''}`} ref={cardRef}>
+        <div className={`categories ${className || ''}`}>
             <h3 className="categories-title">
                 <span className="categories-icon">📂</span>
                 分类

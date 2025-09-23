@@ -15,8 +15,6 @@
         0 4px 6px rgba(0, 0, 0, 0.1),
         0 1px 3px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    transform-style: preserve-3d;
-    perspective: 1000px;
     transition: all 0.3s ease-out;
 
     // 光晕效果
@@ -185,7 +183,7 @@
 
     // 悬停效果 - 整个组件hover时所有文字变黑
     &:hover {
-        transform: perspective(1000px) rotateX(1deg) rotateY(1deg) scale(1.01);
+        // 移除3D变换效果
         background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(20px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
