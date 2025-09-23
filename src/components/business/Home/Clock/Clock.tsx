@@ -85,15 +85,7 @@ const Clock: React.FC<ClockProps> = ({className, profileImage, backgroundImage})
                 <div className="hand hand--sec"/>
                 <div className="ring"/>
             </div>
-            {profileImage ? (
-                <div className="layer layer--profile">
-                    <img src={profileImage} alt="Profile" className="profile"/>
-                </div>
-            ) : (
-                <div className="layer layer--profile">
-                    <div className="profile profile--empty"></div>
-                </div>
-            )}
+
         </div>
     );
 };

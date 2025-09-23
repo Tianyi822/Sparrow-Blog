@@ -11,39 +11,17 @@
   position: relative;
   width: 24em;
   height: 24em;
-  // 移除3D变换效果
+  transform: rotateX(30deg) rotateY(-30deg) rotateZ(30deg);
+  transform-style: preserve-3d;
   transition: transform 0.3s cubic-bezier(0.42, 0, 0.58, 1);
 }
 
-/* 时钟头像样式 */
-.profile {
-  background-color: hsl(223, 10%, 50%);
-  border: 0;
-  border-radius: $border-radius-circle;
-  box-shadow: 0 0 0 0.25em hsla(223, 90%, 10%, 0.6);
-  display: block;
-  width: 3em;
-  height: 3em;
-  object-fit: cover;
-  position: absolute;
-  left: 2em;
-  bottom: 2em;
-  z-index: 2;
-  
-  &--empty {
-    background: linear-gradient(45deg, $primary-300, #8e44ad);
-    display: block;
-    position: absolute;
-    left: 2em;
-    bottom: 2em;
-    z-index: 2;
-  }
-}
+
 
 /* 鼠标悬停时钟样式 */
 .clock:focus-visible,
 .clock:hover {
-  // 移除3D变换效果
+  transform: rotateX(0) rotateY(0) rotateZ(0);
 }
 
 /* 时钟数字容器样式 */
@@ -94,7 +72,7 @@
 }
 
 .hand--hr {
-  height: 4.7em;
+  height: 4.5em;
   transform: rotate(var(--hrAngle)) translateY(-2em);
 }
 
@@ -104,7 +82,7 @@
 }
 
 .hand--sec {
-  width: .2em;
+  width: .5em;
   height: 5.9em;
   transform: rotate(var(--secAngle)) translateY(-2em);
 }
@@ -115,7 +93,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  // 移除3D变换效果
+  transform: rotateX(-30deg);
   transform-origin: 50% 100%;
 }
 
@@ -150,9 +128,7 @@
   }
 }
 
-.layer--profile {
-  transform: translateZ(11em);
-}
+
 
 /* 时钟遮罩层样式 */
 .layer--shade {
@@ -169,19 +145,7 @@
         width: 20em;
         height: 20em;
 
-        .profile {
-            width: 2.5em;
-            height: 2.5em;
-            left: 1.75em;
-            bottom: 1.75em;
-            
-            &--empty {
-                width: 2.5em;
-                height: 2.5em;
-                left: 1.75em;
-                bottom: 1.75em;
-            }
-        }
+
 
         .hand {
             bottom: calc(50% - 0.4em);
@@ -189,16 +153,16 @@
             width: 0.8em;
 
             &--hr {
-                height: 4em;
+                height: 3.7em;
             }
 
             &--min {
-                height: 5.4em;
+                height: 4.5em;
             }
 
             &--sec {
-                width: 0.18em;
-                height: 5.5em;
+                width: 0.4em;
+                height: 4.5em;
             }
         }
 
@@ -211,9 +175,7 @@
                 transform: translateZ(-3em);
             }
 
-            &--profile {
-                transform: translateZ(9em);
-            }
+
         }
 
         .digits {
@@ -233,19 +195,7 @@
     width: 16em;
     height: 16em;
 
-    .profile {
-      width: 2em;
-      height: 2em;
-      left: 1.5em;
-      bottom: 1.5em;
-      
-      &--empty {
-        width: 2em;
-        height: 2em;
-        left: 1.5em;
-        bottom: 1.5em;
-      }
-    }
+
 
     .hand {
       bottom: calc(50% - 0.35em);
@@ -253,16 +203,16 @@
       width: 0.7em;
 
       &--hr {
-        height: 3.2em;
+        height: 2.9em;
       }
 
       &--min {
-        height: 4.7em;
+        height: 3.5em;
       }
 
       &--sec {
-        width: 0.15em;
-        height: 4.7em;
+        width: 0.35em;
+        height: 3.5em;
       }
     }
 
@@ -275,9 +225,7 @@
         transform: translateZ(-2.5em);
       }
 
-      &--profile {
-        transform: translateZ(7.5em);
-      }
+
     }
 
     .digits {
