@@ -47,7 +47,6 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     const navigate = useNavigate();
     const { searchModalOpen, setSearchModalOpen } = useUIStore();
 
-    const [scrollDirection, setScrollDirection] = useState('none');
     const [isAtTop, setIsAtTop] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
@@ -73,11 +72,9 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
                     if (Math.abs(currentScrollY - lastScrollY) > scrollThreshold) {
                         if (currentScrollY > lastScrollY && currentScrollY > 100) {
                             // 向下滚动且不在顶部附近时隐藏
-                            setScrollDirection('down');
                             setIsVisible(false);
                         } else if (currentScrollY < lastScrollY) {
                             // 向上滚动时显示
-                            setScrollDirection('up');
                             setIsVisible(true);
                         }
                         setLastScrollY(currentScrollY);
