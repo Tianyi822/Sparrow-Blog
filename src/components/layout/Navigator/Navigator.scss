@@ -7,64 +7,77 @@ $navigator-primary-400: $primary-400;
 
 .navigator {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-md $spacing-xl;
-  background: transparent;
+  padding: $spacing-sm calc($spacing-lg * 1.8);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 50px;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   z-index: 1000;
-  transition: $transition-base;
-  transform: translateY(0);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
+  width: 50vw;
+  
+  /* 毛玻璃悬停效果 */
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 
   /* 向下滚动时隐藏 */
   &.nav-hidden {
-    transform: translateY(-100%);
+    transform: translateX(-50%) translateY(-120%);
     opacity: 0;
+    pointer-events: none;
   }
 
-  /* 向上滚动时显示毛玻璃效果 */
+
+  /* 向上滚动时显示效果 */
   &.nav-solid {
-    transform: translateY(0);
-    background: rgba($white, 0.1);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    box-shadow: 0 2px 10px rgba($black, 0.1);
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
 
     .nav-brand {
       color: rgba($white, 0.95);
     }
 
     .nav-list .nav-item {
-      color: rgba($white, 0.95);
-
-      &::after {
-        background-color: rgba(135, 206, 235, 0.8);
-      }
+      color: rgba($white, 0.9);
 
       .svg-icon {
-        transition: $transition-base;
-        color: rgba($white, 0.95) !important;
+        color: rgba($white, 0.9) !important;
       }
     }
 
     .nav-menu-button span {
-      background-color: rgba($white, 0.95);
-    }
-
-    .svg-icon {
-      color: rgba($white, 0.95) !important;
+      background-color: rgba($white, 0.9);
     }
   }
 
-  /* 在顶部时透明背景 */
+  /* 在顶部时的效果 */
   &.nav-transparent {
-    transform: translateY(0);
-    background: transparent;
-    box-shadow: none;
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 
     .nav-brand {
       color: rgba($white, 0.9);
@@ -74,251 +87,221 @@ $navigator-primary-400: $primary-400;
       color: rgba($white, 0.8);
 
       .svg-icon {
-        transition: $transition-base;
+        color: rgba($white, 0.8) !important;
       }
     }
 
     .nav-menu-button span {
-      background-color: rgba($white, 0.9);
+      background-color: rgba($white, 0.8);
     }
   }
 
   .nav-brand {
     font-family: $navigator-font-family;
-    font-size: $font-size-xl;
+    font-size: $font-size-lg;
     font-weight: $navigator-font-weight-bolder * 1.5;
-    color: rgba($white, 0.9);
+    color: rgba($white, 0.95);
     cursor: pointer;
+    white-space: nowrap;
+    margin-right: calc($spacing-lg * 1.8);
   }
 
   .nav-menu-button {
     display: none;
-    /* 默认隐藏 */
-    z-index: 1001;
-    width: 30px;
-    height: 30px;
-    position: relative;
-    cursor: pointer;
-
-    span {
-      display: block;
-      position: absolute;
-      width: 25px;
-      height: 3px;
-      background-color: rgba($white, 0.9);
-      transition: $transition-base;
-      left: 0;
-
-      &:first-child {
-        top: 5px;
-      }
-
-      &:nth-child(2) {
-        top: 14px;
-      }
-
-      &:last-child {
-        top: 23px;
-      }
-    }
-
-    &:hover span {
-      background-color: $navigator-primary-400;
-    }
-  }
-
-  /* 菜单打开时的动画效果 */
-  .nav-list.open~.nav-menu-button {
-    span {
-      background-color: $gray-800;
-
-      &:first-child {
-        transform: translateY(9px) rotate(45deg);
-      }
-
-      &:nth-child(2) {
-        opacity: 0;
-      }
-
-      &:last-child {
-        transform: translateY(-9px) rotate(-45deg);
-      }
-    }
   }
 
   .nav-list {
     display: flex;
     align-items: center;
-    gap: $spacing-md;
+    gap: calc($spacing-md * 1.8);
     list-style: none;
     margin: 0;
     padding: 0;
 
     .nav-item {
       font-family: $navigator-font-family;
-      font-size: $font-size-md;
+      font-size: $font-size-sm;
       font-weight: $navigator-font-weight-bolder * 1.2;
-      padding: $spacing-sm $spacing-md;
+      padding: $spacing-xs $spacing-sm;
       cursor: pointer;
-      color: rgba($white, 0.8);
+      color: rgba($white, 0.9);
       transition: $transition-base;
-      border-radius: $border-radius-md;
+      border-radius: 20px;
       display: flex;
       align-items: center;
-      gap: $spacing-sm;
+      gap: $spacing-xs;
       position: relative;
+      white-space: nowrap;
+      border: 1px solid transparent;
+      box-sizing: border-box;
 
-      /* 下划线效果 */
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: -$spacing-xs;
-        left: 15%;
-        width: 0;
-        height: 3px;
-        background-color: rgba(135, 206, 235, 0.8);
-        transition: $transition-base;
+      &:hover {
+        color: rgba($white, 1);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08);
+        
+        .svg-icon {
+          color: rgba($white, 1) !important;
+        }
       }
 
-      &:hover,
       &.active {
-        &::after {
-          width: 75%;
+        color: rgba($white, 1);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        
+        .svg-icon {
+          color: rgba($white, 1) !important;
         }
       }
 
       .nav-text {
-        margin-left: $spacing-sm;
+        font-size: 14px;
+        font-weight: 500;
       }
 
       .svg-icon {
-        transition: transform $transition-base;
-        stroke-width: 2;
+        width: 16px;
+        height: 16px;
+        transition: all 0.2s ease;
+        color: rgba($white, 0.8) !important;
       }
-
-      &:hover,
-      &.active {
-        &::after {
-          width: 75%;
-        }
-
-        .svg-icon {
-          stroke-width: 2.5;
-        }
-      }
-
-      &:hover .svg-icon {
-        transform: scale(1.1);
-      }
-    }
-
-    .about-link {
-      margin-left: auto;
     }
   }
 
   /* 响应式布局 */
   @media (max-width: 1050px) {
-    padding: $spacing-md;
+    margin: 12px auto;
+    padding: 10px calc(20px * 1.8);
+    width: 50vw;
+    min-width: 350px;
+    max-width: 90vw;
+
+    .nav-brand {
+      font-size: 16px;
+    }
 
     .nav-list {
-      gap: $spacing-sm;
+      gap: calc(10px * 1.8);
 
       .nav-item {
-        font-size: $font-size-sm;
-        padding: $spacing-sm $spacing-md;
+        font-size: 13px;
+        padding: 6px calc(12px * 1.8);
+        border: 1px solid transparent;
+        box-sizing: border-box;
+        
+        .nav-text {
+          font-size: 13px;
+        }
+        
+        .svg-icon {
+          width: 14px;
+          height: 14px;
+        }
       }
     }
   }
 
   /* 折叠导航栏样式 */
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 8px calc(16px * 1.8);
+    width: 50vw;
+    max-width: 90vw;
+    min-width: 300px;
+    border-radius: 50px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &.nav-hidden {
+      transform: translateX(-50%) translateY(-120%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    &.nav-solid {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    &.nav-transparent {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .nav-brand {
+      font-size: 14px;
+    }
+    
     .nav-menu-button {
-      display: block;
-      /* 窄屏时显示 */
+      display: none;
     }
 
     .nav-list {
-      position: fixed;
-      top: 0;
-      right: -100%;
-      width: 25%;
-      height: 100vh;
-      flex-direction: column;
-      background: rgba($white, 0.1);
-      /* 改为半透明背景 */
-      backdrop-filter: blur(16px) saturate(180%);
-      /* 添加毛玻璃效果 */
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      padding: $spacing-xl $spacing-md $spacing-xl;
-      transition: right $transition-base;
-      box-shadow: -2px 0 10px rgba($black, 0.1);
-
-      &.open {
-        right: 0;
-      }
-
+      gap: calc(8px * 1.8);
+      
       .nav-item {
-        width: 100%;
-        margin: $spacing-sm 0;
-        padding: $spacing-md $spacing-md;
-        border-left: 3px solid transparent;
-        color: rgba($white, 0.95) !important;
-
-        &:hover,
-        &.active {
-          border-left-color: rgba(135, 206, 235, 0.9);
-          background: rgba($white, 0.15);
-
-          &::after {
-            width: 0;
-          }
-        }
-
+        padding: 6px 10px;
+        border-radius: 15px;
+        border: 1px solid transparent;
+        box-sizing: border-box;
+        
         .nav-text {
-          margin-left: $spacing-md;
-          font-size: $font-size-sm;
+          font-size: 12px;
         }
-
+        
         .svg-icon {
-          width: 1.2rem;
-          min-width: 1.2rem;
-          height: 1.2rem;
-          color: rgba($white, 0.95) !important;
+          width: 16px;
+          height: 16px;
         }
       }
-
-      .about-link {
-        margin-left: 0;
-        margin-top: $spacing-xl;
-      }
-    }
-
-    /* 添加菜单打开时的样式 */
-    .nav-list.open+.nav-menu-button span,
-    .nav-list.open~.nav-menu-button span {
-      background-color: rgba($white, 0.95);
     }
   }
 
   /* 超小屏幕样式 */
-  @media (max-width: 370px) {
+  @media (max-width: 480px) {
+    width: 50vw;
+    max-width: 85vw;
+    min-width: 280px;
+    padding: 6px 12px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &.nav-hidden {
+      transform: translateX(-50%) translateY(-120%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    &.nav-solid {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    &.nav-transparent {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
     .nav-list {
-      width: 4rem;
-      padding: 4rem 0.5rem 2rem;
-
+      gap: calc(6px * 1.8);
+      
       .nav-item {
-        padding: $spacing-md;
-        justify-content: center;
-
-        .nav-text {
-          display: none;
-        }
-
+        padding: 6px 10px;
+        border: 1px solid transparent;
+        box-sizing: border-box;
+        
         .svg-icon {
-          width: 1.4rem;
-          min-width: 1.4rem;
-          height: 1.4rem;
+          width: 16px;
+          height: 16px;
         }
       }
     }

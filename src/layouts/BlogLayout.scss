@@ -27,12 +27,8 @@
 
   // 导航器样式 - 完整的导航栏样式集成
   .blog-layout-navigator.navigator {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100vw;
+    // 移除transform覆盖，让Navigator.scss中的动画生效
+    // transform: translateX(-50%); // 已移除，避免覆盖滚动动画
     box-sizing: border-box;
     padding: var.$spacing-md var.$spacing-xl;
     margin: 0;

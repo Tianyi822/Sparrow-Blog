@@ -50,28 +50,48 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     const [scrollDirection, setScrollDirection] = useState('none');
     const [isAtTop, setIsAtTop] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const [isVisible, setIsVisible] = useState(true);
 
     // 监听滚动事件，控制导航栏显示和隐藏
     useEffect(() => {
+        let ticking = false;
+        
         const handleScroll = () => {
             // 如果搜索模态框打开，不处理滚动事件
             if (searchModalOpen) return;
             
-            const currentScrollY = window.scrollY;
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const currentScrollY = window.scrollY;
+                    const scrollThreshold = 10; // 滚动阈值，避免微小滚动触发动画
 
-            // 检查是否在顶部
-            setIsAtTop(currentScrollY === 0);
+                    // 检查是否在顶部
+                    const atTop = currentScrollY <= 50;
+                    setIsAtTop(atTop);
 
-            // 确定滚动方向并设置状态
-            if (currentScrollY > lastScrollY) {
-                // 向下滚动
-                setScrollDirection('down');
-            } else if (currentScrollY < lastScrollY) {
-                // 向上滚动
-                setScrollDirection('up');
+                    // 只有滚动距离超过阈值时才处理方向变化
+                    if (Math.abs(currentScrollY - lastScrollY) > scrollThreshold) {
+                        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                            // 向下滚动且不在顶部附近时隐藏
+                            setScrollDirection('down');
+                            setIsVisible(false);
+                        } else if (currentScrollY < lastScrollY) {
+                            // 向上滚动时显示
+                            setScrollDirection('up');
+                            setIsVisible(true);
+                        }
+                        setLastScrollY(currentScrollY);
+                    }
+                    
+                    // 在顶部附近时始终显示
+                    if (atTop) {
+                        setIsVisible(true);
+                    }
+                    
+                    ticking = false;
+                });
+                ticking = true;
             }
-
-            setLastScrollY(currentScrollY);
         };
 
         // 只在搜索模态框关闭时监听滚动
@@ -185,8 +205,8 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
         'navigator',
         className,
         {
-            'nav-hidden': scrollDirection === 'down' && !isAtTop,
-            'nav-solid': !isAtTop && scrollDirection === 'up',
+            'nav-hidden': !isVisible && !isAtTop,
+            'nav-solid': !isAtTop && isVisible,
             'nav-transparent': isAtTop
         }
     );
