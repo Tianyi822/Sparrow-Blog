@@ -5,7 +5,14 @@ $navigator-font-family: $font-family-sans-serif;
 $navigator-font-weight-bolder: $font-weight-medium;
 $navigator-primary-400: $primary-400;
 
+/* 导入glass模块 */
+@use '../../../style/glass';
+
+/* 导航栏样式 */
 .navigator {
+  @include glass.glass-effect;
+  @include glass.glass-hover;
+  
   position: fixed;
   top: 20px;
   left: 50%;
@@ -14,23 +21,10 @@ $navigator-primary-400: $primary-400;
   align-items: center;
   justify-content: space-between;
   padding: $spacing-sm calc($spacing-lg * 1.8);
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 50px;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  border-radius: var(--glass-border-radius);
   z-index: 1000;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
   width: 50vw;
-  
-  /* 毛玻璃悬停效果 */
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
 
   /* 向下滚动时隐藏 */
   &.nav-hidden {
@@ -40,16 +34,13 @@ $navigator-primary-400: $primary-400;
   }
 
 
-  /* 向上滚动时显示效果 */
+  /* 向上滚动时显示效果 - 增强流体玻璃 */
   &.nav-solid {
+    @include glass.glass-solid;
+    
     transform: translateX(-50%) translateY(0);
     opacity: 1;
     pointer-events: auto;
-    background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(24px) saturate(200%);
-    -webkit-backdrop-filter: blur(24px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
 
     .nav-brand {
       color: rgba($white, 0.95);
@@ -68,16 +59,13 @@ $navigator-primary-400: $primary-400;
     }
   }
 
-  /* 在顶部时的效果 */
+  /* 在顶部时的效果 - 轻盈流体玻璃 */
   &.nav-transparent {
+    @include glass.glass-transparent;
+    
     transform: translateX(-50%) translateY(0);
     opacity: 1;
     pointer-events: auto;
-    background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 
     .nav-brand {
       color: rgba($white, 0.9);
@@ -119,6 +107,8 @@ $navigator-primary-400: $primary-400;
     padding: 0;
 
     .nav-item {
+      @include glass.glass-item;
+      
       font-family: $navigator-font-family;
       font-size: $font-size-sm;
       font-weight: $navigator-font-weight-bolder * 1.2;
@@ -126,20 +116,14 @@ $navigator-primary-400: $primary-400;
       cursor: pointer;
       color: rgba($white, 0.9);
       transition: $transition-base;
-      border-radius: 20px;
       display: flex;
       align-items: center;
       gap: $spacing-xs;
-      position: relative;
       white-space: nowrap;
-      border: 1px solid transparent;
       box-sizing: border-box;
 
       &:hover {
         color: rgba($white, 1);
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08);
         
         .svg-icon {
           color: rgba($white, 1) !important;
@@ -148,8 +132,6 @@ $navigator-primary-400: $primary-400;
 
       &.active {
         color: rgba($white, 1);
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
         
         .svg-icon {
           color: rgba($white, 1) !important;
@@ -167,6 +149,57 @@ $navigator-primary-400: $primary-400;
         transition: all 0.2s ease;
         color: rgba($white, 0.8) !important;
       }
+    }
+  }
+
+  /* 移动设备响应式设计 */
+  @media (max-width: 768px) {
+    width: 90vw;
+    padding: calc($spacing-sm * 0.8) calc($spacing-lg * 1.2);
+    
+    .nav-list {
+      gap: calc($spacing-md * 1.2);
+      
+      .nav-item {
+        padding: calc($spacing-xs * 0.8) calc($spacing-sm * 0.8);
+        font-size: calc($font-size-sm * 0.9);
+        
+        .svg-icon {
+          width: 14px;
+          height: 14px;
+        }
+        
+        .nav-text {
+          font-size: 12px;
+        }
+      }
+    }
+    
+    .nav-brand {
+      font-size: calc($font-size-lg * 0.9);
+      margin-right: calc($spacing-lg * 1.2);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    width: 95vw;
+    padding: calc($spacing-sm * 0.6) $spacing-lg;
+    
+    .nav-list {
+      gap: $spacing-md;
+      
+      .nav-item {
+        padding: calc($spacing-xs * 0.6) calc($spacing-sm * 0.6);
+        
+        .nav-text {
+          display: none; /* 在很小的屏幕上隐藏文字，只显示图标 */
+        }
+      }
+    }
+    
+    .nav-brand {
+      font-size: $font-size-md;
+      margin-right: $spacing-lg;
     }
   }
 
