@@ -1,5 +1,6 @@
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
+@use '@/style/glass' as glass;
 @use "sass:color";
 
 /* 作者信息 */
@@ -27,9 +28,7 @@
             will-change: transform;
             box-sizing: border-box;
             border-radius: $border-radius-md;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            @include glass.glass-effect;
             user-select: none !important;
             -webkit-user-select: none !important;
             -moz-user-select: none !important;
@@ -38,33 +37,10 @@
         
         &:hover {
             transform: perspective(1000px) rotateX(1deg) rotateY(1deg) scale(1.01);
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            @include glass.glass-hover;
             box-shadow:
                 0 8px 16px rgba(0, 0, 0, 0.1),
                 0 4px 6px rgba(0, 0, 0, 0.08);
-            
-            /* 鼠标悬停时改变文字颜色 */
-            .author-info-name {
-                color: rgba(26, 38, 52, 0.95); /* 深黑色 */
-            }
-            
-            .author-info-bio {
-                color: rgba(44, 62, 80, 0.9); /* 稍浅的黑色 */
-            }
-            
-            .author-info-stats {
-                .stat-item {
-                    .stat-value {
-                        color: rgba(26, 38, 52, 0.95); /* 深黑色 */
-                    }
-                    
-                    .stat-label {
-                        color: rgba(44, 62, 80, 0.9); /* 稍浅的黑色 */
-                    }
-                }
-            }
 
             /* 简化的光晕效果 */
             .author-info-border-glow {
