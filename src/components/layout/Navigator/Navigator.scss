@@ -10,9 +10,6 @@ $navigator-primary-400: $primary-400;
 
 /* 导航栏样式 */
 .navigator {
-  @include glass.glass-effect;
-  @include glass.glass-hover;
-  
   position: fixed;
   top: 20px;
   left: 50%;
@@ -25,6 +22,9 @@ $navigator-primary-400: $primary-400;
   z-index: 1000;
   user-select: none;
   width: 50vw;
+  
+  @include glass.glass-effect;
+  @include glass.glass-hover;
 
   /* 向下滚动时隐藏 */
   &.nav-hidden {
@@ -36,11 +36,11 @@ $navigator-primary-400: $primary-400;
 
   /* 向上滚动时显示效果 - 增强流体玻璃 */
   &.nav-solid {
-    @include glass.glass-solid;
-    
     transform: translateX(-50%) translateY(0);
     opacity: 1;
     pointer-events: auto;
+    
+    @include glass.glass-solid;
 
     .nav-brand {
       color: rgba($white, 0.95);
@@ -61,11 +61,11 @@ $navigator-primary-400: $primary-400;
 
   /* 在顶部时的效果 - 轻盈流体玻璃 */
   &.nav-transparent {
-    @include glass.glass-transparent;
-    
     transform: translateX(-50%) translateY(0);
     opacity: 1;
     pointer-events: auto;
+    
+    @include glass.glass-transparent;
 
     .nav-brand {
       color: rgba($white, 0.9);
@@ -107,8 +107,6 @@ $navigator-primary-400: $primary-400;
     padding: 0;
 
     .nav-item {
-      @include glass.glass-item;
-      
       font-family: $navigator-font-family;
       font-size: $font-size-sm;
       font-weight: $navigator-font-weight-bolder * 1.2;
@@ -121,6 +119,8 @@ $navigator-primary-400: $primary-400;
       gap: $spacing-xs;
       white-space: nowrap;
       box-sizing: border-box;
+      
+      @include glass.glass-item;
 
       &:hover {
         color: rgba($white, 1);
