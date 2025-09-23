@@ -1,5 +1,6 @@
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
+@use '@/style/glass' as glass;
 
 // 定义变量
 $mobile-breakpoint: $breakpoint-md;
@@ -20,9 +21,28 @@ $mobile-padding: $spacing-md;
     gap: $spacing-xs * 3;
     padding: $spacing-lg;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.1); // 与AuthorInfo默认背景色一致
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    /* 苹果流体玻璃效果 - 多层背景 */
+    background: 
+      linear-gradient(135deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.013) 100%),
+      linear-gradient(225deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.007) 100%),
+      rgba(0, 0, 0, 0.017);
+    
+    /* 增强的模糊效果 */
+    backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+    -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+    
+    /* 精细的边框效果 */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* 多层阴影效果 */
+    box-shadow: 
+      var(--glass-shadow-medium),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    
+    /* 性能优化 */
+    will-change: transform, opacity, backdrop-filter;
+    contain: layout style paint;
   }
   
   // 嵌套规则放在后面
@@ -64,30 +84,25 @@ $mobile-padding: $spacing-md;
 
   &:hover {
     transform: perspective(1000px) rotateX(2deg) rotateY(2deg) scale(1.02);
-    background: rgba(255, 255, 255, 0.7); // hover时背景变成高亮度白色
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow:
-      0 10px 20px rgba(0, 0, 0, 0.1),
-      0 6px 6px rgba(0, 0, 0, 0.1);
+    /* 流体玻璃悬停效果 */
+    background: 
+      linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
+      linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
+      rgba(0, 0, 0, 0.02);
+    
+    backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+    -webkit-backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+    
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.08);
     
     & {
-      .blog-card-title {
-        color: rgba(26, 38, 52, 0.95);
-      }
-
-      .blog-card-meta {
-        color: rgba(68, 85, 102, 0.9);
-      }
-
-      .blog-card-brief {
-        color: rgba(44, 62, 80, 0.9);
-      }
-
       .blog-card-category,
       .blog-card-tag {
         opacity: 1;
-        color: rgba($white, 0.95);
       }
 
       .blog-card-border-glow {
@@ -167,8 +182,12 @@ $mobile-padding: $spacing-md;
       padding: $spacing-xs $spacing-xs * 2.5;
       border-radius: $border-radius-sm;
       font-size: $font-size-xs;
-      backdrop-filter: blur(8px) saturate(160%);
-      -webkit-backdrop-filter: blur(8px) saturate(160%);
+      /* 标签流体玻璃效果 */
+       background: 
+         linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%),
+         rgba(0, 0, 0, 0.013);
+       backdrop-filter: blur(12px) saturate(160%);
+       -webkit-backdrop-filter: blur(12px) saturate(160%);
       border: $border-width-thin solid rgba($white, 0.2);
       opacity: 0.8;
       transition: opacity $transition-base;
