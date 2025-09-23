@@ -37,14 +37,7 @@
     z-index: 1000;
     /* 确保导航在其他元素之上 */
 
-    /* 小屏幕上的内边距调整 */
-    @media (max-width: 1050px) {
-      padding: 0.75rem 1.5rem;
-    }
 
-    @media (max-width: 600px) {
-      padding: var.$spacing-sm var.$spacing-md;
-    }
 
     /* 使移动菜单独立于其父元素的overflow设置 */
     .nav-list {
@@ -60,117 +53,9 @@
       }
     }
 
-    /* 移动导航的特定修复 */
-    @media (max-width: 900px) {
-      .nav-menu-button {
-        display: block !important;
-        /* 强制显示移动菜单按钮 */
-        position: relative;
-        z-index: 1010;
-        /* 高于菜单以确保可点击 */
-        margin-left: auto;
-        cursor: pointer;
 
-        span {
-          background-color: rgba(255, 255, 255, 0.9);
-          /* 确保颜色可见 */
-          display: block !important;
-          /* 强制显示 */
-          width: 25px;
-          height: 3px;
-          position: absolute;
-          left: 0;
-          transition: var.$transition-base;
-        }
 
-        span:first-child {
-          top: 5px;
-        }
 
-        span:nth-child(2) {
-          top: 14px;
-        }
-
-        span:last-child {
-          top: 23px;
-        }
-      }
-
-      .nav-list {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        /* 起始位置在屏幕外 */
-        width: 250px;
-        max-width: 80vw;
-        height: 100vh;
-        z-index: 1005;
-        background-color: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-        transition: right var.$transition-base;
-        padding-top: 4rem;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-
-        &.open {
-          right: 0;
-          /* 打开时，从右边缘定位 */
-        }
-
-        .nav-item {
-          width: 100%;
-          padding: 0.75rem 1.5rem;
-          margin: var.$spacing-xs 0;
-
-          .nav-text {
-            margin-left: var.$spacing-md;
-            display: inline-block !important;
-            /* 在移动端强制显示 */
-          }
-        }
-      }
-
-      /* 确保菜单图标在菜单打开时正确变换 */
-      .nav-list.open~.nav-menu-button span,
-      .nav-list.open+.nav-menu-button span {
-        &:first-child {
-          transform: translateY(9px) rotate(45deg);
-        }
-
-        &:nth-child(2) {
-          opacity: 0;
-        }
-
-        &:last-child {
-          transform: translateY(-9px) rotate(-45deg);
-        }
-      }
-    }
-
-    /* 确保桌面端的正确布局 */
-    @media (min-width: 901px) {
-      .nav-menu-button {
-        display: none !important;
-        /* 在桌面端隐藏菜单按钮 */
-      }
-
-      .nav-list {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        position: relative;
-        height: auto;
-        width: auto;
-        background: none;
-        box-shadow: none;
-        padding: 0;
-        right: 0 !important;
-        /* 在桌面端始终可见 */
-      }
-    }
   }
 
   // 工具栏样式，从App.scss移动过来
@@ -180,17 +65,7 @@
     bottom: var.$spacing-md;
     z-index: 100;
 
-    // 移动端响应式调整
-    @media (max-width: 900px) {
-      right: var.$spacing-sm;
-      bottom: var.$spacing-sm;
-    }
 
-    // 超小屏幕调整
-    @media (max-width: 370px) {
-      right: var.$spacing-xs;
-      bottom: var.$spacing-xs;
-    }
   }
 
   // 滚动条样式，从App.scss移动过来

@@ -27,25 +27,7 @@
         }
     }
 
-    /* 移动端响应式样式 */
-    @media (max-width: 900px) {
-        width: 32px;
-        height: 32px;
-        
-        .toc-icon {
-            font-size: $font-size-sm;
-        }
-    }
-    
-    /* 超小屏幕样式调整 */
-    @media (max-width: 370px) {
-        width: 28px;
-        height: 28px;
-        
-        .toc-icon {
-            font-size: $font-size-xs;
-        }
-    }
+
 
     &:active:not(.disabled) {
         transform: scale(0.95);

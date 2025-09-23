@@ -18,37 +18,7 @@
         transform: scale(1.05);
     }
 
-    /* 移动端响应式样式 */
-    @media (max-width: 900px) {
-        width: 32px;
-        height: 32px;
-        
-        .comments-icon {
-            font-size: $font-size-sm;
-        }
-        
-        .comments-count {
-            font-size: 9px;
-            min-width: 12px;
-            height: 12px;
-        }
-    }
-    
-    /* 超小屏幕样式调整 */
-    @media (max-width: 370px) {
-        width: 28px;
-        height: 28px;
-        
-        .comments-icon {
-            font-size: $font-size-xs;
-        }
-        
-        .comments-count {
-            font-size: 8px;
-            min-width: 10px;
-            height: 10px;
-        }
-    }
+
 
     &:active {
         transform: scale(0.95);

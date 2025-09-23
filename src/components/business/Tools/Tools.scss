@@ -47,22 +47,7 @@
         flex-shrink: 0; /* 防止组件被压缩 */
     }
 
-    /* 移动端响应式样式 - 缩小组件并向右侧吸附 */
-    @media (max-width: 900px) {
-        right: $spacing-xs;
-        left: auto;
-        bottom: $spacing-md;
-        gap: $spacing-sm; /* 移动端使用较小间距 */
-        /* 在移动端将Tools组件向右侧吸附，缩小间距 */
-    }
-    
-    /* 超小屏幕样式调整 */
-    @media (max-width: 370px) {
-        right: $spacing-xs * 0.5;
-        bottom: $spacing-sm;
-        gap: $spacing-xs * 0.5;
-        /* 在超小屏幕上保持右侧吸附并减小间距 */
-    }
+
 }
 
 /* 上浮动画 */

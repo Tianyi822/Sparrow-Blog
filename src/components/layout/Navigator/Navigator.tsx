@@ -46,7 +46,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     const { index, setIndex, className, userName } = props
     const navigate = useNavigate();
     const { searchModalOpen, setSearchModalOpen } = useUIStore();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     const [scrollDirection, setScrollDirection] = useState('none');
     const [isAtTop, setIsAtTop] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -102,27 +102,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [lastScrollY, searchModalOpen]);
 
-    // 添加点击外部关闭菜单的处理函数
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            // 如果菜单是打开的，且点击的不是菜单按钮和菜单内容
-            if (isMenuOpen &&
-                event.target &&
-                !(event.target as Element).closest('.nav-menu-button') &&
-                !(event.target as Element).closest('.nav-list')) {
-                setIsMenuOpen(false);
-            }
-        };
 
-        // 只在菜单打开时添加事件监听
-        if (isMenuOpen) {
-            document.addEventListener('click', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, [isMenuOpen]);
 
     /**
      * 处理搜索按钮点击
@@ -130,7 +110,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     const handleSearch = useCallback(() => {
         // 打开搜索模态框
         setSearchModalOpen(true);
-        setIsMenuOpen(false);
+
     }, [setSearchModalOpen]);
 
     /**
@@ -146,7 +126,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     const handleAdminClick = useCallback(() => {
         // 在新标签页中打开后台管理页面
         window.open('/admin/login', '_blank');
-        setIsMenuOpen(false);
+
     }, []);
 
     /**
@@ -174,7 +154,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
         if (item.path) {
             navigate(item.path);
         }
-        setIsMenuOpen(false);  // 选中选项后关闭菜单
+
     }, [setIndex, navigate]);
 
     /**
@@ -187,16 +167,10 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
         if (setIndex) {
             setIndex(1);
         }
-        // 关闭菜单(如果打开)
-        setIsMenuOpen(false);
+
     }, [navigate, setIndex]);
 
-    /**
-     * 切换菜单显示状态
-     */
-    const toggleMenu = useCallback(() => {
-        setIsMenuOpen(prev => !prev);
-    }, []);
+
 
     /**
      * 计算导航栏类名
@@ -227,7 +201,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
                     {userName}&#39;s Blog
                 </div>
 
-                <ul className={`nav-list ${isMenuOpen ? 'open' : ''}`}>
+                <ul className="nav-list">
                     {navItems.map((item, idx) => (
                         <li
                             key={item.name}
@@ -244,11 +218,7 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
                     ))}
                 </ul>
 
-                <div className="nav-menu-button" onClick={toggleMenu}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+
             </nav>
             
             {/* 搜索模态框 */}
