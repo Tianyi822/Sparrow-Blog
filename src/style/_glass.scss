@@ -20,30 +20,33 @@
 
 /* 基础流体玻璃效果混合器 */
 @mixin glass-effect {
-  /* 苹果流体玻璃效果 - 多层背景 */
-  background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.013) 100%),
-    linear-gradient(225deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.007) 100%),
-    rgba(0, 0, 0, 0.017);
-  
-  /* 增强的模糊效果 */
-  backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-  -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-  
-  /* 精细的边框效果 - 使用伪元素保持圆角 */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  
-  /* 多层阴影效果 */
-  box-shadow: 
-    var(--glass-shadow-medium),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-  
-  transition: var(--glass-transition);
-  
-  /* 性能优化 */
-  will-change: transform, opacity, backdrop-filter;
-  contain: layout style paint;
+  /* 使用 & {} 包裹声明，解决嵌套规则后的声明问题 */
+  & {
+    /* 苹果流体玻璃效果 - 多层背景 */
+    background: 
+      linear-gradient(135deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.013) 100%),
+      linear-gradient(225deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.007) 100%),
+      rgba(0, 0, 0, 0.017);
+    
+    /* 增强的模糊效果 */
+    backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+    -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+    
+    /* 精细的边框效果 - 使用伪元素保持圆角 */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* 多层阴影效果 */
+    box-shadow: 
+      var(--glass-shadow-medium),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    
+    transition: var(--glass-transition);
+    
+    /* 性能优化 */
+    will-change: transform, opacity, backdrop-filter;
+    contain: layout style paint;
+  }
   
   /* 浏览器兼容性 */
   
@@ -82,30 +85,33 @@
 
 /* 基础流体玻璃效果类 */
 .glass-effect {
-  /* 苹果流体玻璃效果 - 多层背景 */
-  background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.013) 100%),
-    linear-gradient(225deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.007) 100%),
-    rgba(0, 0, 0, 0.017);
-  
-  /* 增强的模糊效果 */
-  backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-  -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-  
-  /* 精细的边框效果 - 使用伪元素保持圆角 */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  
-  /* 多层阴影效果 */
-  box-shadow: 
-    var(--glass-shadow-medium),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-  
-  transition: var(--glass-transition);
-  
-  /* 性能优化 */
-  will-change: transform, opacity, backdrop-filter;
-  contain: layout style paint;
+  /* 使用 & {} 包裹声明，解决嵌套规则后的声明问题 */
+  & {
+    /* 苹果流体玻璃效果 - 多层背景 */
+    background: 
+      linear-gradient(135deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.013) 100%),
+      linear-gradient(225deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.007) 100%),
+      rgba(0, 0, 0, 0.017);
+    
+    /* 增强的模糊效果 */
+    backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+    -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+    
+    /* 精细的边框效果 - 使用伪元素保持圆角 */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* 多层阴影效果 */
+    box-shadow: 
+      var(--glass-shadow-medium),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    
+    transition: var(--glass-transition);
+    
+    /* 性能优化 */
+    will-change: transform, opacity, backdrop-filter;
+    contain: layout style paint;
+  }
   
   /* 浏览器兼容性 */
   
