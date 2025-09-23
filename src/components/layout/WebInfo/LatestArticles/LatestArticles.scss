@@ -1,5 +1,6 @@
 @use '@/style/mixins'as *;
 @use '@/style/variables'as var;
+@use '@/style/glass' as *;
 
 .latest-articles {
     width: 100%;
@@ -7,15 +8,14 @@
     border-radius: var.$border-radius-md;
     padding: var.$spacing-md + 0.2rem;
     box-sizing: border-box;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow:
-        0 4px 6px rgba(0, 0, 0, 0.1),
-        0 1px 3px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    transition: all 0.3s ease-out;
+    transform: translateY(0) scale(1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    @include card-style;
+    @include glass-effect;
+    @include glass-hover;
 
     // 光晕效果
     .latest-articles-border-glow {
@@ -103,13 +103,7 @@
 
     // 悬停效果
     &:hover {
-        // 移除3D变换效果
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        box-shadow:
-            0 8px 16px rgba(0, 0, 0, 0.1),
-            0 4px 6px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px) scale(1.02);
 
         .latest-articles-border-glow {
             box-shadow: 
@@ -118,20 +112,8 @@
             opacity: 1;
         }
 
-        .latest-articles-title {
-            color: rgba(26, 38, 52, 0.95);
-        }
-
         .latest-articles-list {
             .article-item {
-                .article-title {
-                    color: rgba(26, 38, 52, 0.95);
-                }
-
-                .article-date {
-                    color: rgba(44, 62, 80, 0.9);
-                }
-
                 &:hover {
                     transform: translateX(4px);
                     background: rgba(255, 255, 255, 0.1);
