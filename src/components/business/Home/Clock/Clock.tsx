@@ -13,7 +13,7 @@ interface TimeObject {
     s: number;
 }
 
-const Clock: React.FC<ClockProps> = ({className, profileImage, backgroundImage}) => {
+const Clock: React.FC<ClockProps> = ({className, backgroundImage}) => {
     const clockRef = useRef<HTMLDivElement | null>(null);
     const [time, setTime] = useState<TimeObject>(getTimeObject());
 
