@@ -28,7 +28,13 @@
 
     &-search {
         @include input-base;
-        @extend .glass-subtle;
+        /* 使用内联样式替换 @extend .glass-subtle */
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+                    rgba(0, 0, 0, 0.015) !important;
+        backdrop-filter: blur(15px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 
         flex: 1;
         padding: $spacing-md $spacing-lg;
@@ -49,7 +55,13 @@
 
     .apply-button {
         @include button-base;
-        @extend .glass-subtle;
+        /* 使用内联样式替换 @extend .glass-subtle */
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+                    rgba(0, 0, 0, 0.015) !important;
+        backdrop-filter: blur(15px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
         
         padding: $spacing-md $spacing-lg;
         border: 1px solid rgba($white, 0.2);
@@ -82,7 +94,13 @@
 
         .category-button {
             @include button-base;
-            @extend .glass-subtle;
+            /* 使用内联样式替换 @extend .glass-subtle */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+                        rgba(0, 0, 0, 0.015) !important;
+            backdrop-filter: blur(15px) saturate(150%) !important;
+            -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 
             padding: $spacing-sm $spacing-md;
             border: 1px solid rgba($white, 0.1);
@@ -143,7 +161,17 @@
         }
 
         .friend-card-3d {
-            @extend .glass;
+            /* 使用内联样式替换 @extend .glass */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.013) 100%),
+                        linear-gradient(225deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.007) 100%),
+                        rgba(0, 0, 0, 0.017) !important;
+            backdrop-filter: blur(20px) saturate(200%) brightness(1.1) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                        inset 0 -1px 0 rgba(255, 255, 255, 0.05) !important;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
             border-radius: $border-radius-md;
             transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba($white, 0.1);
