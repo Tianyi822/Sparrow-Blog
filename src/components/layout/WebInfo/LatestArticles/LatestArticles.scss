@@ -15,7 +15,6 @@
     
     @include card-style;
     @include glass-effect;
-    @include glass-hover;
 
     // 光晕效果
     .latest-articles-border-glow {
@@ -101,9 +100,22 @@
         }
     }
 
-    // 悬停效果
+    // 悬停效果 - 参考LatestComments样式，添加毛玻璃背景增强
     &:hover {
-        transform: translateY(-2px) scale(1.02);
+        // 毛玻璃背景增强效果
+        background: 
+            linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
+            linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
+            rgba(0, 0, 0, 0.02);
+        
+        backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+        -webkit-backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+        
+        box-shadow: 
+            0 12px 40px rgba(0, 0, 0, 0.15),
+            0 4px 12px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 
         .latest-articles-border-glow {
             box-shadow: 
@@ -115,7 +127,6 @@
         .latest-articles-list {
             .article-item {
                 &:hover {
-                    transform: translateX(4px);
                     background: rgba(255, 255, 255, 0.1);
                     border-radius: var.$border-radius-sm;
                     padding: 4px;
