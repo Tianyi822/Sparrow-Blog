@@ -1,6 +1,6 @@
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
-@use '@/style/glass' as glass;
+@use '@/style/glass' as *;
 
 // 定义变量
 $mobile-breakpoint: $breakpoint-md;
@@ -9,38 +9,42 @@ $mobile-padding: $spacing-md;
 
 .blog-card {
   @include card-style;
+  @include glass-effect;
   
   // 将所有声明放在嵌套规则之前
   & {
     position: relative;
-    transition: all 0.3s ease-out;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     gap: $spacing-xs * 3;
     padding: $spacing-lg;
     cursor: pointer;
-    /* 苹果流体玻璃效果 - 多层背景 */
-    background: 
-      linear-gradient(135deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.013) 100%),
-      linear-gradient(225deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.007) 100%),
-      rgba(0, 0, 0, 0.017);
-    
-    /* 增强的模糊效果 */
-    backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-    -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-    
-    /* 精细的边框效果 */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    
-    /* 多层阴影效果 */
-    box-shadow: 
-      var(--glass-shadow-medium),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    isolation: isolate;
+    box-sizing: border-box;
+    transform: translateY(0) scale(1);
+    overflow: hidden;
+    z-index: 1;
     
     /* 性能优化 */
     will-change: transform, opacity, backdrop-filter;
     contain: layout style paint;
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+    z-index: -1;
+    transition: opacity 0.3s ease;
   }
   
   // 嵌套规则放在后面
@@ -68,20 +72,21 @@ $mobile-padding: $spacing-md;
     color: var(--text-tertiary);
   }
 
-  .blog-card-border-glow {
+  /* 边框光晕 */
+  &-border-glow {
     position: absolute;
     inset: -15px;
-    border-radius: calc(#{$border-radius-md} + 15px);
-    pointer-events: none;
     z-index: 1;
+    pointer-events: none;
+    border-radius: calc(#{$border-radius-md} + 15px);
+    transition: all 0.3s ease-out;
     mix-blend-mode: normal;
     opacity: 0;
-    transition: all 0.3s ease-out;
     user-select: none;
   }
 
   &:hover {
-    /* 流体玻璃悬停效果 */
+    /* 参考 AuthorInfo 样式，添加毛玻璃背景增强效果 */
     background: 
       linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
       linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
@@ -95,19 +100,18 @@ $mobile-padding: $spacing-md;
       0 4px 12px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.2),
       inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-    
-    & {
-      .blog-card-category,
-      .blog-card-tag {
-        opacity: 1;
-      }
 
-      .blog-card-border-glow {
-        box-shadow: 
-          0 0 30px 8px rgba(255, 255, 255, 0.6),
-          0 0 60px 15px rgba(255, 255, 255, 0.3);
-        opacity: 1;
-      }
+    /* 简化的光晕效果 */
+    .blog-card-border-glow {
+      box-shadow: 
+        0 0 30px 8px rgba(255, 255, 255, 0.6),
+        0 0 60px 15px rgba(255, 255, 255, 0.3);
+      opacity: 1;
+    }
+    
+    .blog-card-category,
+    .blog-card-tag {
+      opacity: 1;
     }
   }
 
