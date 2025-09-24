@@ -9,9 +9,12 @@
     padding: var.$spacing-md + 0.2rem;
     box-sizing: border-box;
     @include glass-effect;
-    overflow: hidden;
-    transform: translateY(0) scale(1);
-    transition: all 0.3s ease-out;
+    
+    & {
+        overflow: hidden;
+        transform: translateY(0) scale(1);
+        transition: all 0.3s ease-out;
+    }
 
     // 光晕效果
     .latest-comments-border-glow {
