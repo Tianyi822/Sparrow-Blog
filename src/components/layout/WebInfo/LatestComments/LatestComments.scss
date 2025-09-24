@@ -1,4 +1,5 @@
 @use '@/style/mixins'as *;
+@use '@/style/glass' as *;
 @use '@/style/variables'as var;
 
 .latest-comments {
@@ -7,14 +8,9 @@
     border-radius: var.$border-radius-md;
     padding: var.$spacing-md + 0.2rem;
     box-sizing: border-box;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow:
-        0 4px 6px rgba(0, 0, 0, 0.1),
-        0 1px 3px rgba(0, 0, 0, 0.08);
+    @include glass-effect;
     overflow: hidden;
+    transform: translateY(0) scale(1);
     transition: all 0.3s ease-out;
 
     // 光晕效果
@@ -87,7 +83,6 @@
                 cursor: pointer;
                 
                 &:hover {
-                    transform: translateY(-2px) scale(1.02);
                     background: rgba(255, 255, 255, 0.18);
                     border-color: rgba(255, 255, 255, 0.3);
                     box-shadow: 
@@ -181,50 +176,15 @@
         }
     }
 
-    // 悬停效果 - 整个组件hover时所有文字变黑
+    // 悬停效果 - 保持glass效果但不改变字体颜色
     &:hover {
-        // 移除3D变换效果
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        box-shadow:
-            0 8px 16px rgba(0, 0, 0, 0.1),
-            0 4px 6px rgba(0, 0, 0, 0.08);
+        @include glass-hover;
 
         .latest-comments-border-glow {
             box-shadow: 
                 0 0 30px 8px rgba(255, 255, 255, 0.6),
                 0 0 60px 15px rgba(255, 255, 255, 0.3);
             opacity: 1;
-        }
-
-        // 标题变黑
-        .latest-comments-title {
-            color: rgba(26, 38, 52, 0.95);
-        }
-
-        // 所有评论项的文字都变黑
-        .latest-comments-list {
-            .comment-item {
-                .comment-content {
-                    color: rgba(26, 38, 52, 0.95);
-                }
-
-                .comment-meta {
-                    .comment-commenter {
-                        background: rgba(255, 255, 255, 0.9);
-                        color: rgba(26, 38, 52, 0.9);
-                    }
-
-                    .comment-article {
-                        color: rgba(44, 62, 80, 0.8);
-                    }
-
-                    .comment-date {
-                        color: rgba(44, 62, 80, 0.7);
-                    }
-                }
-            }
         }
     }
 }
