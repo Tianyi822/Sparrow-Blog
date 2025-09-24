@@ -47,11 +47,6 @@ $mobile-padding: $spacing-md;
     transition: opacity 0.3s ease;
   }
   
-  // 嵌套规则放在后面
-  &:hover {
-    // 移除3D变换效果
-  }
-  
   .blog-title {
     font-size: $font-size-lg;
     font-weight: $font-weight-semibold;
