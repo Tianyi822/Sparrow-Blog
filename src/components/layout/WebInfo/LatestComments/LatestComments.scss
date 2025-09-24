@@ -106,6 +106,7 @@
                 // 限制显示行数，避免过长
                 display: -webkit-box;
                 -webkit-line-clamp: 3;
+                line-clamp: 3;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -158,10 +159,8 @@
                 border-color: rgba(255, 255, 255, 0.2);
             }
 
-            // 可点击项的悬停样式 - 只有动画效果，不改变颜色
-            &.clickable:hover {
-                // 颜色继承父级hover状态，不需要额外设置
-            }
+            // 可点击项的悬停样式已在上方.clickable:hover中定义
+            // 避免空规则集，此处不再重复定义
         }
 
         // 空状态或加载状态的样式
