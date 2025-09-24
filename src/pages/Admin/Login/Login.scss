@@ -14,7 +14,17 @@
 
   // 登录卡片
   .login-card {
-    @extend .glass-strong;
+    /* 使用内联样式替换 @extend .glass-strong */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%),
+                linear-gradient(225deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%),
+                rgba(0, 0, 0, 0.02) !important;
+    backdrop-filter: blur(25px) saturate(200%) brightness(1.2) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(200%) brightness(1.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15),
+                0 5px 15px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.08) !important;
     @include card-style;
 
     & {
@@ -95,7 +105,13 @@
       // 输入框
       input {
         @include input-base;
-        @extend .glass-subtle;
+        /* 使用内联样式替换 @extend .glass-subtle */
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+                    rgba(0, 0, 0, 0.015) !important;
+        backdrop-filter: blur(15px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 
         width: 100%;
         height: 36px;
@@ -144,7 +160,13 @@
         // 验证码按钮
         .verify-code-button {
           @include button-base;
-          @extend .glass-subtle;
+          /* 使用内联样式替换 @extend .glass-subtle */
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+                      rgba(0, 0, 0, 0.015) !important;
+          backdrop-filter: blur(15px) saturate(150%) !important;
+          -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
+                      inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 
           height: 36px;
           padding: 0 $spacing-md;
@@ -161,7 +183,13 @@
     // 登录按钮
     .login-button {
       @include button-primary;
-      @extend .glass-subtle;
+      /* 使用内联样式替换 @extend .glass-subtle */
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+                  rgba(0, 0, 0, 0.015) !important;
+      backdrop-filter: blur(15px) saturate(150%) !important;
+      -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 
       width: 100%;
       height: 42px;
@@ -176,7 +204,13 @@
 
     // 提交错误容器
     .submit-error-container {
-      @extend .glass-subtle;
+      /* 使用内联样式替换 @extend .glass-subtle */
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+                  rgba(0, 0, 0, 0.015) !important;
+      backdrop-filter: blur(15px) saturate(150%) !important;
+      -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
       @include error-container;
 
       margin-top: $spacing-lg;
