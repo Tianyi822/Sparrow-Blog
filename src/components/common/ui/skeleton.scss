@@ -25,7 +25,13 @@
 }
 
 .friend-link-card-skeleton {
-    @extend .glass-subtle;
+    /* 使用内联样式替换 @extend .glass-subtle */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+                rgba(0, 0, 0, 0.015) !important;
+    backdrop-filter: blur(15px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
     position: relative;
     display: inline-block;
     width: 100%;
