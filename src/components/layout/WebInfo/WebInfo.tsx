@@ -1,5 +1,6 @@
 import AuthorInfo from '@/components/layout/WebInfo/AuthorInfo/AuthorInfo';
-import LatestArticlesLazy from '@/components/layout/WebInfo/LatestArticles/LatestArticlesLazy';
+import ArticleTitle from '@/components/layout/WebInfo/ArticleTitle/ArticleTitle';
+import ArticleList from '@/components/layout/WebInfo/ArticleList/ArticleList';
 import LatestCommentsLazy from '@/components/layout/WebInfo/LatestComments/LatestCommentsLazy';
 import Categories from '@/components/layout/WebInfo/Categories/Categories';
 import './WebInfo.scss';
@@ -92,7 +93,8 @@ const WebInfo: React.FC<WebContentProps> = ({
                 stats={stats}
                 social={socialLinks}
             />
-            <LatestArticlesLazy className="web-content-latest-articles" />
+            <ArticleTitle className="web-content-article-title" />
+            <ArticleList className="web-content-article-list" />
             <LatestCommentsLazy className="web-content-latest-comments"/>
             <Categories 
                 className="web-content-categories"

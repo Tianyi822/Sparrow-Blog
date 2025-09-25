@@ -1,12 +1,12 @@
-import './LatestArticles.scss';
+import './ArticleList.scss';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
 import { useMemo } from 'react';
 
-interface LatestArticlesProps {
+interface ArticleListProps {
     className?: string;
 }
 
-const LatestArticles: React.FC<LatestArticlesProps> = ({className}) => {
+const ArticleList: React.FC<ArticleListProps> = ({ className }) => {
     const { homeData, getImageUrl } = useBlogLayoutContext();
 
     // 获取最新的5篇文章
@@ -35,12 +35,9 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({className}) => {
     };
 
     return (
-        <div className={`latest-articles ${className || ''}`}>
-            <div className="latest-articles-border-glow" />
-            <h3 className="latest-articles-title">
-                最新文章
-            </h3>
-            <div className="latest-articles-list">
+        <div className={`article-list-container ${className || ''}`}>
+            <div className="article-list-border-glow" />
+            <div className="article-list">
                 {latestArticles.map(article => (
                     <div 
                         key={article.id} 
@@ -60,4 +57,4 @@ const LatestArticles: React.FC<LatestArticlesProps> = ({className}) => {
     );
 };
 
-export default LatestArticles;
+export default ArticleList;
