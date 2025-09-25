@@ -44,7 +44,6 @@ const CommentList: React.FC<CommentListProps> = ({ className }) => {
 
     // 生成头像（使用评论者名称的首字母）
     const generateAvatar = (name: string) => {
-        const firstLetter = name.charAt(0).toUpperCase();
         const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
         const colorIndex = name.charCodeAt(0) % colors.length;
         return {
