@@ -170,40 +170,130 @@
     /* 社交链接 */
     &-social {
         display: flex;
-        flex-direction: column;
-        gap: $spacing-xs;
+        flex-direction: row;
+        gap: 0;
         width: 100%;
+        margin-top: auto;
+        padding: 0;
+        border-radius: var(--glass-border-radius);
+        background: 
+            linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
+            linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
+            rgba(0, 0, 0, 0.02);
+        backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
+        -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.12),
+            0 2px 8px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.05);
         user-select: none !important;
         -webkit-user-select: none !important;
+        overflow: hidden;
         
         a, button {
-            display: block;
-            width: 100%;
-            padding: $spacing-xs 0;
-            border-radius: $border-radius-sm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: $spacing-md $spacing-sm;
+            min-height: 48px;
             text-align: center;
-            font-weight: $font-weight-medium;
-            transition: $transition-short;
+            font-weight: $font-weight-semibold;
+            font-size: $font-size-sm;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             text-decoration: none;
             border: none;
             cursor: pointer;
             user-select: none;
+            position: relative;
+            overflow: hidden;
+            
+            /* 流体玻璃效果基础 */
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(
+                    135deg,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    rgba(255, 255, 255, 0.05) 100%
+                );
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                z-index: 1;
+            }
+            
+            /* 文字在前景 */
+            span, & {
+                position: relative;
+                z-index: 2;
+            }
             
             &.github {
-                background-color: #4267B2;
+                background: 
+                    linear-gradient(135deg, rgba(66, 103, 178, 0.9) 0%, rgba(66, 103, 178, 0.8) 100%),
+                    linear-gradient(225deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
                 color: $white;
+                border-right: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: var(--glass-border-radius) 0 0 var(--glass-border-radius);
+                backdrop-filter: blur(12px) saturate(150%);
+                -webkit-backdrop-filter: blur(12px) saturate(150%);
                 
                 &:hover {
-                    background-color: color.adjust(#4267B2, $lightness: -10%);
+                    background: 
+                        linear-gradient(135deg, rgba(66, 103, 178, 1) 0%, rgba(66, 103, 178, 0.9) 100%),
+                        linear-gradient(225deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+                    backdrop-filter: blur(16px) saturate(180%) brightness(1.1);
+                    -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.1);
+                    box-shadow: 
+                        0 8px 24px rgba(66, 103, 178, 0.3),
+                        0 4px 8px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                    transform: translateY(-1px);
+                    
+                    &::before {
+                        opacity: 1;
+                    }
+                }
+                
+                &:active {
+                    transform: translateY(0);
                 }
             }
             
             &.email {
-                background-color: #4CAF50;
+                background: 
+                    linear-gradient(135deg, rgba(76, 175, 80, 0.9) 0%, rgba(76, 175, 80, 0.8) 100%),
+                    linear-gradient(225deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
                 color: $white;
+                border-radius: 0 var(--glass-border-radius) var(--glass-border-radius) 0;
+                backdrop-filter: blur(12px) saturate(150%);
+                -webkit-backdrop-filter: blur(12px) saturate(150%);
                 
                 &:hover {
-                    background-color: color.adjust(#4CAF50, $lightness: -10%);
+                    background: 
+                        linear-gradient(135deg, rgba(76, 175, 80, 1) 0%, rgba(76, 175, 80, 0.9) 100%),
+                        linear-gradient(225deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+                    backdrop-filter: blur(16px) saturate(180%) brightness(1.1);
+                    -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.1);
+                    box-shadow: 
+                        0 8px 24px rgba(76, 175, 80, 0.3),
+                        0 4px 8px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                    transform: translateY(-1px);
+                    
+                    &::before {
+                        opacity: 1;
+                    }
+                }
+                
+                &:active {
+                    transform: translateY(0);
                 }
             }
         }
