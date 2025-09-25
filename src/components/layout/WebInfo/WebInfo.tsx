@@ -1,7 +1,8 @@
 import AuthorInfo from '@/components/layout/WebInfo/AuthorInfo/AuthorInfo';
 import ArticleTitle from '@/components/layout/WebInfo/ArticleTitle/ArticleTitle';
 import ArticleList from '@/components/layout/WebInfo/ArticleList/ArticleList';
-import LatestCommentsLazy from '@/components/layout/WebInfo/LatestComments/LatestCommentsLazy';
+import CommentTitle from '@/components/layout/WebInfo/CommentTitle/CommentTitle';
+import CommentList from '@/components/layout/WebInfo/CommentList/CommentList';
 import Categories from '@/components/layout/WebInfo/Categories/Categories';
 import './WebInfo.scss';
 import TagsLazy from './Tags/TagsLazy';
@@ -95,7 +96,8 @@ const WebInfo: React.FC<WebContentProps> = ({
             />
             <ArticleTitle className="web-content-article-title" />
             <ArticleList className="web-content-article-list" />
-            <LatestCommentsLazy className="web-content-latest-comments"/>
+            <CommentTitle className="web-content-comment-title" />
+            <CommentList className="web-content-comment-list" />
             <Categories 
                 className="web-content-categories"
                 categories={homeData?.categories || []}

@@ -8,13 +8,13 @@
     border-radius: var.$border-radius-md;
     padding: var.$spacing-md + 0.2rem;
     box-sizing: border-box;
-    @include glass-effect;
+    overflow: hidden;
+    transform: translateY(0) scale(1);
+    transition: all 0.3s ease;
+    cursor: pointer;
     
-    & {
-        overflow: hidden;
-        transform: translateY(0) scale(1);
-        transition: all 0.3s ease-out;
-    }
+    @include card-style;
+    @include glass-effect;
 
     // 光晕效果
     .latest-comments-border-glow {
@@ -33,10 +33,10 @@
     .latest-comments-title {
         display: flex;
         align-items: center;
-        gap: var.$spacing-sm;
-        margin: 0 0 var.$spacing-lg 0;
+        justify-content: center;
+        text-align: center;
+        margin: 0 0 var.$spacing-md 0;
         font-size: var.$font-size-md + 0.1rem;
-        font-weight: 600;
         color: rgba(255, 255, 255, 0.95);
         position: relative;
         z-index: 3;
@@ -52,7 +52,7 @@
         z-index: 3;
         display: flex;
         flex-direction: column;
-        gap: var.$spacing-sm;
+        gap: var.$spacing-md;
 
         // 评论项目
         .comment-item {
@@ -86,7 +86,9 @@
                 cursor: pointer;
                 
                 &:hover {
-                    background: rgba(255, 255, 255, 0.18);
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: calc(var.$border-radius-pill * 1.3);
+                    transform: scale(1.02);
                     border-color: rgba(255, 255, 255, 0.3);
                     box-shadow: 
                         0 8px 25px rgba(0, 0, 0, 0.1),
