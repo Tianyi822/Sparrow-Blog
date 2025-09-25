@@ -11,7 +11,6 @@
     overflow: hidden;
     transform: translateY(0) scale(1);
     transition: all 0.3s ease;
-    cursor: pointer;
     
     @include card-style;
     @include glass-effect;
