@@ -25,6 +25,8 @@ $mobile-padding: $spacing-md;
     transform: translateY(0) scale(1);
     overflow: hidden;
     z-index: 1;
+    /* 设置卡片最小高度，增加 0.25 倍 */
+    min-height: 312.5px; /* 原始高度 250px * 1.25 = 312.5px */
     
     /* 性能优化 */
     will-change: transform, opacity, backdrop-filter;
@@ -124,6 +126,11 @@ $mobile-padding: $spacing-md;
     background-position: center;
     overflow: hidden;
     border-radius: var(--glass-border-radius);
+    /* 使用绝对定位确保完全贴边 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
   }
 
   // 内容区域基础样式
@@ -133,6 +140,8 @@ $mobile-padding: $spacing-md;
     display: flex;
     flex-direction: column;
     gap: $spacing-sm + 0.3rem;
+    /* 为绝对定位的图片留出空间 */
+    margin-left: 40%;
   }
 
   // 标题和元数据样式
@@ -222,11 +231,33 @@ $mobile-padding: $spacing-md;
       flex-direction: row;
     }
 
-    &.odd {
-      flex-direction: row-reverse;
-      
+    // 图片在左边的布局（偶数卡片）
+    &.even {
       .blog-card-img {
-        border-radius: var(--glass-border-radius);
+        left: 0;
+        right: auto;
+        width: 40%;
+        border-radius: var(--glass-border-radius) 0 0 var(--glass-border-radius);
+      }
+      
+      .blog-card-content {
+        margin-left: 40%;
+        margin-right: 0;
+      }
+    }
+
+    // 图片在右边的布局（奇数卡片）
+    &.odd {
+      .blog-card-img {
+        left: auto;
+        right: 0;
+        width: 40%;
+        border-radius: 0 var(--glass-border-radius) var(--glass-border-radius) 0;
+      }
+      
+      .blog-card-content {
+        margin-left: 0;
+        margin-right: 40%;
       }
     }
   }
@@ -235,14 +266,23 @@ $mobile-padding: $spacing-md;
   @media (max-width: $mobile-breakpoint) {
     flex-direction: column;
 
-    .blog-card-img,
+    .blog-card-img {
+      position: relative;
+      width: 100%;
+      min-height: 225px; /* 原始 180px * 1.25 = 225px */
+      /* 允许图片高度根据内容自适应，但保持最小高度 */
+      aspect-ratio: 16/9;
+      top: auto;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      border-radius: var(--glass-border-radius) var(--glass-border-radius) 0 0;
+    }
+    
     .blog-card-content {
       width: 100%;
-    }
-
-    .blog-card-img {
-      height: 180px;
-      border-radius: var(--glass-border-radius);
+      margin-left: 0;
+      margin-right: 0;
     }
   }
 

@@ -55,9 +55,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ title, date, updateDate, category, 
             <div
                 className="blog-card-img"
                 style={{
-                    backgroundImage: `url(${image})`,
-                    height: '250px',
-                    minHeight: '200px'
+                    backgroundImage: `url(${image})`
                 }}
             />
 
