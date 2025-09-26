@@ -1,4 +1,4 @@
-import './CategoriesTitle.scss';
+import SectionTitle from '../SectionTitle/SectionTitle';
 
 interface CategoriesTitleProps {
     className?: string;
@@ -6,12 +6,11 @@ interface CategoriesTitleProps {
 
 const CategoriesTitle: React.FC<CategoriesTitleProps> = ({ className }) => {
     return (
-        <div className={`categories-title-container ${className || ''}`}>
-            <div className="categories-title-border-glow" />
-            <h3 className="categories-title-text">
-                分类
-            </h3>
-        </div>
+        <SectionTitle 
+            title="分类" 
+            type="categories" 
+            className={className}
+        />
     );
 };
 

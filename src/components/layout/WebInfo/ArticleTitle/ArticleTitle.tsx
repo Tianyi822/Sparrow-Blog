@@ -1,4 +1,4 @@
-import './ArticleTitle.scss';
+import SectionTitle from '../SectionTitle/SectionTitle';
 
 interface ArticleTitleProps {
     className?: string;
@@ -6,12 +6,11 @@ interface ArticleTitleProps {
 
 const ArticleTitle: React.FC<ArticleTitleProps> = ({ className }) => {
     return (
-        <div className={`article-title-container ${className || ''}`}>
-            <div className="article-title-border-glow" />
-            <h3 className="article-title-text">
-                最新文章
-            </h3>
-        </div>
+        <SectionTitle 
+            title="最新文章" 
+            type="article" 
+            className={className}
+        />
     );
 };
 

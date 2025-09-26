@@ -1,4 +1,4 @@
-import './CommentTitle.scss';
+import SectionTitle from '../SectionTitle/SectionTitle';
 
 interface CommentTitleProps {
     className?: string;
@@ -6,12 +6,11 @@ interface CommentTitleProps {
 
 const CommentTitle: React.FC<CommentTitleProps> = ({ className }) => {
     return (
-        <div className={`comment-title-container ${className || ''}`}>
-            <div className="comment-title-border-glow" />
-            <h3 className="comment-title-text">
-                最新评论
-            </h3>
-        </div>
+        <SectionTitle 
+            title="最新评论" 
+            type="comment" 
+            className={className}
+        />
     );
 };
 

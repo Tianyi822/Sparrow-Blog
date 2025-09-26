@@ -1,4 +1,4 @@
-import './TagsTitle.scss';
+import SectionTitle from '../SectionTitle/SectionTitle';
 
 interface TagsTitleProps {
     className?: string;
@@ -6,12 +6,11 @@ interface TagsTitleProps {
 
 const TagsTitle: React.FC<TagsTitleProps> = ({ className }) => {
     return (
-        <div className={`tags-title-container ${className || ''}`}>
-            <div className="tags-title-border-glow" />
-            <h3 className="tags-title-text">
-                标签
-            </h3>
-        </div>
+        <SectionTitle 
+            title="标签" 
+            type="tags" 
+            className={className}
+        />
     );
 };
 
