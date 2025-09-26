@@ -17,7 +17,6 @@
 }
 
 .apply-modal {
-    @include glass-effect;
     width: 100%;
     max-width: 500px;
     max-height: 90vh;
@@ -25,6 +24,8 @@
     overflow: hidden;
     animation: slideIn 0.3s ease-out;
     position: relative;
+    
+    @include glass-effect;
 }
 
 .apply-modal-header {
@@ -217,12 +218,12 @@
     min-height: 100px;
     font-family: inherit;
     line-height: $line-height-base;
+    box-sizing: border-box;
+    border-radius: 25px !important;
+    
     // 圆角已在上面的 .form-input, .form-textarea 选择器中设置
     // 确保没有额外的样式覆盖
-    box-sizing: border-box; // 重置浏览器默认样式
-    
     // 强制应用圆角，防止浏览器默认样式覆盖
-    border-radius: 25px !important;
 }
 
 .error-message {
