@@ -6,7 +6,6 @@
 export const WEB_ROUTES = {
   HOME: '/',
   BLOG_DETAIL: '/blog/:blogId',
-  FRIENDS: '/friends',
   WAITING: '/waiting'
 } as const;
 
@@ -17,7 +16,6 @@ export const ADMIN_ROUTES = {
   POSTS: '/admin/posts',
   EDIT: '/admin/edit',
   GALLERY: '/admin/gallery',
-  FRIEND_LINKS: '/admin/friend-links',
   COMMENTS: '/admin/comments',
   SETTINGS: '/admin/settings'
 } as const;

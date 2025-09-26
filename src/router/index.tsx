@@ -6,7 +6,6 @@ import { localStorage } from "@/utils";
 
 // 懒加载组件
 const Home = React.lazy(() => import("@/pages/Home"));
-const FriendLink = React.lazy(() => import("@/pages/FriendLink"));
 const BlogContent = React.lazy(() => import("@/pages/BlogContent"));
 const BlogLayout = React.lazy(() => import("@/layouts/BlogLayout"));
 const AdminLayout = React.lazy(() => import("@/layouts/AdminLayout"));
@@ -15,7 +14,6 @@ const Login = React.lazy(() => import("@/pages/Admin/Login"));
 const NotFound = React.lazy(() => import("@/pages/NotFound/NotFound"));
 const Edit = React.lazy(() => import("@/pages/Admin/Edit"));
 const Gallery = React.lazy(() => import("@/pages/Admin/Gallery"));
-const FriendLinks = React.lazy(() => import("@/pages/Admin/FriendLinks"));
 const Comments = React.lazy(() => import("@/pages/Admin/Comments"));
 const Settings = React.lazy(() => import("@/pages/Admin/Settings"));
 const Waiting = React.lazy(() => import("@/pages/Waiting"));
@@ -154,10 +152,6 @@ const routes: RouteObject[] = [
             {
                 path: WEB_ROUTES.BLOG_DETAIL,
                 element: withSuspense(BlogContent)
-            },
-            {
-                path: WEB_ROUTES.FRIENDS,
-                element: withSuspense(FriendLink)
             }
         ]
     },
@@ -198,11 +192,6 @@ const routes: RouteObject[] = [
                 path: ADMIN_ROUTES.GALLERY,
                 element: withSuspense(Gallery),
                 loader: () => adminAuthLoader('gallery')
-            },
-            {
-                path: ADMIN_ROUTES.FRIEND_LINKS,
-                element: withSuspense(FriendLinks),
-                loader: () => adminAuthLoader('friend-links')
             },
             {
                 path: ADMIN_ROUTES.COMMENTS,

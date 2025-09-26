@@ -2,7 +2,7 @@ import { getUserConfig } from '@/services/adminService';
 import { businessApiRequest } from '@/services/api';
 import { ApiResponse } from '@/types';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { FiChevronLeft, FiChevronRight, FiEdit, FiFileText, FiImage, FiLogOut, FiMessageCircle, FiSettings, FiUsers } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiEdit, FiFileText, FiImage, FiLogOut, FiMessageCircle, FiSettings } from 'react-icons/fi';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useUserStore, useUIStore } from '@/stores';
 import './AdminLayout.scss';
@@ -162,12 +162,6 @@ const AdminLayout: React.FC = () => {
                 <Link to="/admin/comments" className={`nav-item ${isActive('/admin/comments', true) ? 'active' : ''}`}>
                   <FiMessageCircle className="nav-icon" />
                   <span className="nav-text">评论管理</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/admin/friend-links" className={`nav-item ${isActive('/admin/friend-links') ? 'active' : ''}`}>
-                  <FiUsers className="nav-icon" />
-                  <span className="nav-text">友链管理</span>
                 </Link>
               </li>
               <li>

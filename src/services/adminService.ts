@@ -24,10 +24,7 @@ import {
     OSSConfigResponse,
     CacheAndIndexConfigResponse,
     CommentItem,
-    CommentsResponse,
-    FriendLinksResponse,
-    UpdateFriendLinkRequest,
-    ToggleDisplayResponse
+    CommentsResponse
 } from '../types';
 import { ADMIN_API_ENDPOINTS, STORAGE_KEYS } from '../constants';
 import { localStorage, numberFormat } from '../utils';
@@ -747,60 +744,7 @@ export const updateComment = async (commentId: string, content: string): Promise
     });
 };
 
-// ===============================================================
-// 友链管理相关接口和函数
-// ===============================================================
 
-/**
- * 获取所有友链列表
- * @returns 友链列表数据
- */
-export const getAllFriendLinks = async (): Promise<FriendLinksResponse> => {
-    return businessApiRequest<FriendLinksResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.ALL
-    });
-};
-
-/**
- * 更新友链
- * @param data 友链数据（包含friend_link_id）
- * @returns 更新结果
- */
-export const updateFriendLink = async (data: UpdateFriendLinkRequest): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.UPDATE,
-        data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-};
-
-/**
- * 删除友链
- * @param friendLinkId 友链ID
- * @returns 删除结果
- */
-export const deleteFriendLink = async (friendLinkId: string): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'DELETE',
-        url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.DELETE(friendLinkId)
-    });
-};
-
-/**
- * 切换友链显示状态
- * @param friendLinkId 友链ID
- * @returns 切换结果，包含新的显示状态
- */
-export const toggleFriendLinkDisplay = async (friendLinkId: string): Promise<ToggleDisplayResponse> => {
-    return businessApiRequest<ToggleDisplayResponse>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.FRIEND_LINKS.TOGGLE_DISPLAY(friendLinkId)
-    });
-};
 
 // 导出所有API函数
 export default {
@@ -848,11 +792,5 @@ export default {
     // 评论相关
     getAllComments,
     deleteComment,
-    updateComment,
-
-    // 友链相关
-    getAllFriendLinks,
-    updateFriendLink,
-    deleteFriendLink,
-    toggleFriendLinkDisplay
+    updateComment
 };

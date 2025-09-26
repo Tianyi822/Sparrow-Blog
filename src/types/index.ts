@@ -14,8 +14,5 @@ export * from './user';
 // 评论相关类型
 export * from './comment';
 
-// 友链相关类型
-export * from './friendLink';
-
 // 通用类型
 export * from './common';

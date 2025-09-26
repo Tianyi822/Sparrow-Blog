@@ -6,7 +6,6 @@ import SvgIcon, {
     Normal,
     Search,
     Home,
-    FriendLink,
     Category
 } from "@/components/common/SvgIcon/SvgIcon";
 import classNames from "classnames";
@@ -132,7 +131,6 @@ const Navigator: React.FC<NavigatorProps> = (props) => {
     const navItems = useMemo(() => [
         { name: '搜索', path: '', label: '搜索', icon: Search, onClick: handleSearch },
         { name: '首页', path: WEB_ROUTES.HOME, label: '首页', icon: Home },
-        { name: '友链', path: WEB_ROUTES.FRIENDS, label: '友链', icon: FriendLink },
         { name: '后台管理', path: '', label: '后台管理', icon: Category, onClick: handleAdminClick },
     ], [handleSearch, handleAdminClick]);
 

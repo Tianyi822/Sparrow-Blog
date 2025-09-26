@@ -7,10 +7,7 @@ import {
     SearchResponseData,
     Comment,
     AddCommentData,
-    ReplyCommentData,
-    FriendLink,
-    FriendLinkApplicationData,
-    FriendLinkApplicationResponse
+    ReplyCommentData
 } from '../types';
 
 // 响应类型定义
@@ -19,8 +16,6 @@ type BasicDataResponse = ApiResponse<BasicData>;
 type SearchResponse = ApiResponse<SearchResponseData>;
 type CommentsResponse = ApiResponse<Comment[]>;
 type CommentResponse = ApiResponse<Comment>;
-type FriendLinksResponse = ApiResponse<FriendLink[]>;
-type FriendLinkApplyResponse = ApiResponse<null>;
 
 // ========================================
 // 工具函数 - Utility Functions
@@ -233,65 +228,7 @@ export const getLatestComments = async (): Promise<Comment[] | null> => {
     }
 };
 
-// ========================================
-// 友链相关 - Friend Link Services
-// ========================================
 
-/**
- * 获取友链列表
- */
-export const getFriendLinks = async (): Promise<FriendLink[] | null> => {
-    try {
-        const response = await businessApiRequest<FriendLinksResponse>({
-            method: 'GET',
-            url: WEB_API_ENDPOINTS.FRIEND_LINKS.ALL
-        });
-
-        return handleApiResponse(response, '获取友链数据');
-    } catch (error) {
-        handleError('获取友链数据', error);
-        return null;
-    }
-};
-
-/**
- * 申请友链
- */
-export const applyFriendLink = async (applicationData: FriendLinkApplicationData): Promise<FriendLinkApplicationResponse> => {
-    try {
-        const response = await businessApiRequest<FriendLinkApplyResponse>({
-            method: 'POST',
-            url: WEB_API_ENDPOINTS.FRIEND_LINKS.APPLY,
-            data: applicationData
-        });
-
-        return {
-            code: response.code,
-            msg: response.msg || '友链申请成功，请等待管理员审核',
-            data: response.data
-        };
-    } catch (error) {
-        handleError('友链申请', error);
-
-        // 提取API错误信息
-        if (error && typeof error === 'object' && 'response' in error) {
-            const apiError = error as { response?: { data?: { msg?: string; code?: number } } };
-            if (apiError.response?.data) {
-                return {
-                    code: apiError.response.data.code || 500,
-                    msg: apiError.response.data.msg || '友链申请失败，请稍后重试',
-                    data: null
-                };
-            }
-        }
-
-        return {
-            code: 500,
-            msg: error instanceof Error ? error.message : '友链申请失败，请稍后重试',
-            data: null
-        };
-    }
-};
 
 // ========================================
 // 默认导出 - Default Export
@@ -313,9 +250,5 @@ export default {
     // 评论相关
     getBlogComments,
     addComment,
-    replyComment,
-
-    // 友链相关
-    getFriendLinks,
-    applyFriendLink
+    replyComment
 };

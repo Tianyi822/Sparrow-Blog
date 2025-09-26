@@ -17,7 +17,6 @@ const NAV_INDEX_STORAGE_KEY = 'nav_index';
 // 路径到导航索引的映射
 const pathToNavIndex: Record<string, number> = {
     '/': 1,           // 首页
-    '/friends': 2,    // 友链
     // 其他路径可以在这里添加
 };
 

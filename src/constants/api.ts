@@ -72,14 +72,6 @@ export const ADMIN_API_ENDPOINTS = {
     UPDATE_CONTENT: (commentId: string) => `/admin/comments/${commentId}/content`
   },
   
-  // 友链管理
-  FRIEND_LINKS: {
-    ALL: '/admin/friend-links/all',
-    UPDATE: '/admin/friend-links/update',
-    DELETE: (friendLinkId: string) => `/admin/friend-links/${friendLinkId}`,
-    TOGGLE_DISPLAY: (friendLinkId: string) => `/admin/friend-links/${friendLinkId}/display`
-  },
-  
   // OSS 相关
   OSS: {
     PRE_SIGN_URL: (fileName: string, fileType: string) => `/admin/oss/pre_sign_url/${fileName}/type/${fileType}`
@@ -109,12 +101,6 @@ export const WEB_API_ENDPOINTS = {
     ADD: '/web/comment',
     REPLY: '/web/comment/reply',
     LATEST: '/web/comment/latest'
-  },
-  
-  // 友链
-  FRIEND_LINKS: {
-    ALL: '/web/friend-link/all',
-    APPLY: '/web/friend-link/apply'
   }
 } as const;
 
