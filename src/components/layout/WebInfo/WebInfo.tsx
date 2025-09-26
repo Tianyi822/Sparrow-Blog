@@ -3,7 +3,9 @@ import ArticleTitle from '@/components/layout/WebInfo/ArticleTitle/ArticleTitle'
 import ArticleList from '@/components/layout/WebInfo/ArticleList/ArticleList';
 import CommentTitle from '@/components/layout/WebInfo/CommentTitle/CommentTitle';
 import CommentList from '@/components/layout/WebInfo/CommentList/CommentList';
+import CategoriesTitle from '@/components/layout/WebInfo/CategoriesTitle/CategoriesTitle';
 import Categories from '@/components/layout/WebInfo/Categories/Categories';
+import TagsTitle from '@/components/layout/WebInfo/TagsTitle/TagsTitle';
 import './WebInfo.scss';
 import TagsLazy from './Tags/TagsLazy';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
@@ -98,6 +100,7 @@ const WebInfo: React.FC<WebContentProps> = ({
             <ArticleList className="web-content-article-list" />
             <CommentTitle className="web-content-comment-title" />
             <CommentList className="web-content-comment-list" />
+            <CategoriesTitle className="web-content-categories-title" />
             <Categories 
                 className="web-content-categories"
                 categories={homeData?.categories || []}
@@ -105,6 +108,7 @@ const WebInfo: React.FC<WebContentProps> = ({
                 onCategoryClick={onCategoryClick}
                 activeCategory={activeCategoryId}
             />
+            <TagsTitle className="web-content-tags-title" />
             <TagsLazy 
                 className="web-content-tags"
                 tags={homeData?.tags || []}

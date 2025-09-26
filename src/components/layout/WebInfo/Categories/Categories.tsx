@@ -69,10 +69,6 @@ const Categories: React.FC<CategoriesProps> = ({
 
     return (
         <div className={`categories ${className || ''}`}>
-            <h3 className="categories-title">
-                <span className="categories-icon">📂</span>
-                分类
-            </h3>
             <div className="categories-list">
                 {categoriesWithCount.map(category => {
                     // 确保category_id存在

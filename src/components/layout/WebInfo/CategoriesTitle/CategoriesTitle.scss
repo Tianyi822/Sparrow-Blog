@@ -1,0 +1,68 @@
+@use '@/style/mixins'as *;
+@use '@/style/variables'as var;
+@use '@/style/glass' as *;
+
+.categories-title-container {
+    width: 100%;
+    position: relative;
+    border-radius: var.$border-radius-md;
+    padding: var.$spacing-md + 0.2rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    transform: translateY(0) scale(1);
+    transition: all 0.3s ease;
+    
+    @include card-style;
+    @include glass-effect;
+
+    // 光晕效果
+    .categories-title-border-glow {
+        position: absolute;
+        inset: -15px;
+        z-index: 1;
+        pointer-events: none;
+        border-radius: calc(#{var.$border-radius-md} + 15px);
+        transition: all 0.3s ease-out;
+        mix-blend-mode: normal;
+        opacity: 0;
+        user-select: none;
+    }
+
+    // 标题文本
+    .categories-title-text {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin: 0;
+        font-size: var.$font-size-md + 0.1rem;
+        color: rgba(255, 255, 255, 0.95);
+        position: relative;
+        z-index: 3;
+    }
+
+    // 悬停效果
+    &:hover {
+        // 毛玻璃背景增强效果
+        background: 
+            linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
+            linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
+            rgba(0, 0, 0, 0.02);
+        
+        backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+        -webkit-backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+        
+        box-shadow: 
+            0 12px 40px rgba(0, 0, 0, 0.15),
+            0 4px 12px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+
+        .categories-title-border-glow {
+            box-shadow: 
+                0 0 30px 8px rgba(255, 255, 255, 0.6),
+                0 0 60px 15px rgba(255, 255, 255, 0.3);
+            opacity: 1;
+        }
+    }
+}

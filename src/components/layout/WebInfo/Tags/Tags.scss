@@ -10,6 +10,7 @@
     padding: var.$spacing-md + 0.2rem;
     box-sizing: border-box;
     @include glass-effect;
+    @include card-style;
     
     & {
         overflow: hidden;
@@ -54,14 +55,16 @@
         z-index: 3;
         display: flex;
         flex-wrap: wrap;
-        gap: var.$spacing-sm;
+        gap: var.$spacing-md;
+        padding: var.$spacing-xs 0;
 
         // 标签项目
         .tag-item {
             font-size: var.$font-size-sm;
             color: rgba(255, 255, 255, 0.98);
-            padding: 4px 8px;
-            border-radius: var.$border-radius-sm;
+            padding: calc(var.$spacing-xs + 0.1rem) calc(var.$spacing-sm + 0.2rem);
+            border-radius: var.$border-radius-pill;
+            border: 1px solid transparent;
             cursor: pointer;
             transition: var.$transition-base;
             position: relative;
@@ -73,6 +76,7 @@
 
                 &:hover {
                     background: rgba(255, 107, 129, 0.45);
+                    border: 1px solid rgba(255, 255, 255, 0.25);
                 }
             }
 
@@ -81,6 +85,7 @@
 
                 &:hover {
                     background: rgba(86, 204, 242, 0.45);
+                    border: 1px solid rgba(255, 255, 255, 0.25);
                 }
             }
 
@@ -89,6 +94,7 @@
 
                 &:hover {
                     background: rgba(111, 207, 151, 0.45);
+                    border: 1px solid rgba(255, 255, 255, 0.25);
                 }
             }
 
@@ -97,6 +103,7 @@
 
                 &:hover {
                     background: rgba(255, 204, 77, 0.45);
+                    border: 1px solid rgba(255, 255, 255, 0.25);
                 }
             }
 
@@ -105,6 +112,7 @@
 
                 &:hover {
                     background: rgba(187, 107, 217, 0.45);
+                    border: 1px solid rgba(255, 255, 255, 0.25);
                 }
             }
 
@@ -113,6 +121,7 @@
 
                 &:hover {
                     background: rgba(250, 130, 49, 0.45);
+                    border: 1px solid rgba(255, 255, 255, 0.25);
                 }
             }
 

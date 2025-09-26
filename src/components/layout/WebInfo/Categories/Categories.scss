@@ -9,6 +9,7 @@
     border-radius: var.$border-radius-md;
     padding: var.$spacing-md + 0.2rem;
     box-sizing: border-box;
+    @include card-style;
     @include glass-effect;
     
     & {
@@ -30,24 +31,6 @@
         user-select: none;
     }
 
-    // 分类标题
-    .categories-title {
-        display: flex;
-        align-items: center;
-        gap: var.$spacing-sm;
-        margin: 0 0 var.$spacing-md 0;
-        font-size: var.$font-size-md + 0.1rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.95);
-        position: relative;
-        z-index: 3;
-        transition: var.$transition-base;
-
-        .categories-icon {
-            font-size: var.$font-size-md + 0.2rem;
-        }
-    }
-
     // 分类列表
     .categories-list {
         position: relative;
@@ -61,8 +44,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: var.$spacing-xs var.$spacing-sm;
-            border-radius: var.$border-radius-sm;
+            padding: calc(var.$spacing-xs + 0.1rem) calc(var.$spacing-sm + 0.2rem);
+            border-radius: var.$border-radius-pill;
+            border: 1px solid transparent;
             cursor: pointer;
             transition: var.$transition-base;
 
@@ -76,8 +60,8 @@
                 font-size: var.$font-size-xs;
                 color: rgba(255, 255, 255, 0.9);
                 background: rgba(255, 255, 255, 0.15);
-                padding: 2px 8px;
-                border-radius: 10px;
+                padding: 3px 10px;
+                border-radius: var.$border-radius-pill;
                 transition: var.$transition-base;
             }
 
