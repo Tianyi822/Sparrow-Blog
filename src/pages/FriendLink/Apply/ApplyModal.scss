@@ -9,9 +9,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba($black, 0.75);
-    backdrop-filter: blur(12px) saturate(120%);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    background: transparent;
     z-index: 1050;
     @include flex-center;
     padding: $spacing-lg;
@@ -19,24 +17,14 @@
 }
 
 .apply-modal {
-    /* 使用内联样式替换 @extend .glass */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.013) 100%),
-                linear-gradient(225deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.007) 100%),
-                rgba(0, 0, 0, 0.017) !important;
-    backdrop-filter: blur(20px) saturate(200%) brightness(1.1) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(200%) brightness(1.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15),
-                inset 0 -1px 0 rgba(255, 255, 255, 0.05) !important;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    @include glass-effect;
     width: 100%;
     max-width: 500px;
     max-height: 90vh;
-    border-radius: $border-radius-lg;
-    border: 1px solid rgba($white, 0.2);
+    border-radius: var(--glass-border-radius); // 胶囊形状圆角
     overflow: hidden;
     animation: slideIn 0.3s ease-out;
+    position: relative;
 }
 
 .apply-modal-header {
@@ -57,18 +45,28 @@
     @include button-base;
     width: 32px;
     height: 32px;
-    border-radius: 50%;
-    background: rgba($white, 0.1);
+    border-radius: 50%; // 保持圆形
+    background: linear-gradient(135deg, var(--glass-white-1) 0%, var(--glass-white-05) 100%),
+                var(--glass-black-017);
+    backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item);
+    -webkit-backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item);
     border: 1px solid rgba($white, 0.2);
     color: rgba($white, 0.7);
     font-size: $font-size-lg;
     @include flex-center;
-    transition: all 0.2s ease;
+    // 确保图标完美居中
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: var(--glass-transition);
+    box-shadow: var(--glass-shadow-light),
+                inset 0 1px 0 var(--glass-white-1);
 
     &:hover {
-        background: rgba($white, 0.2);
+        @include glass-hover;
         color: rgba($white, 0.9);
-        transform: scale(1.05);
+        // 移除尺寸变化效果，保持其他hover效果
     }
 }
 
@@ -99,13 +97,15 @@
 
 .submit-result {
     padding: $spacing-md;
-    border-radius: $border-radius-md;
+    border-radius: var(--glass-border-radius-small); // 胶囊形状圆角
     margin-bottom: $spacing-lg;
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
     @include flex-align-center;
     gap: $spacing-xs;
     animation: slideDown 0.3s ease-out;
+    backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item);
+    -webkit-backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item);
 
     &.success {
         background: rgba($success, 0.15);
@@ -133,11 +133,16 @@
 }
 
 .form-tip {
-    background: rgba($info, 0.1);
+    background: linear-gradient(135deg, rgba($info, 0.12) 0%, rgba($info, 0.08) 100%),
+                var(--glass-black-017);
+    backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item);
+    -webkit-backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item);
     border: 1px solid rgba($info, 0.2);
-    border-radius: $border-radius-sm;
+    border-radius: 20px; // 胶囊形状圆角
     padding: $spacing-sm $spacing-md;
     margin-bottom: $spacing-lg;
+    box-shadow: var(--glass-shadow-light),
+                inset 0 1px 0 rgba($info, 0.1);
     
     span {
         font-size: $font-size-xs;
@@ -165,21 +170,20 @@
 .form-input,
 .form-textarea {
     @include input-base;
-    /* 使用内联样式替换 @extend .glass-subtle */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
-                rgba(0, 0, 0, 0.015) !important;
-    backdrop-filter: blur(15px) saturate(150%) !important;
-    -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    background: linear-gradient(135deg, var(--glass-white-08) 0%, var(--glass-white-04) 100%),
+                var(--glass-black-017);
+    backdrop-filter: var(--glass-blur-mini) var(--glass-saturation-item);
+    -webkit-backdrop-filter: var(--glass-blur-mini) var(--glass-saturation-item);
+    box-shadow: var(--glass-shadow-light),
+                inset 0 1px 0 var(--glass-white-1);
     
     width: 100%;
     padding: $spacing-md;
     border: 1px solid rgba($white, 0.2);
-    border-radius: $border-radius-md;
+    border-radius: var(--glass-border-radius); // 胶囊形状圆角
     color: rgba($white, 0.9);
     font-size: $font-size-sm;
-    transition: all 0.3s ease;
+    transition: var(--glass-transition);
 
     &::placeholder {
         color: rgba($white, 0.5);
@@ -188,7 +192,11 @@
     &:focus {
         @include input-focus;
         border-color: rgba($primary-400, 0.6);
-        box-shadow: 0 0 0 2px rgba($primary-400, 0.2);
+        box-shadow: 0 0 0 2px rgba($primary-400, 0.2),
+                    var(--glass-shadow-medium),
+                    inset 0 1px 0 var(--glass-white-15);
+        backdrop-filter: var(--glass-blur-medium) var(--glass-saturation);
+        -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation);
         outline: none;
     }
 
@@ -199,6 +207,8 @@
 
     &:hover:not(:focus) {
         border-color: rgba($white, 0.3);
+        backdrop-filter: var(--glass-blur-medium) var(--glass-saturation-light);
+        -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation-light);
     }
 }
 
@@ -207,6 +217,12 @@
     min-height: 100px;
     font-family: inherit;
     line-height: $line-height-base;
+    // 圆角已在上面的 .form-input, .form-textarea 选择器中设置
+    // 确保没有额外的样式覆盖
+    box-sizing: border-box; // 重置浏览器默认样式
+    
+    // 强制应用圆角，防止浏览器默认样式覆盖
+    border-radius: 25px !important;
 }
 
 .error-message {
@@ -236,11 +252,13 @@
 .btn-submit {
     @include button-base;
     padding: $spacing-sm $spacing-lg;
-    border-radius: $border-radius-md;
+    border-radius: var(--glass-border-radius); // 胶囊形状圆角
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
-    transition: all 0.3s ease;
+    transition: var(--glass-transition);
     min-width: 80px;
+    position: relative;
+    overflow: hidden;
 
     &:disabled {
         opacity: 0.5;
@@ -249,29 +267,46 @@
 }
 
 .btn-cancel {
-    background: rgba($white, 0.1);
+    background: linear-gradient(135deg, var(--glass-white-1) 0%, var(--glass-white-05) 100%),
+                var(--glass-black-017);
+    backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item);
+    -webkit-backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item);
     border: 1px solid rgba($white, 0.2);
     color: rgba($white, 0.7);
+    box-shadow: var(--glass-shadow-light),
+                inset 0 1px 0 var(--glass-white-1);
 
     &:hover:not(:disabled) {
-        background: rgba($white, 0.15);
+        @include glass-hover;
         color: rgba($white, 0.9);
+        transform: translateY(-1px);
     }
 }
 
 .btn-submit {
-    background: linear-gradient(45deg, $primary-400, $primary-400);
-    border: 1px solid $primary-400;
+    background: linear-gradient(135deg, $primary-400 0%, color.scale($primary-400, $lightness: 5%) 100%),
+                linear-gradient(225deg, var(--glass-white-02) 0%, var(--glass-white-007) 100%);
+    backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item) var(--glass-brightness);
+    -webkit-backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item) var(--glass-brightness);
+    border: 1px solid rgba($primary-400, 0.8);
     color: $white;
+    box-shadow: var(--glass-shadow-light),
+                0 2px 8px rgba($primary-400, 0.2),
+                inset 0 1px 0 rgba($white, 0.2);
 
     &:hover:not(:disabled) {
-        background: linear-gradient(45deg, $primary-400, color.scale($primary-400, $lightness: -10%));
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba($primary-400, 0.3);
+        background: linear-gradient(135deg, color.scale($primary-400, $lightness: 10%) 0%, $primary-400 100%),
+                    linear-gradient(225deg, var(--glass-white-03) 0%, var(--glass-white-01) 100%);
+        backdrop-filter: var(--glass-blur-medium) var(--glass-saturation-hover) var(--glass-brightness-hover);
+        -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation-hover) var(--glass-brightness-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--glass-shadow-medium),
+                    0 6px 20px rgba($primary-400, 0.4),
+                    inset 0 1px 0 rgba($white, 0.3);
     }
 
     &:active:not(:disabled) {
-        transform: translateY(0);
+        transform: translateY(-1px);
     }
 }
 
@@ -361,4 +396,4 @@
             width: 100%;
         }
     }
-} 
+}
