@@ -59,18 +59,21 @@
 
 // 卡片样式基础组件
 @mixin card-style {
-  position: relative;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: var(--glass-border-radius);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 4px 6px rgba(0, 0, 0, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  // 将所有基础声明放在嵌套规则之前
+  & {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--glass-border-radius);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+      0 4px 6px rgba(0, 0, 0, 0.1),
+      0 1px 3px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
 
-  // 使用 & {} 包裹声明，解决嵌套规则后的声明问题
+  // 嵌套规则
   & {
     &-glow {
       position: absolute;
