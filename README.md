@@ -1,4 +1,4 @@
-# H2Blog
+# Sparrow Blog
 
 一个现代化的个人博客系统，基于 React 18+ 和 TypeScript 构建，具有优雅的 UI 设计和完善的功能特性。
 
