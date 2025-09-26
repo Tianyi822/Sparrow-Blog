@@ -147,7 +147,7 @@
     
     span {
         font-size: $font-size-xs;
-        color: rgba($info, 0.9);
+        color: rgba(255, 165, 0, 0.9); // 橙色，醒目但不刺眼
         line-height: $line-height-base;
     }
 }
