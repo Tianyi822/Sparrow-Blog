@@ -42,8 +42,6 @@ const Tags: React.FC<TagsProps> = memo(({
             {/* 光晕效果元素 */}
             <div className="tags-border-glow" />
             
-
-            
             {/* 标签列表 */}
             <div className="tags-list">
                 {tags.map((tag) => {
