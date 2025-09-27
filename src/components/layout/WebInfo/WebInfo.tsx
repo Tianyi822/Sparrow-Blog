@@ -1,11 +1,8 @@
 import AuthorInfo from '@/components/layout/WebInfo/AuthorInfo/AuthorInfo';
-import ArticleTitle from '@/components/layout/WebInfo/ArticleTitle/ArticleTitle';
 import ArticleList from '@/components/layout/WebInfo/ArticleList/ArticleList';
-import CommentTitle from '@/components/layout/WebInfo/CommentTitle/CommentTitle';
 import CommentList from '@/components/layout/WebInfo/CommentList/CommentList';
-import CategoriesTitle from '@/components/layout/WebInfo/CategoriesTitle/CategoriesTitle';
 import Categories from '@/components/layout/WebInfo/Categories/Categories';
-import TagsTitle from '@/components/layout/WebInfo/TagsTitle/TagsTitle';
+import SectionTitle from '@/components/layout/WebInfo/SectionTitle/SectionTitle';
 import './WebInfo.scss';
 import TagsLazy from './Tags/TagsLazy';
 import { useBlogLayoutContext } from '@/layouts/BlogLayoutContext';
@@ -96,11 +93,11 @@ const WebInfo: React.FC<WebContentProps> = ({
                 stats={stats}
                 social={socialLinks}
             />
-            <ArticleTitle className="web-content-article-title" />
+            <SectionTitle title="最新文章" type="article" className="web-content-article-title" />
             <ArticleList className="web-content-article-list" />
-            <CommentTitle className="web-content-comment-title" />
+            <SectionTitle title="最新评论" type="comment" className="web-content-comment-title" />
             <CommentList className="web-content-comment-list" />
-            <CategoriesTitle className="web-content-categories-title" />
+            <SectionTitle title="分类" type="categories" className="web-content-categories-title" />
             <Categories 
                 className="web-content-categories"
                 categories={homeData?.categories || []}
@@ -108,7 +105,7 @@ const WebInfo: React.FC<WebContentProps> = ({
                 onCategoryClick={onCategoryClick}
                 activeCategory={activeCategoryId}
             />
-            <TagsTitle className="web-content-tags-title" />
+            <SectionTitle title="标签" type="tags" className="web-content-tags-title" />
             <TagsLazy 
                 className="web-content-tags"
                 tags={homeData?.tags || []}
