@@ -95,14 +95,9 @@
     width: 90%;
     padding: $spacing-xxl;
     text-align: center;
-    border-radius: $border-radius-lg;
+    border-radius: var(--glass-border-radius);
     z-index: 10;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
+    @include glass-effect;
     
     @media (max-width: $breakpoint-sm) {
         padding: $spacing-xl;
@@ -216,20 +211,14 @@
     .countdown-info {
         .countdown-text {
             font-size: $font-size-md;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             margin: 0;
             padding: $spacing-sm $spacing-md;
-            background: linear-gradient(
-                135deg,
-                rgba(168, 85, 247, 0.15),
-                rgba(129, 140, 248, 0.12)
-            );
-            border-radius: $border-radius-md;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: var(--glass-border-radius-small);
             display: inline-block;
             animation: countdown-pulse 1s ease-in-out infinite;
-            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+            @include glass-transparent;
+            border: 1px solid rgba(168, 85, 247, 0.3);
         }
     }
 }
@@ -248,16 +237,21 @@
         align-items: center;
         gap: $spacing-sm;
         padding: $spacing-md $spacing-lg;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: $border-radius-md;
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(10px);
-        color: rgba(255, 255, 255, 0.9);
+        border-radius: var(--glass-border-radius);
+        color: rgba(255, 255, 255, 0.95);
+        background: rgba(255, 255, 255, 0.15);
         font-size: $font-size-sm;
         font-weight: $font-weight-medium;
         cursor: pointer;
-        transition: $transition-base;
         min-width: 100px;
+        @include glass-item;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: rgba(255, 255, 255, 1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
         
         .home-icon,
         .back-icon,
@@ -265,14 +259,6 @@
             width: 18px;
             height: 18px;
             transition: transform 0.3s ease;
-        }
-        
-        &:hover {
-            transform: translateY(-2px);
-            color: rgba(255, 255, 255, 1);
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(168, 85, 247, 0.3);
-            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.15);
         }
         
         &:active {
@@ -290,13 +276,10 @@
     
     .timer-btn {
         &.active {
-            background: linear-gradient(
-                135deg,
-                rgba(168, 85, 247, 0.2),
-                rgba(129, 140, 248, 0.15)
-            );
-            border-color: rgba(168, 85, 247, 0.4);
-            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+            @include glass-solid;
+            background: rgba(168, 85, 247, 0.3);
+            color: rgba(255, 255, 255, 1);
+            border-color: rgba(168, 85, 247, 0.5);
         }
         
         &:hover .timer-icon {
@@ -366,20 +349,20 @@
 
 @keyframes countdown-pulse {
     0%, 100% {
-        background: linear-gradient(
-            135deg,
-            rgba(168, 85, 247, 0.15),
-            rgba(129, 140, 248, 0.12)
-        );
-        box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+        border-color: rgba(168, 85, 247, 0.3);
+        box-shadow: 
+            var(--glass-shadow-light),
+            inset 0 1px 0 var(--glass-white-12),
+            inset 0 -1px 0 var(--glass-white-04),
+            0 0 20px rgba(168, 85, 247, 0.1);
     }
     50% {
-        background: linear-gradient(
-            135deg,
-            rgba(168, 85, 247, 0.25),
-            rgba(129, 140, 248, 0.2)
-        );
-        box-shadow: 0 6px 16px rgba(168, 85, 247, 0.2);
+        border-color: rgba(168, 85, 247, 0.5);
+        box-shadow: 
+            var(--glass-shadow-medium),
+            inset 0 1px 0 var(--glass-white-18),
+            inset 0 -1px 0 var(--glass-white-06),
+            0 0 30px rgba(168, 85, 247, 0.2);
     }
 }
 
