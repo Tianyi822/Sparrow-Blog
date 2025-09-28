@@ -72,6 +72,7 @@
   --glass-transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --glass-border-radius: 50px;
   --glass-border-radius-small: 20px;
+  --glass-border-radius-capsule: 9999px;
   --glass-shadow-light: 0 6px 24px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
   --glass-shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
   --glass-shadow-heavy: 0 10px 36px rgba(0, 0, 0, 0.14), 0 3px 10px rgba(0, 0, 0, 0.08);
@@ -79,36 +80,32 @@
 
 /* 基础流体玻璃效果混合器 */
 @mixin glass-effect {
-  /* 使用 & {} 包裹声明，解决嵌套规则后的声明问题 */
-  & {
-    /* 苹果流体玻璃效果 - 多层背景 */
-    background: 
-      linear-gradient(135deg, var(--glass-white-027) 0%, var(--glass-white-013) 100%),
-      linear-gradient(225deg, var(--glass-white-02) 0%, var(--glass-white-007) 100%),
-      var(--glass-black-017);
-    
-    /* 增强的模糊效果 */
-    backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-    -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-    
-    /* 精细的边框效果 - 使用伪元素保持圆角 */
-    border: 1px solid var(--glass-white-1);
-    
-    /* 多层阴影效果 */
-    box-shadow: 
-      var(--glass-shadow-medium),
-      inset 0 1px 0 var(--glass-white-15),
-      inset 0 -1px 0 var(--glass-white-05);
-    
-    transition: var(--glass-transition);
-    
-    /* 性能优化 */
-    will-change: transform, opacity, backdrop-filter;
-    contain: layout style paint;
-  }
+  /* 苹果流体玻璃效果 - 多层背景 */
+  background: 
+    linear-gradient(135deg, var(--glass-white-027) 0%, var(--glass-white-013) 100%),
+    linear-gradient(225deg, var(--glass-white-02) 0%, var(--glass-white-007) 100%),
+    var(--glass-black-017);
+  
+  /* 增强的模糊效果 */
+  backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+  -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+  
+  /* 精细的边框效果 - 使用伪元素保持圆角 */
+  border: 1px solid var(--glass-white-1);
+  
+  /* 多层阴影效果 */
+  box-shadow: 
+    var(--glass-shadow-medium),
+    inset 0 1px 0 var(--glass-white-15),
+    inset 0 -1px 0 var(--glass-white-05);
+  
+  transition: var(--glass-transition);
+  
+  /* 性能优化 */
+  will-change: transform, opacity, backdrop-filter;
+  contain: layout style paint;
   
   /* 浏览器兼容性 */
-  
   &::before {
     content: '';
     position: absolute;

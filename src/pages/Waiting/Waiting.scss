@@ -1,5 +1,6 @@
-@use "@/style/variables" as *;
-@use "@/style/glass" as *;
+@use '../../style/variables';
+@use '../../style/mixins';
+@use '../../style/glass';
 
 .waiting-container {
     position: fixed;
@@ -36,7 +37,7 @@
         
         .shape {
             position: absolute;
-            border-radius: $border-radius-circle;
+            border-radius: variables.$border-radius-circle;
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(12px);
             animation: float 6s ease-in-out infinite;
@@ -84,25 +85,46 @@
     position: relative;
     max-width: 480px;
     width: 90%;
-    padding: $spacing-xxl;
+    padding: variables.$spacing-xxl;
     text-align: center;
-    border-radius: $border-radius-lg;
     z-index: 10;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
     
-    @media (max-width: $breakpoint-sm) {
-        padding: $spacing-xl;
+    /* 使用标准化的液态玻璃效果 */
+    border-radius: var(--glass-border-radius);
+    
+    /* 苹果流体玻璃效果 - 多层背景 */
+    background: 
+      linear-gradient(135deg, var(--glass-white-027) 0%, var(--glass-white-013) 100%),
+      linear-gradient(225deg, var(--glass-white-02) 0%, var(--glass-white-007) 100%),
+      var(--glass-black-017);
+    
+    /* 增强的模糊效果 */
+    backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+    -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
+    
+    /* 精细的边框效果 */
+    border: 1px solid var(--glass-white-1);
+    
+    /* 多层阴影效果 */
+    box-shadow: 
+      var(--glass-shadow-medium),
+      inset 0 1px 0 var(--glass-white-15),
+      inset 0 -1px 0 var(--glass-white-05);
+    
+    transition: var(--glass-transition);
+    
+    /* 性能优化 */
+    will-change: transform, opacity, backdrop-filter;
+    contain: layout style paint;
+    
+    @media (max-width: variables.$breakpoint-sm) {
+        padding: variables.$spacing-xl;
         max-width: 95%;
     }
 }
 
 .waiting-icon {
-    margin-bottom: $spacing-xl;
+    margin-bottom: variables.$spacing-xl;
     
     .spinner {
         position: relative;
@@ -117,7 +139,7 @@
             width: 100%;
             height: 100%;
             border: 3px solid transparent;
-            border-radius: $border-radius-circle;
+            border-radius: variables.$border-radius-circle;
             animation: spin 1.5s linear infinite;
             
             &:nth-child(1) {
@@ -154,49 +176,52 @@
 }
 
 .waiting-text {
-    margin-bottom: $spacing-xl;
+    margin-bottom: variables.$spacing-xl;
     
     .waiting-title {
-        font-size: $font-size-xxl;
-        font-weight: $font-weight-semibold;
+        font-size: variables.$font-size-xxl;
+        font-weight: variables.$font-weight-semibold;
         color: rgba(255, 255, 255, 0.95);
-        margin-bottom: $spacing-md;
-        line-height: $line-height-tight;
+        margin-bottom: variables.$spacing-md;
+        line-height: variables.$line-height-tight;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         
-        @media (max-width: $breakpoint-sm) {
-            font-size: $font-size-xl;
+        @media (max-width: variables.$breakpoint-sm) {
+            font-size: variables.$font-size-xl;
         }
     }
     
     .waiting-description {
-        font-size: $font-size-lg;
+        font-size: variables.$font-size-lg;
         color: rgba(255, 255, 255, 0.75);
-        margin-bottom: $spacing-lg;
-        line-height: $line-height-base;
+        margin-bottom: variables.$spacing-lg;
+        line-height: variables.$line-height-base;
         
-        @media (max-width: $breakpoint-sm) {
-            font-size: $font-size-md;
+        @media (max-width: variables.$breakpoint-sm) {
+            font-size: variables.$font-size-md;
         }
     }
     
     .retry-info {
+        /* 使用液态玻璃透明效果 */
+        @include glass.glass-transparent;
+        border-radius: var(--glass-border-radius-small);
+        padding: variables.$spacing-md;
+        margin-top: variables.$spacing-lg;
+        
         .retry-text {
-            font-size: $font-size-sm;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: variables.$font-size-sm;
+            color: rgba(255, 255, 255, 0.8);
             margin: 0;
-            padding: $spacing-xs $spacing-sm;
-            background: rgba(168, 85, 247, 0.1);
-            border-radius: $border-radius-sm;
-            display: inline-block;
+            line-height: 1.5;
         }
     }
 }
 
 .waiting-actions {
-    margin-bottom: $spacing-lg;
+    margin-bottom: variables.$spacing-lg;
     display: flex;
-    gap: $spacing-md;
+    gap: variables.$spacing-md;
     justify-content: center;
     flex-wrap: wrap;
     
@@ -204,18 +229,24 @@
     .home-btn {
         display: inline-flex;
         align-items: center;
-        gap: $spacing-sm;
-        padding: $spacing-md $spacing-lg;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: $border-radius-md;
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(10px);
-        color: rgba(255, 255, 255, 0.9);
-        font-size: $font-size-md;
-        font-weight: $font-weight-medium;
-        cursor: pointer;
-        transition: $transition-base;
+        gap: variables.$spacing-sm;
+        padding: variables.$spacing-md variables.$spacing-lg;
         min-width: 120px;
+        
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        
+        color: rgba(255, 255, 255, 0.95);
+        font-size: variables.$font-size-md;
+        font-weight: variables.$font-weight-medium;
+        cursor: pointer;
+        
+        /* 使用液态玻璃效果 */
+        @include glass.glass-item;
+        @include glass.glass-hover;
+        
+        /* 完全胶囊形状按钮 - 在 glass-item 之后重新设置以覆盖默认圆角 */
+        border-radius: var(--glass-border-radius-capsule) !important;
         
         .refresh-icon,
         .home-icon {
@@ -225,11 +256,11 @@
         }
         
         &:hover {
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.25);
             color: rgba(255, 255, 255, 1);
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(99, 179, 237, 0.3);
-            box-shadow: 0 8px 20px rgba(99, 179, 237, 0.15);
+            transform: translateY(-2px);
+            /* 确保悬停状态下也保持胶囊形状 */
+            border-radius: var(--glass-border-radius-capsule) !important;
         }
         
         &:active {
@@ -245,7 +276,7 @@
         transform: scale(1.1);
     }
     
-    @media (max-width: $breakpoint-sm) {
+    @media (max-width: variables.$breakpoint-sm) {
         flex-direction: column;
         align-items: center;
         
@@ -259,10 +290,10 @@
 
 .waiting-footer {
     .status-text {
-        font-size: $font-size-sm;
+        font-size: variables.$font-size-sm;
         color: rgba(255, 255, 255, 0.55);
         margin: 0;
-        line-height: $line-height-base;
+        line-height: variables.$line-height-base;
     }
 }
 
@@ -292,7 +323,7 @@
 }
 
 // 响应式优化
-@media (max-width: $breakpoint-md) {
+@media (max-width: variables.$breakpoint-md) {
     .waiting-background .floating-shapes .shape {
         &.shape-1 {
             width: 80px;
@@ -316,7 +347,7 @@
     }
 }
 
-@media (max-width: $breakpoint-sm) {
+@media (max-width: variables.$breakpoint-sm) {
     .waiting-icon .spinner {
         width: 60px;
         height: 60px;
@@ -335,4 +366,4 @@
             left: 15px;
         }
     }
-} 
+}
