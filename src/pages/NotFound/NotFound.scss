@@ -237,15 +237,26 @@
         align-items: center;
         gap: $spacing-sm;
         padding: $spacing-md $spacing-lg;
-        border-radius: var(--glass-border-radius);
         color: rgba(255, 255, 255, 0.95);
         background: rgba(255, 255, 255, 0.15);
         font-size: $font-size-sm;
         font-weight: $font-weight-medium;
         cursor: pointer;
         min-width: 100px;
-        @include glass-item;
         border: 1px solid rgba(255, 255, 255, 0.2);
+        
+        // 应用 glass-item 样式但覆盖圆角
+        @include glass-item;
+        border-radius: var(--glass-border-radius-capsule) !important;
+        
+        // 确保伪元素也使用胶囊圆角
+        &::before {
+            border-radius: var(--glass-border-radius-capsule) !important;
+        }
+        
+        &:hover::before {
+            border-radius: var(--glass-border-radius-capsule) !important;
+        }
         
         &:hover {
             background: rgba(255, 255, 255, 0.25);
