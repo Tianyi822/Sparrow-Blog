@@ -6,72 +6,145 @@
   @include full-viewport;
   @include flex-center;
 
-  background: linear-gradient(135deg, $primary-500 0%, $gray-900 100%);
+  background: linear-gradient(
+    135deg,
+    #1e293b 0%,
+    #334155 30%,
+    #475569 70%,
+    #64748b 100%
+  );
   background-attachment: fixed;
   padding: $spacing-xl;
   font-family: $font-family-base;
   color: $font-color-inverse;
+  overflow: hidden;
+
+  // 背景装饰动效
+  .login-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    
+    .floating-shapes {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      
+      .shape {
+        position: absolute;
+        border-radius: var(--glass-border-radius-capsule);
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        animation: float 6s ease-in-out infinite;
+        
+        &.shape-1 {
+          width: 100px;
+          height: 100px;
+          top: 10%;
+          left: 15%;
+          animation-delay: 0s;
+          background: rgba(99, 179, 237, 0.08);
+        }
+        
+        &.shape-2 {
+          width: 140px;
+          height: 140px;
+          top: 70%;
+          right: 15%;
+          animation-delay: 2s;
+          background: rgba(52, 168, 83, 0.06);
+        }
+        
+        &.shape-3 {
+          width: 80px;
+          height: 80px;
+          bottom: 30%;
+          left: 30%;
+          animation-delay: 4s;
+          background: rgba(45, 158, 123, 0.07);
+        }
+        
+        &.shape-4 {
+          width: 120px;
+          height: 120px;
+          top: 20%;
+          right: 30%;
+          animation-delay: 1s;
+          background: rgba(56, 178, 172, 0.06);
+        }
+        
+        &.shape-5 {
+          width: 90px;
+          height: 90px;
+          bottom: 20%;
+          right: 45%;
+          animation-delay: 3s;
+          background: rgba(79, 172, 254, 0.05);
+        }
+      }
+    }
+  }
 
   // 登录卡片
   .login-card {
-    /* 使用内联样式替换 @extend .glass-strong */
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%),
-                linear-gradient(225deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%),
-                rgba(0, 0, 0, 0.02) !important;
-    backdrop-filter: blur(25px) saturate(200%) brightness(1.2) !important;
-    -webkit-backdrop-filter: blur(25px) saturate(200%) brightness(1.2) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15),
-                0 5px 15px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.25),
-                inset 0 -1px 0 rgba(255, 255, 255, 0.08) !important;
+    @include glass-effect;
     @include card-style;
 
-    & {
-      max-width: 400px;
-      width: 100%;
-      padding: $spacing-xl;
-      position: relative;
-    }
-
-    @include hover-lift;
-
+    max-width: 420px;
+    width: 100%;
+    padding: $spacing-xxl;
+    position: relative;
+    z-index: 10;
+    border-radius: var(--glass-border-radius);
+    
     // 登录卡片发光效果
-    &::before {
+    &::after {
       content: '';
       position: absolute;
-      inset: -1px;
+      inset: -2px;
       background: linear-gradient(45deg,
-          rgba($primary-400, 0.3),
-          rgba($white, 0.1),
-          rgba($primary-400, 0.3));
-      border-radius: $border-radius-lg;
+          rgba(99, 179, 237, 0.15),
+          rgba(52, 168, 83, 0.1),
+          rgba(45, 158, 123, 0.12));
+      border-radius: var(--glass-border-radius);
       z-index: -1;
-      filter: blur(8px);
-      opacity: 0.7;
-      transition: $transition-base;
-    }
-
-    &:hover::before {
-      opacity: 1;
+      filter: blur(12px);
+      opacity: 0.5;
+      transition: var(--glass-transition);
+      animation: glow-pulse 3s ease-in-out infinite;
     }
   }
 
   // 登录头部
   .login-header {
     text-align: center;
-    margin-bottom: $spacing-xl;
+    margin-bottom: $spacing-xxl;
 
     h1 {
-      @include gradient-text($gray-200, $white);
       font-size: $font-size-xxl;
       font-weight: $font-weight-bold;
-      margin-bottom: $spacing-sm;
+      margin-bottom: $spacing-md;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(99, 179, 237, 0.75) 50%,
+        rgba(52, 168, 83, 0.8) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 20px rgba(99, 179, 237, 0.3);
+      animation: title-glow 2s ease-in-out infinite alternate;
     }
 
     p {
       font-size: $font-size-md;
-      color: rgba($white, 0.7);
+      color: rgba(255, 255, 255, 0.75);
+      line-height: $line-height-base;
     }
   }
 
@@ -87,11 +160,11 @@
         @include flex-align-center;
         margin-bottom: $spacing-sm;
         font-weight: $font-weight-medium;
-        color: rgba($white, 0.9);
+        color: rgba(255, 255, 255, 0.9);
 
         .icon {
           margin-right: $spacing-sm;
-          color: rgba($white, 0.9);
+          color: rgba(255, 255, 255, 0.9);
           font-size: $font-size-md;
         }
       }
@@ -102,32 +175,32 @@
         width: 100%;
       }
 
-      // 输入框
+      // 输入框胶囊样式
       input {
         @include input-base;
-        /* 使用内联样式替换 @extend .glass-subtle */
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
-                    rgba(0, 0, 0, 0.015) !important;
-        backdrop-filter: blur(15px) saturate(150%) !important;
-        -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-
+        @include glass-effect;
+        
         width: 100%;
-        height: 36px;
-        padding: 0 $spacing-md;
-        color: rgba($white, 0.9);
-        border: 1px solid rgba($white, 0.1);
+        height: 48px;
+        padding: 0 $spacing-lg;
+        color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 9999px;
+        font-size: $font-size-md;
+        transition: var(--glass-transition);
 
         &:focus {
           @include input-focus;
-          border-color: rgba($white, 0.3);
-          box-shadow: 0 0 0 3px rgba($white, 0.1);
-          background: rgba($white, 0.1);
+          border-color: rgba(99, 179, 237, 0.5);
+          box-shadow: 
+            0 0 0 3px rgba(99, 179, 237, 0.12),
+            var(--glass-shadow-medium);
+          backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover);
+          -webkit-backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover);
         }
 
         &::placeholder {
-          color: rgba($white, 0.4);
+          color: rgba(255, 255, 255, 0.4);
         }
       }
 
@@ -145,7 +218,7 @@
 
     // 验证码组
     .verify-code-group {
-      margin-bottom: $spacing-lg !important;
+      margin-bottom: $spacing-md !important;
 
       .verify-code-container {
         @include flex-align-center;
@@ -157,72 +230,141 @@
           letter-spacing: 2px;
         }
 
-        // 验证码按钮
+        // 验证码按钮胶囊样式
         .verify-code-button {
           @include button-base;
-          /* 使用内联样式替换 @extend .glass-subtle */
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
-                      rgba(0, 0, 0, 0.015) !important;
-          backdrop-filter: blur(15px) saturate(150%) !important;
-          -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
-                      inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-
-          height: 36px;
-          padding: 0 $spacing-md;
+          @include glass-effect;
+          
+          height: 48px;
+          padding: 0 $spacing-lg;
           font-size: $font-size-sm;
-          color: rgba($white, 0.95);
-          border: 1px solid rgba($white, 0.3);
+          color: rgba(255, 255, 255, 0.95);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 9999px;
           white-space: nowrap;
+          transition: var(--glass-transition);
+          cursor: pointer;
 
-          @include button-hover-effect(rgba($white, 0.25));
+          &:hover:not(:disabled) {
+            @include glass-hover;
+            border-color: rgba(99, 179, 237, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 
+              var(--glass-shadow-heavy),
+              0 0 20px rgba(99, 179, 237, 0.2);
+          }
+          
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
         }
       }
     }
 
-    // 登录按钮
+    // 登录按钮胶囊样式
     .login-button {
       @include button-primary;
-      /* 使用内联样式替换 @extend .glass-subtle */
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
-                  rgba(0, 0, 0, 0.015) !important;
-      backdrop-filter: blur(15px) saturate(150%) !important;
-      -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-
+      @include glass-effect;
+      
       width: 100%;
-      height: 42px;
-      margin-top: $spacing-sm !important;
+      height: 52px;
+      margin-top: $spacing-xs !important;
       font-size: $font-size-md !important;
-      background: rgba($white, 0.15);
-      color: rgba($white, 0.95);
-      border: 1px solid rgba($white, 0.3);
+      font-weight: $font-weight-semibold;
+      color: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(99, 179, 237, 0.3);
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: var(--glass-transition);
+      background: linear-gradient(
+        135deg,
+        rgba(99, 179, 237, 0.18) 0%,
+        rgba(52, 168, 83, 0.12) 100%
+      );
 
-      @include button-hover-effect(rgba($white, 0.25));
+      &:hover:not(:disabled) {
+        @include glass-hover;
+        border-color: rgba(99, 179, 237, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 
+          var(--glass-shadow-heavy),
+          0 0 30px rgba(99, 179, 237, 0.25);
+        background: linear-gradient(
+          135deg,
+          rgba(99, 179, 237, 0.25) 0%,
+          rgba(52, 168, 83, 0.18) 100%
+        );
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
     }
 
-    // 提交错误容器
+    // 提交错误容器胶囊样式
     .submit-error-container {
-      /* 使用内联样式替换 @extend .glass-subtle */
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
-                  rgba(0, 0, 0, 0.015) !important;
-      backdrop-filter: blur(15px) saturate(150%) !important;
-      -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+      @include glass-effect;
       @include error-container;
 
       margin-top: $spacing-lg;
-      background-color: rgba($danger, 0.15);
-      border: 1px solid rgba($danger, 0.3);
+      padding: $spacing-md $spacing-lg;
+      background: linear-gradient(
+        135deg,
+        rgba(239, 68, 68, 0.15) 0%,
+        rgba(220, 38, 38, 0.1) 100%
+      );
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 9999px;
 
       .submit-error {
-        color: rgba($danger, 0.9);
+        color: rgba(239, 68, 68, 0.9);
         font-size: $font-size-sm;
         text-align: center;
+        margin: 0;
       }
     }
+  }
+}
+
+// 动画定义
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-15px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(-20px) rotate(270deg);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    filter: blur(12px);
+  }
+  50% {
+    opacity: 0.8;
+    filter: blur(16px);
+  }
+}
+
+@keyframes title-glow {
+  0% {
+    text-shadow: 0 0 20px rgba(99, 179, 237, 0.3);
+    filter: brightness(1);
+  }
+  100% {
+    text-shadow: 
+      0 0 30px rgba(99, 179, 237, 0.4), 
+      0 0 40px rgba(52, 168, 83, 0.3);
+    filter: brightness(1.05);
   }
 }
 
@@ -232,10 +374,13 @@
     padding: $spacing-md;
 
     .login-card {
-      padding: $spacing-lg;
+      padding: $spacing-xl;
+      max-width: 95%;
     }
 
     .login-header {
+      margin-bottom: $spacing-xl;
+      
       h1 {
         font-size: $font-size-xl;
       }
@@ -246,13 +391,53 @@
     }
 
     .login-form {
+      .form-group {
+        input {
+          height: 44px;
+          padding: 0 $spacing-md;
+        }
+      }
+      
       .verify-code-container {
         @include flex-column;
-        gap: $spacing-sm;
+        gap: $spacing-md;
 
         .verify-code-button {
           width: 100%;
+          height: 44px;
         }
+      }
+      
+      .login-button {
+        height: 48px;
+      }
+    }
+    
+    // 移动设备背景优化
+    .login-background .floating-shapes .shape {
+      &.shape-1 {
+        width: 80px;
+        height: 80px;
+      }
+      
+      &.shape-2 {
+        width: 100px;
+        height: 100px;
+      }
+      
+      &.shape-3 {
+        width: 60px;
+        height: 60px;
+      }
+      
+      &.shape-4 {
+        width: 90px;
+        height: 90px;
+      }
+      
+      &.shape-5 {
+        width: 70px;
+        height: 70px;
       }
     }
   }
