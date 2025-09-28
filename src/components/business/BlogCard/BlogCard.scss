@@ -8,8 +8,7 @@ $card-padding: $spacing-md + 0.2rem;
 $mobile-padding: $spacing-md;
 
 .blog-card {
-  @include card-style;
-  @include glass-effect;
+  @include glass-card-complete;
   
   // 将所有声明放在嵌套规则之前
   & {

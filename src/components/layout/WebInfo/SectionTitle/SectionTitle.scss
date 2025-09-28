@@ -13,8 +13,7 @@
     transform: translateY(0) scale(1);
     transition: all 0.3s ease;
     
-    @include card-style;
-    @include glass-effect;
+    @include glass-card-complete;
 
     // 悬停效果
     &:hover {

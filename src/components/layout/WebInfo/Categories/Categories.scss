@@ -9,8 +9,7 @@
     border-radius: var.$border-radius-md;
     padding: var.$spacing-md + 0.2rem;
     box-sizing: border-box;
-    @include card-style;
-    @include glass-effect;
+    @include glass-card-complete;
     
     & {
         overflow: hidden;
