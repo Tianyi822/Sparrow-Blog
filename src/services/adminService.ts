@@ -20,7 +20,6 @@ import {
     UserConfigResponse,
     ServerConfigResponse,
     LoggerConfigResponse,
-    MySQLConfigResponse,
     OSSConfigResponse,
     CacheAndIndexConfigResponse,
     CommentItem,
@@ -526,60 +525,7 @@ export const updateLoggerConfig = async (
     });
 };
 
-// ===============================================================
-// 数据库配置相关接口和函数
-// ===============================================================
 
-/**
- * 获取MySQL数据库配置信息
- * @returns 数据库配置数据
- */
-export const getMySQLConfig = async (): Promise<MySQLConfigResponse> => {
-    return businessApiRequest<MySQLConfigResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.MYSQL.CONFIG
-    });
-};
-
-/**
- * 更新MySQL数据库配置信息
- * @param user 数据库用户名
- * @param password 数据库密码
- * @param host 数据库主机地址
- * @param port 数据库端口
- * @param database 数据库名称
- * @param maxOpen 最大打开连接数
- * @param maxIdle 最大空闲连接数
- * @returns 更新结果
- */
-export const updateMySQLConfig = async (
-    user: string,
-    password: string,
-    host: string,
-    port: number,
-    database: string,
-    maxOpen: number,
-    maxIdle: number
-): Promise<ApiResponse<null>> => {
-    const requestData: Record<string, string | number> = {
-        'mysql.user': user,
-        'mysql.password': password,
-        'mysql.host': host,
-        'mysql.port': port,
-        'mysql.database': database,
-        'mysql.max_open': maxOpen,
-        'mysql.max_idle': maxIdle
-    };
-
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.MYSQL.CONFIG,
-        data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-};
 
 // ===============================================================
 // OSS配置相关接口和函数
@@ -778,8 +724,6 @@ export default {
     updateServerConfig,
     getLoggerConfig,
     updateLoggerConfig,
-    getMySQLConfig,
-    updateMySQLConfig,
     getOSSConfig,
     updateOSSConfig,
     getCacheAndIndexConfig,

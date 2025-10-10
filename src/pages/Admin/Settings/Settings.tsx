@@ -2,14 +2,12 @@ import React, { memo, useCallback, useState } from 'react';
 import {
     FiChevronDown,
     FiCpu,
-    FiDatabase,
     FiHardDrive,
     FiServer,
     FiUser
 } from 'react-icons/fi';
 import { localStorage } from '@/utils';
 import CacheAndIndexSetting from './CacheAndIndexSetting';
-import DatabaseSetting from './DatabaseSetting';
 import LogSetting from './LogSetting';
 import OssSetting from './OssSetting';
 import ServiceSetting from './ServiceSetting';
@@ -17,7 +15,7 @@ import './Settings.scss';
 import UserSetting from './UserSetting';
 
 // 设置标签页类型定义
-type SettingTab = 'user' | 'service' | 'log' | 'database' | 'oss' | 'cache';
+type SettingTab = 'user' | 'service' | 'log' | 'oss' | 'cache';
 
 const Settings: React.FC = memo(() => {
     // 状态管理
@@ -32,7 +30,6 @@ const Settings: React.FC = memo(() => {
     const tabOptions = [
         { id: 'user', label: '用户设置', icon: <FiUser /> },
         { id: 'log', label: '日志设置', icon: <FiCpu /> },
-        { id: 'database', label: '数据库设置', icon: <FiDatabase /> },
         { id: 'oss', label: 'OSS设置', icon: <FiHardDrive /> },
         { id: 'cache', label: '缓存与索引设置', icon: <FiCpu /> },
         { id: 'service', label: '服务设置', icon: <FiServer /> },
@@ -65,8 +62,6 @@ const Settings: React.FC = memo(() => {
                 return <ServiceSetting onSaveSuccess={handleSaveSuccess} />;
             case 'log':
                 return <LogSetting onSaveSuccess={handleSaveSuccess} />;
-            case 'database':
-                return <DatabaseSetting onSaveSuccess={handleSaveSuccess} />;
             case 'oss':
                 return <OssSetting onSaveSuccess={handleSaveSuccess} />;
             case 'cache':

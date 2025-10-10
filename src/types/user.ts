@@ -57,23 +57,7 @@ export interface LoggerConfigResponse {
     data: LoggerConfig;
 }
 
-// MySQL配置接口
-export interface MySQLConfig {
-    database: string;
-    host: string;
-    max_idle: number;
-    max_open: number;
-    port: number;
-    user: string;
-    password?: string;
-}
 
-// MySQL配置响应接口
-export interface MySQLConfigResponse {
-    code: number;
-    msg: string;
-    data: MySQLConfig;
-}
 
 // OSS配置接口
 export interface OSSConfig {

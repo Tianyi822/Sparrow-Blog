@@ -52,9 +52,7 @@ export const ADMIN_API_ENDPOINTS = {
     LOGGER: {
       CONFIG: '/admin/setting/logger/config'
     },
-    MYSQL: {
-      CONFIG: '/admin/setting/mysql/config'
-    },
+
     OSS: {
       CONFIG: '/admin/setting/oss/config'
     },
