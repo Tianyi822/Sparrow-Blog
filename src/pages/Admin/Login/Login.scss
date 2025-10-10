@@ -91,15 +91,15 @@
 
   // 登录卡片
   .login-card {
-    @include glass-effect;
-    @include card-style;
-
     max-width: 420px;
     width: 100%;
     padding: $spacing-xxl;
     position: relative;
     z-index: 10;
     border-radius: var(--glass-border-radius);
+    
+    @include glass-effect;
+    @include card-style;
     
     // 登录卡片发光效果
     &::after {
@@ -177,9 +177,6 @@
 
       // 输入框胶囊样式
       input {
-        @include input-base;
-        @include glass-effect;
-        
         width: 100%;
         height: 48px;
         padding: 0 $spacing-lg;
@@ -188,6 +185,9 @@
         border-radius: 9999px;
         font-size: $font-size-md;
         transition: var(--glass-transition);
+        
+        @include input-base;
+        @include glass-effect;
 
         &:focus {
           @include input-focus;
@@ -232,9 +232,6 @@
 
         // 验证码按钮胶囊样式
         .verify-code-button {
-          @include button-base;
-          @include glass-effect;
-          
           height: 48px;
           padding: 0 $spacing-lg;
           font-size: $font-size-sm;
@@ -244,6 +241,9 @@
           white-space: nowrap;
           transition: var(--glass-transition);
           cursor: pointer;
+          
+          @include button-base;
+          @include glass-effect;
 
           &:hover:not(:disabled) {
             @include glass-hover;
@@ -264,9 +264,6 @@
 
     // 登录按钮胶囊样式
     .login-button {
-      @include button-primary;
-      @include glass-effect;
-      
       width: 100%;
       height: 52px;
       margin-top: $spacing-xs !important;
@@ -282,6 +279,9 @@
         rgba(99, 179, 237, 0.18) 0%,
         rgba(52, 168, 83, 0.12) 100%
       );
+      
+      @include button-primary;
+      @include glass-effect;
 
       &:hover:not(:disabled) {
         @include glass-hover;
@@ -305,9 +305,6 @@
 
     // 提交错误容器胶囊样式
     .submit-error-container {
-      @include glass-effect;
-      @include error-container;
-
       margin-top: $spacing-lg;
       padding: $spacing-md $spacing-lg;
       background: linear-gradient(
@@ -317,6 +314,9 @@
       );
       border: 1px solid rgba(239, 68, 68, 0.3);
       border-radius: 9999px;
+
+      @include error-container;
+      @include glass-effect;
 
       .submit-error {
         color: rgba(239, 68, 68, 0.9);
