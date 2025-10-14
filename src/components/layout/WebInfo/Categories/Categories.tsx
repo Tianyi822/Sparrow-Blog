@@ -23,14 +23,6 @@ const Categories: React.FC<CategoriesProps> = ({
 }) => {
     // 计算每个分类的文章数量
     const categoriesWithCount = useMemo(() => {
-        console.log('Total blogs passed to Categories:', blogCounts.length);
-        console.log('Categories to count:', categories);
-        
-        // 帮助调试：打印每篇博客的分类信息
-        blogCounts.forEach(blog => {
-            console.log(`Blog "${blog.blog_title}" has category:`, blog.category);
-        });
-        
         return categories.map(category => {
             // 确保 category_id 存在
             const categoryId = category.category_id || '';
@@ -44,12 +36,8 @@ const Categories: React.FC<CategoriesProps> = ({
                     : '';
                 const match = blogCategoryId === String(categoryId);
                 
-                console.log(`Comparing blog "${blog.blog_title}": category_id=${blogCategoryId} with category "${category.category_name}" (ID=${categoryId}), match=${match}`);
-                
                 return match;
             }).length;
-            
-            console.log(`Category "${category.category_name}" (ID: ${categoryId}) has ${count} blogs`);
             
             return {
                 ...category,
@@ -59,9 +47,6 @@ const Categories: React.FC<CategoriesProps> = ({
     }, [categories, blogCounts]);
 
     const handleCategoryClick = (category: CategoryWithCount) => {
-        console.log('Category clicked:', category);
-        console.log('Category ID:', category.category_id, 'Type:', typeof category.category_id);
-        
         if (onCategoryClick) {
             onCategoryClick(category);
         }

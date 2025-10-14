@@ -67,7 +67,6 @@ export const loginWithVerificationCode = async (data: LoginRequest): Promise<Api
         // 如果登录成功且返回了token，则存储到localStorage
         if (response.code === 200 && response.data && response.data.token) {
             localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-            console.log('Token已保存到localStorage');
         }
 
         return response;

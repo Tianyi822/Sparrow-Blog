@@ -330,9 +330,9 @@ const BlogContent: React.FC = memo(() => {
                 // 尝试使用现代的 Clipboard API
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(url).then(() => {
-                        console.log('标题链接已复制到剪贴板');
+                        // 复制成功
                     }).catch(() => {
-                        console.log('复制失败');
+                        // 复制失败
                     });
                 } else {
                     // 降级处理：直接更新 URL hash

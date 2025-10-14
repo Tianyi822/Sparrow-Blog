@@ -24,16 +24,11 @@ const Waiting: React.FC = () => {
     useEffect(() => {
         const checkStatus = async () => {
             try {
-                console.log('检查系统状态...');
                 const { isRuntime, errorMessage } = await checkSystemStatus();
-                console.log('系统状态检查结果:', { isRuntime, errorMessage });
                 
                 if (isRuntime) {
-                    console.log('系统已就绪，跳转到首页');
                     // 使用 navigate 跳转到首页，并替换当前历史记录
                     navigate('/', { replace: true });
-                } else {
-                    console.log('系统尚未就绪，继续等待...');
                 }
             } catch (error) {
                 console.error('系统状态检查失败:', error);
@@ -147,4 +142,4 @@ const Waiting: React.FC = () => {
     );
 };
 
-export default Waiting; 
+export default Waiting;

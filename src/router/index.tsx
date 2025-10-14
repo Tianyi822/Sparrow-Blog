@@ -48,12 +48,9 @@ const checkAuthStatus = () => {
 // 统一的系统状态检查函数
 const checkSystemStatusLoader = async (routeName: string = 'unknown') => {
     try {
-        console.log(`路由器 [${routeName}]: 开始检查系统状态...`);
         const { isRuntime, errorMessage } = await checkSystemStatus();
-        console.log(`路由器 [${routeName}]: 系统状态检查结果:`, { isRuntime, errorMessage });
 
         if (!isRuntime) {
-            console.log(`路由器 [${routeName}]: 系统未就绪，重定向到等待页面`);
             throw new Response("", {
                 status: 302,
                 headers: {
@@ -62,7 +59,6 @@ const checkSystemStatusLoader = async (routeName: string = 'unknown') => {
             });
         }
 
-        console.log(`路由器 [${routeName}]: 系统已就绪，允许访问`);
         return null;
     } catch (error) {
         // 如果是重定向错误，直接抛出
@@ -123,10 +119,8 @@ const loginLoader = async () => {
 
 // 管理后台子路由的认证检查（不需要重复检查系统状态，因为父路由已检查）
 const adminAuthLoader = async (routeName: string) => {
-    console.log(`管理后台 [${routeName}]: 检查认证状态...`);
     const { isAuthenticated } = checkAuthStatus();
     if (!isAuthenticated) {
-        console.log(`管理后台 [${routeName}]: 未认证，重定向到登录页`);
         throw new Response("", {
             status: 302,
             headers: {
@@ -134,7 +128,6 @@ const adminAuthLoader = async (routeName: string) => {
             },
         });
     }
-    console.log(`管理后台 [${routeName}]: 认证通过，允许访问`);
     return null;
 };
 
@@ -159,7 +152,6 @@ const routes: RouteObject[] = [
         path: WEB_ROUTES.WAITING,
         element: withSuspense(Waiting),
         loader: () => {
-            console.log('等待页面: 直接加载，不检查系统状态');
             return null;
         }
     },

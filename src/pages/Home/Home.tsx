@@ -230,13 +230,6 @@ const Home: React.FC = () => {
             // 计算滚动目标位置，留出一些顶部空间
             const targetScrollTop = Math.max(0, offsetTop - 50);
 
-            console.log('Scroll Debug Info:');
-            console.log('offsetTop:', offsetTop);
-            console.log('targetScrollTop:', targetScrollTop);
-            console.log('Document height:', document.documentElement.scrollHeight);
-            console.log('Window height:', window.innerHeight);
-            console.log('Max scrollable distance:', document.documentElement.scrollHeight - window.innerHeight);
-
             window.scrollTo({
                 top: targetScrollTop,
                 behavior: 'smooth'
