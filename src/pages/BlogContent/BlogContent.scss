@@ -1,5 +1,6 @@
 @use '@/style/mixins' as *;
 @use '@/style/variables' as var;
+@use '@/style/glass' as *;
 
 .blog-content-page {
   display: flex;
@@ -11,13 +12,11 @@
   min-height: 100vh;
 
   &-header {
-    @include glass-card;
+    @include glass-effect;
     margin-bottom: var.$spacing-xl;
     padding: var.$spacing-xl;
-    border-radius: var.$border-radius-lg;
+    border-radius: var(--glass-border-radius);
     position: relative;
-
-    @include glass-glow;
 
     &-title {
       font-size: var.$font-size-xxl + 0.5rem;
@@ -105,12 +104,10 @@
   }
 
   &-article {
-    @include glass-card;
+    @include glass-effect;
     padding: var.$spacing-xl;
-    border-radius: var.$border-radius-lg;
+    border-radius: var(--glass-border-radius);
     position: relative;
-
-    @include glass-glow;
 
     .markdown-content {
       position: relative;
