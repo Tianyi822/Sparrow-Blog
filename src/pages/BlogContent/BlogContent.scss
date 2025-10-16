@@ -13,10 +13,13 @@
 
   &-header {
     @include glass-effect;
-    margin-bottom: var.$spacing-xl;
-    padding: var.$spacing-xl;
-    border-radius: var(--glass-border-radius);
-    position: relative;
+    
+    & {
+      margin-bottom: var.$spacing-xl;
+      padding: var.$spacing-xl;
+      border-radius: var(--glass-border-radius);
+      position: relative;
+    }
 
     &-title {
       font-size: var.$font-size-xxl + 0.5rem;
@@ -105,9 +108,12 @@
 
   &-article {
     @include glass-effect;
-    padding: var.$spacing-xl;
-    border-radius: var(--glass-border-radius);
-    position: relative;
+    
+    & {
+      padding: var.$spacing-xl;
+      border-radius: var(--glass-border-radius);
+      position: relative;
+    }
 
     .markdown-content {
       position: relative;
