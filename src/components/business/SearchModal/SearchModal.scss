@@ -1,7 +1,8 @@
 @use '@/style/variables'as *;
 @use '@/style/mixins'as *;
+@use '@/style/glass'as *;
 
-// 确保SearchModal样式不被外部干扰 - 移除对glass的依赖
+// 确保SearchModal样式不被外部干扰
 .search-modal-backdrop * {
     box-sizing: border-box;
 }
@@ -64,64 +65,46 @@
     -webkit-backdrop-filter: blur(8px);
     z-index: 2000;
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding-top: 10vh;
-
-    // 防止滚动穿透
+    gap: 16px;
     overflow: hidden;
     overscroll-behavior: none;
-
-    // 禁用触摸滚动
     touch-action: none;
 }
 
 .search-modal {
     width: 90%;
     max-width: 700px;
-    max-height: 80vh;
-
-    // 直接内联毛玻璃样式，避免@extend问题
-    background: rgba(255, 255, 255, 0.15) !important;
-    backdrop-filter: blur(24px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
-    border: 2px solid rgba(255, 255, 255, 0.1) !important;
-
-    border-radius: 16px !important; // 直接使用数值
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-    overflow: hidden;
-    animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    // 防止滚动穿透到背景
-    overscroll-behavior: contain;
-
-    // 确保容器不会滚动
     position: relative;
-    touch-action: pan-y; // 只允许垂直滚动
-    
-    // 防止被其他样式干扰
     isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
 }
 
 .search-modal-header {
     position: relative;
-    padding: 24px 32px; // 直接使用数值
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    padding: 0;
     z-index: 5;
+    border-radius: var(--glass-border-radius);
+    animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     
-    // 防止内容溢出
-    overflow: hidden;
+    @include glass-effect;
     
-    // 确保最小高度
-    min-height: 80px;
-    box-sizing: border-box;
+    &::before {
+        border-radius: var(--glass-border-radius);
+    }
 }
 
 // 移除 search-input-container 样式，将其转移到 search-input
 
 .search-icon {
     position: absolute !important;
-    left: 48px !important; // 32px(header padding) + 16px(desired offset) = 48px
+    left: 24px !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
     color: rgba(255, 255, 255, 0.6) !important;
@@ -130,8 +113,8 @@
     justify-content: center !important;
     width: 20px !important;
     height: 20px !important;
-    z-index: 11 !important; // 确保在输入框之上
-    pointer-events: none !important; // 防止阻挡输入框点击
+    z-index: 11 !important;
+    pointer-events: none !important;
     
     svg {
         width: 20px !important;
@@ -142,34 +125,50 @@
 
 .search-input {
     width: 100% !important;
-    min-height: 56px !important;
-    height: 56px !important;
+    min-height: 64px !important;
+    height: 64px !important;
     border: none !important;
     outline: none !important;
-    
-    // 转移原来 search-input-container 的样式
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(16px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-    border: 2px solid rgba(255, 255, 255, 0.05) !important;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03) !important;
-    border-radius: 12px !important;
-    
-    // 调整padding以容纳图标和按钮
-    padding: 0 48px 0 48px !important; // 左右留出空间给图标和按钮
+    padding: 0 64px 0 56px !important;
     font-size: 16px !important;
     color: rgba(255, 255, 255, 0.95) !important;
     font-family: inherit !important;
     line-height: 1.5 !important;
-    
-    transition: all 0.3s ease !important;
     box-sizing: border-box !important;
     z-index: 10 !important;
+    position: relative;
+    border-radius: var(--glass-border-radius) !important;
+    
+    background: 
+        linear-gradient(135deg, var(--glass-white-027) 0%, var(--glass-white-013) 100%),
+        linear-gradient(225deg, var(--glass-white-02) 0%, var(--glass-white-007) 100%),
+        var(--glass-black-017) !important;
+    
+    backdrop-filter: var(--glass-blur-mini) var(--glass-saturation-active) var(--glass-brightness-light) !important;
+    -webkit-backdrop-filter: var(--glass-blur-mini) var(--glass-saturation-active) var(--glass-brightness-light) !important;
+    
+    border: 1px solid var(--glass-white-08) !important;
+    
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 var(--glass-white-12),
+        inset 0 -1px 0 var(--glass-white-04) !important;
+    
+    transition: var(--glass-transition) !important;
     
     &:focus {
         border-color: rgba(52, 152, 219, 0.5) !important;
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1) !important;
-        background: rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 
+            0 0 0 3px rgba(52, 152, 219, 0.1),
+            0 6px 16px rgba(0, 0, 0, 0.12),
+            inset 0 1px 0 var(--glass-white-15),
+            inset 0 -1px 0 var(--glass-white-05) !important;
+        background: 
+            linear-gradient(135deg, var(--glass-white-033) 0%, var(--glass-white-02) 100%),
+            linear-gradient(225deg, var(--glass-white-027) 0%, var(--glass-white-01) 100%),
+            var(--glass-black-02) !important;
+        backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness) !important;
+        -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness) !important;
     }
     
     // 防止自动填充样式干扰
@@ -190,7 +189,7 @@
 
 .clear-button {
     position: absolute !important;
-    right: 48px !important; // 32px(header padding) + 16px(desired offset) = 48px
+    right: 16px !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
     background: none !important;
@@ -201,16 +200,17 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 4px !important;
-    transition: all 0.3s ease !important;
+    border-radius: 10px !important;
+    transition: var(--glass-transition) !important;
     width: 32px !important;
     height: 32px !important;
-    z-index: 11 !important; // 确保在输入框之上
+    z-index: 11 !important;
 
     &:hover {
         color: rgba(255, 255, 255, 0.9) !important;
-        background: rgba(255, 255, 255, 0.1) !important;
-        transform: scale(1.1) !important;
+        background: var(--glass-white-1) !important;
+        backdrop-filter: var(--glass-blur-tiny) !important;
+        -webkit-backdrop-filter: var(--glass-blur-tiny) !important;
     }
     
     &:focus {
@@ -226,10 +226,14 @@
 }
 
 .search-modal-body {
-    max-height: 60vh;
+    width: 100%;
+    max-height: 70vh;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: $spacing-lg 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
     // 使用项目标准的滚动条样式
     &::-webkit-scrollbar {
@@ -309,82 +313,51 @@
 }
 
 .search-results {
-    padding: 0 $spacing-lg;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
 }
 
 .search-result-item {
     display: flex;
     align-items: flex-start;
-    gap: 16px; // 直接使用数值
-    padding: 24px; // 直接使用数值
-    margin-bottom: 8px; // 直接使用数值
-
-    // 直接内联卡片样式，不依赖@extend
+    gap: 16px;
+    padding: 24px;
+    margin-bottom: 0;
     position: relative;
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border-radius: 12px !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow:
-        0 4px 6px rgba(0, 0, 0, 0.1),
-        0 1px 3px rgba(0, 0, 0, 0.08) !important;
-    overflow: hidden;
-
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-    // 苹果百叶窗动画效果
     animation: blindsSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     transform-origin: top;
-    
-    // 防止被其他样式干扰
     isolation: isolate;
-
-    // 添加发光组件
-    .search-result-glow {
-        position: absolute;
-        inset: 0;
-        z-index: 2;
-        pointer-events: none;
-        mix-blend-mode: soft-light;
-        transition: all 0.2s ease-out;
-        border-radius: inherit;
-    }
-
-    .search-result-border-glow {
-        position: absolute;
-        inset: -2px;
-        z-index: 1;
-        pointer-events: none;
-        border-radius: inherit;
-        transition: all 0.2s ease-out;
-        mix-blend-mode: overlay;
-        opacity: 1;
+    border-radius: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    
+    @include glass-effect;
+    
+    &::before {
+        border-radius: 20px;
     }
 
     &:hover {
-        // 移除3D变换效果
-        box-shadow:
-            0 10px 20px rgba(0, 0, 0, 0.1),
-            0 6px 6px rgba(0, 0, 0, 0.1) !important;
-        border-color: rgba(52, 152, 219, 0.3) !important;
-
-        .search-result-glow {
-            background: radial-gradient(circle at 50% 50%,
-                    rgba(52, 152, 219, 0.3),
-                    transparent 80%);
-        }
-
-        .search-result-border-glow {
-            background: radial-gradient(circle at 50% 50%,
-                    rgba(52, 152, 219, 0.5),
-                    transparent 40%);
-            box-shadow: 0 0 20px 5px rgba(52, 152, 219, 0.1);
-        }
+        background: 
+            linear-gradient(135deg, var(--glass-white-033) 0%, var(--glass-white-02) 100%),
+            linear-gradient(225deg, var(--glass-white-027) 0%, var(--glass-white-01) 100%),
+            var(--glass-black-02) !important;
+        
+        backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover) !important;
+        -webkit-backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover) !important;
+        
+        box-shadow: 
+            0 12px 40px rgba(0, 0, 0, 0.15),
+            0 4px 12px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 var(--glass-white-2),
+            inset 0 -1px 0 var(--glass-white-08) !important;
     }
 
     &:active {
-        // 移除3D变换效果
         transition-duration: 0.1s !important;
     }
 }
@@ -486,6 +459,8 @@
         width: 95%;
         max-height: 85vh;
         margin: 0 $spacing-md;
+        backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item) !important;
+        -webkit-backdrop-filter: var(--glass-blur-small) var(--glass-saturation-item) !important;
     }
 
     .search-modal-header {
@@ -520,6 +495,8 @@
     .search-modal {
         width: 98%;
         border-radius: $border-radius-lg;
+        backdrop-filter: var(--glass-blur-tiny) var(--glass-saturation-mobile) !important;
+        -webkit-backdrop-filter: var(--glass-blur-tiny) var(--glass-saturation-mobile) !important;
     }
 
     .search-modal-header {

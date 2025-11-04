@@ -366,10 +366,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                                     style={{ animationDelay: `${index * 50}ms` }}
                                     onClick={() => handleResultClick(item)}
                                 >
-                                    {/* 添加发光效果组件 */}
-                                    <div className="search-result-glow"></div>
-                                    <div className="search-result-border-glow"></div>
-
                                     <div className="result-image">
                                         {item.img_id && (
                                             <img
@@ -398,18 +394,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                         </div>
                     )}
 
-                    {!isLoading && !searchQuery && (
-                        <div className="search-placeholder">
-                            <div className="placeholder-icon">
-                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.5" />
-                                    <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="1.5" />
-                                </svg>
-                            </div>
-                            <h3>搜索博客内容</h3>
-                            <p>输入关键词开始搜索</p>
-                        </div>
-                    )}
+
                 </div>
             </div>
         </div>
