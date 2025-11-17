@@ -1,10 +1,12 @@
 import react from '@vitejs/plugin-react';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import type { ConfigEnv } from 'vite';
 import { defineConfig, loadEnv } from 'vite';
 import svgr from 'vite-plugin-svgr';
-import { readFileSync, writeFileSync } from 'fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { readFileSync, writeFileSync } from 'node:fs';
 
+// Deno 兼容的目录路径获取
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // 创建404.html插件，用于对象存储部署
@@ -28,7 +30,7 @@ const create404Plugin = () => {
 };
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode }: ConfigEnv) => {
   // 加载环境变量
   loadEnv(mode, process.cwd(), '');
   return {
@@ -75,14 +77,12 @@ export default defineConfig(({ mode }) => {
     },
     // CSS相关配置
     css: {
-      // 确保CSS模块化和作用域正确
-      modules: false,
       // 开发时保持源码映射，生产时可选
       devSourcemap: true
     },
     build: {
       // 启用Terser压缩
-      minify: 'terser',
+      minify: 'terser' as const,
       // 启用CSS代码分割，但保持简单
       cssCodeSplit: true,
       // 确保输出目录正确
@@ -110,7 +110,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           // 设置稳定的文件名格式，确保hash值一致性
-          chunkFileNames: (chunkInfo) => {
+          chunkFileNames: (chunkInfo: { facadeModuleId?: string | null; name?: string }) => {
             // 为不同类型的chunk使用不同的命名策略
             const facadeModuleId = chunkInfo.facadeModuleId;
             if (facadeModuleId) {
@@ -130,7 +130,7 @@ export default defineConfig(({ mode }) => {
             return `assets/[name]-[hash].js`;
           },
           entryFileNames: 'assets/[name]-[hash].js',
-          assetFileNames: (assetInfo) => {
+          assetFileNames: (assetInfo: { name?: string }) => {
             // 为不同类型的资源使用不同的命名策略
             const name = assetInfo.name || '';
             if (name.endsWith('.css')) {
@@ -145,7 +145,7 @@ export default defineConfig(({ mode }) => {
             return 'assets/[name]-[hash].[ext]';
           },
           // 简化的代码分割策略 - 只分割必要的大块
-          manualChunks: (id) => {
+          manualChunks: (id: string) => {
             // 1. React核心库 - 稳定且经常使用
             if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
               return 'react-vendor';

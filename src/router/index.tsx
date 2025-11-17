@@ -48,7 +48,7 @@ const checkAuthStatus = () => {
 // 统一的系统状态检查函数
 const checkSystemStatusLoader = async (routeName: string = 'unknown') => {
     try {
-        const { isRuntime, errorMessage } = await checkSystemStatus();
+        const { isRuntime } = await checkSystemStatus();
 
         if (!isRuntime) {
             throw new Response("", {
@@ -118,7 +118,7 @@ const loginLoader = async () => {
 };
 
 // 管理后台子路由的认证检查（不需要重复检查系统状态，因为父路由已检查）
-const adminAuthLoader = async (routeName: string) => {
+const adminAuthLoader = async (_routeName: string) => {
     const { isAuthenticated } = checkAuthStatus();
     if (!isAuthenticated) {
         throw new Response("", {

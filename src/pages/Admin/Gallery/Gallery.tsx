@@ -298,8 +298,8 @@ const Gallery: React.FC = () => {
             } else {
                 setErrorMessage(`获取图片失败: ${response.msg}`);
             }
-        } catch (error) {
-            setErrorMessage(error instanceof Error ? error.message : '加载图片失败');
+        } catch {
+            setErrorMessage('加载图片失败');
         } finally {
             setIsLoading(false);
         }
@@ -447,7 +447,7 @@ const Gallery: React.FC = () => {
             } else {
                 setErrorMessage(`删除失败: ${response.msg}`);
             }
-        } catch (error) {
+        } catch {
             setErrorMessage('删除请求出错');
         } finally {
             closeContextMenu();
@@ -520,7 +520,7 @@ const Gallery: React.FC = () => {
             } else {
                 setErrorMessage(`重命名失败: ${response.msg}`);
             }
-        } catch (error) {
+        } catch {
             setErrorMessage('重命名请求出错，请稍后重试');
         } finally {
             // 无论成功还是失败，退出重命名模式

@@ -76,7 +76,7 @@ const OssSetting: React.FC<OssConfigProps> = memo(({onSaveSuccess}) => {
                     // 显示后端返回的错误信息
                     setSubmitError(`获取OSS配置失败: ${response.msg}`);
                 }
-            } catch (error) {
+            } catch {
                 setSubmitError('获取OSS配置时发生错误，请稍后再试');
             } finally {
                 setLoading(false);
@@ -190,7 +190,7 @@ const OssSetting: React.FC<OssConfigProps> = memo(({onSaveSuccess}) => {
                 // 显示后端返回的错误信息
                 setSubmitError(`${response.msg}`);
             }
-        } catch (error) {
+        } catch {
             setSubmitError('保存配置时发生错误，请稍后再试');
         } finally {
             setIsSubmitting(false);

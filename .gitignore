@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Bun
+bun.lockb
+
+# Deno
+deno.lock
+
+# vite
+.vite
+
 # Editor directories and files
 .vscode/*
 .qoder/*

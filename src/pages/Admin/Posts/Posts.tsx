@@ -50,7 +50,7 @@ const Posts: React.FC = memo(() => {
                 } else {
                     setError(response.msg || '获取博客列表失败');
                 }
-            } catch (err) {
+            } catch {
                 setError('获取博客列表时发生错误');
             } finally {
                 setLoading(false);
@@ -71,7 +71,7 @@ const Posts: React.FC = memo(() => {
         if (!posts.length) return [];
         const tagSet = new Set<string>();
         posts.forEach(post => {
-            post.tags.forEach((tag: any) => {
+            post.tags.forEach((tag: { tag_name: string }) => {
                 tagSet.add(tag.tag_name);
             });
         });
@@ -88,7 +88,7 @@ const Posts: React.FC = memo(() => {
             const categoryMatch = selectedCategory ? post.category.category_name === selectedCategory : true;
 
             // 标签筛选
-            const tagMatch = selectedTag ? post.tags.some((tag: any) => tag.tag_name === selectedTag) : true;
+            const tagMatch = selectedTag ? post.tags.some((tag: { tag_name: string }) => tag.tag_name === selectedTag) : true;
 
             return titleMatch && categoryMatch && tagMatch;
         });
@@ -146,7 +146,7 @@ const Posts: React.FC = memo(() => {
                 // 显示错误消息
                 setError(response.msg || '修改置顶状态失败');
             }
-        } catch (err) {
+        } catch {
             setError('修改置顶状态时发生错误');
         }
     }, []);
@@ -164,7 +164,7 @@ const Posts: React.FC = memo(() => {
                 // 显示错误消息
                 setError(response.msg || '修改博客状态失败');
             }
-        } catch (err) {
+        } catch {
             setError('修改博客状态时发生错误');
         }
     }, []);
@@ -186,7 +186,7 @@ const Posts: React.FC = memo(() => {
                     // 显示错误消息
                     setError(response.msg || '删除博客失败');
                 }
-            } catch (err) {
+            } catch {
                 setError('删除博客时发生错误');
             }
         }
@@ -461,12 +461,12 @@ const Posts: React.FC = memo(() => {
                                             {post.tags.length === 0 ? (
                                                 <span className="no-tags">-</span>
                                             ) : post.tags.length <= getTagDisplayCount() ? (
-                                                post.tags.map((tag: any) => (
+                                                post.tags.map((tag: { tag_id: string; tag_name: string }) => (
                                                     <span key={tag.tag_id} className="tag-badge" title={tag.tag_name}>{tag.tag_name}</span>
                                                 ))
                                             ) : (
                                                 <>
-                                                    {getTagLimitCount() > 0 && post.tags.slice(0, getTagLimitCount()).map((tag: any) => (
+                                                    {getTagLimitCount() > 0 && post.tags.slice(0, getTagLimitCount()).map((tag: { tag_id: string; tag_name: string }) => (
                                                         <span key={tag.tag_id} className="tag-badge" title={tag.tag_name}>{tag.tag_name}</span>
                                                     ))}
                                                     <span
@@ -535,7 +535,7 @@ const Posts: React.FC = memo(() => {
                         left: `${popupPosition.left}px`
                     }}
                 >
-                    {posts.find(post => post.blog_id === activeTagPopup)?.tags.slice(getTagLimitCount()).map((tag: any) => (
+                    {posts.find(post => post.blog_id === activeTagPopup)?.tags.slice(getTagLimitCount()).map((tag: { tag_id: string; tag_name: string }) => (
                         <span key={tag.tag_id} className="popup-tag">{tag.tag_name}</span>
                     ))}
                 </div>

@@ -158,7 +158,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5分钟缓存
  * @param delay 延迟时间
  * @returns 节流后的函数
  */
-function throttle<T extends (...args: any[]) => any>(func: T, delay: number): (...args: Parameters<T>) => void {
+function throttle<T extends (...args: unknown[]) => unknown>(func: T, delay: number): (...args: Parameters<T>) => void {
     let timeoutId: NodeJS.Timeout | null = null;
     let lastExecTime = 0;
     

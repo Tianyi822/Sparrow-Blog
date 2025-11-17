@@ -49,7 +49,7 @@ const Login: React.FC = memo(() => {
         if (response.code === 200 && response.data?.user_name) {
           setUserName(response.data.user_name);
         }
-      } catch (error) {
+      } catch {
         setSubmitError('获取用户信息失败');
       } finally {
         setFetchingUserData(false);
@@ -164,7 +164,7 @@ const Login: React.FC = memo(() => {
 
       setCountdown(60); // 设置60秒倒计时
       // 成功提示可以在这里添加
-    } catch (error) {
+    } catch {
       setSubmitError('发送验证码失败，请稍后重试');
     } finally {
       setVerifyCodeSending(false);

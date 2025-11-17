@@ -41,7 +41,7 @@ const Comments: React.FC = memo(() => {
         } else {
           setError(response.msg || '获取评论列表失败');
         }
-      } catch (err) {
+      } catch {
         setError('获取评论列表时发生错误');
       } finally {
         setLoading(false);
@@ -105,7 +105,7 @@ const Comments: React.FC = memo(() => {
         } else {
           setError(response.msg || '删除评论失败');
         }
-      } catch (err) {
+      } catch {
         setError('删除评论时发生错误');
       }
     }
@@ -165,7 +165,7 @@ const Comments: React.FC = memo(() => {
       } else {
         setError(response.msg || '更新评论失败');
       }
-    } catch (err) {
+    } catch {
       setError('更新评论时发生错误');
     } finally {
       setIsSaving(false);

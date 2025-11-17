@@ -51,7 +51,7 @@ const LogSetting: React.FC<LogConfigProps> = memo(({ onSaveSuccess }) => {
                     // 显示后端返回的错误信息
                     setSubmitError(`获取日志配置失败: ${response.msg}`);
                 }
-            } catch (error) {
+            } catch {
                 setSubmitError('获取日志配置时发生错误，请稍后再试');
             } finally {
                 setLoading(false);
@@ -162,7 +162,7 @@ const LogSetting: React.FC<LogConfigProps> = memo(({ onSaveSuccess }) => {
                     // 显示后端返回的错误信息
                     setSubmitError(`${response.msg}`);
                 }
-            } catch (error) {
+            } catch {
                 setSubmitError('保存配置时发生错误，请稍后再试');
             }
         }

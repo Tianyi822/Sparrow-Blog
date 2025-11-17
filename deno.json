@@ -1,0 +1,49 @@
+{
+  "tasks": {
+    "dev": "deno run -A --node-modules-dir=auto npm:vite --mode development",
+    "build": "deno run -A --node-modules-dir=auto npm:tsc -b && deno run -A --node-modules-dir=auto npm:vite build --mode production",
+    "build:dev": "deno run -A --node-modules-dir=auto npm:tsc -b && deno run -A --node-modules-dir=auto npm:vite build --mode development",
+    "lint": "deno run -A --node-modules-dir=auto npm:eslint .",
+    "preview": "deno run -A --node-modules-dir=auto npm:tsc -b && deno run -A --node-modules-dir=auto npm:vite build --mode production && deno run -A --node-modules-dir=auto npm:vite preview",
+    "start": "deno run -A --node-modules-dir=auto npm:tsc -b && deno run -A --node-modules-dir=auto npm:vite build --mode production && deno run -A --node-modules-dir=auto npm:vite start",
+    "install": "deno install --node-modules-dir=auto",
+    "clean": "rm -rf node_modules deno.lock"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "lib": ["deno.window", "dom", "dom.iterable", "dom.asynciterable"],
+    "types": [
+      "./src/vite-env.d.ts",
+      "vite-plugin-svgr/client",
+      "node"
+    ]
+  },
+  "nodeModulesDir": "auto",
+  "imports": {
+    "@/": "./src/",
+    "react": "npm:react@^19.0.0",
+    "react-dom": "npm:react-dom@^19.0.0",
+    "vite": "npm:vite@^6.3.1",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.4",
+    "vite-plugin-svgr": "npm:vite-plugin-svgr@^4.3.0"
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build"
+  ],
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  }
+}

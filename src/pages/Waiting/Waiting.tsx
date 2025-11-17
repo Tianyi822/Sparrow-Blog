@@ -24,7 +24,7 @@ const Waiting: React.FC = () => {
     useEffect(() => {
         const checkStatus = async () => {
             try {
-                const { isRuntime, errorMessage } = await checkSystemStatus();
+                const { isRuntime } = await checkSystemStatus();
                 
                 if (isRuntime) {
                     // 使用 navigate 跳转到首页，并替换当前历史记录
