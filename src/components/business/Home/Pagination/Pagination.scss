@@ -3,107 +3,107 @@
 
 /* 分页组件 */
 .pagination {
+  display: flex;
+  justify-content: center; /* 确保水平居中 */
+  align-items: center;
+  gap: $spacing-sm; /* 统一设置基础间距 */
+  width: fit-content; /* 修改为适应内容的宽度 */
+  margin: 0 auto; /* 添加这行以确保居中 */
+  position: relative; /* 添加这行，作为定位上下文 */
+  min-height: 2rem;
+  user-select: none; /* 添加这行，使整个组件文本不可选中 */
+
+  /* 基础按钮样式 */
+  %button-base {
+    width: 2rem;
+    height: 2rem;
     display: flex;
-    justify-content: center; /* 确保水平居中 */
     align-items: center;
-    gap: $spacing-sm; /* 统一设置基础间距 */
-    width: fit-content; /* 修改为适应内容的宽度 */
-    margin: 0 auto; /* 添加这行以确保居中 */
-    position: relative;  /* 添加这行，作为定位上下文 */
-    min-height: 2rem;
-    user-select: none;  /* 添加这行，使整个组件文本不可选中 */
+    justify-content: center;
+    color: rgba($white, 0.9);
+    border-radius: $border-radius-md;
+    cursor: pointer;
+    transition: $transition-base;
+    @include glass-card;
 
-    /* 基础按钮样式 */
-    %button-base {
-        width: 2rem;
-        height: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba($white, 0.9);
-        border-radius: $border-radius-md;
-        cursor: pointer;
+    &:hover {
+      @include glass-card-hover;
+    }
+  }
+
+  /* 箭头区域 */
+  .pagination-arrow-area {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 箭头按钮 */
+  .pagination-arrow {
+    @extend %button-base;
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  /* 数字按钮区域 */
+  .pagination-numbers {
+    display: flex;
+    gap: $spacing-sm; /* 与外层间距保持一致 */
+    justify-content: center; /* 确保数字始终居中 */
+  }
+
+  /* 数字按钮 */
+  .pagination-number {
+    @extend %button-base;
+
+    &.active {
+      background: rgba($primary-300, 0.4);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      color: rgba($white, 0.98);
+      cursor: default;
+      box-shadow: 0 4px 8px rgba($primary-300, 0.25);
+    }
+
+    &.ellipsis {
+      cursor: pointer;
+      position: relative;
+      font-size: 0; /* 隐藏原始内容 */
+
+      &::after {
+        content: '•••';
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         transition: $transition-base;
-        @include glass-card;
+        font-size: $font-size-base; /* 恢复字体大小 */
+      }
 
-        &:hover {
-            @include glass-card-hover;
+      &:hover {
+        background-color: rgba($white, 0.8);
+
+        &::after {
+          content: '•••';
+          letter-spacing: 2px;
         }
+      }
     }
+  }
 
-    /* 箭头区域 */
-    .pagination-arrow-area {
-        width: 2rem;
-        height: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+  /* 响应式调整 */
+  @media (max-width: $breakpoint-md) {
+    gap: $spacing-sm;
 
-    /* 箭头按钮 */
-    .pagination-arrow {
-        @extend %button-base;
-
-        &.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-    }
-
-    /* 数字按钮区域 */
     .pagination-numbers {
-        display: flex;
-        gap: $spacing-sm; /* 与外层间距保持一致 */
-        justify-content: center;  /* 确保数字始终居中 */
+      gap: $spacing-sm;
+      /* 不再隐藏任何页码，因为我们现在精确控制显示哪些页码 */
     }
-
-    /* 数字按钮 */
-    .pagination-number {
-        @extend %button-base;
-
-        &.active {
-            background: rgba($primary-300, 0.4);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            color: rgba($white, 0.98);
-            cursor: default;
-            box-shadow: 0 4px 8px rgba($primary-300, 0.25);
-        }
-
-        &.ellipsis {
-            cursor: pointer;
-            position: relative;
-            font-size: 0; /* 隐藏原始内容 */
-            
-            &::after {
-                content: '•••';
-                position: absolute;
-                top: 45%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                transition: $transition-base;
-                font-size: $font-size-base; /* 恢复字体大小 */
-            }
-
-            &:hover {
-                background-color: rgba($white, 0.8);
-                
-                &::after {
-                    content: '•••';
-                    letter-spacing: 2px;
-                }
-            }
-        }
-    }
-
-    /* 响应式调整 */
-    @media (max-width: $breakpoint-md) {
-        gap: $spacing-sm;
-        
-        .pagination-numbers {
-            gap: $spacing-sm;
-            /* 不再隐藏任何页码，因为我们现在精确控制显示哪些页码 */
-        }
-    }
-} 
+  }
+}

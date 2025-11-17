@@ -1,3 +1,3 @@
-import ImageSelectorModal from "./ImageSelectorModal";
+import ImageSelectorModal from './ImageSelectorModal';
 
-export default ImageSelectorModal
+export default ImageSelectorModal;

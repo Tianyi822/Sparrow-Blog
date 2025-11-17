@@ -1,5 +1,5 @@
-@use '@/style/mixins'as *;
-@use '@/style/variables'as var;
+@use '@/style/mixins' as *;
+@use '@/style/variables' as var;
 
 /* 
  * 服务设置卡片组件
@@ -57,7 +57,7 @@
         .service-icon {
           font-size: var.$font-size-xxxl;
           margin-bottom: var.$spacing-md;
-          color: #9376E0;
+          color: #9376e0;
         }
 
         h2 {
@@ -129,7 +129,7 @@
         height: 50px;
         border: var.$border-width-thick solid rgba(147, 118, 224, 0.3);
         border-radius: var.$border-radius-circle;
-        border-top-color: #9376E0;
+        border-top-color: #9376e0;
         animation: spin 1s ease-in-out infinite;
         margin-bottom: var.$spacing-lg;
       }
@@ -183,7 +183,7 @@
 
           .icon-button {
             background-color: rgba(147, 118, 224, 0.2);
-            color: #9376E0;
+            color: #9376e0;
             border: none;
             border-radius: var.$border-radius-circle;
             width: 28px;
@@ -220,7 +220,7 @@
         /* 端口注释 */
         .port-note {
           font-size: var.$font-size-xs + 0.1rem;
-          color: #FF9671;
+          color: #ff9671;
           margin-top: var.$spacing-xs;
           margin-bottom: 0;
           font-style: italic;
@@ -297,7 +297,7 @@
             top: 50%;
             transform: translateY(-50%);
             background-color: rgba(147, 118, 224, 0.2);
-            color: #9376E0;
+            color: #9376e0;
             border: none;
             border-radius: var.$border-radius-circle;
             width: 32px;
@@ -345,7 +345,7 @@
 
           &:focus {
             outline: none;
-            border-color: #9376E0;
+            border-color: #9376e0;
             box-shadow: 0 0 0 2px rgba(147, 118, 224, 0.3);
           }
 
@@ -569,7 +569,7 @@
 
   &:focus {
     outline: none;
-    border-color: #9376E0;
+    border-color: #9376e0;
     box-shadow: 0 0 0 2px rgba(147, 118, 224, 0.3);
   }
 

@@ -22,7 +22,7 @@ $mobile-breakpoint: $breakpoint-md;
     display: flex;
     flex-direction: column;
     gap: $spacing-sm;
-    
+
     .hello {
       font-size: 3.75rem;
       font-weight: $font-weight-medium;
@@ -35,12 +35,10 @@ $mobile-breakpoint: $breakpoint-md;
     }
   }
 
-
-
   .tech-stack {
     font-size: 2.25rem;
     margin-bottom: $spacing-md;
-    
+
     .tech {
       color: $primary-color;
       font-weight: $font-weight-semibold;
@@ -71,8 +69,6 @@ $mobile-breakpoint: $breakpoint-md;
         font-size: 4.2rem;
       }
     }
-
-
 
     .tech-stack {
       font-size: 1.8rem;

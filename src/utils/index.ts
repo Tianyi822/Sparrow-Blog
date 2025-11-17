@@ -17,6 +17,6 @@ export * from './request';
 
 // 为了向后兼容，提供一些常用函数的直接导出
 export { formatDate, formatDateTime, pad } from './format';
-export { localStorage, sessionStorage, jsonStorage } from './storage';
-export { isValidEmail, isValidUrl, isRequired } from './validation';
+export { jsonStorage, localStorage, sessionStorage } from './storage';
+export { isRequired, isValidEmail, isValidUrl } from './validation';
 export { buildQueryString, buildUrl, isSuccessStatus } from './request';

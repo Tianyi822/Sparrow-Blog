@@ -16,7 +16,7 @@ export const HTTP_STATUS = {
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
   BAD_GATEWAY: 502,
-  SERVICE_UNAVAILABLE: 503
+  SERVICE_UNAVAILABLE: 503,
 } as const;
 
 /**
@@ -29,7 +29,7 @@ export const HTTP_METHODS = {
   DELETE: 'DELETE',
   PATCH: 'PATCH',
   HEAD: 'HEAD',
-  OPTIONS: 'OPTIONS'
+  OPTIONS: 'OPTIONS',
 } as const;
 
 /**
@@ -41,7 +41,7 @@ export const CONTENT_TYPES = {
   FORM_URLENCODED: 'application/x-www-form-urlencoded',
   TEXT: 'text/plain',
   HTML: 'text/html',
-  XML: 'application/xml'
+  XML: 'application/xml',
 } as const;
 
 /**
@@ -49,19 +49,19 @@ export const CONTENT_TYPES = {
  * @param params 参数对象
  * @returns 查询字符串
  */
-export const buildQueryString = (params: Record<string, any>): string => {
+export const buildQueryString = (params: Record<string, unknown>): string => {
   const searchParams = new URLSearchParams();
-  
+
   Object.entries(params).forEach(([key, value]) => {
     if (value !== null && value !== undefined && value !== '') {
       if (Array.isArray(value)) {
-        value.forEach(item => searchParams.append(key, String(item)));
+        value.forEach((item) => searchParams.append(key, String(item)));
       } else {
         searchParams.append(key, String(value));
       }
     }
   });
-  
+
   return searchParams.toString();
 };
 
@@ -73,11 +73,11 @@ export const buildQueryString = (params: Record<string, any>): string => {
 export const parseQueryString = (queryString: string): Record<string, string> => {
   const params: Record<string, string> = {};
   const searchParams = new URLSearchParams(queryString);
-  
+
   searchParams.forEach((value, key) => {
     params[key] = value;
   });
-  
+
   return params;
 };
 
@@ -88,18 +88,18 @@ export const parseQueryString = (queryString: string): Record<string, string> =>
  * @param params 查询参数
  * @returns 完整的 URL
  */
-export const buildUrl = (baseUrl: string, path: string = '', params?: Record<string, any>): string => {
+export const buildUrl = (baseUrl: string, path: string = '', params?: Record<string, unknown>): string => {
   let url = baseUrl;
-  
+
   if (path) {
-    url = url.endsWith('/') ? url + path.replace(/^\//,'') : url + '/' + path.replace(/^\//,'');
+    url = url.endsWith('/') ? url + path.replace(/^\//, '') : url + '/' + path.replace(/^\//, '');
   }
-  
+
   if (params && Object.keys(params).length > 0) {
     const queryString = buildQueryString(params);
     url += (url.includes('?') ? '&' : '?') + queryString;
   }
-  
+
   return url;
 };
 
@@ -167,7 +167,7 @@ export const getErrorMessage = (status: number): string => {
  * @returns Promise
  */
 export const delay = (ms: number): Promise<void> => {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 /**
@@ -180,24 +180,24 @@ export const delay = (ms: number): Promise<void> => {
 export const retry = async <T>(
   fn: () => Promise<T>,
   maxRetries: number = 3,
-  delayMs: number = 1000
+  delayMs: number = 1000,
 ): Promise<T> => {
   let lastError: Error;
-  
+
   for (let i = 0; i <= maxRetries; i++) {
     try {
       return await fn();
     } catch (error) {
       lastError = error as Error;
-      
+
       if (i === maxRetries) {
         throw lastError;
       }
-      
+
       await delay(delayMs * Math.pow(2, i)); // 指数退避
     }
   }
-  
+
   throw lastError!;
 };
 
@@ -212,7 +212,7 @@ export const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<
     promise,
     new Promise<never>((_, reject) => {
       setTimeout(() => reject(new Error('Request timeout')), timeoutMs);
-    })
+    }),
   ]);
 };
 
@@ -222,12 +222,12 @@ export const withTimeout = <T>(promise: Promise<T>, timeoutMs: number): Promise<
  * @param wait 等待时间（毫秒）
  * @returns 防抖后的函数
  */
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
-  wait: number
-): ((...args: Parameters<T>) => void) => {
+  wait: number,
+): (...args: Parameters<T>) => void => {
   let timeout: NodeJS.Timeout;
-  
+
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(null, args), wait);
@@ -240,12 +240,12 @@ export const debounce = <T extends (...args: any[]) => any>(
  * @param limit 限制时间（毫秒）
  * @returns 节流后的函数
  */
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: unknown[]) => unknown>(
   func: T,
-  limit: number
-): ((...args: Parameters<T>) => void) => {
+  limit: number,
+): (...args: Parameters<T>) => void => {
   let inThrottle: boolean;
-  
+
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
       func.apply(null, args);

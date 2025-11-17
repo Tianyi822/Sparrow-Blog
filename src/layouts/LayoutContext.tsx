@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 // 定义上下文类型
 export interface LayoutContextType {
@@ -7,6 +7,6 @@ export interface LayoutContextType {
 }
 
 export const LayoutContext = createContext<LayoutContextType>({
-    collapsed: false,
-    isLayoutTransitioning: false
+  collapsed: false,
+  isLayoutTransitioning: false,
 });

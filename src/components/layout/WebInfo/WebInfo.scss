@@ -2,18 +2,18 @@
 
 /* 网站信息容器 */
 .web-content {
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-md;
-    box-sizing: border-box;
-    margin-top: 0;
-    padding-top: 0;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  box-sizing: border-box;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 /* 响应式布局 */
 @media (max-width: $breakpoint-md) {
-    .web-content {
-        width: 100%;
-    }
+  .web-content {
+    width: 100%;
+  }
 }

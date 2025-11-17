@@ -44,19 +44,19 @@ export const isValidPhone = (phone: string): boolean => {
  */
 export const getPasswordStrength = (password: string): 'weak' | 'medium' | 'strong' => {
   if (password.length < 6) return 'weak';
-  
+
   let score = 0;
-  
+
   // 长度检查
   if (password.length >= 8) score++;
   if (password.length >= 12) score++;
-  
+
   // 字符类型检查
   if (/[a-z]/.test(password)) score++; // 小写字母
   if (/[A-Z]/.test(password)) score++; // 大写字母
   if (/\d/.test(password)) score++; // 数字
   if (/[^\w\s]/.test(password)) score++; // 特殊字符
-  
+
   if (score < 3) return 'weak';
   if (score < 5) return 'medium';
   return 'strong';
@@ -130,7 +130,7 @@ export const isValidLength = (str: string, minLength: number, maxLength: number)
  * @param value 值
  * @returns 是否为空
  */
-export const isRequired = (value: any): boolean => {
+export const isRequired = (value: unknown): boolean => {
   if (value === null || value === undefined) return false;
   if (typeof value === 'string') return value.trim().length > 0;
   if (Array.isArray(value)) return value.length > 0;
@@ -142,7 +142,7 @@ export const isRequired = (value: any): boolean => {
  * @param value 值
  * @returns 是否为有效数字
  */
-export const isValidNumber = (value: any): boolean => {
+export const isValidNumber = (value: unknown): boolean => {
   return !isNaN(value) && !isNaN(parseFloat(value));
 };
 
@@ -151,7 +151,7 @@ export const isValidNumber = (value: any): boolean => {
  * @param value 值
  * @returns 是否为整数
  */
-export const isInteger = (value: any): boolean => {
+export const isInteger = (value: unknown): boolean => {
   return Number.isInteger(Number(value));
 };
 

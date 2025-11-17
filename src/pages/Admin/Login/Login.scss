@@ -1,6 +1,6 @@
-@use "@/style/variables"as *;
-@use "@/style/mixins"as *;
-@use "@/style/glass"as *;
+@use '@/style/variables' as *;
+@use '@/style/mixins' as *;
+@use '@/style/glass' as *;
 
 .login-container {
   @include full-viewport;
@@ -28,19 +28,19 @@
     height: 100%;
     overflow: hidden;
     pointer-events: none;
-    
+
     .floating-shapes {
       position: relative;
       width: 100%;
       height: 100%;
-      
+
       .shape {
         position: absolute;
         border-radius: var(--glass-border-radius-capsule);
         background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(12px);
         animation: float 6s ease-in-out infinite;
-        
+
         &.shape-1 {
           width: 100px;
           height: 100px;
@@ -49,7 +49,7 @@
           animation-delay: 0s;
           background: rgba(99, 179, 237, 0.08);
         }
-        
+
         &.shape-2 {
           width: 140px;
           height: 140px;
@@ -58,7 +58,7 @@
           animation-delay: 2s;
           background: rgba(52, 168, 83, 0.06);
         }
-        
+
         &.shape-3 {
           width: 80px;
           height: 80px;
@@ -67,7 +67,7 @@
           animation-delay: 4s;
           background: rgba(45, 158, 123, 0.07);
         }
-        
+
         &.shape-4 {
           width: 120px;
           height: 120px;
@@ -76,7 +76,7 @@
           animation-delay: 1s;
           background: rgba(56, 178, 172, 0.06);
         }
-        
+
         &.shape-5 {
           width: 90px;
           height: 90px;
@@ -97,19 +97,16 @@
     position: relative;
     z-index: 10;
     border-radius: var(--glass-border-radius);
-    
+
     @include glass-effect;
     @include card-style;
-    
+
     // 登录卡片发光效果
     &::after {
       content: '';
       position: absolute;
       inset: -2px;
-      background: linear-gradient(45deg,
-          rgba(99, 179, 237, 0.15),
-          rgba(52, 168, 83, 0.1),
-          rgba(45, 158, 123, 0.12));
+      background: linear-gradient(45deg, rgba(99, 179, 237, 0.15), rgba(52, 168, 83, 0.1), rgba(45, 158, 123, 0.12));
       border-radius: var(--glass-border-radius);
       z-index: -1;
       filter: blur(12px);
@@ -185,16 +182,14 @@
         border-radius: 9999px;
         font-size: $font-size-md;
         transition: var(--glass-transition);
-        
+
         @include input-base;
         @include glass-effect;
 
         &:focus {
           @include input-focus;
           border-color: rgba(99, 179, 237, 0.5);
-          box-shadow: 
-            0 0 0 3px rgba(99, 179, 237, 0.12),
-            var(--glass-shadow-medium);
+          box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.12), var(--glass-shadow-medium);
           backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover);
           -webkit-backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover);
         }
@@ -241,7 +236,7 @@
           white-space: nowrap;
           transition: var(--glass-transition);
           cursor: pointer;
-          
+
           @include button-base;
           @include glass-effect;
 
@@ -249,11 +244,11 @@
             @include glass-hover;
             border-color: rgba(99, 179, 237, 0.4);
             transform: translateY(-1px);
-            box-shadow: 
+            box-shadow:
               var(--glass-shadow-heavy),
               0 0 20px rgba(99, 179, 237, 0.2);
           }
-          
+
           &:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -279,7 +274,7 @@
         rgba(99, 179, 237, 0.18) 0%,
         rgba(52, 168, 83, 0.12) 100%
       );
-      
+
       @include button-primary;
       @include glass-effect;
 
@@ -287,7 +282,7 @@
         @include glass-hover;
         border-color: rgba(99, 179, 237, 0.5);
         transform: translateY(-2px);
-        box-shadow: 
+        box-shadow:
           var(--glass-shadow-heavy),
           0 0 30px rgba(99, 179, 237, 0.25);
         background: linear-gradient(
@@ -296,7 +291,7 @@
           rgba(52, 168, 83, 0.18) 100%
         );
       }
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
@@ -361,9 +356,7 @@
     filter: brightness(1);
   }
   100% {
-    text-shadow: 
-      0 0 30px rgba(99, 179, 237, 0.4), 
-      0 0 40px rgba(52, 168, 83, 0.3);
+    text-shadow: 0 0 30px rgba(99, 179, 237, 0.4), 0 0 40px rgba(52, 168, 83, 0.3);
     filter: brightness(1.05);
   }
 }
@@ -380,7 +373,7 @@
 
     .login-header {
       margin-bottom: $spacing-xl;
-      
+
       h1 {
         font-size: $font-size-xl;
       }
@@ -397,7 +390,7 @@
           padding: 0 $spacing-md;
         }
       }
-      
+
       .verify-code-container {
         @include flex-column;
         gap: $spacing-md;
@@ -407,34 +400,34 @@
           height: 44px;
         }
       }
-      
+
       .login-button {
         height: 48px;
       }
     }
-    
+
     // 移动设备背景优化
     .login-background .floating-shapes .shape {
       &.shape-1 {
         width: 80px;
         height: 80px;
       }
-      
+
       &.shape-2 {
         width: 100px;
         height: 100px;
       }
-      
+
       &.shape-3 {
         width: 60px;
         height: 60px;
       }
-      
+
       &.shape-4 {
         width: 90px;
         height: 90px;
       }
-      
+
       &.shape-5 {
         width: 70px;
         height: 70px;

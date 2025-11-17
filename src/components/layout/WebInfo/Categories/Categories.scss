@@ -1,120 +1,118 @@
-@use '@/style/mixins'as *;
-@use '@/style/mixins'as *;
+@use '@/style/mixins' as *;
+@use '@/style/mixins' as *;
 @use '@/style/glass' as *;
-@use '@/style/variables'as var;
+@use '@/style/variables' as var;
 
 .categories {
-    width: 100%;
+  width: 100%;
+  position: relative;
+  border-radius: var.$border-radius-md;
+  padding: var.$spacing-md + 0.2rem;
+  box-sizing: border-box;
+  @include glass-card-complete;
+
+  & {
+    overflow: hidden;
+    transform: translateY(0) scale(1);
+    transition: all 0.3s ease-out;
+  }
+
+  // 光晕效果
+  .categories-border-glow {
+    position: absolute;
+    inset: -15px;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: calc(#{var.$border-radius-md} + 15px);
+    transition: all 0.3s ease-out;
+    mix-blend-mode: normal;
+    opacity: 0;
+    user-select: none;
+  }
+
+  // 分类列表
+  .categories-list {
     position: relative;
-    border-radius: var.$border-radius-md;
-    padding: var.$spacing-md + 0.2rem;
-    box-sizing: border-box;
-    @include glass-card-complete;
-    
-    & {
-        overflow: hidden;
-        transform: translateY(0) scale(1);
-        transition: all 0.3s ease-out;
-    }
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: var.$spacing-xs + 0.15rem;
 
-    // 光晕效果
+    // 分类项目
+    .category-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: calc(var.$spacing-xs + 0.1rem) calc(var.$spacing-sm + 0.2rem);
+      border-radius: var.$border-radius-pill;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: var.$transition-base;
+
+      .category-name {
+        font-size: var.$font-size-sm;
+        color: rgba(255, 255, 255, 0.98);
+        transition: var.$transition-base;
+      }
+
+      .category-count {
+        font-size: var.$font-size-xs;
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.15);
+        padding: 3px 10px;
+        border-radius: var.$border-radius-pill;
+        transition: var.$transition-base;
+      }
+
+      // 激活状态
+      &.active {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 1);
+
+        .category-name {
+          color: rgba(255, 255, 255, 1);
+        }
+
+        .category-count {
+          background: rgba(255, 255, 255, 0.3);
+          color: rgba(255, 255, 255, 1);
+        }
+      }
+
+      // 悬停效果
+      &:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+
+        .category-count {
+          background: rgba(255, 255, 255, 0.25);
+        }
+      }
+    }
+  }
+
+  // 悬停效果 - 参考LatestComments样式，无上浮效果
+  &:hover {
+    // 流体玻璃背景增强效果 - 使用CSS变量
+    background:
+      linear-gradient(135deg, var(--glass-white-033) 0%, var(--glass-white-02) 100%),
+      linear-gradient(225deg, var(--glass-white-027) 0%, var(--glass-white-01) 100%),
+      var(--glass-black-02);
+
+    backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover);
+    -webkit-backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover);
+
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 var(--glass-white-2),
+      inset 0 -1px 0 var(--glass-white-08);
+
+    /* 简化的光晕效果 */
     .categories-border-glow {
-        position: absolute;
-        inset: -15px;
-        z-index: 1;
-        pointer-events: none;
-        border-radius: calc(#{var.$border-radius-md} + 15px);
-        transition: all 0.3s ease-out;
-        mix-blend-mode: normal;
-        opacity: 0;
-        user-select: none;
+      box-shadow: 0 0 30px 8px rgba(255, 255, 255, 0.6), 0 0 60px 15px rgba(255, 255, 255, 0.3);
+      opacity: 1;
     }
-
-    // 分类列表
-    .categories-list {
-        position: relative;
-        z-index: 3;
-        display: flex;
-        flex-direction: column;
-        gap: var.$spacing-xs + 0.15rem;
-
-        // 分类项目
-        .category-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: calc(var.$spacing-xs + 0.1rem) calc(var.$spacing-sm + 0.2rem);
-            border-radius: var.$border-radius-pill;
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: var.$transition-base;
-
-            .category-name {
-                font-size: var.$font-size-sm;
-                color: rgba(255, 255, 255, 0.98);
-                transition: var.$transition-base;
-            }
-
-            .category-count {
-                font-size: var.$font-size-xs;
-                color: rgba(255, 255, 255, 0.9);
-                background: rgba(255, 255, 255, 0.15);
-                padding: 3px 10px;
-                border-radius: var.$border-radius-pill;
-                transition: var.$transition-base;
-            }
-
-            // 激活状态
-            &.active {
-                background: rgba(255, 255, 255, 0.2);
-                border: 1px solid rgba(255, 255, 255, 0.3);
-                color: rgba(255, 255, 255, 1);
-
-                .category-name {
-                    color: rgba(255, 255, 255, 1);
-                }
-
-                .category-count {
-                    background: rgba(255, 255, 255, 0.3);
-                    color: rgba(255, 255, 255, 1);
-                }
-            }
-
-            // 悬停效果
-            &:hover {
-                background: rgba(255, 255, 255, 0.18);
-                border: 1px solid rgba(255, 255, 255, 0.25);
-                
-                .category-count {
-                    background: rgba(255, 255, 255, 0.25);
-                }
-            }
-        }
-    }
-
-    // 悬停效果 - 参考LatestComments样式，无上浮效果
-    &:hover {
-        // 流体玻璃背景增强效果 - 使用CSS变量
-        background: 
-            linear-gradient(135deg, var(--glass-white-033) 0%, var(--glass-white-02) 100%),
-            linear-gradient(225deg, var(--glass-white-027) 0%, var(--glass-white-01) 100%),
-            var(--glass-black-02);
-        
-        backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover);
-        -webkit-backdrop-filter: var(--glass-blur-extra) var(--glass-saturation-hover) var(--glass-brightness-hover);
-        
-        box-shadow: 
-            0 12px 40px rgba(0, 0, 0, 0.15),
-            0 4px 12px rgba(0, 0, 0, 0.1),
-            inset 0 1px 0 var(--glass-white-2),
-            inset 0 -1px 0 var(--glass-white-08);
-
-        /* 简化的光晕效果 */
-        .categories-border-glow {
-            box-shadow: 
-                0 0 30px 8px rgba(255, 255, 255, 0.6),
-                0 0 60px 15px rgba(255, 255, 255, 0.3);
-            opacity: 1;
-        }
-    }
+  }
 }

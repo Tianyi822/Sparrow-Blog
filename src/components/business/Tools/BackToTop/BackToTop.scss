@@ -3,34 +3,32 @@
 
 /* 返回顶部按钮样式 */
 .back-to-top {
-    @include glass-card-base;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  @include glass-card-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+
+  /* 图标样式 */
+  .svg-icon {
     width: 36px;
     height: 36px;
-    padding: 0;
-    border-radius: $border-radius-md;
-    cursor: pointer;
+    flex-shrink: 0;
+    padding: $spacing-sm;
+    box-sizing: border-box;
 
-    /* 图标样式 */
-    .svg-icon {
-        width: 36px;
-        height: 36px;
-        flex-shrink: 0;
-        padding: $spacing-sm;
-        box-sizing: border-box;
-
-        /* 翻转箭头指向上方 */
-        svg {
-            transform: rotate(180deg);
-        }
+    /* 翻转箭头指向上方 */
+    svg {
+      transform: rotate(180deg);
     }
+  }
 
-    /* 悬停效果 */
-    &:hover {
-        @include glass-card-hover-base;
-    }
-
-
+  /* 悬停效果 */
+  &:hover {
+    @include glass-card-hover-base;
+  }
 }

@@ -1,5 +1,5 @@
-@use '@/style/mixins'as *;
-@use '@/style/variables'as var;
+@use '@/style/mixins' as *;
+@use '@/style/variables' as var;
 
 /* 保留滚动条相关样式以保持兼容性 */
 .blog-layout {
@@ -37,8 +37,6 @@
     z-index: 1000;
     /* 确保导航在其他元素之上 */
 
-
-
     /* 使移动菜单独立于其父元素的overflow设置 */
     .nav-list {
       transition: right var.$transition-base;
@@ -52,10 +50,6 @@
         /* 确保不透明 */
       }
     }
-
-
-
-
   }
 
   // 工具栏样式，从App.scss移动过来
@@ -64,8 +58,6 @@
     right: var.$spacing-md;
     bottom: var.$spacing-md;
     z-index: 100;
-
-
   }
 
   // 滚动条样式，从App.scss移动过来

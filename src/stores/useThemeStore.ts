@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { ThemeMode, ThemeState, ThemeActions } from './types';
+import { ThemeActions, ThemeMode, ThemeState } from './types';
 
 type ThemeStore = ThemeState & ThemeActions;
 
@@ -27,7 +27,7 @@ const calculateIsDark = (mode: ThemeMode): boolean => {
 // 应用主题到 DOM
 const applyTheme = (isDark: boolean) => {
   if (typeof window === 'undefined') return;
-  
+
   const root = document.documentElement;
   if (isDark) {
     root.classList.add('dark');
@@ -52,7 +52,7 @@ export const useThemeStore = create<ThemeStore>()(
             applyTheme(isDark);
           }
         };
-        
+
         // 添加监听器
         mediaQuery.addEventListener('change', handleChange);
       }
@@ -72,7 +72,7 @@ export const useThemeStore = create<ThemeStore>()(
         toggleTheme: () => {
           const { mode } = get();
           let newMode: ThemeMode;
-          
+
           switch (mode) {
             case 'light':
               newMode = 'dark';
@@ -87,7 +87,7 @@ export const useThemeStore = create<ThemeStore>()(
             default:
               newMode = 'light';
           }
-          
+
           const isDark = calculateIsDark(newMode);
           set({ mode: newMode, isDark });
           applyTheme(isDark);
@@ -96,8 +96,8 @@ export const useThemeStore = create<ThemeStore>()(
     },
     {
       name: 'theme-storage',
-      partialize: (state: ThemeStore) => ({ 
-        mode: state.mode 
+      partialize: (state: ThemeStore) => ({
+        mode: state.mode,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
@@ -107,8 +107,8 @@ export const useThemeStore = create<ThemeStore>()(
           applyTheme(isDark);
         }
       },
-    }
-  )
+    },
+  ),
 );
 
 // 初始化主题

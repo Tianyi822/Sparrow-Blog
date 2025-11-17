@@ -8,25 +8,25 @@ export const ADMIN_API_ENDPOINTS = {
   AUTH: {
     VERIFICATION_CODE: '/admin/login/verification-code',
     LOGIN: '/admin/login',
-    USER_INFO: '/admin/login/user-info'
-  },
-  
+    USER_INFO: '/admin/login/user-info',
+  } as const,
+
   // 文章管理
   POSTS: {
     ALL_BLOGS: '/admin/posts/all-blogs',
     BLOG_BY_ID: (blogId: string) => `/admin/posts/blog/${blogId}`,
     DELETE_BLOG: (blogId: string) => `/admin/posts/delete/${blogId}`,
     CHANGE_BLOG_STATE: (blogId: string) => `/admin/posts/change-blog-state/${blogId}`,
-    SET_TOP: (blogId: string) => `/admin/posts/set-top/${blogId}`
-  },
-  
+    SET_TOP: (blogId: string) => `/admin/posts/set-top/${blogId}`,
+  } as const,
+
   // 编辑相关
   EDIT: {
     ALL_TAGS_CATEGORIES: '/admin/edit/all-tags-categories',
     UPDATE_OR_ADD_BLOG: '/admin/edit/update-or-add-blog',
-    BLOG_DATA: (blogId: string) => `/admin/edit/blog-data/${blogId}`
-  },
-  
+    BLOG_DATA: (blogId: string) => `/admin/edit/blog-data/${blogId}`,
+  } as const,
+
   // 图库管理
   GALLERY: {
     ALL_IMGS: '/admin/gallery/all-imgs',
@@ -35,71 +35,71 @@ export const ADMIN_API_ENDPOINTS = {
     SEARCH_IMGS: '/admin/gallery/search',
     ADD_IMG: '/admin/gallery/add',
     RENAME_IMG: (imageId: string) => `/admin/gallery/${imageId}`,
-    CHECK_IMG_NAME: (imageName: string) => `/admin/gallery/is-exist/${encodeURIComponent(imageName)}`
-  },
-  
+    CHECK_IMG_NAME: (imageName: string) => `/admin/gallery/is-exist/${encodeURIComponent(imageName)}`,
+  } as const,
+
   // 设置相关
   SETTINGS: {
     USER: {
       CONFIG: '/admin/setting/user/config',
       VERIFY_NEW_EMAIL: '/admin/setting/user/verify-new-email',
-      VISUAL: '/admin/setting/user/visual'
-    },
+      VISUAL: '/admin/setting/user/visual',
+    } as const,
     SERVER: {
       CONFIG: '/admin/setting/server/config',
-      VERIFY_SMTP: '/admin/setting/user/verify-new-smtp-config'
-    },
+      VERIFY_SMTP: '/admin/setting/user/verify-new-smtp-config',
+    } as const,
     LOGGER: {
-      CONFIG: '/admin/setting/logger/config'
-    },
+      CONFIG: '/admin/setting/logger/config',
+    } as const,
 
     OSS: {
-      CONFIG: '/admin/setting/oss/config'
-    },
+      CONFIG: '/admin/setting/oss/config',
+    } as const,
     CACHE_INDEX: {
       CONFIG: '/admin/setting/cache-index/config',
-      REBUILD_INDEX: '/admin/setting/cache-index/rebuild-index'
-    }
-  },
-  
+      REBUILD_INDEX: '/admin/setting/cache-index/rebuild-index',
+    } as const,
+  } as const,
+
   // 评论管理
   COMMENTS: {
     ALL: '/admin/comments/all',
     DELETE: (commentId: string) => `/admin/comments/${commentId}`,
     UPDATE: '/admin/comments/update',
-    UPDATE_CONTENT: (commentId: string) => `/admin/comments/${commentId}/content`
-  },
-  
+    UPDATE_CONTENT: (commentId: string) => `/admin/comments/${commentId}/content`,
+  } as const,
+
   // OSS 相关
   OSS: {
-    PRE_SIGN_URL: (fileName: string, fileType: string) => `/admin/oss/pre_sign_url/${fileName}/type/${fileType}`
-  }
+    PRE_SIGN_URL: (fileName: string, fileType: string) => `/admin/oss/pre_sign_url/${fileName}/type/${fileType}`,
+  } as const,
 } as const;
 
 // Web 端 API 端点
 export const WEB_API_ENDPOINTS = {
   // 系统相关
   SYSTEM: {
-    STATUS: '/web/sys/status'
-  },
-  
+    STATUS: '/web/sys/status',
+  } as const,
+
   // 基础数据
   DATA: {
     BASIC_DATA: '/web/basic-data',
-    BLOG_CONTENT: (blogId: string) => `/web/blog/${blogId}`
-  },
-  
+    BLOG_CONTENT: (blogId: string) => `/web/blog/${blogId}`,
+  } as const,
+
   // 搜索
   SEARCH: {
-    BLOGS: (query: string) => `/web/search/${encodeURIComponent(query)}`
-  },
-  
+    BLOGS: (query: string) => `/web/search/${encodeURIComponent(query)}`,
+  } as const,
+
   // 评论
   COMMENTS: {
     ADD: '/web/comment',
     REPLY: '/web/comment/reply',
-    LATEST: '/web/comment/latest'
-  }
+    LATEST: '/web/comment/latest',
+  } as const,
 } as const;
 
 // HTTP 方法常量
@@ -108,7 +108,7 @@ export const HTTP_METHODS = {
   POST: 'POST',
   PUT: 'PUT',
   DELETE: 'DELETE',
-  PATCH: 'PATCH'
+  PATCH: 'PATCH',
 } as const;
 
 // HTTP 状态码常量
@@ -120,5 +120,5 @@ export const HTTP_STATUS = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500
+  INTERNAL_SERVER_ERROR: 500,
 } as const;

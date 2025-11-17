@@ -3,94 +3,94 @@
 
 /* 页码弹出层容器 */
 .page-popup-container {
-    position: fixed;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1000;
+
+  /* 弹出层背景遮罩 */
+  .page-popup-overlay {
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    pointer-events: none;
-    z-index: 1000;
+    background-color: transparent;
+    opacity: 0;
+    pointer-events: auto;
+  }
 
-    /* 弹出层背景遮罩 */
+  /* 弹出层内容 */
+  .page-popup {
+    position: absolute;
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: $spacing-sm;
+    min-width: 200px;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: auto;
+    transform: translate(-50%, -120%);
+    transition: $transition-base;
+    @include glass-card-base;
+
+    /* 页码按钮 */
+    .popup-page-number {
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: rgba($white, 0.9);
+      border-radius: $border-radius-sm;
+      user-select: none;
+      @include glass-card-base;
+
+      /* 悬停样式 */
+      &:hover {
+        @include glass-card-hover-base;
+        color: rgba($white, 0.98);
+      }
+
+      /* 激活样式 */
+      &.active {
+        background: rgba($primary-300, 0.4);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        color: rgba($white, 0.98);
+        cursor: default;
+        box-shadow: 0 4px 8px rgba($primary-300, 0.25);
+      }
+    }
+  }
+
+  /* 可见状态 */
+  &.visible {
     .page-popup-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: transparent;
-        opacity: 0;
-        pointer-events: auto;
+      opacity: 1;
     }
 
-    /* 弹出层内容 */
     .page-popup {
-        position: absolute;
-        border-radius: $border-radius-md;
-        padding: $spacing-md;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: $spacing-sm;
-        min-width: 200px;
-        z-index: 10;
-        opacity: 0;
-        pointer-events: auto;
-        transform: translate(-50%, -120%);
-        transition: $transition-base;
-        @include glass-card-base;
+      opacity: 1;
+      transform: translate(-50%, -100%);
+    }
+  }
 
-        /* 页码按钮 */
-        .popup-page-number {
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: rgba($white, 0.9);
-            border-radius: $border-radius-sm;
-            user-select: none;
-            @include glass-card-base;
-
-            /* 悬停样式 */
-            &:hover {
-                @include glass-card-hover-base;
-                color: rgba($white, 0.98);
-            }
-            
-            /* 激活样式 */
-            &.active {
-                background: rgba($primary-300, 0.4);
-                backdrop-filter: blur(16px) saturate(180%);
-                -webkit-backdrop-filter: blur(16px) saturate(180%);
-                color: rgba($white, 0.98);
-                cursor: default;
-                box-shadow: 0 4px 8px rgba($primary-300, 0.25);
-            }
-        }
+  /* 关闭状态 */
+  &.closing {
+    .page-popup-overlay {
+      opacity: 0;
     }
 
-    /* 可见状态 */
-    &.visible {
-        .page-popup-overlay {
-            opacity: 1;
-        }
-
-        .page-popup {
-            opacity: 1;
-            transform: translate(-50%, -100%);
-        }
+    .page-popup {
+      opacity: 0;
+      transform: translate(-50%, -80%);
     }
-
-    /* 关闭状态 */
-    &.closing {
-        .page-popup-overlay {
-            opacity: 0;
-        }
-
-        .page-popup {
-            opacity: 0;
-            transform: translate(-50%, -80%);
-        }
-    }
-} 
+  }
+}

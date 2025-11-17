@@ -12,11 +12,13 @@
 ## 🛠️ 技术栈
 
 ### 前端框架
+
 - **React 19** - 最新的 React 版本
 - **TypeScript** - 类型安全的 JavaScript
 - **Vite** - 现代化的构建工具
 
 ### 内容处理
+
 - **React Markdown** - Markdown 渲染
 - **Highlight.js** - 代码高亮
 - **DOMPurify** - HTML 安全处理

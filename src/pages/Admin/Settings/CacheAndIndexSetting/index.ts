@@ -1,1 +1,1 @@
-export { default } from './CacheAndIndexSetting'; 
+export { default } from './CacheAndIndexSetting';

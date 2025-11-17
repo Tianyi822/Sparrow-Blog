@@ -2,54 +2,52 @@
 @use '@/style/variables' as *;
 
 .toc-button {
-    @include glass-card-base;
-    width: 36px;
-    height: 36px;
-    border-radius: $border-radius-md;
+  @include glass-card-base;
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-base;
+  position: relative;
+
+  &:hover:not(.disabled) {
+    @include glass-card-hover-base;
+    transform: scale(1.05);
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+
+    .toc-icon {
+      color: rgba($white, 0.4);
+    }
+  }
+
+  &:active:not(.disabled) {
+    transform: scale(0.95);
+    transition-duration: 0.1s;
+  }
+
+  .toc-button-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all $transition-base;
     position: relative;
+    width: 100%;
+    height: 100%;
+  }
 
-    &:hover:not(.disabled) {
-        @include glass-card-hover-base;
-        transform: scale(1.05);
-    }
+  .toc-icon {
+    font-size: $font-size-lg;
+    color: rgba($white, 0.8);
+    transition: color $transition-base;
+  }
 
-    &.disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-
-        .toc-icon {
-            color: rgba($white, 0.4);
-        }
-    }
-
-
-
-    &:active:not(.disabled) {
-        transform: scale(0.95);
-        transition-duration: 0.1s;
-    }
-
-    .toc-button-content {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-
-    .toc-icon {
-        font-size: $font-size-lg;
-        color: rgba($white, 0.8);
-        transition: color $transition-base;
-    }
-
-    &:hover:not(.disabled) .toc-icon {
-        color: #2196F3;
-    }
+  &:hover:not(.disabled) .toc-icon {
+    color: #2196f3;
+  }
 }

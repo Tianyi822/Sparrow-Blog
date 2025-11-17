@@ -1,6 +1,6 @@
-@use "sass:color";
-@use '@/style/mixins'as *;
-@use '@/style/variables'as *;
+@use 'sass:color';
+@use '@/style/mixins' as *;
+@use '@/style/variables' as *;
 
 .edit-page {
   height: 100%;
@@ -29,9 +29,7 @@
       margin: 0;
       font-size: $font-size-xl + 0.3rem;
       font-weight: $font-weight-bold;
-      background: linear-gradient(135deg,
-          rgba($white, 0.95),
-          rgba($primary-200, 0.9));
+      background: linear-gradient(135deg, rgba($white, 0.95), rgba($primary-200, 0.9));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -87,9 +85,7 @@
     // 保存按钮
     .save-button {
       @include glass-card-base;
-      background: linear-gradient(135deg,
-          rgba($success, 0.8),
-          rgba($success, 0.9));
+      background: linear-gradient(135deg, rgba($success, 0.8), rgba($success, 0.9));
       backdrop-filter: blur(16px) saturate(180%);
       -webkit-backdrop-filter: blur(16px) saturate(180%);
       border: $border-width-thin solid rgba($success, 0.4);
@@ -104,9 +100,7 @@
       text-shadow: 0 1px 2px rgba($black, 0.2);
 
       &:hover {
-        background: linear-gradient(135deg,
-            rgba($success, 0.9),
-            rgba($success, 1));
+        background: linear-gradient(135deg, rgba($success, 0.9), rgba($success, 1));
         border-color: rgba($success, 0.6);
         transform: translateY(-2px);
         box-shadow: $shadow-lg, 0 0 25px rgba($success, 0.4);
@@ -359,7 +353,7 @@
 
         .intro-input {
           flex: 1;
-          height: calc(9/16 * 200px);
+          height: calc(9 / 16 * 200px);
           resize: none;
           padding: $spacing-md;
         }
@@ -380,7 +374,7 @@
 
         .article-image-preview {
           width: 100%;
-          height: calc(9/16 * 200px);
+          height: calc(9 / 16 * 200px);
           @include glass-card-base;
           background: rgba($white, 0.05);
           border: 2px dashed rgba($white, 0.2);
@@ -425,7 +419,7 @@
       }
     }
 
-    input[type="text"],
+    input[type='text'],
     textarea {
       width: 100%;
       padding: $spacing-md;
@@ -771,7 +765,7 @@
           width: 0;
           height: 0;
 
-          &+.toggle-switch-label {
+          & + .toggle-switch-label {
             @include glass-card-base;
             background: rgba($white, 0.1);
             backdrop-filter: blur(8px) saturate(180%);
@@ -801,7 +795,7 @@
             }
           }
 
-          &:checked+.toggle-switch-label {
+          &:checked + .toggle-switch-label {
             background: rgba($primary-300, 0.5);
             border-color: rgba($primary-200, 0.6);
             box-shadow: 0 0 10px rgba($primary-300, 0.3);

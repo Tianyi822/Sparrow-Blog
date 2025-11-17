@@ -12,19 +12,19 @@ export { useUIStore } from './useUIStore';
 
 // 导出类型定义
 export type {
-  User,
-  UserState,
-  UserActions,
+  Article,
+  BlogActions,
+  BlogState,
+  Comment,
+  Notification,
+  ThemeActions,
   ThemeMode,
   ThemeState,
-  ThemeActions,
-  Article,
-  Comment,
-  BlogState,
-  BlogActions,
-  UIState,
   UIActions,
-  Notification,
+  UIState,
+  User,
+  UserActions,
+  UserState,
 } from './types';
 
 // 导出组合 hooks（可选）

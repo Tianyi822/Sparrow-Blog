@@ -3,135 +3,135 @@
 
 /* 网站备案号组件 */
 .website-record {
-    @include glass-card-base;
+  @include glass-card-base;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: background $transition-base, box-shadow $transition-base, width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* 移动端响应式样式 */
+  @media (max-width: 900px) {
+    width: 32px;
+    height: 32px;
+
+    .record-text {
+      font-size: $font-size-xs;
+    }
+
+    .record-icon {
+      font-size: $font-size-sm;
+    }
+  }
+
+  /* 超小屏幕样式调整 */
+  @media (max-width: 370px) {
+    width: 28px;
+    height: 28px;
+
+    .record-text {
+      font-size: $font-size-xs * 0.9;
+    }
+
+    .record-icon {
+      font-size: $font-size-xs;
+    }
+  }
+
+  /* 图标容器 */
+  .icon-container {
     display: flex;
     align-items: center;
-    flex-direction: row;
+    justify-content: center;
     width: 36px;
     height: 36px;
-    padding: 0;
-    border-radius: $border-radius-md;
-    cursor: pointer;
-    overflow: hidden;
+    flex-shrink: 0;
     position: relative;
-    transition: background $transition-base, box-shadow $transition-base, width 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* 移动端响应式样式 */
-    @media (max-width: 900px) {
-        width: 32px;
-        height: 32px;
-        
-        .record-text {
-            font-size: $font-size-xs;
-        }
-        
-        .record-icon {
-            font-size: $font-size-sm;
-        }
-    }
-    
-    /* 超小屏幕样式调整 */
-    @media (max-width: 370px) {
-        width: 28px;
-        height: 28px;
-        
-        .record-text {
-            font-size: $font-size-xs * 0.9;
-        }
-        
-        .record-icon {
-            font-size: $font-size-xs;
-        }
+    /* 居中对齐状态 */
+    &.centered {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
-    /* 图标容器 */
-    .icon-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        flex-shrink: 0;
-        position: relative;
-        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-        
-        /* 居中对齐状态 */
-        &.centered {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        /* 左对齐状态 */
-        &.left-aligned {
-            position: relative;
-            left: 0;
-            transform: translateX(0);
-        }
-        
-        /* 图标样式 */
-        .svg-icon {
-            width: 36px;
-            height: 36px;
-            flex-shrink: 0;
-            padding: $spacing-sm;
-            box-sizing: border-box;
-            color: $white;
-            z-index: 2;
-            transition: color $transition-base;
-        }
+    /* 左对齐状态 */
+    &.left-aligned {
+      position: relative;
+      left: 0;
+      transform: translateX(0);
     }
 
-    /* 备案文本 */
+    /* 图标样式 */
+    .svg-icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      padding: $spacing-sm;
+      box-sizing: border-box;
+      color: $white;
+      z-index: 2;
+      transition: color $transition-base;
+    }
+  }
+
+  /* 备案文本 */
+  .record-text {
+    margin-left: $spacing-xs;
+    white-space: nowrap;
+    color: $white;
+    font-size: $font-size-xs;
+    line-height: 36px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    height: 36px;
+    padding-right: $spacing-sm;
+  }
+
+  /* 展开状态 */
+  &.expanded {
+    width: auto;
+    min-width: 36px;
+    max-width: 500px; /* 增加最大宽度，确保长备案号能完全显示 */
+    padding: 0;
     .record-text {
-        margin-left: $spacing-xs;
-        white-space: nowrap;
-        color: $white;
-        font-size: $font-size-xs;
-        line-height: 36px;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateX(-10px);
-        transition: opacity 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.4,0,0.2,1);
-        display: flex;
-        align-items: center;
-        height: 36px;
-        padding-right: $spacing-sm;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+      transition-delay: 0.05s;
     }
+  }
 
-    /* 展开状态 */
-    &.expanded {
-        width: auto;
-        min-width: 36px;
-        max-width: 500px; /* 增加最大宽度，确保长备案号能完全显示 */
-        padding: 0;
-        .record-text {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateX(0);
-            transition-delay: 0.05s;
-        }
+  /* 悬停效果 */
+  &:hover {
+    @include glass-card-hover-base;
+    .svg-icon {
+      color: $white;
     }
-
-    /* 悬停效果 */
-    &:hover {
-        @include glass-card-hover-base;
-        .svg-icon {
-            color: $white;
-        }
-        .record-text {
-            color: $white;
-        }
+    .record-text {
+      color: $white;
     }
+  }
 }
 
 /* 记录展开动画 */
 @keyframes recordExpand {
-    0% {
-        width: 36px;
-    }
-    100% {
-        width: auto;
-        min-width: 36px;
-    }
+  0% {
+    width: 36px;
+  }
+  100% {
+    width: auto;
+    min-width: 36px;
+  }
 }

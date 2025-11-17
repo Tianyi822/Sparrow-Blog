@@ -69,8 +69,8 @@ export const localStorage = {
       console.error('localStorage.hasItem error:', error);
       return false;
     }
-  }
-};
+  },
+} as const;
 
 /**
  * sessionStorage 操作工具
@@ -138,8 +138,8 @@ export const sessionStorage = {
       console.error('sessionStorage.hasItem error:', error);
       return false;
     }
-  }
-};
+  },
+} as const;
 
 /**
  * JSON 数据存储工具
@@ -181,5 +181,5 @@ export const jsonStorage = {
    */
   removeItem: (key: string): void => {
     localStorage.removeItem(key);
-  }
-};
+  },
+} as const;

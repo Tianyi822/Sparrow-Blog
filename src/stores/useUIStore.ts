@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { UIState, UIActions, Notification } from './types';
+import { Notification, UIActions, UIState } from './types';
 
 type UIStore = UIState & UIActions;
 
@@ -64,18 +64,20 @@ export const useUIStore = create<UIStore>()(
           position,
           isZooming: true,
           isClosing: false,
-          isVisible: false
-        }
+          isVisible: false,
+        },
       });
     },
 
     closeImageModal: () => {
       set((state) => ({
-        imageModalData: state.imageModalData ? {
-          ...state.imageModalData,
-          isClosing: true,
-          isVisible: false
-        } : null
+        imageModalData: state.imageModalData
+          ? {
+            ...state.imageModalData,
+            isClosing: true,
+            isVisible: false,
+          }
+          : null,
       }));
     },
 
@@ -98,13 +100,13 @@ export const useUIStore = create<UIStore>()(
 
     removeNotification: (id: string) => {
       const { notifications } = get();
-      set({ 
-        notifications: notifications.filter(notification => notification.id !== id) 
+      set({
+        notifications: notifications.filter((notification) => notification.id !== id),
       });
     },
 
     clearNotifications: () => {
       set({ notifications: [] });
     },
-  })
+  }),
 );

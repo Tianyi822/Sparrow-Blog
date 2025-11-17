@@ -1,29 +1,29 @@
 import { businessApiRequest } from './api';
 import {
-    ApiResponse,
-    VerificationCodeRequest,
-    LoginRequest,
-    LoginResponse,
-    UserInfoResponse,
-    BlogListResponse,
-    TagsAndCategoriesResponse,
-    UploadToOSSResponse,
-    UpdateOrAddBlogRequest,
-    BlogDataResponse,
-    GalleryImagesResponse,
-    CheckImageNameResponse,
-    AddImagesRequest,
-    AddImagesResponse,
-    RenameImageRequest,
-    PreSignUrlResponse,
-    UserConfig,
-    UserConfigResponse,
-    ServerConfigResponse,
-    LoggerConfigResponse,
-    OSSConfigResponse,
-    CacheAndIndexConfigResponse,
-    CommentItem,
-    CommentsResponse
+  AddImagesRequest,
+  AddImagesResponse,
+  ApiResponse,
+  BlogDataResponse,
+  BlogListResponse,
+  CacheAndIndexConfigResponse,
+  CheckImageNameResponse,
+  CommentItem,
+  CommentsResponse,
+  GalleryImagesResponse,
+  LoggerConfigResponse,
+  LoginRequest,
+  LoginResponse,
+  OSSConfigResponse,
+  PreSignUrlResponse,
+  RenameImageRequest,
+  ServerConfigResponse,
+  TagsAndCategoriesResponse,
+  UpdateOrAddBlogRequest,
+  UploadToOSSResponse,
+  UserConfig,
+  UserConfigResponse,
+  UserInfoResponse,
+  VerificationCodeRequest,
 } from '../types';
 import { ADMIN_API_ENDPOINTS, STORAGE_KEYS } from '../constants';
 import { localStorage, numberFormat } from '../utils';
@@ -38,14 +38,14 @@ import { localStorage, numberFormat } from '../utils';
  * @returns 发送结果
  */
 export const sendVerificationCode = async (data: VerificationCodeRequest): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'POST',
-        url: ADMIN_API_ENDPOINTS.AUTH.VERIFICATION_CODE,
-        data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'POST',
+    url: ADMIN_API_ENDPOINTS.AUTH.VERIFICATION_CODE,
+    data,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 /**
@@ -54,26 +54,26 @@ export const sendVerificationCode = async (data: VerificationCodeRequest): Promi
  * @returns 登录结果
  */
 export const loginWithVerificationCode = async (data: LoginRequest): Promise<ApiResponse<LoginResponse>> => {
-    try {
-        const response = await businessApiRequest<ApiResponse<LoginResponse>>({
-            method: 'POST',
-            url: ADMIN_API_ENDPOINTS.AUTH.LOGIN,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+  try {
+    const response = await businessApiRequest<ApiResponse<LoginResponse>>({
+      method: 'POST',
+      url: ADMIN_API_ENDPOINTS.AUTH.LOGIN,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-        // 如果登录成功且返回了token，则存储到localStorage
-        if (response.code === 200 && response.data && response.data.token) {
-            localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.data.token);
-        }
-
-        return response;
-    } catch (error) {
-        console.error('登录失败:', error);
-        throw error;
+    // 如果登录成功且返回了token，则存储到localStorage
+    if (response.code === 200 && response.data && response.data.token) {
+      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.data.token);
     }
+
+    return response;
+  } catch (error) {
+    console.error('登录失败:', error);
+    throw error;
+  }
 };
 
 /**
@@ -81,10 +81,10 @@ export const loginWithVerificationCode = async (data: LoginRequest): Promise<Api
  * @returns 用户信息数据
  */
 export const getUserInfo = async (): Promise<UserInfoResponse> => {
-    return businessApiRequest<UserInfoResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.AUTH.USER_INFO
-    });
+  return businessApiRequest<UserInfoResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.AUTH.USER_INFO,
+  });
 };
 
 // ===============================================================
@@ -96,10 +96,10 @@ export const getUserInfo = async (): Promise<UserInfoResponse> => {
  * @returns 博客列表数据
  */
 export const getAllBlogs = async (): Promise<BlogListResponse> => {
-    return businessApiRequest<BlogListResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.POSTS.ALL_BLOGS
-    });
+  return businessApiRequest<BlogListResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.POSTS.ALL_BLOGS,
+  });
 };
 
 /**
@@ -108,10 +108,10 @@ export const getAllBlogs = async (): Promise<BlogListResponse> => {
  * @returns 修改结果
  */
 export const changeBlogState = async (blogId: string): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.POSTS.CHANGE_BLOG_STATE(blogId)
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.POSTS.CHANGE_BLOG_STATE(blogId),
+  });
 };
 
 /**
@@ -120,10 +120,10 @@ export const changeBlogState = async (blogId: string): Promise<ApiResponse<null>
  * @returns 修改结果
  */
 export const setBlogTop = async (blogId: string): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.POSTS.SET_TOP(blogId)
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.POSTS.SET_TOP(blogId),
+  });
 };
 
 /**
@@ -132,10 +132,10 @@ export const setBlogTop = async (blogId: string): Promise<ApiResponse<null>> => 
  * @returns 删除结果
  */
 export const deleteBlog = async (blogId: string): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'DELETE',
-        url: ADMIN_API_ENDPOINTS.POSTS.DELETE_BLOG(blogId)
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'DELETE',
+    url: ADMIN_API_ENDPOINTS.POSTS.DELETE_BLOG(blogId),
+  });
 };
 
 /**
@@ -143,10 +143,10 @@ export const deleteBlog = async (blogId: string): Promise<ApiResponse<null>> => 
  * @returns 标签和分类数据
  */
 export const getAllTagsAndCategories = async (): Promise<TagsAndCategoriesResponse> => {
-    return businessApiRequest<TagsAndCategoriesResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.EDIT.ALL_TAGS_CATEGORIES
-    });
+  return businessApiRequest<TagsAndCategoriesResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.EDIT.ALL_TAGS_CATEGORIES,
+  });
 };
 
 /**
@@ -155,14 +155,14 @@ export const getAllTagsAndCategories = async (): Promise<TagsAndCategoriesRespon
  * @returns 操作结果
  */
 export const updateOrAddBlog = async (data: UpdateOrAddBlogRequest): Promise<UploadToOSSResponse> => {
-    return businessApiRequest<UploadToOSSResponse>({
-        method: 'POST',
-        url: ADMIN_API_ENDPOINTS.EDIT.UPDATE_OR_ADD_BLOG,
-        data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<UploadToOSSResponse>({
+    method: 'POST',
+    url: ADMIN_API_ENDPOINTS.EDIT.UPDATE_OR_ADD_BLOG,
+    data,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 /**
@@ -171,10 +171,10 @@ export const updateOrAddBlog = async (data: UpdateOrAddBlogRequest): Promise<Upl
  * @returns 博客数据和内容URL
  */
 export const getBlogDataForEdit = async (blogId: string): Promise<BlogDataResponse> => {
-    return businessApiRequest<BlogDataResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.EDIT.BLOG_DATA(blogId)
-    });
+  return businessApiRequest<BlogDataResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.EDIT.BLOG_DATA(blogId),
+  });
 };
 
 // ===============================================================
@@ -186,10 +186,10 @@ export const getBlogDataForEdit = async (blogId: string): Promise<BlogDataRespon
  * @returns 图片列表数据
  */
 export const getAllGalleryImages = async (): Promise<GalleryImagesResponse> => {
-    return businessApiRequest<GalleryImagesResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.GALLERY.ALL_IMGS
-    });
+  return businessApiRequest<GalleryImagesResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.GALLERY.ALL_IMGS,
+  });
 };
 
 /**
@@ -199,14 +199,14 @@ export const getAllGalleryImages = async (): Promise<GalleryImagesResponse> => {
  * @returns 操作结果
  */
 export const renameGalleryImage = async (imageId: string, data: RenameImageRequest): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.GALLERY.RENAME_IMG(imageId),
-        data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.GALLERY.RENAME_IMG(imageId),
+    data,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 /**
@@ -215,10 +215,10 @@ export const renameGalleryImage = async (imageId: string, data: RenameImageReque
  * @returns 操作结果
  */
 export const deleteGalleryImage = async (imageId: string): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'DELETE',
-        url: ADMIN_API_ENDPOINTS.GALLERY.DELETE_IMG(imageId)
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'DELETE',
+    url: ADMIN_API_ENDPOINTS.GALLERY.DELETE_IMG(imageId),
+  });
 };
 
 /**
@@ -228,10 +228,10 @@ export const deleteGalleryImage = async (imageId: string): Promise<ApiResponse<n
  * @returns 包含预签名URL的响应
  */
 export const getPreSignUrl = async (fileName: string, fileType: string): Promise<PreSignUrlResponse> => {
-    return businessApiRequest<PreSignUrlResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.OSS.PRE_SIGN_URL(fileName, fileType)
-    });
+  return businessApiRequest<PreSignUrlResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.OSS.PRE_SIGN_URL(fileName, fileType),
+  });
 };
 
 /**
@@ -240,14 +240,14 @@ export const getPreSignUrl = async (fileName: string, fileType: string): Promise
  * @returns 添加结果
  */
 export const addGalleryImages = async (data: AddImagesRequest): Promise<AddImagesResponse> => {
-    return businessApiRequest<AddImagesResponse>({
-        method: 'POST',
-        url: ADMIN_API_ENDPOINTS.GALLERY.ADD_IMG,
-        data,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<AddImagesResponse>({
+    method: 'POST',
+    url: ADMIN_API_ENDPOINTS.GALLERY.ADD_IMG,
+    data,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 /**
@@ -256,10 +256,10 @@ export const addGalleryImages = async (data: AddImagesRequest): Promise<AddImage
  * @returns 包含结果的响应（data为true表示名称已存在）
  */
 export const checkImageNameExistence = async (imageName: string): Promise<CheckImageNameResponse> => {
-    return businessApiRequest<CheckImageNameResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.GALLERY.CHECK_IMG_NAME(imageName)
-    });
+  return businessApiRequest<CheckImageNameResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.GALLERY.CHECK_IMG_NAME(imageName),
+  });
 };
 
 /**
@@ -268,8 +268,8 @@ export const checkImageNameExistence = async (imageName: string): Promise<CheckI
  * @returns 图片的完整URL
  */
 export const getImageUrl = (imgId: string): string => {
-    const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
-    return `${businessServiceUrl}/web/img/get/${imgId}`;
+  const businessServiceUrl = import.meta.env.VITE_BUSINESS_SERVICE_URL || '';
+  return `${businessServiceUrl}/web/img/get/${imgId}`;
 };
 
 // ===============================================================
@@ -281,10 +281,10 @@ export const getImageUrl = (imgId: string): string => {
  * @returns 用户配置数据
  */
 export const getUserConfig = async (): Promise<UserConfigResponse> => {
-    return businessApiRequest<UserConfigResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.USER.CONFIG
-    });
+  return businessApiRequest<UserConfigResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.USER.CONFIG,
+  });
 };
 
 /**
@@ -295,38 +295,38 @@ export const getUserConfig = async (): Promise<UserConfigResponse> => {
  * @returns 更新结果
  */
 export const updateUserConfig = async (
-    userData: Partial<UserConfig>,
-    verificationCode?: string,
-    isEmailChanged?: boolean
+  userData: Partial<UserConfig>,
+  verificationCode?: string,
+  isEmailChanged?: boolean,
 ): Promise<ApiResponse<null>> => {
-    // 构建使用点表示法的请求数据对象
-    const requestData: Record<string, string | string[] | undefined> = {};
+  // 构建使用点表示法的请求数据对象
+  const requestData: Record<string, string | string[] | undefined> = {};
 
-    // 添加用户数据，使用点表示法
-    if (userData.user_name) requestData['user.user_name'] = userData.user_name;
+  // 添加用户数据，使用点表示法
+  if (userData.user_name) requestData['user.user_name'] = userData.user_name;
 
-    // 如果邮箱已修改，则需要添加邮箱和验证码
-    if (isEmailChanged && userData.user_email) {
-        requestData['user.user_email'] = userData.user_email;
-        if (verificationCode) {
-            requestData['user.verification_code'] = verificationCode;
-        }
+  // 如果邮箱已修改，则需要添加邮箱和验证码
+  if (isEmailChanged && userData.user_email) {
+    requestData['user.user_email'] = userData.user_email;
+    if (verificationCode) {
+      requestData['user.verification_code'] = verificationCode;
     }
+  }
 
-    // 添加新字段
-    if (userData.user_github_address) requestData['user.user_github_address'] = userData.user_github_address;
-    if (userData.user_hobbies) requestData['user.user_hobbies'] = userData.user_hobbies;
-    if (userData.type_writer_content) requestData['user.type_writer_content'] = userData.type_writer_content;
-    if (userData.icp_filing_number !== undefined) requestData['user.icp_filing_number'] = userData.icp_filing_number;
+  // 添加新字段
+  if (userData.user_github_address) requestData['user.user_github_address'] = userData.user_github_address;
+  if (userData.user_hobbies) requestData['user.user_hobbies'] = userData.user_hobbies;
+  if (userData.type_writer_content) requestData['user.type_writer_content'] = userData.type_writer_content;
+  if (userData.icp_filing_number !== undefined) requestData['user.icp_filing_number'] = userData.icp_filing_number;
 
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.USER.CONFIG,
-        data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.USER.CONFIG,
+    data: requestData,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 /**
@@ -335,14 +335,14 @@ export const updateUserConfig = async (
  * @returns 验证码发送结果
  */
 export const sendEmailVerificationCode = async (email: string): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'POST',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.USER.VERIFY_NEW_EMAIL,
-        data: { 'user.user_email': email },
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'POST',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.USER.VERIFY_NEW_EMAIL,
+    data: { 'user.user_email': email },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 /**
@@ -353,27 +353,27 @@ export const sendEmailVerificationCode = async (email: string): Promise<ApiRespo
  * @returns 更新结果
  */
 export const updateUserImages = async (
-    avatarImage?: string,
-    webLogo?: string,
-    backgroundImage?: string
+  avatarImage?: string,
+  webLogo?: string,
+  backgroundImage?: string,
 ): Promise<ApiResponse<null>> => {
-    // 构建使用点表示法的请求数据对象
-    const requestData: Record<string, string> = {};
+  // 构建使用点表示法的请求数据对象
+  const requestData: Record<string, string> = {};
 
-    // 添加图片数据，使用点表示法
-    if (avatarImage) requestData['user.avatar_image'] = avatarImage;
-    if (webLogo) requestData['user.web_logo'] = webLogo;
-    if (backgroundImage) requestData['user.background_image'] = backgroundImage;
+  // 添加图片数据，使用点表示法
+  if (avatarImage) requestData['user.avatar_image'] = avatarImage;
+  if (webLogo) requestData['user.web_logo'] = webLogo;
+  if (backgroundImage) requestData['user.background_image'] = backgroundImage;
 
-    // 使用完整路径并允许重定向
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.USER.VISUAL,
-        data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  // 使用完整路径并允许重定向
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.USER.VISUAL,
+    data: requestData,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 // ===============================================================
@@ -385,10 +385,10 @@ export const updateUserImages = async (
  * @returns 服务器配置数据
  */
 export const getServerConfig = async (): Promise<ServerConfigResponse> => {
-    return businessApiRequest<ServerConfigResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.CONFIG
-    });
+  return businessApiRequest<ServerConfigResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.CONFIG,
+  });
 };
 
 /**
@@ -402,45 +402,45 @@ export const getServerConfig = async (): Promise<ServerConfigResponse> => {
  * @returns 更新结果
  */
 export const updateServerConfig = async (
-    corsOrigins: string[],
-    tokenExpireDuration: number,
-    tokenKey?: string,
-    smtpAccount?: string,
-    smtpAddress?: string,
-    smtpPort?: number
+  corsOrigins: string[],
+  tokenExpireDuration: number,
+  tokenKey?: string,
+  smtpAccount?: string,
+  smtpAddress?: string,
+  smtpPort?: number,
 ): Promise<ApiResponse<null>> => {
-    // 使用点表示法构建请求数据
-    const requestData: Record<string, string | number | string[]> = {
-        'server.token_expire_duration': tokenExpireDuration,
-        'server.cors_origins': corsOrigins
-    };
+  // 使用点表示法构建请求数据
+  const requestData: Record<string, string | number | string[]> = {
+    'server.token_expire_duration': tokenExpireDuration,
+    'server.cors_origins': corsOrigins,
+  };
 
-    // 如果提供了令牌密钥，则添加到请求数据
-    if (tokenKey) {
-        requestData['server.token_key'] = tokenKey;
-    }
+  // 如果提供了令牌密钥，则添加到请求数据
+  if (tokenKey) {
+    requestData['server.token_key'] = tokenKey;
+  }
 
-    // 添加SMTP相关配置
-    if (smtpAccount) {
-        requestData['server.smtp_account'] = smtpAccount;
-    }
+  // 添加SMTP相关配置
+  if (smtpAccount) {
+    requestData['server.smtp_account'] = smtpAccount;
+  }
 
-    if (smtpAddress) {
-        requestData['server.smtp_address'] = smtpAddress;
-    }
+  if (smtpAddress) {
+    requestData['server.smtp_address'] = smtpAddress;
+  }
 
-    if (smtpPort) {
-        requestData['server.smtp_port'] = smtpPort;
-    }
+  if (smtpPort) {
+    requestData['server.smtp_port'] = smtpPort;
+  }
 
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.CONFIG,
-        data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.CONFIG,
+    data: requestData,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 /**
@@ -452,24 +452,24 @@ export const updateServerConfig = async (
  * @returns 验证码发送结果
  */
 export const sendSMTPVerificationCode = async (
-    smtpAccount: string,
-    smtpAddress: string,
-    smtpPort: string,
-    smtpAuthCode: string
+  smtpAccount: string,
+  smtpAddress: string,
+  smtpPort: string,
+  smtpAuthCode: string,
 ): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'POST',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.VERIFY_SMTP,
-        data: {
-            'server.smtp_account': smtpAccount,
-            'server.smtp_address': smtpAddress,
-            'server.smtp_port': smtpPort,
-            'server.smtp_auth_code': smtpAuthCode
-        },
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'POST',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.SERVER.VERIFY_SMTP,
+    data: {
+      'server.smtp_account': smtpAccount,
+      'server.smtp_address': smtpAddress,
+      'server.smtp_port': smtpPort,
+      'server.smtp_auth_code': smtpAuthCode,
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 // ===============================================================
@@ -481,10 +481,10 @@ export const sendSMTPVerificationCode = async (
  * @returns 日志配置数据
  */
 export const getLoggerConfig = async (): Promise<LoggerConfigResponse> => {
-    return businessApiRequest<LoggerConfigResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.LOGGER.CONFIG
-    });
+  return businessApiRequest<LoggerConfigResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.LOGGER.CONFIG,
+  });
 };
 
 /**
@@ -498,33 +498,31 @@ export const getLoggerConfig = async (): Promise<LoggerConfigResponse> => {
  * @returns 更新结果
  */
 export const updateLoggerConfig = async (
-    level: string,
-    dirPath: string,
-    maxAge: number,
-    maxSize: number,
-    maxBackups: number,
-    compress: boolean
+  level: string,
+  dirPath: string,
+  maxAge: number,
+  maxSize: number,
+  maxBackups: number,
+  compress: boolean,
 ): Promise<ApiResponse<null>> => {
-    const requestData: Record<string, string | number | boolean> = {
-        'logger.level': level.toUpperCase(),
-        'logger.path': dirPath,
-        'logger.max_age': maxAge,
-        'logger.max_size': maxSize,
-        'logger.max_backups': maxBackups,
-        'logger.compress': compress
-    };
+  const requestData: Record<string, string | number | boolean> = {
+    'logger.level': level.toUpperCase(),
+    'logger.path': dirPath,
+    'logger.max_age': maxAge,
+    'logger.max_size': maxSize,
+    'logger.max_backups': maxBackups,
+    'logger.compress': compress,
+  };
 
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.LOGGER.CONFIG,
-        data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.LOGGER.CONFIG,
+    data: requestData,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
-
-
 
 // ===============================================================
 // OSS配置相关接口和函数
@@ -535,10 +533,10 @@ export const updateLoggerConfig = async (
  * @returns OSS配置数据
  */
 export const getOSSConfig = async (): Promise<OSSConfigResponse> => {
-    return businessApiRequest<OSSConfigResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.OSS.CONFIG
-    });
+  return businessApiRequest<OSSConfigResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.OSS.CONFIG,
+  });
 };
 
 /**
@@ -553,32 +551,32 @@ export const getOSSConfig = async (): Promise<OSSConfigResponse> => {
  * @returns 更新结果
  */
 export const updateOSSConfig = async (
-    endpoint: string,
-    region: string,
-    accessKeyId: string,
-    accessKeySecret: string,
-    bucket: string,
-    imageOssPath: string,
-    blogOssPath: string
+  endpoint: string,
+  region: string,
+  accessKeyId: string,
+  accessKeySecret: string,
+  bucket: string,
+  imageOssPath: string,
+  blogOssPath: string,
 ): Promise<ApiResponse<null>> => {
-    const requestData: Record<string, string> = {
-        'oss.endpoint': endpoint,
-        'oss.region': region,
-        'oss.access_key_id': accessKeyId,
-        'oss.access_key_secret': accessKeySecret,
-        'oss.bucket': bucket,
-        'oss.image_oss_path': imageOssPath,
-        'oss.blog_oss_path': blogOssPath
-    };
+  const requestData: Record<string, string> = {
+    'oss.endpoint': endpoint,
+    'oss.region': region,
+    'oss.access_key_id': accessKeyId,
+    'oss.access_key_secret': accessKeySecret,
+    'oss.bucket': bucket,
+    'oss.image_oss_path': imageOssPath,
+    'oss.blog_oss_path': blogOssPath,
+  };
 
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.OSS.CONFIG,
-        data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.OSS.CONFIG,
+    data: requestData,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 // ===============================================================
@@ -590,10 +588,10 @@ export const updateOSSConfig = async (
  * @returns 缓存和索引配置数据
  */
 export const getCacheAndIndexConfig = async (): Promise<CacheAndIndexConfigResponse> => {
-    return businessApiRequest<CacheAndIndexConfigResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.CONFIG
-    });
+  return businessApiRequest<CacheAndIndexConfigResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.CONFIG,
+  });
 };
 
 /**
@@ -606,28 +604,28 @@ export const getCacheAndIndexConfig = async (): Promise<CacheAndIndexConfigRespo
  * @returns 更新结果
  */
 export const updateCacheAndIndexConfig = async (
-    enableAOF: boolean,
-    aofPath: string,
-    aofMaxSize: number,
-    aofCompress: boolean,
-    indexPath: string
+  enableAOF: boolean,
+  aofPath: string,
+  aofMaxSize: number,
+  aofCompress: boolean,
+  indexPath: string,
 ): Promise<ApiResponse<null>> => {
-    const requestData: Record<string, boolean | string | number> = {
-        'cache.aof.enable': enableAOF,
-        'cache.aof.path': aofPath,
-        'cache.aof.max_size': numberFormat.toString(aofMaxSize),
-        'cache.aof.compress': aofCompress,
-        'search_engine.index_path': indexPath
-    };
+  const requestData: Record<string, boolean | string | number> = {
+    'cache.aof.enable': enableAOF,
+    'cache.aof.path': aofPath,
+    'cache.aof.max_size': numberFormat.toString(aofMaxSize),
+    'cache.aof.compress': aofCompress,
+    'search_engine.index_path': indexPath,
+  };
 
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.CONFIG,
-        data: requestData,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.CONFIG,
+    data: requestData,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 /**
@@ -635,13 +633,13 @@ export const updateCacheAndIndexConfig = async (
  * @returns 重建索引结果
  */
 export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.REBUILD_INDEX,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.SETTINGS.CACHE_INDEX.REBUILD_INDEX,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
 
 // ===============================================================
@@ -654,10 +652,10 @@ export const rebuildIndex = async (): Promise<ApiResponse<null>> => {
  * @returns 评论列表数据
  */
 export const getAllComments = async (): Promise<CommentsResponse> => {
-    return businessApiRequest<CommentsResponse>({
-        method: 'GET',
-        url: ADMIN_API_ENDPOINTS.COMMENTS.ALL
-    });
+  return businessApiRequest<CommentsResponse>({
+    method: 'GET',
+    url: ADMIN_API_ENDPOINTS.COMMENTS.ALL,
+  });
 };
 
 /**
@@ -666,10 +664,10 @@ export const getAllComments = async (): Promise<CommentsResponse> => {
  * @returns 删除结果
  */
 export const deleteComment = async (commentId: string): Promise<ApiResponse<null>> => {
-    return businessApiRequest<ApiResponse<null>>({
-        method: 'DELETE',
-        url: ADMIN_API_ENDPOINTS.COMMENTS.DELETE(commentId)
-    });
+  return businessApiRequest<ApiResponse<null>>({
+    method: 'DELETE',
+    url: ADMIN_API_ENDPOINTS.COMMENTS.DELETE(commentId),
+  });
 };
 
 /**
@@ -679,61 +677,59 @@ export const deleteComment = async (commentId: string): Promise<ApiResponse<null
  * @returns 编辑结果，包含更新后的评论数据
  */
 export const updateComment = async (commentId: string, content: string): Promise<ApiResponse<CommentItem>> => {
-    return businessApiRequest<ApiResponse<CommentItem>>({
-        method: 'PUT',
-        url: ADMIN_API_ENDPOINTS.COMMENTS.UPDATE_CONTENT(commentId),
-        data: { content },
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return businessApiRequest<ApiResponse<CommentItem>>({
+    method: 'PUT',
+    url: ADMIN_API_ENDPOINTS.COMMENTS.UPDATE_CONTENT(commentId),
+    data: { content },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
-
-
 
 // 导出所有API函数
 export default {
-    // 认证相关
-    sendVerificationCode,
-    loginWithVerificationCode,
-    getUserInfo,
+  // 认证相关
+  sendVerificationCode,
+  loginWithVerificationCode,
+  getUserInfo,
 
-    // 博客相关
-    getAllBlogs,
-    changeBlogState,
-    setBlogTop,
-    deleteBlog,
-    getAllTagsAndCategories,
-    updateOrAddBlog,
-    getBlogDataForEdit,
+  // 博客相关
+  getAllBlogs,
+  changeBlogState,
+  setBlogTop,
+  deleteBlog,
+  getAllTagsAndCategories,
+  updateOrAddBlog,
+  getBlogDataForEdit,
 
-    // 图库相关
-    getAllGalleryImages,
-    renameGalleryImage,
-    deleteGalleryImage,
-    getPreSignUrl,
-    addGalleryImages,
-    checkImageNameExistence,
-    getImageUrl,
+  // 图库相关
+  getAllGalleryImages,
+  renameGalleryImage,
+  deleteGalleryImage,
+  getPreSignUrl,
+  addGalleryImages,
+  checkImageNameExistence,
+  getImageUrl,
 
-    // 配置相关
-    getUserConfig,
-    updateUserConfig,
-    getServerConfig,
-    updateServerConfig,
-    getLoggerConfig,
-    updateLoggerConfig,
-    getOSSConfig,
-    updateOSSConfig,
-    getCacheAndIndexConfig,
-    updateCacheAndIndexConfig,
-    updateUserImages,
-    sendEmailVerificationCode,
-    sendSMTPVerificationCode,
-    rebuildIndex,
+  // 配置相关
+  getUserConfig,
+  updateUserConfig,
+  getServerConfig,
+  updateServerConfig,
+  getLoggerConfig,
+  updateLoggerConfig,
+  getOSSConfig,
+  updateOSSConfig,
+  getCacheAndIndexConfig,
+  updateCacheAndIndexConfig,
+  updateUserImages,
+  sendEmailVerificationCode,
+  sendSMTPVerificationCode,
+  rebuildIndex,
 
-    // 评论相关
-    getAllComments,
-    deleteComment,
-    updateComment
+  // 评论相关
+  getAllComments,
+  deleteComment,
+  updateComment,
 };

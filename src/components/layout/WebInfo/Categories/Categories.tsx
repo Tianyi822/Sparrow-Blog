@@ -3,77 +3,75 @@ import { BlogCategory, BlogInfo } from '@/types';
 import { useMemo } from 'react';
 
 interface CategoriesProps {
-    className?: string;
-    categories: BlogCategory[];
-    blogCounts: BlogInfo[];
-    onCategoryClick?: (category: BlogCategory) => void;
-    activeCategory?: string | null; // Selected category ID as string
+  className?: string;
+  categories: BlogCategory[];
+  blogCounts: BlogInfo[];
+  onCategoryClick?: (category: BlogCategory) => void;
+  activeCategory?: string | null; // Selected category ID as string
 }
 
 interface CategoryWithCount extends BlogCategory {
-    count: number;
+  count: number;
 }
 
 const Categories: React.FC<CategoriesProps> = ({
-    className, 
-    categories, 
-    blogCounts, 
-    onCategoryClick,
-    activeCategory
+  className,
+  categories,
+  blogCounts,
+  onCategoryClick,
+  activeCategory,
 }) => {
-    // 计算每个分类的文章数量
-    const categoriesWithCount = useMemo(() => {
-        return categories.map(category => {
-            // 确保 category_id 存在
-            const categoryId = category.category_id || '';
-            
-            // 计算该分类下的文章数量 - 确保使用字符串比较
-            const count = blogCounts.filter(blog => {
-                // 确保两边都是字符串进行比较
-                // 注意：正确的路径是 blog.category.category_id 而不是 blog.category_id
-                const blogCategoryId = blog.category && blog.category.category_id 
-                    ? String(blog.category.category_id) 
-                    : '';
-                const match = blogCategoryId === String(categoryId);
-                
-                return match;
-            }).length;
-            
-            return {
-                ...category,
-                count
-            };
-        });
-    }, [categories, blogCounts]);
+  // 计算每个分类的文章数量
+  const categoriesWithCount = useMemo(() => {
+    return categories.map((category) => {
+      // 确保 category_id 存在
+      const categoryId = category.category_id || '';
 
-    const handleCategoryClick = (category: CategoryWithCount) => {
-        if (onCategoryClick) {
-            onCategoryClick(category);
-        }
-    };
+      // 计算该分类下的文章数量 - 确保使用字符串比较
+      const count = blogCounts.filter((blog) => {
+        // 确保两边都是字符串进行比较
+        // 注意：正确的路径是 blog.category.category_id 而不是 blog.category_id
+        const blogCategoryId = blog.category && blog.category.category_id ? String(blog.category.category_id) : '';
+        const match = blogCategoryId === String(categoryId);
 
-    return (
-        <div className={`categories ${className || ''}`}>
-            <div className="categories-list">
-                {categoriesWithCount.map(category => {
-                    // 确保category_id存在
-                    const categoryId = category.category_id || '';
-                    const isActive = activeCategory !== null && categoryId !== '' && activeCategory === categoryId;
-                    
-                    return (
-                        <div 
-                            key={categoryId || Math.random().toString()} 
-                            className={`category-item ${isActive ? 'active' : ''}`}
-                            onClick={() => handleCategoryClick(category)}
-                        >
-                            <span className="category-name">{category.category_name || '未命名分类'}</span>
-                            <span className="category-count">{category.count || 0}</span>
-                        </div>
-                    );
-                })}
+        return match;
+      }).length;
+
+      return {
+        ...category,
+        count,
+      };
+    });
+  }, [categories, blogCounts]);
+
+  const handleCategoryClick = (category: CategoryWithCount) => {
+    if (onCategoryClick) {
+      onCategoryClick(category);
+    }
+  };
+
+  return (
+    <div className={`categories ${className || ''}`}>
+      <div className='categories-list'>
+        {categoriesWithCount.map((category) => {
+          // 确保category_id存在
+          const categoryId = category.category_id || '';
+          const isActive = activeCategory !== null && categoryId !== '' && activeCategory === categoryId;
+
+          return (
+            <div
+              key={categoryId || Math.random().toString()}
+              className={`category-item ${isActive ? 'active' : ''}`}
+              onClick={() => handleCategoryClick(category)}
+            >
+              <span className='category-name'>{category.category_name || '未命名分类'}</span>
+              <span className='category-count'>{category.count || 0}</span>
             </div>
-        </div>
-    );
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 export default Categories;

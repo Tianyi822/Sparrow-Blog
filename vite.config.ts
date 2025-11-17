@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { readFileSync, writeFileSync } from 'node:fs';
 
 // Deno 兼容的目录路径获取
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // 创建404.html插件，用于对象存储部署
 const create404Plugin = () => {
@@ -17,7 +17,7 @@ const create404Plugin = () => {
       // 在构建完成后，使用专门的404模板
       const templatePath = path.resolve(__dirname, 'public/404-template.html');
       const notFoundPath = path.resolve(__dirname, 'dist/404.html');
-      
+
       try {
         const templateContent = readFileSync(templatePath, 'utf-8');
         writeFileSync(notFoundPath, templateContent);
@@ -25,7 +25,7 @@ const create404Plugin = () => {
       } catch (error) {
         console.error('Error creating 404.html:', error);
       }
-    }
+    },
   };
 };
 
@@ -59,9 +59,9 @@ export default defineConfig(({ mode }: ConfigEnv) => {
         index: '/index.html',
         rewrites: [
           // 所有非API请求都回退到index.html
-          { from: /^\/(?!api).*$/, to: '/index.html' }
-        ]
-      }
+          { from: /^\/(?!api).*$/, to: '/index.html' },
+        ],
+      },
     },
     // 预览服务器配置（用于本地预览生产构建）
     preview: {
@@ -71,14 +71,14 @@ export default defineConfig(({ mode }: ConfigEnv) => {
       historyApiFallback: {
         index: '/index.html',
         rewrites: [
-          { from: /^\/(?!api).*$/, to: '/index.html' }
-        ]
-      }
+          { from: /^\/(?!api).*$/, to: '/index.html' },
+        ],
+      },
     },
     // CSS相关配置
     css: {
       // 开发时保持源码映射，生产时可选
-      devSourcemap: true
+      devSourcemap: true,
     },
     build: {
       // 启用Terser压缩
@@ -150,117 +150,127 @@ export default defineConfig(({ mode }: ConfigEnv) => {
             if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
               return 'react-vendor';
             }
-            
+
             // 2. React Router - 路由相关
             if (id.includes('node_modules/react-router')) {
               return 'router-vendor';
             }
-            
+
             // 3. UI组件库 - 图标和UI组件
-            if (id.includes('node_modules/react-icons') || 
-                id.includes('node_modules/@mui/')) {
+            if (
+              id.includes('node_modules/react-icons') ||
+              id.includes('node_modules/@mui/')
+            ) {
               return 'ui-vendor';
             }
-            
+
             // 4. Markdown相关 - 内容渲染核心
-            if (id.includes('node_modules/marked') ||
-                id.includes('node_modules/react-markdown') ||
-                id.includes('node_modules/react-syntax-highlighter') ||
-                id.includes('node_modules/highlight.js') ||
-                id.includes('node_modules/rehype') ||
-                id.includes('node_modules/remark') ||
-                id.includes('node_modules/unified') ||
-                id.includes('node_modules/refractor') ||
-                id.includes('node_modules/prismjs') ||
-                id.includes('node_modules/lowlight')) {
+            if (
+              id.includes('node_modules/marked') ||
+              id.includes('node_modules/react-markdown') ||
+              id.includes('node_modules/react-syntax-highlighter') ||
+              id.includes('node_modules/highlight.js') ||
+              id.includes('node_modules/rehype') ||
+              id.includes('node_modules/remark') ||
+              id.includes('node_modules/unified') ||
+              id.includes('node_modules/refractor') ||
+              id.includes('node_modules/prismjs') ||
+              id.includes('node_modules/lowlight')
+            ) {
               return 'markdown-vendor';
             }
-            
+
             // 5. 数学公式渲染
             if (id.includes('node_modules/katex')) {
               return 'math-vendor';
             }
-            
+
             // 6. HTTP请求库
             if (id.includes('node_modules/axios')) {
               return 'http-vendor';
             }
-            
+
             // 7. 图片处理
             if (id.includes('node_modules/browser-image-compression')) {
               return 'image-vendor';
             }
-            
+
             // 8. 状态管理
             if (id.includes('node_modules/zustand')) {
               return 'state-vendor';
             }
-            
+
             // 9. 工具库 - 常用工具
-            if (id.includes('node_modules/lodash') ||
-                id.includes('node_modules/date-fns') ||
-                id.includes('node_modules/classnames') ||
-                id.includes('node_modules/dompurify') ||
-                id.includes('node_modules/zod')) {
+            if (
+              id.includes('node_modules/lodash') ||
+              id.includes('node_modules/date-fns') ||
+              id.includes('node_modules/classnames') ||
+              id.includes('node_modules/dompurify') ||
+              id.includes('node_modules/zod')
+            ) {
               return 'utils-vendor';
             }
-            
+
             // 10. 阿里云OSS
             if (id.includes('node_modules/ali-oss')) {
               return 'oss-vendor';
             }
-            
+
             // 11. 其他第三方库统一打包
             if (id.includes('node_modules/')) {
               return 'vendor';
             }
-            
+
             // 12. 应用代码按功能模块分割
-            
+
             // 管理后台相关页面
             if (id.includes('/pages/Admin/')) {
               return 'admin-pages';
             }
-            
+
             // 前台页面
-            if (id.includes('/pages/Home/') || 
-                id.includes('/pages/BlogContent/') ||
-                id.includes('/pages/FriendLink/')) {
+            if (
+              id.includes('/pages/Home/') ||
+              id.includes('/pages/BlogContent/') ||
+              id.includes('/pages/FriendLink/')
+            ) {
               return 'frontend-pages';
             }
-            
+
             // 其他页面（404、等待页等）
             if (id.includes('/pages/')) {
               return 'misc-pages';
             }
-            
+
             // 组件库
             if (id.includes('/components/')) {
               return 'components';
             }
-            
+
             // 布局组件
             if (id.includes('/layouts/')) {
               return 'layouts';
             }
-            
+
             // 服务层
             if (id.includes('/services/')) {
               return 'services';
             }
-            
+
             // 工具函数和常量
-            if (id.includes('/utils/') || 
-                id.includes('/constants/') ||
-                id.includes('/hooks/')) {
+            if (
+              id.includes('/utils/') ||
+              id.includes('/constants/') ||
+              id.includes('/hooks/')
+            ) {
               return 'app-utils';
             }
-            
+
             // 默认不分割，保持在主bundle中
             return undefined;
-          }
-        }
-      }
-    }
-  }
-})
+          },
+        },
+      },
+    },
+  };
+});

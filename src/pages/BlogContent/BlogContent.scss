@@ -13,7 +13,7 @@
 
   &-header {
     @include glass-effect;
-    
+
     & {
       margin-bottom: var.$spacing-xl;
       padding: var.$spacing-xl;
@@ -108,7 +108,7 @@
 
   &-article {
     @include glass-effect;
-    
+
     & {
       padding: var.$spacing-xl;
       border-radius: var(--glass-border-radius);
@@ -133,7 +133,7 @@
         color: var.$white !important;
         position: relative;
         scroll-margin-top: 80px;
-        
+
         &::after {
           height: 3px;
           background: linear-gradient(90deg, #82b4ff, #a0c4ff, #82b4ff);
@@ -149,7 +149,7 @@
         color: var.$white !important;
         position: relative;
         scroll-margin-top: 80px;
-        
+
         &::after {
           height: 2px;
           background: linear-gradient(90deg, #82b4ff, #a0c4ff);
@@ -165,7 +165,7 @@
         color: var.$white !important;
         position: relative;
         scroll-margin-top: 80px;
-        
+
         &::after {
           height: 2px;
           background: linear-gradient(90deg, #82b4ff, #c4d4ff);
@@ -181,13 +181,13 @@
         color: var.$white !important;
         position: relative;
         scroll-margin-top: 80px;
-        
+
         &::after {
           height: 1px;
           background: rgba(#82b4ff, 0.6);
         }
       }
-      
+
       h5,
       .markdown-heading-h5 {
         font-size: var.$font-size-md !important;
@@ -197,13 +197,13 @@
         color: var.$white !important;
         position: relative;
         scroll-margin-top: 80px;
-        
+
         &::after {
           height: 1px;
           background: rgba(#82b4ff, 0.4);
         }
       }
-      
+
       h6,
       .markdown-heading-h6 {
         font-size: calc(var.$font-size-sm + 0.1rem) !important;
@@ -213,13 +213,13 @@
         color: rgba(var.$white, 0.9) !important;
         position: relative;
         scroll-margin-top: 80px;
-        
+
         &::after {
           height: 1px;
           background: rgba(#82b4ff, 0.3);
         }
       }
-      
+
       /* 所有标题的通用交互效果 */
       h1,
       h2,
@@ -234,7 +234,7 @@
       .markdown-heading-h5,
       .markdown-heading-h6 {
         cursor: pointer;
-        
+
         /* 悬停时显示锚点链接 */
         &:hover::before {
           content: '#';
@@ -245,11 +245,11 @@
           cursor: pointer;
           transition: color 0.2s ease;
         }
-        
+
         &:hover::before:hover {
           color: rgba(var.$white, 0.8);
         }
-        
+
         /* 为标题添加渐变下划线 */
         &::after {
           content: '';
@@ -261,12 +261,12 @@
           background: linear-gradient(90deg, #82b4ff, #a0c4ff);
           transition: width 0.3s ease;
         }
-        
+
         &:hover::after {
           width: 100%;
         }
       }
-      
+
       /* 标题目标高亮效果 - 当通过URL hash跳转时 */
       h1:target,
       h2:target,
@@ -281,13 +281,13 @@
       .markdown-heading-h5:target,
       .markdown-heading-h6:target {
         animation: highlight-heading 2s ease-out;
-        
+
         &::after {
           width: 100%;
           animation: highlight-underline 2s ease-out;
         }
       }
-      
+
       @keyframes highlight-heading {
         0% {
           background-color: rgba(130, 180, 255, 0.2);
@@ -298,7 +298,7 @@
           transform: scale(1);
         }
       }
-      
+
       @keyframes highlight-underline {
         0% {
           box-shadow: 0 2px 10px rgba(130, 180, 255, 0.6);
@@ -345,25 +345,25 @@
         padding: var.$spacing-md;
         border-radius: var.$border-radius-md;
         border: 1px solid rgba(var.$white, 0.1);
-        
+
         .katex {
           color: var.$white !important;
           font-size: 1.1em;
         }
-        
+
         &::-webkit-scrollbar {
           height: 6px;
         }
-        
+
         &::-webkit-scrollbar-track {
           background: rgba(var.$white, 0.1);
           border-radius: var.$border-radius-sm;
         }
-        
+
         &::-webkit-scrollbar-thumb {
           background: rgba(var.$white, 0.3);
           border-radius: var.$border-radius-sm;
-          
+
           &:hover {
             background: rgba(var.$white, 0.4);
           }
@@ -373,70 +373,70 @@
       .katex {
         color: var.$white !important;
         font-size: 1em;
-        
+
         .katex-html {
           color: var.$white !important;
         }
-        
+
         .mord, .mop, .mrel, .mbin, .mpunct, .mopen, .mclose {
           color: var.$white !important;
         }
-        
+
         .accent-body {
           color: var.$white !important;
         }
-        
+
         .mfrac > span {
           border-color: rgba(var.$white, 0.8) !important;
         }
-        
+
         .sqrt > .sqrt-line {
           border-color: rgba(var.$white, 0.8) !important;
         }
-        
+
         .mtable .arraycolsep {
           color: var.$white !important;
         }
-        
+
         .rule {
           border-color: rgba(var.$white, 0.8) !important;
         }
       }
-      
+
       /* 内联数学公式样式 */
       .katex-inline {
         background: rgba(0, 0, 0, 0.1);
         padding: 0.1rem 0.3rem;
         border-radius: var.$border-radius-sm;
-        
+
         .katex {
           color: var.$white !important;
         }
       }
-      
+
       /* 矩阵和数组样式 */
       .katex .mtable {
         .col-align-c {
           text-align: center;
         }
-        
+
         .col-align-l {
           text-align: left;
         }
-        
+
         .col-align-r {
           text-align: right;
         }
-        
+
         .arraycolsep {
           width: 0.5em;
         }
-        
+
         .vertical-separator {
           border-color: rgba(var.$white, 0.6) !important;
         }
       }
-      
+
       /* 数学公式相关样式 - 结束 */
 
       /* 代码块相关样式 - 开始 */
@@ -564,7 +564,7 @@
           text-shadow: none !important;
         }
 
-        span[style*="display: block"] {
+        span[style*='display: block'] {
           height: 1.5em !important;
           line-height: 1.5 !important;
           min-height: 1.5em !important;
@@ -862,7 +862,7 @@
 
     &-article {
       padding: var.$spacing-lg;
-      
+
       .markdown-content {
         // 移动端表格样式优化
         table {
@@ -872,20 +872,20 @@
           margin: var.$spacing-md 0;
           border-radius: var.$border-radius-sm;
           -webkit-overflow-scrolling: touch;
-          
+
           &::-webkit-scrollbar {
             height: 8px;
           }
-          
+
           &::-webkit-scrollbar-track {
             background: rgba(var.$white, 0.1);
             border-radius: var.$border-radius-sm;
           }
-          
+
           &::-webkit-scrollbar-thumb {
             background: rgba(var.$white, 0.3);
             border-radius: var.$border-radius-sm;
-            
+
             &:hover {
               background: rgba(var.$white, 0.4);
             }
@@ -906,19 +906,19 @@
         // 移动端列表样式优化
         ul, ol {
           margin: var.$spacing-md 0;
-          
+
           li {
             padding-left: var.$spacing-lg;
             margin: var.$spacing-xs 0;
             font-size: var.$font-size-sm;
-            
+
             ul, ol {
               margin: var.$spacing-xs 0;
               padding-left: var.$spacing-md;
             }
           }
         }
-        
+
         // 移动端数学公式样式优化
         .katex-display {
           margin: var.$spacing-md 0;
@@ -926,21 +926,21 @@
           font-size: 0.9em;
           overflow-x: auto;
           -webkit-overflow-scrolling: touch;
-          
+
           &::-webkit-scrollbar {
             height: 6px;
           }
-          
+
           .katex {
             font-size: 0.95em;
             min-width: max-content;
           }
         }
-        
+
         .katex {
           font-size: 0.9em;
         }
-        
+
         // 移动端标题样式优化
         .markdown-content h1,
         .markdown-content .markdown-heading-h1 {
@@ -949,7 +949,7 @@
           margin-top: var.$spacing-xl !important;
           scroll-margin-top: 60px !important;
         }
-        
+
         .markdown-content h2,
         .markdown-content .markdown-heading-h2 {
           font-size: calc(var.$font-size-lg + 0.2rem) !important;
@@ -957,7 +957,7 @@
           margin-top: calc(var.$spacing-lg + var.$spacing-sm) !important;
           scroll-margin-top: 60px !important;
         }
-        
+
         .markdown-content h3,
         .markdown-content .markdown-heading-h3 {
           font-size: var.$font-size-lg !important;
@@ -965,7 +965,7 @@
           margin-top: var.$spacing-lg !important;
           scroll-margin-top: 60px !important;
         }
-        
+
         .markdown-content h4,
         .markdown-content .markdown-heading-h4 {
           font-size: calc(var.$font-size-md + 0.1rem) !important;
@@ -973,7 +973,7 @@
           margin-top: calc(var.$spacing-md + var.$spacing-sm) !important;
           scroll-margin-top: 60px !important;
         }
-        
+
         .markdown-content h5,
         .markdown-content .markdown-heading-h5 {
           font-size: var.$font-size-md !important;
@@ -981,7 +981,7 @@
           margin-top: var.$spacing-md !important;
           scroll-margin-top: 60px !important;
         }
-        
+
         .markdown-content h6,
         .markdown-content .markdown-heading-h6 {
           font-size: calc(var.$font-size-sm + 0.1rem) !important;
@@ -990,7 +990,7 @@
           color: rgba(var.$white, 0.85) !important;
           scroll-margin-top: 60px !important;
         }
-        
+
         /* 移动端标题通用交互效果 */
         .markdown-content h1,
         .markdown-content h2,
@@ -1058,8 +1058,7 @@
   align-items: center;
   padding: var.$spacing-xl;
   backdrop-filter: blur(0);
-  transition: background-color 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-  backdrop-filter 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+  transition: background-color 0.3s cubic-bezier(0.2, 0, 0.2, 1), backdrop-filter 0.3s cubic-bezier(0.2, 0, 0.2, 1);
   opacity: 0;
   will-change: opacity, backdrop-filter;
 
@@ -1067,18 +1066,20 @@
     opacity: 1;
     background-color: rgba(0, 0, 0, 0.9);
     backdrop-filter: blur(8px);
-    transition: background-color 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    backdrop-filter 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    transition:
+      background-color 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+      backdrop-filter 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
   }
 
   &.closing {
     opacity: 0;
     background-color: rgba(0, 0, 0, 0);
     backdrop-filter: blur(0);
-    transition: background-color 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    backdrop-filter 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    transition:
+      background-color 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+      backdrop-filter 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
   }
 }
 
@@ -1093,15 +1094,13 @@
   &.visible {
     opacity: 1;
     transform: scale(1);
-    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
   }
 
   &.closing {
     opacity: 0;
     transform: scale(0.9);
-    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1);
   }
 }
 
@@ -1120,18 +1119,20 @@
     opacity: 1;
     transform: scale(1);
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    box-shadow 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0, 0.2, 1);
   }
 
   &.closing {
     opacity: 0;
     transform: scale(0.5);
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0);
-    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1),
-    box-shadow 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.2, 0, 0.2, 1),
+      box-shadow 0.3s cubic-bezier(0.2, 0, 0.2, 1);
   }
 }
 
@@ -1159,10 +1160,7 @@
   .visible & {
     opacity: 1;
     animation: pulse 2s infinite;
-    transition: opacity 0.3s 0.1s cubic-bezier(0.2, 0, 0.2, 1),
-    background-color 0.2s,
-    transform 0.2s,
-    box-shadow 0.2s;
+    transition: opacity 0.3s 0.1s cubic-bezier(0.2, 0, 0.2, 1), background-color 0.2s, transform 0.2s, box-shadow 0.2s;
   }
 
   &:hover {

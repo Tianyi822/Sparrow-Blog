@@ -1,95 +1,95 @@
-@use "sass:color";
-@use '@/style/variables'as *;
+@use 'sass:color';
+@use '@/style/variables' as *;
 
 /* 隐藏浏览器原生滚动条 */
 html,
 body {
-    scrollbar-width: none;
-    /* Firefox */
-    -ms-overflow-style: none;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
 
-    /* IE and Edge */
-    &::-webkit-scrollbar {
-        display: none;
-        /* Chrome, Safari, Opera */
-    }
+  /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+  }
 }
 
 /* 自定义滚动条容器 */
 .scroll-bar-container {
-    position: fixed;
-    top: 0;
-    right: 4px;
-    width: 6px;
-    height: 100%;
-    z-index: 1000;
-    background-color: transparent;
-    opacity: 0;
-    transition: $transition-base;
-    pointer-events: none;
+  position: fixed;
+  top: 0;
+  right: 4px;
+  width: 6px;
+  height: 100%;
+  z-index: 1000;
+  background-color: transparent;
+  opacity: 0;
+  transition: $transition-base;
+  pointer-events: none;
 
-    /* 可见状态 */
-    &.visible {
-        opacity: 1;
-        pointer-events: auto;
+  /* 可见状态 */
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 顶部弹跳动画 */
+  &.bounce-top .scroll-bar-thumb {
+    animation: bounce-top 0.3s ease;
+  }
+
+  /* 底部弹跳动画 */
+  &.bounce-bottom .scroll-bar-thumb {
+    animation: bounce-bottom 0.3s ease;
+  }
+
+  /* 滚动条滑块 */
+  & .scroll-bar-thumb {
+    position: absolute;
+    width: 100%;
+    height: auto;
+    background-color: rgba(146, 180, 206, 1);
+    border-radius: 3px;
+    cursor: pointer;
+    pointer-events: auto;
+
+    &:hover {
+      background-color: rgba(146, 180, 206, 1);
     }
 
-    /* 顶部弹跳动画 */
-    &.bounce-top .scroll-bar-thumb {
-        animation: bounce-top 0.3s ease;
+    &:active {
+      background-color: #92b4ce;
     }
-
-    /* 底部弹跳动画 */
-    &.bounce-bottom .scroll-bar-thumb {
-        animation: bounce-bottom 0.3s ease;
-    }
-
-    /* 滚动条滑块 */
-    & .scroll-bar-thumb {
-        position: absolute;
-        width: 100%;
-        height: auto;
-        background-color: rgba(146, 180, 206, 1);
-        border-radius: 3px;
-        cursor: pointer;
-        pointer-events: auto;
-
-        &:hover {
-            background-color: rgba(146, 180, 206, 1);
-        }
-
-        &:active {
-            background-color: #92b4ce;
-        }
-    }
+  }
 }
 
 /* 顶部弹跳动画关键帧 */
 @keyframes bounce-top {
-    0% {
-        transform: translateY(0);
-    }
+  0% {
+    transform: translateY(0);
+  }
 
-    50% {
-        transform: translateY(10px);
-    }
+  50% {
+    transform: translateY(10px);
+  }
 
-    100% {
-        transform: translateY(0);
-    }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 /* 底部弹跳动画关键帧 */
 @keyframes bounce-bottom {
-    0% {
-        transform: translateY(0);
-    }
+  0% {
+    transform: translateY(0);
+  }
 
-    50% {
-        transform: translateY(-10px);
-    }
+  50% {
+    transform: translateY(-10px);
+  }
 
-    100% {
-        transform: translateY(0);
-    }
+  100% {
+    transform: translateY(0);
+  }
 }

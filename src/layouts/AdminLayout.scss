@@ -51,9 +51,10 @@
       left: -1px;
       right: -1px;
       bottom: -1px;
-      background: linear-gradient(45deg, 
-        rgba($primary-300, 0.2), 
-        rgba($white, 0.05), 
+      background: linear-gradient(
+        45deg,
+        rgba($primary-300, 0.2),
+        rgba($white, 0.05),
         rgba($primary-400, 0.15),
         rgba($primary-200, 0.1)
       );

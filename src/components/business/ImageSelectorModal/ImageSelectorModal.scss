@@ -85,7 +85,7 @@ body.modal-open {
   flex-direction: column;
   box-shadow: $shadow-lg, 0 0 40px rgba($primary-300, 0.2);
   animation: scaleIn 0.3s ease;
-  
+
   // 自定义滚动条
   &::-webkit-scrollbar {
     width: 8px;
@@ -104,7 +104,7 @@ body.modal-open {
       background: rgba($primary-200, 0.6);
     }
   }
-  
+
   /* 选择器头部 */
   .selector-header {
     display: flex;
@@ -114,22 +114,22 @@ body.modal-open {
     border-bottom: $border-width-thin solid rgba($white, 0.1);
     @include glass-card-base;
     background: rgba($white, 0.05);
-    
+
     .selector-title {
       display: flex;
       align-items: center;
       gap: $spacing-sm + 0.25rem;
-      
+
       .title-with-icon {
         display: flex;
         align-items: center;
         gap: $spacing-sm;
         color: rgba($white, 0.9);
-        
+
         svg {
           font-size: $font-size-lg;
         }
-        
+
         h3 {
           margin: 0;
           color: rgba($white, 0.95);
@@ -138,7 +138,7 @@ body.modal-open {
           text-shadow: 0 1px 2px rgba($black, 0.3);
         }
       }
-      
+
       .selector-upload-btn {
         background: rgba(130, 180, 255, 0.2);
         border: $border-width-thin solid rgba(130, 180, 255, 0.3);
@@ -152,22 +152,22 @@ body.modal-open {
         cursor: pointer;
         transition: $transition-base;
         margin-left: $spacing-sm;
-        
+
         &:hover {
           background: rgba(130, 180, 255, 0.3);
         }
-        
+
         &:disabled {
           opacity: 0.5;
           cursor: not-allowed;
         }
-        
+
         .spin-icon {
           animation: spin 1.5s linear infinite;
         }
       }
     }
-    
+
     .close-selector-btn {
       background: rgba($white, 0.1);
       border: $border-width-thin solid rgba($white, 0.2);
@@ -183,7 +183,7 @@ body.modal-open {
       justify-content: center;
       line-height: 1;
       transition: $transition-base;
-      
+
       &:hover {
         background: rgba($danger, 0.2);
         border-color: rgba($danger, 0.4);
@@ -192,7 +192,7 @@ body.modal-open {
       }
     }
   }
-  
+
   /* 上传预览区域 */
   .upload-preview {
     margin: $spacing-sm $spacing-lg;
@@ -200,7 +200,7 @@ body.modal-open {
     background: rgba(35, 35, 45, 0.5);
     border-radius: $border-radius-sm;
     border: $border-width-thin solid rgba($white, 0.05);
-    
+
     .upload-file-info {
       p {
         margin: 0 0 $spacing-sm 0;
@@ -210,7 +210,7 @@ body.modal-open {
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      
+
       .upload-size-info {
         display: flex;
         align-items: center;
@@ -218,38 +218,38 @@ body.modal-open {
         font-size: $font-size-xs + 0.1rem;
         color: rgba($white, 0.7);
         margin-bottom: $spacing-sm;
-        
+
         .arrow {
           color: rgba($white, 0.4);
         }
-        
+
         .compression-rate {
           color: #4cd964;
         }
       }
     }
-    
+
     .upload-progress-container {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: $spacing-sm;
       margin-top: $spacing-sm;
-      
+
       .spin-icon, .upload-icon {
         color: rgba($white, 0.9);
         font-size: $font-size-md;
       }
-      
+
       .spin-icon {
         animation: spin 1.5s linear infinite;
       }
-      
+
       span {
         font-size: $font-size-xs + 0.1rem;
         color: rgba($white, 0.9);
       }
-      
+
       .progress-bar {
         width: 100%;
         height: 6px;
@@ -257,20 +257,20 @@ body.modal-open {
         border-radius: calc($border-radius-sm / 2);
         overflow: hidden;
         margin-top: $spacing-xs + 0.05rem;
-        
+
         .progress-bar-inner {
           height: 100%;
           background: linear-gradient(to right, $primary-300, #2980b9);
           border-radius: calc($border-radius-sm / 2);
           transition: width $transition-base;
         }
-        
+
         .upload-bar {
           background: linear-gradient(to right, #2ecc71, #27ae60);
         }
       }
     }
-    
+
     .upload-error {
       margin-top: $spacing-sm;
       p {
@@ -278,7 +278,7 @@ body.modal-open {
         font-size: $font-size-xs + 0.1rem;
         margin: 0 0 $spacing-sm 0;
       }
-      
+
       .retry-button {
         background: rgba($white, 0.1);
         color: rgba($white, 0.9);
@@ -288,14 +288,14 @@ body.modal-open {
         font-size: $font-size-xs + 0.1rem;
         cursor: pointer;
         transition: $transition-base;
-        
+
         &:hover {
           background: rgba($white, 0.2);
         }
       }
     }
   }
-  
+
   /* 选择器内容区域 */
   .selector-content {
     flex: 1;
@@ -303,7 +303,7 @@ body.modal-open {
     padding: $spacing-md + 0.25rem;
     max-height: calc(80vh - 200px); /* 为头部和底部留出空间 */
     min-height: 300px;
-    
+
     // 自定义滚动条
     &::-webkit-scrollbar {
       width: 8px;
@@ -322,7 +322,7 @@ body.modal-open {
         background: rgba($primary-200, 0.6);
       }
     }
-    
+
     .selector-loading, .selector-empty {
       display: flex;
       flex-direction: column;
@@ -330,14 +330,14 @@ body.modal-open {
       justify-content: center;
       min-height: 200px;
       color: rgba($white, 0.6);
-      
+
       .spin-icon {
         font-size: $font-size-lg;
         margin-bottom: $spacing-sm;
         animation: spin 1.5s linear infinite;
       }
     }
-    
+
     .selector-list {
       list-style: none;
       padding: 0;
@@ -345,7 +345,7 @@ body.modal-open {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: $spacing-md;
-      
+
       .selector-item {
         display: flex;
         flex-direction: column;
@@ -356,35 +356,37 @@ body.modal-open {
         border: $border-width-thin solid rgba($white, 0.05);
         overflow: hidden;
         position: relative;
-        
+
         &:hover {
           background: rgba(35, 35, 45, 0.8);
           transform: translateY(-2px);
           box-shadow: $shadow-sm;
         }
-        
+
         &.selected {
-          border: 2px solid #9376E0;
+          border: 2px solid #9376e0;
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(147, 118, 224, 0.4);
         }
-        
+
         &.loading .image-preview {
-          background: linear-gradient(110deg,
-              rgba($gray-700, 0.8) 8%,
-              rgba($gray-600, 0.9) 18%,
-              rgba($gray-700, 0.8) 33%);
+          background: linear-gradient(
+            110deg,
+            rgba($gray-700, 0.8) 8%,
+            rgba($gray-600, 0.9) 18%,
+            rgba($gray-700, 0.8) 33%
+          );
           background-size: 200% 100%;
           animation: shimmer 1.5s infinite linear;
         }
-        
+
         .image-preview {
           width: 100%;
           position: relative;
           padding-top: 75%; /* 4:3 aspect ratio */
           overflow: hidden;
           background: rgba($gray-700, 0.3);
-          
+
           img {
             position: absolute;
             top: 0;
@@ -393,7 +395,7 @@ body.modal-open {
             height: 100%;
             object-fit: cover;
           }
-          
+
           .image-placeholder {
             position: absolute;
             top: 0;
@@ -405,13 +407,13 @@ body.modal-open {
             justify-content: center;
             background: rgba($gray-700, 0.5);
             color: rgba($white, 0.6);
-            
+
             .spin-icon {
               font-size: $font-size-lg;
               animation: spin 1.5s linear infinite;
             }
           }
-          
+
           .image-error {
             position: absolute;
             top: 0;
@@ -425,17 +427,17 @@ body.modal-open {
             background: rgba($danger, 0.1);
             color: rgba($danger, 0.8);
             gap: $spacing-xs;
-            
+
             svg {
               font-size: $font-size-md;
             }
-            
+
             span {
               font-size: $font-size-xs;
               font-weight: $font-weight-medium;
             }
           }
-          
+
           .selected-overlay {
             position: absolute;
             top: 0;
@@ -446,7 +448,7 @@ body.modal-open {
             display: flex;
             align-items: center;
             justify-content: center;
-            
+
             .selected-icon {
               font-size: $font-size-xxl;
               color: $white;
@@ -454,10 +456,10 @@ body.modal-open {
             }
           }
         }
-        
+
         .image-info {
           padding: $spacing-sm + 0.25rem;
-          
+
           .image-name {
             font-size: $font-size-sm;
             color: rgba($white, 0.9);
@@ -469,13 +471,13 @@ body.modal-open {
       }
     }
   }
-  
+
   .selector-footer {
     padding: $spacing-md $spacing-lg;
     display: flex;
     justify-content: flex-end;
     border-top: $border-width-thin solid rgba($white, 0.1);
-    
+
     .cancel-button {
       background: rgba($white, 0.1);
       border: $border-width-thin solid rgba($white, 0.2);
@@ -485,7 +487,7 @@ body.modal-open {
       font-size: $font-size-sm + 0.05rem;
       cursor: pointer;
       transition: $transition-base;
-      
+
       &:hover {
         background: rgba($white, 0.2);
       }
@@ -498,7 +500,7 @@ body.modal-open {
   .image-selector-modal {
     width: 95%;
     max-width: none;
-    
+
     .selector-content {
       .selector-list {
         grid-template-columns: repeat(2, 1fr);
@@ -515,4 +517,4 @@ body.modal-open {
       }
     }
   }
-} 
+}

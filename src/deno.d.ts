@@ -8,7 +8,7 @@ declare namespace Deno {
 // 扩展 NodeJS.Timeout 类型兼容性
 declare global {
   type DenoTimeout = number;
-  
+
   namespace NodeJS {
     type Timeout = number | ReturnType<typeof setTimeout>;
   }

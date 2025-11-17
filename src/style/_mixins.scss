@@ -9,7 +9,6 @@
 
 // 基础毛玻璃 hover 效果，不包含动画
 @mixin glass-card-hover-base {
-
   .title,
   h3,
   h4,
@@ -60,25 +59,25 @@
   & {
     position: relative;
     // 使用 glass-effect 的样式替换基础样式
-    background: 
+    background:
       linear-gradient(135deg, var(--glass-white-027) 0%, var(--glass-white-013) 100%),
       linear-gradient(225deg, var(--glass-white-02) 0%, var(--glass-white-007) 100%),
       var(--glass-black-017);
-    
+
     backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
     -webkit-backdrop-filter: var(--glass-blur-medium) var(--glass-saturation) var(--glass-brightness);
-    
+
     border-radius: var(--glass-border-radius);
     border: 1px solid var(--glass-white-1);
-    
-    box-shadow: 
+
+    box-shadow:
       var(--glass-shadow-medium),
       inset 0 1px 0 var(--glass-white-15),
       inset 0 -1px 0 var(--glass-white-05);
-    
+
     transition: var(--glass-transition);
     overflow: hidden;
-    
+
     will-change: transform, opacity, backdrop-filter;
     contain: layout style paint;
   }
@@ -104,7 +103,7 @@
     opacity: 1;
     user-select: none;
   }
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -112,22 +111,23 @@
     left: -1px;
     right: -1px;
     bottom: -1px;
-    background: linear-gradient(135deg, 
-      var(--glass-white-2) 0%, 
-      var(--glass-white-05) 50%, 
-      var(--glass-white-1) 100%);
+    background: linear-gradient(135deg, var(--glass-white-2) 0%, var(--glass-white-05) 50%, var(--glass-white-1) 100%);
     border-radius: inherit;
     z-index: -1;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     mask-composite: xor;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
   }
-  
+
   @supports not (backdrop-filter: blur(20px)) {
     background: var(--glass-black-85) !important;
   }
-  
+
   @media (prefers-reduced-motion: reduce) {
     transition: none;
     backdrop-filter: none;
@@ -146,9 +146,7 @@
     -webkit-backdrop-filter: blur(10px);
     border-radius: var(--glass-border-radius);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow:
-      0 4px 6px rgba(0, 0, 0, 0.1),
-      0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
     overflow: hidden;
   }
 
@@ -179,20 +177,14 @@
 @mixin glass-card-hover {
   & {
     // 移除3D变换效果
-    box-shadow:
-      0 10px 20px rgba(0, 0, 0, 0.1),
-      0 6px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
 
     .card-glow {
-      background: radial-gradient(circle at var(--mouse-x) var(--mouse-y),
-          rgba(255, 255, 255, 0.8),
-          transparent 80%);
+      background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.8), transparent 80%);
     }
 
     .card-border-glow {
-      background: radial-gradient(circle at var(--mouse-x) var(--mouse-y),
-          rgba(255, 255, 255, 0.8),
-          transparent 40%);
+      background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(255, 255, 255, 0.8), transparent 40%);
       box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.1);
     }
   }
@@ -239,10 +231,7 @@
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow:
-      0 15px 30px rgba(0, 0, 0, 0.2),
-      0 10px 10px rgba(0, 0, 0, 0.1),
-      0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -328,19 +317,19 @@
 
 // 响应式设计 mixins
 @mixin responsive-breakpoint($size) {
-  @if $size==sm {
+  @if $size == sm {
     @media (max-width: 480px) {
       @content;
     }
   }
 
-  @if $size==md {
+  @if $size == md {
     @media (max-width: 768px) {
       @content;
     }
   }
 
-  @if $size==lg {
+  @if $size == lg {
     @media (max-width: 1024px) {
       @content;
     }

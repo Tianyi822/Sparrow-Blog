@@ -11,7 +11,7 @@ export const SUCCESS_MESSAGES = {
   UPLOAD_SUCCESS: '上传成功',
   SEND_SUCCESS: '发送成功',
   APPLY_SUCCESS: '申请提交成功',
-  REBUILD_INDEX_SUCCESS: '重建索引成功'
+  REBUILD_INDEX_SUCCESS: '重建索引成功',
 } as const;
 
 // 错误消息
@@ -29,7 +29,7 @@ export const ERROR_MESSAGES = {
   RESOURCE_NOT_FOUND: '请求的资源不存在',
   VALIDATION_FAILED: '表单验证失败',
   FILE_TOO_LARGE: '文件过大',
-  INVALID_FILE_TYPE: '文件类型不支持'
+  INVALID_FILE_TYPE: '文件类型不支持',
 } as const;
 
 // 警告消息
@@ -37,7 +37,7 @@ export const WARNING_MESSAGES = {
   UNSAVED_CHANGES: '您有未保存的更改，确定要离开吗？',
   DELETE_CONFIRM: '确定要删除吗？此操作不可撤销',
   CLEAR_CACHE_CONFIRM: '确定要清除缓存吗？',
-  REBUILD_INDEX_CONFIRM: '确定要重建索引吗？这可能需要一些时间'
+  REBUILD_INDEX_CONFIRM: '确定要重建索引吗？这可能需要一些时间',
 } as const;
 
 // 信息提示
@@ -55,7 +55,7 @@ export const INFO_MESSAGES = {
   SEARCH_PLACEHOLDER: '搜索...',
   EMAIL_PLACEHOLDER: '请输入邮箱地址',
   PASSWORD_PLACEHOLDER: '请输入密码',
-  VERIFICATION_CODE_PLACEHOLDER: '请输入验证码'
+  VERIFICATION_CODE_PLACEHOLDER: '请输入验证码',
 } as const;
 
 // 表单验证消息
@@ -67,7 +67,7 @@ export const VALIDATION_MESSAGES = {
   TOO_LONG: '内容过长',
   INVALID_FORMAT: '格式不正确',
   PASSWORD_TOO_SHORT: '密码长度至少6位',
-  CONFIRM_PASSWORD_MISMATCH: '两次输入的密码不一致'
+  CONFIRM_PASSWORD_MISMATCH: '两次输入的密码不一致',
 } as const;
 
 // 操作确认消息
@@ -78,7 +78,7 @@ export const CONFIRM_MESSAGES = {
   DELETE_FRIEND_LINK: '确定要删除这个友链吗？',
   LOGOUT: '确定要退出登录吗？',
   CLEAR_DRAFT: '确定要清除草稿吗？',
-  RESET_FORM: '确定要重置表单吗？'
+  RESET_FORM: '确定要重置表单吗？',
 } as const;
 
 // 状态标签
@@ -92,7 +92,7 @@ export const STATUS_LABELS = {
   ENABLED: '启用',
   DISABLED: '禁用',
   ONLINE: '在线',
-  OFFLINE: '离线'
+  OFFLINE: '离线',
 } as const;
 
 // 按钮文本
@@ -118,5 +118,5 @@ export const BUTTON_TEXTS = {
   SELECT: '选择',
   PREVIEW: '预览',
   PUBLISH: '发布',
-  DRAFT: '保存草稿'
+  DRAFT: '保存草稿',
 } as const;

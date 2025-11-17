@@ -1,3 +1,3 @@
 import TypeWriter from './TypeWriter';
 
-export default TypeWriter; 
+export default TypeWriter;

@@ -1,3 +1,3 @@
 import Introduction from './Introduction';
 
-export default Introduction; 
+export default Introduction;

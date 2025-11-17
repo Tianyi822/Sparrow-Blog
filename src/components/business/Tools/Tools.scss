@@ -3,63 +3,61 @@
 
 /* 工具组件容器 */
 .tools {
-    position: fixed;
-    bottom: $spacing-lg;
-    right: $spacing-lg;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-md;  /* 组件之间的间距 */
-    align-items: flex-end;  /* 让子元素靠右对齐 */
+  position: fixed;
+  bottom: $spacing-lg;
+  right: $spacing-lg;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md; /* 组件之间的间距 */
+  align-items: flex-end; /* 让子元素靠右对齐 */
 
-    /* 评论按钮样式已在 CommentsButton.scss 中定义 */
-    .tools-comments-button {
-        flex-shrink: 0; /* 防止按钮被压缩 */
+  /* 评论按钮样式已在 CommentsButton.scss 中定义 */
+  .tools-comments-button {
+    flex-shrink: 0; /* 防止按钮被压缩 */
+  }
+
+  /* 目录按钮样式已在 TOCButton.scss 中定义 */
+  .tools-toc-button {
+    flex-shrink: 0; /* 防止按钮被压缩 */
+  }
+
+  /* 返回顶部按钮 */
+  .tools-back-to-top {
+    flex-shrink: 0; /* 防止按钮被压缩 */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity $transition-base, visibility $transition-base;
+
+    /* 可见状态 */
+    &.visible {
+      opacity: 1;
+      visibility: visible;
     }
 
-    /* 目录按钮样式已在 TOCButton.scss 中定义 */
-    .tools-toc-button {
-        flex-shrink: 0; /* 防止按钮被压缩 */
+    /* 动画状态 */
+    &.animating {
+      animation: floatUp $transition-base forwards;
+      pointer-events: none;
     }
+  }
 
-    /* 返回顶部按钮 */
-    .tools-back-to-top {
-        flex-shrink: 0; /* 防止按钮被压缩 */
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity $transition-base, visibility $transition-base;
-
-        /* 可见状态 */
-        &.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* 动画状态 */
-        &.animating {
-            animation: floatUp $transition-base forwards;
-            pointer-events: none;
-        }
-    }
-
-    /* 网站备案信息样式在 ICPFilingNumber 组件内部定义 */
-    .tools-website-record {
-        flex-shrink: 0; /* 防止组件被压缩 */
-    }
-
-
+  /* 网站备案信息样式在 ICPFilingNumber 组件内部定义 */
+  .tools-website-record {
+    flex-shrink: 0; /* 防止组件被压缩 */
+  }
 }
 
 /* 上浮动画 */
 @keyframes floatUp {
-    0% {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-    100% {
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-20px);
-    }
+  0% {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+  }
 }

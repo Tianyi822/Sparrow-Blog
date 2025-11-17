@@ -1,3 +1,3 @@
 import OssSetting from './OssSetting';
 
-export default OssSetting; 
+export default OssSetting;

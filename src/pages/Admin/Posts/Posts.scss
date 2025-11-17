@@ -1,4 +1,4 @@
-@use "sass:color";
+@use 'sass:color';
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
 
@@ -483,14 +483,10 @@
         isolation: isolate;
 
         tr {
-          background: linear-gradient(135deg, 
-            rgba($white, 0.06), 
-            rgba($white, 0.04)) !important;
+          background: linear-gradient(135deg, rgba($white, 0.06), rgba($white, 0.04)) !important;
 
           th {
-            background: linear-gradient(135deg, 
-              rgba($white, 0.06), 
-              rgba($white, 0.04)) !important;
+            background: linear-gradient(135deg, rgba($white, 0.06), rgba($white, 0.04)) !important;
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             font-weight: $font-weight-medium;
@@ -550,17 +546,13 @@
         z-index: 3;
 
         &.index-column {
-          background: linear-gradient(135deg, 
-            rgba($white, 0.06), 
-            rgba($white, 0.04)) !important;
+          background: linear-gradient(135deg, rgba($white, 0.06), rgba($white, 0.04)) !important;
           left: 0;
           box-shadow: 2px 0 6px rgba($black, 0.08);
         }
 
         &.title-column {
-          background: linear-gradient(135deg, 
-            rgba($white, 0.06), 
-            rgba($white, 0.04)) !important;
+          background: linear-gradient(135deg, rgba($white, 0.06), rgba($white, 0.04)) !important;
           left: 70px;
         }
       }
@@ -630,33 +622,25 @@
         transition: $transition-base;
 
         &.public {
-          background: linear-gradient(135deg, 
-            rgba($success, 0.2), 
-            rgba($success, 0.3));
+          background: linear-gradient(135deg, rgba($success, 0.2), rgba($success, 0.3));
           border: $border-width-thin solid rgba($success, 0.4);
           color: color.adjust($success, $lightness: 10%);
           box-shadow: 0 0 10px rgba($success, 0.2);
 
           &:hover {
-            background: linear-gradient(135deg, 
-              rgba($success, 0.3), 
-              rgba($success, 0.4));
+            background: linear-gradient(135deg, rgba($success, 0.3), rgba($success, 0.4));
             transform: scale(1.05);
           }
         }
 
         &.hidden {
-          background: linear-gradient(135deg, 
-            rgba($gray-500, 0.2), 
-            rgba($gray-500, 0.3));
+          background: linear-gradient(135deg, rgba($gray-500, 0.2), rgba($gray-500, 0.3));
           border: $border-width-thin solid rgba($gray-500, 0.4);
           color: color.adjust($gray-500, $lightness: 10%);
           box-shadow: 0 0 10px rgba($gray-500, 0.2);
 
           &:hover {
-            background: linear-gradient(135deg, 
-              rgba($gray-500, 0.3), 
-              rgba($gray-500, 0.4));
+            background: linear-gradient(135deg, rgba($gray-500, 0.3), rgba($gray-500, 0.4));
             transform: scale(1.05);
           }
         }

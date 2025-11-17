@@ -9,10 +9,11 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, 
-    rgba($gray-900, 0.3) 0%, 
-    rgba($primary-500, 0.05) 25%, 
-    rgba($primary-400, 0.08) 50%, 
+  background: linear-gradient(
+    135deg,
+    rgba($gray-900, 0.3) 0%,
+    rgba($primary-500, 0.05) 25%,
+    rgba($primary-400, 0.08) 50%,
     rgba($gray-800, 0.2) 100%
   );
 
@@ -63,11 +64,12 @@
       transform: translateX(-50%);
       width: 80%;
       height: $border-width-thin;
-      background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba($primary-200, 0.3) 20%, 
-        rgba($primary-300, 0.6) 50%, 
-        rgba($primary-200, 0.3) 80%, 
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba($primary-200, 0.3) 20%,
+        rgba($primary-300, 0.6) 50%,
+        rgba($primary-200, 0.3) 80%,
         transparent 100%
       );
     }
@@ -107,7 +109,7 @@
     &::-webkit-scrollbar-thumb {
       background: rgba($primary-200, 0.4);
       border-radius: $border-radius-sm;
-      
+
       &:hover {
         background: rgba($primary-200, 0.6);
       }
@@ -167,10 +169,7 @@
 
       // 活动状态
       &.active {
-        background: linear-gradient(135deg, 
-          rgba($primary-300, 0.2), 
-          rgba($primary-400, 0.15)
-        );
+        background: linear-gradient(135deg, rgba($primary-300, 0.2), rgba($primary-400, 0.15));
         color: $white;
         border-color: $primary-200;
         font-weight: $font-weight-semibold;
@@ -339,10 +338,7 @@
 
         // 活动状态
         &.active {
-          background: linear-gradient(90deg, 
-            rgba($primary-300, 0.2), 
-            rgba($primary-400, 0.15)
-          );
+          background: linear-gradient(90deg, rgba($primary-300, 0.2), rgba($primary-400, 0.15));
           color: $white;
           font-weight: $font-weight-semibold;
 
@@ -424,9 +420,10 @@
       left: -2px;
       right: -2px;
       bottom: -2px;
-      background: linear-gradient(45deg, 
-        rgba($primary-300, 0.2), 
-        rgba($white, 0.05), 
+      background: linear-gradient(
+        45deg,
+        rgba($primary-300, 0.2),
+        rgba($white, 0.05),
         rgba($primary-400, 0.15),
         rgba($primary-200, 0.1)
       );

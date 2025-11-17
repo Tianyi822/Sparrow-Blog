@@ -2,9 +2,18 @@ import { getUserConfig } from '@/services/adminService';
 import { businessApiRequest } from '@/services/api';
 import { ApiResponse } from '@/types';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { FiChevronLeft, FiChevronRight, FiEdit, FiFileText, FiImage, FiLogOut, FiMessageCircle, FiSettings } from 'react-icons/fi';
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiEdit,
+  FiFileText,
+  FiImage,
+  FiLogOut,
+  FiMessageCircle,
+  FiSettings,
+} from 'react-icons/fi';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useUserStore, useUIStore } from '@/stores';
+import { useUIStore, useUserStore } from '@/stores';
 import './AdminLayout.scss';
 import { LayoutContext } from './LayoutContext';
 
@@ -44,7 +53,7 @@ const AdminLayout: React.FC = () => {
             avatar: response.data.avatar_image,
             role: 'admin',
             createdAt: '',
-            updatedAt: ''
+            updatedAt: '',
           });
         }
       } catch (error) {
@@ -116,8 +125,8 @@ const AdminLayout: React.FC = () => {
   // 如果是登录页，则只渲染Outlet部分，不显示侧边栏和导航
   if (isLoginPage) {
     return (
-      <div className="admin-layout login-only">
-        <main className="admin-main full-width">
+      <div className='admin-layout login-only'>
+        <main className='admin-main full-width'>
           <Outlet />
         </main>
       </div>
@@ -129,62 +138,62 @@ const AdminLayout: React.FC = () => {
     <LayoutContext.Provider value={{ collapsed: sidebarCollapsed, isLayoutTransitioning }}>
       <div className={`admin-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         {/* 侧边栏 */}
-        <aside className="admin-sidebar">
-          <div className="sidebar-header">
-            <h1 className="logo">{user?.username || '加载中...'}</h1>
-            <button className="collapse-btn" onClick={toggleSidebar} aria-label="折叠菜单">
+        <aside className='admin-sidebar'>
+          <div className='sidebar-header'>
+            <h1 className='logo'>{user?.username || '加载中...'}</h1>
+            <button type='button' className='collapse-btn' onClick={toggleSidebar} aria-label='折叠菜单'>
               {sidebarCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
             </button>
           </div>
 
           {/* 导航菜单 */}
-          <nav className="sidebar-nav">
+          <nav className='sidebar-nav'>
             <ul>
               <li>
-                <Link to="/admin" className={`nav-item ${isActive('/admin', true) ? 'active' : ''}`}>
-                  <FiFileText className="nav-icon" />
-                  <span className="nav-text">文章管理</span>
+                <Link to='/admin' className={`nav-item ${isActive('/admin', true) ? 'active' : ''}`}>
+                  <FiFileText className='nav-icon' />
+                  <span className='nav-text'>文章管理</span>
                 </Link>
               </li>
               <li>
-                <Link to="/admin/edit" className={`nav-item ${isActive('/admin/edit', true) ? 'active' : ''}`}>
-                  <FiEdit className="nav-icon" />
-                  <span className="nav-text">文章编辑</span>
+                <Link to='/admin/edit' className={`nav-item ${isActive('/admin/edit', true) ? 'active' : ''}`}>
+                  <FiEdit className='nav-icon' />
+                  <span className='nav-text'>文章编辑</span>
                 </Link>
               </li>
               <li>
-                <Link to="/admin/gallery" className={`nav-item ${isActive('/admin/gallery') ? 'active' : ''}`}>
-                  <FiImage className="nav-icon" />
-                  <span className="nav-text">图库管理</span>
+                <Link to='/admin/gallery' className={`nav-item ${isActive('/admin/gallery') ? 'active' : ''}`}>
+                  <FiImage className='nav-icon' />
+                  <span className='nav-text'>图库管理</span>
                 </Link>
               </li>
               <li>
-                <Link to="/admin/comments" className={`nav-item ${isActive('/admin/comments', true) ? 'active' : ''}`}>
-                  <FiMessageCircle className="nav-icon" />
-                  <span className="nav-text">评论管理</span>
+                <Link to='/admin/comments' className={`nav-item ${isActive('/admin/comments', true) ? 'active' : ''}`}>
+                  <FiMessageCircle className='nav-icon' />
+                  <span className='nav-text'>评论管理</span>
                 </Link>
               </li>
               <li>
-                <Link to="/admin/settings" className={`nav-item ${isActive('/admin/settings', true) ? 'active' : ''}`}>
-                  <FiSettings className="nav-icon" />
-                  <span className="nav-text">系统设置</span>
+                <Link to='/admin/settings' className={`nav-item ${isActive('/admin/settings', true) ? 'active' : ''}`}>
+                  <FiSettings className='nav-icon' />
+                  <span className='nav-text'>系统设置</span>
                 </Link>
               </li>
             </ul>
           </nav>
 
           {/* 底部操作区 */}
-          <div className="sidebar-footer">
-            <button className="logout-btn" onClick={handleLogout}>
-              <FiLogOut className="nav-icon" style={{ display: 'block', minWidth: '1.2rem' }} />
-              <span className="nav-text">退出登录</span>
+          <div className='sidebar-footer'>
+            <button type='button' className='logout-btn' onClick={handleLogout}>
+              <FiLogOut className='nav-icon' style={{ display: 'block', minWidth: '1.2rem' }} />
+              <span className='nav-text'>退出登录</span>
             </button>
           </div>
         </aside>
 
         {/* 主内容区域 */}
-        <div className="admin-content">
-          <main className="admin-main">
+        <div className='admin-content'>
+          <main className='admin-main'>
             <Outlet />
           </main>
         </div>

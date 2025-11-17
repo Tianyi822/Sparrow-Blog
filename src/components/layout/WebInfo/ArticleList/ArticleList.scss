@@ -1,122 +1,120 @@
-@use '@/style/mixins'as *;
-@use '@/style/variables'as var;
+@use '@/style/mixins' as *;
+@use '@/style/variables' as var;
 @use '@/style/glass' as *;
 
 .article-list-container {
-    width: 100%;
+  width: 100%;
+  position: relative;
+  border-radius: var.$border-radius-md;
+  padding: var.$spacing-md + 0.2rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  transform: translateY(0) scale(1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  @include glass-card-complete;
+
+  // 光晕效果
+  .article-list-border-glow {
+    position: absolute;
+    inset: -15px;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: calc(#{var.$border-radius-md} + 15px);
+    transition: all 0.3s ease-out;
+    mix-blend-mode: normal;
+    opacity: 0;
+    user-select: none;
+  }
+
+  // 文章列表
+  .article-list {
     position: relative;
-    border-radius: var.$border-radius-md;
-    padding: var.$spacing-md + 0.2rem;
-    box-sizing: border-box;
-    overflow: hidden;
-    transform: translateY(0) scale(1);
-    transition: all 0.3s ease;
-    cursor: pointer;
-    
-    @include glass-card-complete;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: var.$spacing-md;
 
-    // 光晕效果
-    .article-list-border-glow {
-        position: absolute;
-        inset: -15px;
-        z-index: 1;
-        pointer-events: none;
-        border-radius: calc(#{var.$border-radius-md} + 15px);
-        transition: all 0.3s ease-out;
-        mix-blend-mode: normal;
-        opacity: 0;
-        user-select: none;
-    }
+    // 文章条目
+    .article-item {
+      display: flex;
+      gap: var.$spacing-sm + 0.3rem;
+      cursor: pointer;
+      transition: var.$transition-base;
+      border-radius: var.$border-radius-md;
+      padding: var.$spacing-xs;
 
-    // 文章列表
-    .article-list {
-        position: relative;
-        z-index: 3;
+      // 文章图片
+      .article-image {
+        width: 50px;
+        height: 50px;
+        border-radius: var.$border-radius-circle;
+        object-fit: cover;
+      }
+
+      // 文章信息
+      .article-info {
+        flex: 1;
         display: flex;
         flex-direction: column;
-        gap: var.$spacing-md;
+        justify-content: space-between;
+        border-radius: var.$border-radius-md;
 
-        // 文章条目
-        .article-item {
-            display: flex;
-            gap: var.$spacing-sm + 0.3rem;
-            cursor: pointer;
-            transition: var.$transition-base;
-            border-radius: var.$border-radius-md;
-            padding: var.$spacing-xs;
-
-            // 文章图片
-            .article-image {
-                width: 50px;
-                height: 50px;
-                border-radius: var.$border-radius-circle;
-                object-fit: cover;
-            }
-
-            // 文章信息
-            .article-info {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                border-radius: var.$border-radius-md;
-
-                // 文章标题
-                .article-title {
-                    margin: 0;
-                    font-size: var.$font-size-sm;
-                    color: rgba(255, 255, 255, 0.95);
-                    display: -webkit-box;
-                    line-clamp: 1;
-                    -webkit-line-clamp: 1;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    transition: var.$transition-base;
-                    word-break: break-all;
-                    max-width: 200px;
-                    border-radius: var.$border-radius-md;
-                }
-
-                // 文章日期
-                .article-date {
-                    font-size: var.$font-size-xs;
-                    color: rgba(255, 255, 255, 0.8);
-                    transition: var.$transition-base;
-                    border-radius: var.$border-radius-md;
-                }
-            }
-
-            // 文章条目悬停效果
-            &:hover {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: var.$border-radius-pill;
-                transform: scale(1.02);
-            }
+        // 文章标题
+        .article-title {
+          margin: 0;
+          font-size: var.$font-size-sm;
+          color: rgba(255, 255, 255, 0.95);
+          display: -webkit-box;
+          line-clamp: 1;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          transition: var.$transition-base;
+          word-break: break-all;
+          max-width: 200px;
+          border-radius: var.$border-radius-md;
         }
-    }
 
-    // 容器悬停效果
-    &:hover {
-        // 毛玻璃背景增强效果
-        background: 
-            linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
-            linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
-            rgba(0, 0, 0, 0.02);
-        
-        backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
-        -webkit-backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
-        
-        box-shadow: 
-            0 12px 40px rgba(0, 0, 0, 0.15),
-            0 4px 12px rgba(0, 0, 0, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2),
-            inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-
-        .article-list-border-glow {
-            box-shadow: 
-                0 0 30px 8px rgba(255, 255, 255, 0.6),
-                0 0 60px 15px rgba(255, 255, 255, 0.3);
-            opacity: 1;
+        // 文章日期
+        .article-date {
+          font-size: var.$font-size-xs;
+          color: rgba(255, 255, 255, 0.8);
+          transition: var.$transition-base;
+          border-radius: var.$border-radius-md;
         }
+      }
+
+      // 文章条目悬停效果
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var.$border-radius-pill;
+        transform: scale(1.02);
+      }
     }
+  }
+
+  // 容器悬停效果
+  &:hover {
+    // 毛玻璃背景增强效果
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
+      linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
+      rgba(0, 0, 0, 0.02);
+
+    backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+    -webkit-backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+
+    .article-list-border-glow {
+      box-shadow: 0 0 30px 8px rgba(255, 255, 255, 0.6), 0 0 60px 15px rgba(255, 255, 255, 0.3);
+      opacity: 1;
+    }
+  }
 }

@@ -1,6 +1,6 @@
-import { useOutletContext } from "react-router-dom";
-import { BasicData } from "@/types";
-import type { TOCItem } from "@/components/business/Tools/TOCModal/TOCModal";
+import { useOutletContext } from 'react-router-dom';
+import { BasicData } from '@/types';
+import type { TOCItem } from '@/components/business/Tools/TOCModal/TOCModal';
 
 // Define the type for our context
 export type BlogLayoutContext = {

@@ -1,3 +1,3 @@
 import BlogContent from './BlogContent';
- 
-export default BlogContent; 
+
+export default BlogContent;

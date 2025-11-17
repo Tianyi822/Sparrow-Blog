@@ -1,5 +1,5 @@
-@use '@/style/mixins'as *;
-@use '@/style/variables'as var;
+@use '@/style/mixins' as *;
+@use '@/style/variables' as var;
 
 /* 
  * OSS对象存储设置卡片组件
@@ -66,7 +66,7 @@
         .oss-icon {
           font-size: var.$font-size-xxxl;
           margin-bottom: var.$spacing-md;
-          color: #9376E0;
+          color: #9376e0;
         }
 
         h2 {
@@ -160,7 +160,7 @@
 
           &:focus {
             outline: none;
-            border-color: #9376E0;
+            border-color: #9376e0;
             box-shadow: 0 0 0 2px rgba(147, 118, 224, 0.3);
           }
 

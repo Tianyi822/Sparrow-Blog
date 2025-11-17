@@ -1,12 +1,8 @@
-import {
-  getUserInfo,
-  loginWithVerificationCode,
-  sendVerificationCode
-} from '@/services/adminService';
+import { getUserInfo, loginWithVerificationCode, sendVerificationCode } from '@/services/adminService';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { FiLock, FiMail } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import { STORAGE_KEYS, ADMIN_ROUTES } from '../../../constants';
+import { ADMIN_ROUTES, STORAGE_KEYS } from '../../../constants';
 import { localStorage } from '@/utils';
 import './Login.scss';
 
@@ -21,15 +17,13 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-
-
 const Login: React.FC = memo(() => {
   const navigate = useNavigate();
 
   // 状态定义
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
-    verifyCode: ''
+    verifyCode: '',
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitError, setSubmitError] = useState<string>('');
@@ -100,14 +94,14 @@ const Login: React.FC = memo(() => {
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // 清除该字段的错误
     if (errors[name]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -140,17 +134,17 @@ const Login: React.FC = memo(() => {
   const handleSendVerifyCode = useCallback(async () => {
     // 先验证邮箱
     if (!formData.email.trim()) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        email: '邮箱不能为空'
+        email: '邮箱不能为空',
       }));
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        email: '请输入有效的邮箱地址'
+        email: '请输入有效的邮箱地址',
       }));
       return;
     }
@@ -159,7 +153,7 @@ const Login: React.FC = memo(() => {
       setVerifyCodeSending(true);
       // 调用验证码发送接口
       await sendVerificationCode({
-        user_email: formData.email
+        user_email: formData.email,
       });
 
       setCountdown(60); // 设置60秒倒计时
@@ -184,7 +178,7 @@ const Login: React.FC = memo(() => {
       // 调用登录接口
       const response = await loginWithVerificationCode({
         user_email: formData.email,
-        verification_code: formData.verifyCode
+        verification_code: formData.verifyCode,
       });
 
       // 登录成功直接跳转到管理后台
@@ -205,87 +199,83 @@ const Login: React.FC = memo(() => {
   }, [formData.email, formData.verifyCode, navigate, validateForm]);
 
   return (
-    <div className="login-container">
+    <div className='login-container'>
       {/* 背景装饰动效 */}
-      <div className="login-background">
-        <div className="floating-shapes">
-          <div className="shape shape-1"></div>
-          <div className="shape shape-2"></div>
-          <div className="shape shape-3"></div>
-          <div className="shape shape-4"></div>
-          <div className="shape shape-5"></div>
+      <div className='login-background'>
+        <div className='floating-shapes'>
+          <div className='shape shape-1'></div>
+          <div className='shape shape-2'></div>
+          <div className='shape shape-3'></div>
+          <div className='shape shape-4'></div>
+          <div className='shape shape-5'></div>
         </div>
       </div>
-      
-      <div className="login-card">
-        <div className="login-header">
+
+      <div className='login-card'>
+        <div className='login-header'>
           <h1>
             {fetchingUserData ? '验证码登录' : userName ? `欢迎回来，${userName}` : '验证码登录'}
           </h1>
           <p>{userName ? '请输入验证码以安全登录您的管理后台' : '请输入验证码完成登录'}</p>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">
-              <FiMail className="icon" />
+        <form className='login-form' onSubmit={handleSubmit}>
+          <div className='form-group'>
+            <label htmlFor='email'>
+              <FiMail className='icon' />
               <span>邮箱</span>
             </label>
-            <div className="input-container">
+            <div className='input-container'>
               <input
-                type="email"
-                id="email"
-                name="email"
+                type='email'
+                id='email'
+                name='email'
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="请输入您的邮箱"
+                placeholder='请输入您的邮箱'
               />
             </div>
-            {errors.email && <div className="error-message">{errors.email}</div>}
+            {errors.email && <div className='error-message'>{errors.email}</div>}
           </div>
 
-          <div className="form-group verify-code-group">
-            <label htmlFor="verifyCode">
-              <FiLock className="icon" />
+          <div className='form-group verify-code-group'>
+            <label htmlFor='verifyCode'>
+              <FiLock className='icon' />
               <span>验证码</span>
             </label>
-            <div className="verify-code-container">
+            <div className='verify-code-container'>
               <input
-                type="text"
-                id="verifyCode"
-                name="verifyCode"
+                type='text'
+                id='verifyCode'
+                name='verifyCode'
                 value={formData.verifyCode}
                 onChange={handleChange}
-                placeholder="请输入验证码"
+                placeholder='请输入验证码'
                 maxLength={20}
               />
               <button
-                type="button"
-                className="verify-code-button"
+                type='button'
+                className='verify-code-button'
                 onClick={handleSendVerifyCode}
                 disabled={countdown > 0 || verifyCodeSending}
               >
-                {verifyCodeSending
-                  ? '发送中...'
-                  : countdown > 0
-                    ? `${countdown}秒后重试`
-                    : '获取验证码'}
+                {verifyCodeSending ? '发送中...' : countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
               </button>
             </div>
-            {errors.verifyCode && <div className="error-message">{errors.verifyCode}</div>}
+            {errors.verifyCode && <div className='error-message'>{errors.verifyCode}</div>}
           </div>
 
           <button
-            type="submit"
-            className="login-button"
+            type='submit'
+            className='login-button'
             disabled={loading}
           >
             {loading ? '登录中...' : '登录'}
           </button>
 
           {submitError && (
-            <div className="submit-error-container">
-              <div className="submit-error">{submitError}</div>
+            <div className='submit-error-container'>
+              <div className='submit-error'>{submitError}</div>
             </div>
           )}
         </form>

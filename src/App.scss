@@ -1,33 +1,33 @@
 /* 全局隐藏滚动条 - 保持此处以确保向后兼容性 */
 ::-webkit-scrollbar {
-    display: none; /* Chrome, Safari 和 Opera */
+  display: none; /* Chrome, Safari 和 Opera */
 }
 
 .app {
-    width: 100%;
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    position: relative;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  position: relative;
 
-    // 隐藏默认滚动条 - 保持此处以确保向后兼容性
-    &::-webkit-scrollbar {
-        display: none;
-    }
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  // 隐藏默认滚动条 - 保持此处以确保向后兼容性
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* 全局动画 - 保持动画定义以确保向后兼容性 */
 @keyframes floatUp {
-    0% {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-    100% {
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-20px);
-    }
+  0% {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+  }
 }

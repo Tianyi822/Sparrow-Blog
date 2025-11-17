@@ -1,108 +1,100 @@
-@use '@/style/mixins'as *;
-@use '@/style/variables'as var;
+@use '@/style/mixins' as *;
+@use '@/style/variables' as var;
 @use '@/style/glass' as *;
 
 // 通用标题容器样式
 %title-container-base {
-    width: 100%;
-    position: relative;
-    border-radius: var.$border-radius-md;
-    padding: var.$spacing-md + 0.2rem;
-    box-sizing: border-box;
-    overflow: hidden;
-    transform: translateY(0) scale(1);
-    transition: all 0.3s ease;
-    
-    @include glass-card-complete;
+  width: 100%;
+  position: relative;
+  border-radius: var.$border-radius-md;
+  padding: var.$spacing-md + 0.2rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  transform: translateY(0) scale(1);
+  transition: all 0.3s ease;
 
-    // 悬停效果
-    &:hover {
-        // 毛玻璃背景增强效果
-        background: 
-            linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
-            linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
-            rgba(0, 0, 0, 0.02);
-        
-        backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
-        -webkit-backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
-        
-        box-shadow: 
-            0 12px 40px rgba(0, 0, 0, 0.15),
-            0 4px 12px rgba(0, 0, 0, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2),
-            inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-    }
+  @include glass-card-complete;
+
+  // 悬停效果
+  &:hover {
+    // 毛玻璃背景增强效果
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.033) 0%, rgba(255, 255, 255, 0.02) 100%),
+      linear-gradient(225deg, rgba(255, 255, 255, 0.027) 0%, rgba(255, 255, 255, 0.01) 100%),
+      rgba(0, 0, 0, 0.02);
+
+    backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+    -webkit-backdrop-filter: blur(24px) saturate(220%) brightness(1.15);
+
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  }
 }
 
 // 通用光晕效果样式
 %title-border-glow-base {
-    position: absolute;
-    inset: -15px;
-    z-index: 1;
-    pointer-events: none;
-    border-radius: calc(#{var.$border-radius-md} + 15px);
-    transition: all 0.3s ease-out;
-    mix-blend-mode: normal;
-    opacity: 0;
-    user-select: none;
+  position: absolute;
+  inset: -15px;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: calc(#{var.$border-radius-md} + 15px);
+  transition: all 0.3s ease-out;
+  mix-blend-mode: normal;
+  opacity: 0;
+  user-select: none;
 }
 
 // 通用标题文本样式
 %title-text-base {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin: 0;
-    font-size: var.$font-size-md + 0.1rem;
-    color: rgba(255, 255, 255, 0.95);
-    position: relative;
-    z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  font-size: var.$font-size-md + 0.1rem;
+  color: rgba(255, 255, 255, 0.95);
+  position: relative;
+  z-index: 3;
 }
 
 // 各类型标题容器
 .article-title-container {
-    @extend %title-container-base;
-    
-    &:hover .article-title-border-glow {
-        box-shadow: 
-            0 0 30px 8px rgba(255, 255, 255, 0.6),
-            0 0 60px 15px rgba(255, 255, 255, 0.3);
-        opacity: 1;
-    }
+  @extend %title-container-base;
+
+  &:hover .article-title-border-glow {
+    box-shadow: 0 0 30px 8px rgba(255, 255, 255, 0.6), 0 0 60px 15px rgba(255, 255, 255, 0.3);
+    opacity: 1;
+  }
 }
 
 .comment-title-container {
-    @extend %title-container-base;
-    
-    &:hover .comment-title-border-glow {
-        box-shadow: 
-            0 0 30px 8px rgba(255, 255, 255, 0.6),
-            0 0 60px 15px rgba(255, 255, 255, 0.3);
-        opacity: 1;
-    }
+  @extend %title-container-base;
+
+  &:hover .comment-title-border-glow {
+    box-shadow: 0 0 30px 8px rgba(255, 255, 255, 0.6), 0 0 60px 15px rgba(255, 255, 255, 0.3);
+    opacity: 1;
+  }
 }
 
 .categories-title-container {
-    @extend %title-container-base;
-    
-    &:hover .categories-title-border-glow {
-        box-shadow: 
-            0 0 30px 8px rgba(255, 255, 255, 0.6),
-            0 0 60px 15px rgba(255, 255, 255, 0.3);
-        opacity: 1;
-    }
+  @extend %title-container-base;
+
+  &:hover .categories-title-border-glow {
+    box-shadow: 0 0 30px 8px rgba(255, 255, 255, 0.6), 0 0 60px 15px rgba(255, 255, 255, 0.3);
+    opacity: 1;
+  }
 }
 
 .tags-title-container {
-    @extend %title-container-base;
-    
-    &:hover .tags-title-border-glow {
-        box-shadow: 
-            0 0 30px 8px rgba(255, 255, 255, 0.6),
-            0 0 60px 15px rgba(255, 255, 255, 0.3);
-        opacity: 1;
-    }
+  @extend %title-container-base;
+
+  &:hover .tags-title-border-glow {
+    box-shadow: 0 0 30px 8px rgba(255, 255, 255, 0.6), 0 0 60px 15px rgba(255, 255, 255, 0.3);
+    opacity: 1;
+  }
 }
 
 // 各类型光晕效果
@@ -110,7 +102,7 @@
 .comment-title-border-glow,
 .categories-title-border-glow,
 .tags-title-border-glow {
-    @extend %title-border-glow-base;
+  @extend %title-border-glow-base;
 }
 
 // 各类型标题文本
@@ -118,5 +110,5 @@
 .comment-title-text,
 .categories-title-text,
 .tags-title-text {
-    @extend %title-text-base;
+  @extend %title-text-base;
 }

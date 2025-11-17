@@ -1,4 +1,4 @@
-@use "sass:color";
+@use 'sass:color';
 @use '@/style/mixins' as *;
 @use '@/style/variables' as *;
 
@@ -296,8 +296,6 @@
             }
           }
 
-
-
           td {
             padding: $spacing-lg;
             color: rgba($white, 0.85);
@@ -382,8 +380,6 @@
               }
             }
 
-
-
             &.time-column {
               .time-info {
                 display: flex;
@@ -396,11 +392,11 @@
                   flex-shrink: 0;
                 }
 
-                                 .time-text {
-                   color: rgba($white, 0.7);
-                   font-size: $font-size-sm;
-                   font-family: $font-family-monospace;
-                 }
+                .time-text {
+                  color: rgba($white, 0.7);
+                  font-size: $font-size-sm;
+                  font-family: $font-family-monospace;
+                }
               }
             }
 
@@ -874,4 +870,4 @@
       }
     }
   }
-} 
+}
